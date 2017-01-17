@@ -1,0 +1,9 @@
+Package: epicR
+Title: R Package for Evaluation Platform in COPD
+Version: 0.0.0.9000
+Authors@R: person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre"))
+Description: UNDER DEVELOPMENT.
+Depends: R (>= 3.3.2)
+License: Currently under development. Not available publicly. 
+Encoding: UTF-8
+LazyData: true
