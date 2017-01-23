@@ -1,9 +1,9 @@
 rm(list = ls()) #cleaning the environment. Amin.
-setwd(dirname(parent.frame(2)$ofile)) #automating working directory. Amin. testing a working branch 
-master_path<-"../"; #the path to the directory where all the folders reside. Amin 
+setwd(dirname(parent.frame(2)$ofile)) #automating working directory. Amin. testing a working branch
+master_path<-"../"; #the path to the directory where all the folders reside. Amin
 data_path<-paste(master_path,"/data",sep="")
-source(paste(master_path,"/code/input.r",sep=""))
-Rcpp::sourceCpp(paste(master_path,"/code/C/model.WIP.cpp",sep=""))
+source(paste(master_path,"/R/input.r",sep=""))
+Rcpp::sourceCpp(paste(master_path,"/src/model.WIP.cpp",sep=""))
 
 
 
@@ -14,18 +14,18 @@ default_settings<-list(
   update_continuous_outcomes_mode=0,
   n_base_agents=10000, #baseline number of prevalent patients. Total number of patients will be higher due to incident cases.
   runif_buffer_size=1000000, #this, and the next two lines are for random number generation in R. We put them in memory, C picks them up.
-  rnorm_buffer_size=1000000, #generally not a good idea to call R functions from C. Super slow. 
+  rnorm_buffer_size=1000000, #generally not a good idea to call R functions from C. Super slow.
   rexp_buffer_size=1000000,
   agent_stack_size=0,
-  event_stack_size=10000000 #Event Stack Size: Total memory that you give to C code to fill ~agents*1.5*40. R crashes if not enough. 
+  event_stack_size=10000000 #Event Stack Size: Total memory that you give to C code to fill ~agents*1.5*40. R crashes if not enough.
 
 )
 
 
 
-init_session<-function(settings=default_settings) #applies settings to C code. Pushes model inputs to C. 
+init_session<-function(settings=default_settings) #applies settings to C code. Pushes model inputs to C.
 {
-  cat("Initializing the session\n")  
+  cat("Initializing the session\n")
   if(exists("Cdeallocate_resources")) Cdeallocate_resources()
   if(!is.null(settings)) apply_settings(settings);
   init_input()
@@ -35,7 +35,7 @@ init_session<-function(settings=default_settings) #applies settings to C code. P
 
 terminate_session<-function()
 {
-  cat("Terminating the session\n")  
+  cat("Terminating the session\n")
   return(Cdeallocate_resources());
 }
 
@@ -108,7 +108,7 @@ set_Cmodel_inputs<-function(ls)
     res<-Cset_input_var(nms[i],val)
     if(res!=0) {message(last_var); return(res);}
   }
-  
+
   return(0);
 }
 
@@ -119,7 +119,7 @@ express_matrix<-function(mtx)#Takes a named matrix and write thr R code to popul
   nc<-dim(mtx)[2]
   rnames<-rownames(mtx)
   cnames<-colnames(mtx)
-  
+
   for(i in 1:nc)
   {
     cat(cnames[i],'=c(')
@@ -170,13 +170,13 @@ get_all_events<-function()
 run<-function(max_n_agents=NULL,input=NULL)
 {
   Cinit_session();
-  if(is.null(input)) 
+  if(is.null(input))
     input<-model_input;
-  
+
   res<-set_Cmodel_inputs(process_input(input))
-  if(res==0) 
+  if(res==0)
   {
-    if(is.null(max_n_agents)) 
+    if(is.null(max_n_agents))
       max_n_agents=.Machine$integer.max;
     res<-Cmodel(max_n_agents)
   }
@@ -210,7 +210,7 @@ process_input<-function(ls, decision=1)
 {
   ls$agent$p_bgd_by_sex<-ls$agent$p_bgd_by_sex+ls$manual$explicit_mortality_by_age_sex
   ls$smoking$ln_h_inc_betas[1]<-ls$smoking$ln_h_inc_betas[1]+log(ls$manual$smoking$intercept_k)
-  
+
   #ls$manual$MORT_COEFF<-NULL
   #ls$manual$PROP_COPD_DEATH_BY_SEX_AGE<-NULL
   #ls$manual$smoking$intercept_k<-NULL
