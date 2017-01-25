@@ -5,14 +5,17 @@ Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
 Description: UNDER DEVELOPMENT.
-Depends: R (>= 3.3.2)
-License: Currently under development. Not available publicly. 
+Depends:
+    R (>= 3.3.2)
+License: Currently under development. Not available publicly.
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.11.0),
+Imports:
+    Rcpp (>= 0.11.0),
     ggplot2,
     sqldf,
     gsubfn,
     proto,
     RSQLite
 LinkingTo: Rcpp
+RoxygenNote: 5.0.1
