@@ -1,7 +1,4 @@
-#rm(list = ls()) #cleaning the environment. Amin.
-#master_path<-"."; #the path to the directory where all the folders reside. Amin
-#data_path<-paste(master_path,"/data",sep="")
-source("./R/input.R")
+#source("./R/input.R")
 Rcpp::sourceCpp("./src/model.WIP.cpp")
 
 
@@ -21,7 +18,7 @@ default_settings<-list(
 )
 
 
-
+#' @export
 init_session<-function(settings=default_settings) #applies settings to C code. Pushes model inputs to C.
 {
   cat("Initializing the session\n")
@@ -31,7 +28,7 @@ init_session<-function(settings=default_settings) #applies settings to C code. P
   return(Callocate_resources());
 }
 
-
+#' @export
 terminate_session<-function()
 {
   cat("Terminating the session\n")
