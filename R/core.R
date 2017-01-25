@@ -1,6 +1,6 @@
 rm(list = ls()) #cleaning the environment. Amin.
 master_path<-"."; #the path to the directory where all the folders reside. Amin
-data_path<-paste(master_path,"/data",sep="")
+#data_path<-paste(master_path,"/data",sep="")
 source(paste(master_path,"/R/input.R",sep=""))
 Rcpp::sourceCpp(paste(master_path,"/src/model.WIP.cpp",sep=""))
 
