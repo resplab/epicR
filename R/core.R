@@ -35,7 +35,7 @@ terminate_session<-function()
   return(Cdeallocate_resources());
 }
 
-
+#' @export
 apply_settings<-function(settings=settings)
 {
   res<-0;
@@ -55,7 +55,7 @@ apply_settings<-function(settings=settings)
 
 
 
-
+#' @export
 update_run_env_setting<-function(setting_var,value)
 {
   res<-Cset_settings_var(setting_var,value)
@@ -68,7 +68,7 @@ update_run_env_setting<-function(setting_var,value)
 
 
 
-
+#' @export
 get_list_elements<-function(ls,running_name="")
 {
   out<-NULL
@@ -90,7 +90,7 @@ get_list_elements<-function(ls,running_name="")
 }
 
 
-
+#' @export
 set_Cmodel_inputs<-function(ls)
 {
   nms<-get_list_elements(ls)
@@ -108,7 +108,7 @@ set_Cmodel_inputs<-function(ls)
   return(0);
 }
 
-
+#' @export
 express_matrix<-function(mtx)#Takes a named matrix and write thr R code to populate it; good for generating input expressions from calibration results
 {
   nr<-dim(mtx)[1]
@@ -131,7 +131,7 @@ express_matrix<-function(mtx)#Takes a named matrix and write thr R code to popul
 
 
 
-
+#' @export
 get_agent_events<-function(id)
 {
   x<-Cget_agent_events(id)
@@ -141,7 +141,7 @@ get_agent_events<-function(id)
 }
 
 
-
+#' @export
 get_events_by_type<-function(event_type)
 {
   x<-Cget_events_by_type(event_type)
@@ -150,7 +150,7 @@ get_events_by_type<-function(event_type)
   return(data)
 }
 
-
+#' @export
 get_all_events<-function()
 {
   x<-Cget_all_events()
@@ -162,7 +162,7 @@ get_all_events<-function()
 
 
 
-
+#' @export
 run<-function(max_n_agents=NULL,input=NULL)
 {
   Cinit_session();
@@ -186,7 +186,7 @@ run<-function(max_n_agents=NULL,input=NULL)
 
 
 
-
+#' @export
 resume<-function(max_n_agents=NULL)
 {
   if(is.null(max_n_agents)) max_n_agents=settings$n_base_agents;
@@ -202,6 +202,7 @@ resume<-function(max_n_agents=NULL)
 
 
 #processes input and returns the processed one
+#' @export
 process_input<-function(ls, decision=1)
 {
   ls$agent$p_bgd_by_sex<-ls$agent$p_bgd_by_sex+ls$manual$explicit_mortality_by_age_sex
