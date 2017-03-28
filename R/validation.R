@@ -20,6 +20,7 @@ petoc<-function()
 
 
 
+
 sanity_check<-function()
 {
   init_session()
@@ -83,7 +84,8 @@ validate_population<-function(remove_COPD=0,incidence_k=1)
   cat("\nBecause you have called me with remove_COPD=",remove_COPD,", I am",c("NOT","indeed")[remove_COPD+1],"going to remove COPD-related mortality from my calculations");
   petoc()
 
-  CanSim.052.0005<-read.csv(paste(data_path,"/CanSim.052.0005.csv",sep=""),header=T)
+  cat(getwd());
+ # CanSim.052.0005<-read.csv(system.file ("extdata", "CanSim.052.0005.csv", package = "epicR"), header = T); #package ready reading
   x<-aggregate(CanSim.052.0005[,"value"],by=list(CanSim.052.0005[,'year']),FUN=sum)
   x[,2]<-x[,2]/x[1,2]
   x<-x[1:input$global_parameters$time_horizon,]
@@ -108,7 +110,7 @@ validate_population<-function(remove_COPD=0,incidence_k=1)
   lines(x[1:model_input$global_parameters$time_horizon,1],rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/n_y1_agents,col="red")
   legend("topright",c("Predicted","Simulated"),lty=c(1,1),col=c("black","red"))
 
-  cat("And the black one is the observed (simulated) growth\n")
+  cat("And the green one is the pbserved (simulated) growth\n")
 
   pyramid<-matrix(NA,nrow=input$global_parameters$time_horizon,ncol=length(Cget_output_ex()$n_alive_by_ctime_age[1,])-input$global_parameters$age0)
 
@@ -259,7 +261,7 @@ sanity_COPD<-function()
 
   cat("Welcome! I am going to check EPIC's sanity with regard to modeling COPD\n "); petoc()
 
-  cat("COPD incidence and prevalence parameters are as follows\n")
+  cat("COPD incidence and prevalenceparameters are as follows\n")
 
   cat("model_input$COPD$logit_p_COPD_betas_by_sex:\n")
   print(model_input$COPD$logit_p_COPD_betas_by_sex)
@@ -585,5 +587,13 @@ validate_lung_function<-function()
   }
   title(cex.main=0.5,"Trajectories of FEV1 in 100 individuals")
 
-  return(list(FEV1_prev=out_FEV1_prev,FEV1_inc=out_FEV1_inc,gold_prev = out_gold_prev, gold_inc=out_gold_inc))
+  return(list(FEV1_prev=out_FEV1_prev,FEV1_inc=out_FEV1_inc,gold_prev=out_gold_prev,gold_inc=out_gold_inc))
 }
+
+
+
+
+
+
+
+

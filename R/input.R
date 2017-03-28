@@ -34,7 +34,7 @@ init_input<-function()
   input_help$agent$height_weight_rho<-"Correlaiton coefficient between weight and height at baseline"
   
   input_help$agent$p_prevalence_age<-"Age pyramid at baseline (taken from CanSim.052-0005.xlsm for year 2015)"
-  input$agent$p_prevalence_age<-c(rep(0,40),c(473.9  , #taken from CanSim.052-0005.xlsm for year 2015
+  input$agent$p_prevalence_age<-c(rep(0,40),c(473.9*0  , #THANKS TO AMIN! taken from CanSim.052-0005.xlsm for year 2015
                                               462.7  ,
                                               463  ,
                                               469.3	,
@@ -99,7 +99,8 @@ init_input<-function()
   input$agent$p_prevalence_age<-input$agent$p_prevalence_age/sum(input$agent$p_prevalence_age)
   
   input_help$agent$p_incidence_age<-"Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration"
-  input$agent$p_incidence_age<-c(rep(0,40),c(1),0.01*exp(-(0:59)/5),rep(0,111-40-1-60))
+  input$agent$p_incidence_age<-c(rep(0,40),c(1),0.03*exp(-(0:59)/5),rep(0,111-40-1-60))
+  #input$agent$p_incidence_age<-c(rep(0,40),c(1),0.0*exp(-(0:59)/5),rep(0,111-40-1-60))
   input$agent$p_incidence_age<-input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
   
   input_help$agent$p_bgd_by_sex<-"Life table"
@@ -111,7 +112,7 @@ init_input<-function()
     female=c(0.00449,0.00021,0.00016,0.00013,0.00010,0.00009,0.00008,0.00007,0.00007,0.00007,0.00008,0.00008,0.00009,0.00011,0.00014,0.00018,0.00022,0.00026,0.00028,0.00029,0.00030,0.00030,0.00031,0.00031,0.00030,0.00030,0.00030,0.00031,0.00032,0.00034,0.00037,0.00040,0.00043,0.00047,0.00051,0.00056,0.00060,0.00066,0.00071,0.00077,0.00084,0.00092,0.00100,0.00109,0.00118,0.00129,0.00140,0.00153,0.00166,0.00181,0.00197,0.00215,0.00235,0.00257,0.00280,0.00307,0.00336,0.00368,0.00403,0.00442,0.00485,0.00533,0.00586,0.00645,0.00710,0.00782,0.00862,0.00951,0.01051,0.01161,0.01284,0.01420,0.01573,0.01743,0.01934,0.02146,0.02384,0.02649,0.02947,0.03280,0.03654,0.04074,0.04545,0.05074,0.05669,0.06338,0.07091,0.07940,0.08897,0.09977,0.11196,0.12542,0.13991,0.15541,0.17190,0.18849,0.20653,0.22549,0.24526,0.26571,0.28671,0.30810,0.32970,0.35132,0.37280,0.39395,0.41461,0.43462,0.45386,0.47222,1.00000)
   )
   
-  input$agent$l_inc_betas=t(as.matrix(c(intercept=-3.55,y=0.01,y2=0))); #intercept is the result ofmodel calibration
+  input$agent$l_inc_betas=t(as.matrix(c(intercept=-3.55,y=0.01,y2=0))); #intercept is the result of model calibration
   input_help$agent$l_inc_betas="Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
   input$agent$ln_h_bgd_betas=t(as.matrix(c(intercept=0,y=-0.025,y2=0,age=0,b_mi=0.1,n_mi=0,b_stroke=0.1,n_stroke=0,hf=0.1)));
   input_help$agent$ln_h_bgd_betas="Effect of variables on background mortality"
@@ -140,10 +141,7 @@ init_input<-function()
   input$COPD$ln_h_COPD_betas_by_sex<-cbind(
     male =c(Intercept =-6.65,age = 0.046 ,age2 = 0,pack_years = 0.016, smoking_status = 0,year = 0,asthma = 0)
     ,female =c(Intercept =-6.92 ,age = 0.05, age2 =0,pack_years = 0.016, smoking_status = 0 ,year = 0,asthma = 0))
- #  input$COPD$ln_h_COPD_betas_by_sex<-cbind(
-  # male =c(Intercept =-6,age = 0.04048614 ,age2 = 0,pack_years = 0.01299697, smoking_status = 0,year = 0,asthma = 0)
-   #,female =c(Intercept =-6.2 ,age = 0.04287276, age2 =0,pack_years = 0.01341118, smoking_status = 0 ,year = 0,asthma = 0))
-#  input_help$COPD$ln_h_COPD_betas_by_sex<-"Log-hazard of developing COPD (FEV1/FVC<0.7) for those who did not have COPD at creation time (separately by sex)"
+  input_help$COPD$ln_h_COPD_betas_by_sex<-"Log-hazard of developing COPD (FEV1/FVC<0.7) for those who did not have COPD at creation time (separately by sex)"
   
   
   ##Lung function
@@ -181,7 +179,7 @@ init_input<-function()
 
 
   ##Exacerbation;
-  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0)))
+  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0,gold3p=0)))
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
   input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.1685/10,fev1=-0.4279,smoking_status=0)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
@@ -282,16 +280,16 @@ init_input<-function()
   #Carry the last observation forward up to age 111;
   input$manual$explicit_mortality_by_age_sex<-temp
   
-  input$project_specific$ROC16_biomarker_threshold<-1
-  input_help$project_specific$ROC16_biomarker_threshold<-"Threshold on the biomarker value that prompts treatment"
-  input$project_specific$ROC16_biomarker_noise_sd<-0
-  input_help$project_specific$ROC16_biomarker_noise_sd<-"SD of the multiplicative log-normally distirbuted noise arround the actual exacerbation rate - this noise is added to make the biomarker 'imperfect'"
-  input$project_specific$ROC16_biomarker_cost<-100
-  input_help$project_specific$ROC16_biomarker_cost<-"Cost of the biomarker (per patient)"
-  input$project_specific$ROC16_treatment_cost<-4000
-  input_help$project_specific$ROC16_treatment_cost<-"Cost of treatment that will reduce the exacerbation rate"
-  input$project_specific$ROC16_treatment_RR<-0.75
-  input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
+  #input$project_specific$ROC16_biomarker_threshold<-1
+  #input_help$project_specific$ROC16_biomarker_threshold<-"Threshold on the biomarker value that prompts treatment"
+  #input$project_specific$ROC16_biomarker_noise_sd<-0
+  #input_help$project_specific$ROC16_biomarker_noise_sd<-"SD of the multiplicative log-normally distirbuted noise arround the actual exacerbation rate - this noise is added to make the biomarker 'imperfect'"
+  #input$project_specific$ROC16_biomarker_cost<-100
+  #input_help$project_specific$ROC16_biomarker_cost<-"Cost of the biomarker (per patient)"
+  #input$project_specific$ROC16_treatment_cost<-4000
+  #input_help$project_specific$ROC16_treatment_cost<-"Cost of treatment that will reduce the exacerbation rate"
+  #input$project_specific$ROC16_treatment_RR<-0.75
+  #input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
   
   model_input<<-input
   model_input_help<<-input_help
