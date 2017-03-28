@@ -182,7 +182,7 @@ validate_smoking<-function(remove_COPD=1,intercept_k=NULL)
   cat("Starting validation target 1: baseline prevalence of smokers.\n")
   petoc()
 
-  CanSim.105.0501<-read.csv(paste(data_path,"/CanSim.105.0501.csv",sep=""),header=T)
+  #CanSim.105.0501<-read.csv(paste(data_path,"/CanSim.105.0501.csv",sep=""),header=T) Included in the package as internal data
   tab1<-rbind(CanSim.105.0501[1:3,"value"],CanSim.105.0501[4:6,"value"])/100
   cat("This is the observed percentage of current smokers in 2014 (m,f)\n")
   barplot(tab1,beside=T,names.arg=c("40","52","65+"),ylim=c(0,0.4),xlab="Age group",ylab="Prevalenc of smoking",col=c("black","grey"))
