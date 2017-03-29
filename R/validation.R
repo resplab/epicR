@@ -20,7 +20,7 @@ petoc<-function()
 
 
 
-
+#' @export
 sanity_check<-function()
 {
   init_session()
@@ -67,7 +67,7 @@ sanity_check<-function()
 
 
 
-
+#' @export
 validate_population<-function(remove_COPD=0,incidence_k=1)
 {
   cat ("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
@@ -151,7 +151,7 @@ validate_population<-function(remove_COPD=0,incidence_k=1)
 
 
 
-
+#' @export
 validate_smoking<-function(remove_COPD=1,intercept_k=NULL)
 {
   cat ("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
@@ -247,7 +247,7 @@ validate_smoking<-function(remove_COPD=1,intercept_k=NULL)
 
 
 
-
+#' @export
 sanity_COPD<-function()
 {
   settings<-default_settings
@@ -323,7 +323,7 @@ sanity_COPD<-function()
 
 
 
-
+#' @export
 validate_COPD<-function(incident_COPD_k=1)
 {
   out<-list()
@@ -418,7 +418,7 @@ validate_COPD<-function(incident_COPD_k=1)
 
 
 
-
+#' @export
 validate_mortality<-function(n_sim=10^7,bgd=1,bgd_h=1,manual=1,exacerbation=1,comorbidity=1)
 {
   cat("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
@@ -479,7 +479,7 @@ validate_mortality<-function(n_sim=10^7,bgd=1,bgd_h=1,manual=1,exacerbation=1,co
 
 
 
-
+#' @export
 validate_comorbidity<-function(n_sim=100000)
 {
   cat("Hello from EPIC! I am going to validate comorbidities for ya\n")
@@ -543,7 +543,7 @@ validate_comorbidity<-function(n_sim=100000)
 
 
 
-
+#' @export
 validate_lung_function<-function()
 {
   cat("This function examines FEV1 values")
