@@ -1,7 +1,10 @@
 #source("./R/input.R")
 Rcpp::sourceCpp("./src/model.WIP.cpp")
 
-
+# Cleaning up when package unloads
+.onUnload <- function (libpath) {
+  library.dynam.unload("epicR", libpath)
+}
 
 default_settings<-list(
   record_mode=record_mode["record_mode_event"], #RECORD_MODE_NONE,
