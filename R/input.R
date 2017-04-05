@@ -1,38 +1,39 @@
+#' @export
 init_input<-function()
 {
   input<-list()
   input_help<-list()
-  
+
   input$global_parameters<-list(
-    age0=40,   
+    age0=40,
     time_horizon=20,
     discount_cost=0.03,
     discount_qaly=0.03
   )
   input_help$global_parameters<-list(
-    age0="Starting age in the model",   
+    age0="Starting age in the model",
     time_horizon="Model time horizon",
     discount_cost="Discount value for cost outcomes",
     discount_qaly="Discount value for QALY outcomes"
   )
-  
-  
-  
+
+
+
   input$agent$p_female<-0.5
   input_help$agent$p_female<-"Proportion of females in the population"
-  
+
   input$agent$height_0_betas<-t(as.matrix(c(intercept=1.82657,sex=-0.13093,age=-0.00125,age2=0.00000231,sex_age=-0.00016510)))
   input_help$agent$height_0_betas<-"Regressoin coefficients for estimating height (in meters) at baseline"
   input$agent$height_0_sd<-0.06738
   input_help$agent$height_0_sd<-"SD representing heterogeneity in baseline height"
-  
+
   input$agent$weight_0_betas<-t(as.matrix(c(intercept=50,sex=-5,age=0.1,age2=0,sex_age=0,height=1,year=0.01)))
   input_help$agent$weight_0_betas<-"Regressoin coefficients for estimating weiight (in Kg) at baseline"
   input$agent$weight_0_sd<-5
   input_help$agent$weight_0_sd<-"SD representing heterogeneity in baseline weight"
   input$agent$height_weight_rho<-0
   input_help$agent$height_weight_rho<-"Correlaiton coefficient between weight and height at baseline"
-  
+
   input_help$agent$p_prevalence_age<-"Age pyramid at baseline (taken from CanSim.052-0005.xlsm for year 2015)"
   input$agent$p_prevalence_age<-c(rep(0,40),c(473.9*0  , #THANKS TO AMIN! taken from CanSim.052-0005.xlsm for year 2015
                                               462.7  ,
@@ -94,15 +95,15 @@ init_input<-function()
                                               8.8	,
                                               5.9	,
                                               3.8	,
-                                              6.8	
+                                              6.8
   ),rep(0,10));
   input$agent$p_prevalence_age<-input$agent$p_prevalence_age/sum(input$agent$p_prevalence_age)
-  
+
   input_help$agent$p_incidence_age<-"Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration"
   input$agent$p_incidence_age<-c(rep(0,40),c(1),0.03*exp(-(0:59)/5),rep(0,111-40-1-60))
   #input$agent$p_incidence_age<-c(rep(0,40),c(1),0.0*exp(-(0:59)/5),rep(0,111-40-1-60))
   input$agent$p_incidence_age<-input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
-  
+
   input_help$agent$p_bgd_by_sex<-"Life table"
   input$agent$p_bgd_by_sex<-cbind(
     #male=(1+bitwAnd(1:111,1))/10000,
@@ -111,13 +112,13 @@ init_input<-function()
     ,
     female=c(0.00449,0.00021,0.00016,0.00013,0.00010,0.00009,0.00008,0.00007,0.00007,0.00007,0.00008,0.00008,0.00009,0.00011,0.00014,0.00018,0.00022,0.00026,0.00028,0.00029,0.00030,0.00030,0.00031,0.00031,0.00030,0.00030,0.00030,0.00031,0.00032,0.00034,0.00037,0.00040,0.00043,0.00047,0.00051,0.00056,0.00060,0.00066,0.00071,0.00077,0.00084,0.00092,0.00100,0.00109,0.00118,0.00129,0.00140,0.00153,0.00166,0.00181,0.00197,0.00215,0.00235,0.00257,0.00280,0.00307,0.00336,0.00368,0.00403,0.00442,0.00485,0.00533,0.00586,0.00645,0.00710,0.00782,0.00862,0.00951,0.01051,0.01161,0.01284,0.01420,0.01573,0.01743,0.01934,0.02146,0.02384,0.02649,0.02947,0.03280,0.03654,0.04074,0.04545,0.05074,0.05669,0.06338,0.07091,0.07940,0.08897,0.09977,0.11196,0.12542,0.13991,0.15541,0.17190,0.18849,0.20653,0.22549,0.24526,0.26571,0.28671,0.30810,0.32970,0.35132,0.37280,0.39395,0.41461,0.43462,0.45386,0.47222,1.00000)
   )
-  
+
   input$agent$l_inc_betas=t(as.matrix(c(intercept=-3.55,y=0.01,y2=0))); #intercept is the result of model calibration
   input_help$agent$l_inc_betas="Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
   input$agent$ln_h_bgd_betas=t(as.matrix(c(intercept=0,y=-0.025,y2=0,age=0,b_mi=0.1,n_mi=0,b_stroke=0.1,n_stroke=0,hf=0.1)));
   input_help$agent$ln_h_bgd_betas="Effect of variables on background mortality"
-  
-  
+
+
   ###smoking;
   input$smoking$logit_p_current_smoker_0_betas<-t(as.matrix(c(Intercept=-0.53,sex=-0.22,age=-0.02,age2=0,sex_age=0,sex_age2=0,year=-0.02)));
     input_help$smoking$logit_p_current_smoker_0_betas<-"Probability of being a current smoker at the time of creation"
@@ -131,8 +132,8 @@ init_input<-function()
     input_help$smoking$ln_h_inc_betas<-"Log-hazard of starting smoking (incidence or relapse)"
   input$smoking$ln_h_ces_betas<-c(intercept=-3,sex=0,age=0,age2=0,calendar_time=0);
     input_help$smoking$ln_h_ces_betas<-"Log-hazard of smoking cessation"
-  
-  
+
+
   ##COPD
   input$COPD$logit_p_COPD_betas_by_sex<-cbind(
     male=c(intercept=-6,age=log(1.96)/10,age2=0,pack_years=log(1.20)/10,current_smoking=0,year=0,asthma=0),
@@ -142,8 +143,8 @@ init_input<-function()
     male =c(Intercept =-6.65,age = 0.046 ,age2 = 0,pack_years = 0.016, smoking_status = 0,year = 0,asthma = 0)
     ,female =c(Intercept =-6.92 ,age = 0.05, age2 =0,pack_years = 0.016, smoking_status = 0 ,year = 0,asthma = 0))
   input_help$COPD$ln_h_COPD_betas_by_sex<-"Log-hazard of developing COPD (FEV1/FVC<0.7) for those who did not have COPD at creation time (separately by sex)"
-  
-  
+
+
   ##Lung function
   input$lung_function$fev1_0_prev_betas_by_sex<-cbind(
     male=c(intercept=-1.969651,age=-0.027212,height=3.786599,pack_years=-0.005458,current_smoker=0,sgrq=0),
@@ -151,31 +152,31 @@ init_input<-function()
   input_help$lung_function$fev1_0_prev_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
   input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
-  
+
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(
     male=c(intercept=-5.9429280+3.2719928*0.7,age=-0.0253224,height=4.7959326,pack_years=-0.0033031,current_smoker=0,sgrq=0),
     female=c(intercept=-3.1143794+2.1388758*0.7,age=-0.0234219,height=3.2741914,pack_years=-0.0032205,current_smoker=0,sgrq=0))
   input_help$lung_function$fev1_0_inc_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
   input$lung_function$fev1_0_inc_sd_by_sex<-c(male=0.54,female=0.36)
   input_help$lung_function$fev1_0_inc_sd_by_sex<-"SD of FEV1 at time of development of COPD (separately by sex)"
-  
+
   #NHANES: input$lung_function$pred_fev1_betas_by_sex<-rbind(c(intercept=-0.7453,age=-0.04106,age2=0.004477,height2=0.00014098),c(-0.871,0.06537,0,0.00011496))
-  
+
   input$lung_function$pred_fev1_betas_by_sex<-cbind(
     male=c(intercept=-2.06961, age=-0.03167, height=0.04215*100, reserved=0),
     female=c(intercept=-1.68697, age=-0.02773, height=0.03557*100, reserved=0))
   input_help$lung_function$pred_fev1_betas_by_sex<-"Coefficients for calculation of predicted FEV1 based on individual characteristics"
-  
-    
+
+
   input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
   input_help$lung_function$dfev1_betas<-"Regression equations (mixed-effects model) for rate of FEV1 decline"
-  
+
   input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.01,time=0)))
   input_help$lung_function$dfev1_re_sds<-"SD of random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_rho<--0.5 
+  input$lung_function$dfev1_re_rho<--0.5
   input_help$lung_function$dfev1_re_rho<-"Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline"
-  
-  
+
+
 
 
   ##Exacerbation;
@@ -183,41 +184,41 @@ init_input<-function()
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
   input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.1685/10,fev1=-0.4279,smoking_status=0)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
-  
+
   input$exacerbation$ln_rate_intercept_sd=sqrt(0.6393)
   input_help$exacerbation$ln_rate_intercept_sd="SD of the random intercept for log-hazard of exacerbation"
   input$exacerbation$logit_severity_intercept_sd=sqrt(2.6560)
   input_help$exacerbation$logit_severity_intercept_sd="SD of the random intercept for proportional odds model of exacerbation severity"
   input$exacerbation$rate_severity_intercept_rho=-0.02162
   input_help$exacerbation$rate_severity_intercept_rho="Correlation coefficient between the random effect terms of rate and severity"
-  
+
   input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/10,severe=365/15)))
   input_help$exacerbation$exac_end_rate<-"Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level"
-  
+
   input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0.01, severe=0.156)))
   input_help$exacerbation$p_death<-"Probability of deatth due to exacerbation according to its severity level"
-  
+
   #Outpatient;
   input$outpatient$rate_doctor_visit<-0.1
   input$outpatient$p_specialist<-0.1
-  
-  
-  
-  
-  
+
+
+
+
+
   #medication
   #log-hazard regression matrix for initiation of each medication
-  
+
   template=c(int=0,sex=0,age=0,med_class=rep(0,length(medication_classes)))
   mx<-NULL
   for(i in medication_classes)
-    mx<-rbind(mx,template) 
-  
+    mx<-rbind(mx,template)
+
   input$medication$ln_h_start_betas_by_class<-mx
   input$medication$ln_h_stop_betas_by_class<-mx
   input$medication$ln_rr_exac_by_class<-rep(log(1),length(medication_classes))  #TODO: update this to represent different medication effect
-  
-  
+
+
   ###comorbidity
   #mi
   input$comorbidity$logit_p_mi_betas_by_sex=cbind(
@@ -229,8 +230,8 @@ init_input<-function()
     female=c(intercept=-30000, age=0.001, age2=0, pack_years=0.01, smoking=0.61868, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01)
   );
   input$comorbidity$p_mi_death<-0.05;
-  
-  
+
+
   #stroke
   input$comorbidity$logit_p_stroke_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, b_mi=0, gold=0.05, b_mi=0, n_mi=0),
@@ -241,8 +242,8 @@ init_input<-function()
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
   );
   input$comorbidity$p_stroke_death<-0.18;
-  
-  
+
+
   #hf
   input$comorbidity$logit_p_hf_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
@@ -252,25 +253,25 @@ init_input<-function()
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05,b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05,b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
   );
-  
-  
+
+
 ##cost and utility
   input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=36,II=215,III=524,IV=524)))
   input_help$cost$bg_cost_by_stage="Annual direct costs for non-COPD, and COPD by GOLD grades"
   input$cost$exac_dcost=t(as.matrix(c(mild=160,moderate=1500,severe=6500)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
-  
+
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
-  
+
   input$utility$bg_util_by_stage=t(as.matrix(c(N=1, I=0.81,II=0.72,III=0.67,IV=0.67)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
   input$utility$exac_dutil=t(as.matrix(c(mild=-0.07,moderate=-0.37/2,severe=-0.3)))
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
-  
+
   input$manual$MORT_COEFF<-1
   input$manual$smoking$intercept_k<-1
-  
-  
+
+
   #Proportion of death by COPD that should be REMOVED from background mortality (http://vizhub.healthdata.org/cod/)
   temp<-cbind(
     #   0 for <35         35-39           40-44           45-49          50-54      55-59           60-64        65-69          70-74       75-79       80+
@@ -279,7 +280,7 @@ init_input<-function()
   )
   #Carry the last observation forward up to age 111;
   input$manual$explicit_mortality_by_age_sex<-temp
-  
+
   #input$project_specific$ROC16_biomarker_threshold<-1
   #input_help$project_specific$ROC16_biomarker_threshold<-"Threshold on the biomarker value that prompts treatment"
   #input$project_specific$ROC16_biomarker_noise_sd<-0
@@ -290,7 +291,7 @@ init_input<-function()
   #input_help$project_specific$ROC16_treatment_cost<-"Cost of treatment that will reduce the exacerbation rate"
   #input$project_specific$ROC16_treatment_RR<-0.75
   #input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
-  
+
   model_input<<-input
   model_input_help<<-input_help
 }
