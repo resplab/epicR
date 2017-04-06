@@ -1,3 +1,69 @@
+# The following declarations were previosuly in mode.WIP.cpp
+#they are now moved here to make it compatible with epicR as a pakcage. Amin
+
+record_mode<-c(
+  record_mode_none=0,
+  record_mode_agent=1,
+  record_mode_event=2,
+  record_mode_some_event=3
+)
+
+
+medication_classes<-c(
+  MED_CLASS_SABA=1,
+  MED_CLASS_LABA=2,
+  MED_CLASS_LAMA=4,
+  MED_CLASS_ICS=8,
+  MED_CLASS_MACRO=16
+)
+
+
+
+events<-c(
+  event_start=0,
+  event_fixed=1,
+  event_birthday=2,
+  event_smoking_change=3,
+  event_COPD=4,
+  event_exacerbation=5,
+  event_exacerbation_end=6,
+  event_exacerbation_death=7,
+  event_doctor_visit=8,
+  event_medication_change=9,
+
+  event_mi=10,
+  event_stroke=11,
+  event_hf=12,
+
+  event_bgd=13,
+  event_end=14
+)
+
+
+agent_creation_mode<-c(
+  agent_creation_mode_one=0,
+  agent_creation_mode_all=1,
+  agent_creation_mode_pre=2
+)
+
+
+
+errors<-c(
+  ERR_INCORRECT_SETTING_VARIABLE=-1,
+  ERR_INCORRECT_VECTOR_SIZE=-2,
+  ERR_INCORRECT_INPUT_VAR=-3,
+  ERR_EVENT_STACK_FULL=-4,
+  ERR_MEMORY_ALLOCATION_FAILED=-5
+)
+
+# End of declarations
+
+
+
+
+
+
+
 #' @export
 init_input<-function()
 {
