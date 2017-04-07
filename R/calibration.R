@@ -5,7 +5,7 @@ calib_params<-list(
 
 
 
-
+#' @export
 calibrate_explicit_mortality<-function(n_sim=10^8)
 {
   cat("Difference between life table and observed mortality\n")
@@ -45,7 +45,7 @@ calibrate_explicit_mortality<-function(n_sim=10^8)
 
 
 
-
+#' @export
 calibrate_mi_incidence<-function(simple=F)
 {
   settings<-default_settings
@@ -88,7 +88,7 @@ calibrate_mi_incidence<-function(simple=F)
 
 
 
-
+#' @export
 calibrate_smoking<-function()
 {
   cat("I will try to estimate the value of input parameters with simulated data")
