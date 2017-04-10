@@ -1,6 +1,3 @@
-library("ggplot2")
-library(sqldf)
-
 
 report_mode<-1;  #If 1, we are generating a report!
 
@@ -355,14 +352,14 @@ validate_COPD<-function(incident_COPD_k=1)
   out$inc_copd<-sum(opx$n_inc_COPD_by_ctime_age)/opx$cumul_non_COPD_time
   out$inc_copd_by_sex<-sum(opx$n_inc_COPD_by_ctime_age)/opx$cumul_non_COPD_time
 
-  x<-sqldf("SELECT sex, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY sex")
+  x<-sqldf::sqldf("SELECT sex, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY sex")
   out$p_copd_at_creation_by_sex<-x[,'n_copd']/x[,'n']
 
 
 
   age_cats<-c(40,50,60,70,80,111)
   dataS[,'age_cat']<-as.numeric(cut(dataS[,'age_at_creation']+dataS[,'local_time'],age_cats,include.lowest = TRUE))
-  x<-sqldf("SELECT age_cat, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY age_cat")
+  x<-sqldf::sqldf("SELECT age_cat, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY age_cat")
   temp<-x[,'n_copd']/x[,'n']
   names(temp)<-paste(age_cats[-length(age_cats)],age_cats[-1],sep="-")
   out$p_copd_at_creation_by_age<-temp
@@ -370,7 +367,7 @@ validate_COPD<-function(incident_COPD_k=1)
 
   py_cats<-c(0,25,50,75,Inf)
   dataS[,'py_cat']<-as.numeric(cut(dataS[,'pack_years'],py_cats,include.lowest = TRUE))
-  x<-sqldf("SELECT py_cat, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY py_cat")
+  x<-sqldf::sqldf("SELECT py_cat, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY py_cat")
   temp<-x[,'n_copd']/x[,'n']
   names(temp)<-paste(py_cats[-length(py_cats)],py_cats[-1],sep="-")
   out$p_copd_at_creation_by_pack_years<-temp
@@ -568,12 +565,12 @@ validate_lung_function<-function()
   COPD_events<-which(x[,'event']==events["event_COPD"])
   start_events<-which(x[,'event']==events["event_start"])
 
-  out_FEV1_prev<-sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
-  out_FEV1_inc<-sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
+  out_FEV1_prev<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
+  out_FEV1_inc<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
 
-  out_gold_prev<-sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
+  out_gold_prev<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
   out_gold_prev[,'Percent']<-round(out_gold_prev[,'N']/sum(out_gold_prev[,'N']),3)
-  out_gold_inc<-sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
+  out_gold_inc<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
   out_gold_inc[,'Percent']<-round(out_gold_inc[,'N']/sum(out_gold_inc[,'N']),3)
 
   COPD_ids<-x[COPD_events,'id']

@@ -1,6 +1,6 @@
 Package: epicR
 Title: R Package for Evaluation Platform in COPD
-Version: 0.0.1.3
+Version: 0.0.1.4
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
@@ -8,11 +8,7 @@ Description: R Package for Evaluation Platform in COPD (EPIC). EPIC is a Discret
 Depends:
     R (>= 3.3.2),
     Rcpp (>= 0.11.0),
-    ggplot2,
-    sqldf,
-    gsubfn,
-    proto,
-    RSQLite
+
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
