@@ -18,6 +18,7 @@ Imports:
     gsubfn,
     proto,
     RSQLite,
-    tcltk
+    tcltk.
+    DBI
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
