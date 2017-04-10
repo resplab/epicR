@@ -241,7 +241,7 @@ struct settings
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cset_settings_var(std::string name,NumericVector value)
 {
@@ -268,7 +268,7 @@ int Cset_settings_var(std::string name,NumericVector value)
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_settings()
 {
@@ -288,6 +288,7 @@ List Cget_settings()
 
 
 
+//' @export
 // [[Rcpp::export]]
 List Cget_version()
 {
@@ -318,7 +319,7 @@ void reset_runtime_stats()
     x[i]=0;
 }
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_runtime_stats()
 {
@@ -443,7 +444,7 @@ double rand_exp()
   return(temp);
 }
 
-
+//' @export
 // [[Rcpp::export]]
 NumericVector Xrexp(int n, double rate)
 {
@@ -604,7 +605,7 @@ struct input
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_inputs()
 {
@@ -707,7 +708,7 @@ List Cget_inputs()
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cset_input_var(std::string name,NumericVector value)
 {
@@ -799,7 +800,7 @@ int Cset_input_var(std::string name,NumericVector value)
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 double get_sample_output(int year, int sex)
 {
@@ -967,7 +968,7 @@ List get_agent(int id, agent agent_pointer[])
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_agent(long id)
 {
@@ -975,7 +976,7 @@ List Cget_agent(long id)
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_smith()
 {
@@ -1230,13 +1231,7 @@ agent *create_agent(agent *ag,int id)
 
 
 
-
-
-
-
-
-
-
+//' @export
 // [[Rcpp::export]]
 int Ccreate_agents()
 {
@@ -1290,6 +1285,7 @@ void reset_output()
 }
 
 
+//' @export
 // [[Rcpp::export]]
 List Cget_output()
 {
@@ -1394,6 +1390,7 @@ void reset_output_ex()
 }
 
 
+//' @export
 // [[Rcpp::export]]
 List Cget_output_ex()
 {
@@ -1786,7 +1783,7 @@ int push_event(agent *ag)
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_event(int i)
 {
@@ -1794,7 +1791,7 @@ List Cget_event(int i)
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cget_n_events() //number of events, not n events themselves;
 {
@@ -1802,7 +1799,7 @@ int Cget_n_events() //number of events, not n events themselves;
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
 {
@@ -1820,7 +1817,7 @@ DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 DataFrame Cget_events_by_type(int event_type) //Returns all events of a given type for an agent;
 {
@@ -1838,7 +1835,7 @@ DataFrame Cget_events_by_type(int event_type) //Returns all events of a given ty
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 DataFrame Cget_all_events() //Returns all events from all agents;
 {
@@ -1852,7 +1849,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
@@ -2472,7 +2469,7 @@ agent *event_birthday_process(agent *ag)
 
 
 /////////////////////////////////////////////////////////////////////////MODEL///////////////////////////////////////////
-
+//' @export
 // [[Rcpp::export]]
 int Callocate_resources()
 {
@@ -2513,7 +2510,7 @@ int Callocate_resources()
   return(0);
 }
 
-
+//' @export
 // [[Rcpp::export]]
 List Cget_pointers()
 {
@@ -2528,7 +2525,7 @@ List Cget_pointers()
 }
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cdeallocate_resources()
 {
@@ -2545,7 +2542,7 @@ int Cdeallocate_resources()
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cdeallocate_resources2()
 {
@@ -2589,7 +2586,7 @@ int Callocate_resources2()
   return(0);
 }
 
-
+//' @export
 // [[Rcpp::export]]
 int Cinit_session() //Does not deal with memory allocation only resets counters etc;
 {
@@ -2607,7 +2604,7 @@ int Cinit_session() //Does not deal with memory allocation only resets counters 
 
 
 
-
+//' @export
 // [[Rcpp::export]]
 int Cmodel(int max_n_agents)
 {
