@@ -202,26 +202,26 @@ init_input<-function()
 
   ##COPD
   input$COPD$logit_p_COPD_betas_by_sex<-cbind(
-    male=c(intercept=-6,age=log(1.96)/10,age2=0,pack_years=log(1.20)/10,current_smoking=0,year=0,asthma=0),
-    female=c(intercept=-6.2,age=log(1.94)/10,age2=0,pack_years=log(1.20)/10,current_smoking=0,year=0,asthma=0))
+    male=c(intercept=-5.337997,age= 0.044918,age2=0,pack_years= 0.018734,current_smoking=1.093586,year=0,asthma=0), #Updated on 2017-04-19 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
+    female=c(intercept=-4.377285,age=0.031689,age2=0,pack_years=0.025183,current_smoking=0.636127,year=0,asthma=0)) #Updated on 2017-04-19 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
   input_help$COPD$logit_p_COPD_betas_by_sex<-"Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)"
   input$COPD$ln_h_COPD_betas_by_sex<-cbind(
-    male =c(Intercept =-6.65,age = 0.046 ,age2 = 0,pack_years = 0.016, smoking_status = 0,year = 0,asthma = 0)
-    ,female =c(Intercept =-6.92 ,age = 0.05, age2 =0,pack_years = 0.016, smoking_status = 0 ,year = 0,asthma = 0))
+    male =c(Intercept =-7.53034878,age = 0.05169510 ,age2 = 0,pack_years = 0.01436641, smoking_status = 0,year = 0,asthma = 0) #NEEDS TO BE RECALCULATED. Values based on Amin's iterative solution for pre-LLN modification version (v0.1.5)
+    ,female =c(Intercept =-7.75310133 ,age = 0.05380265, age2 =0,pack_years = 0.01466302, smoking_status = 0 ,year = 0,asthma = 0)) #NEEDS TO BE RECALCULATED. Values based on Amin's iterative solution for pre-LLN modification version (v0.1.5)
   input_help$COPD$ln_h_COPD_betas_by_sex<-"Log-hazard of developing COPD (FEV1/FVC<0.7) for those who did not have COPD at creation time (separately by sex)"
 
 
   ##Lung function
   input$lung_function$fev1_0_prev_betas_by_sex<-cbind(
-    male=c(intercept=-1.969651,age=-0.027212,height=3.786599,pack_years=-0.005458,current_smoker=0,sgrq=0),
-    female=c(intercept=-0.8339577 ,age=-0.0252077 ,height=2.7785297,pack_years=-0.0063040,current_smoker=0,sgrq=0))
+    male=c(intercept=1.546161,age=-0.031296,height=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0),  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
+    female=c(intercept= 1.329805 ,age=-0.031296 ,height=1.012579,pack_years=-0.0063040,current_smoker=0,sgrq=0))  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
   input_help$lung_function$fev1_0_prev_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
   input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
 
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(
-    male=c(intercept=-5.9429280+3.2719928*0.7,age=-0.0253224,height=4.7959326,pack_years=-0.0033031,current_smoker=0,sgrq=0),
-    female=c(intercept=-3.1143794+2.1388758*0.7,age=-0.0234219,height=3.2741914,pack_years=-0.0032205,current_smoker=0,sgrq=0))
+    male=c(intercept= 1.4895,age=-0.0322,height=1.27,pack_years=-0.00428,current_smoker=0,sgrq=0),#TO BE ADDED: (-0.6831)(has_copd_incidence==TRUE);  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
+    female=c(intercept=1.5737,age=-0.0275,height=0.97,pack_years=-0.00465 ,current_smoker=0,sgrq=0)) # TO BE ADDED: (-0.425)(has_copd_incidence==TRUE)  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
   input_help$lung_function$fev1_0_inc_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
   input$lung_function$fev1_0_inc_sd_by_sex<-c(male=0.54,female=0.36)
   input_help$lung_function$fev1_0_inc_sd_by_sex<-"SD of FEV1 at time of development of COPD (separately by sex)"
