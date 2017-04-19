@@ -1,6 +1,6 @@
 
 #' @export
-iterate_incidence<-function(nIterations=1000,
+iterate_COPD_inc<-function(nIterations=1000,
                             nPatients=10000,
                             time_horizon=20)
 {
