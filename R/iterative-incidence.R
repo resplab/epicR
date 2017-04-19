@@ -43,15 +43,15 @@ iterate_COPD_inc<-function(nIterations=1000,
     dataF[,'gold3p']<-(dataF[,'gold']>2)*1
     dataF[,'year']<-dataF[,'local_time']+dataF[,'time_at_creation']
 
-    res_male<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years,family=binomial(link=logit))
+    res_male<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years+smoking_status,family=binomial(link=logit))
     coefficients(res_male)
 
-    res_female<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years,family=binomial(link=logit))
+    res_female<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years+smoking_status,family=binomial(link=logit))
     coefficients(res_female)
 
     latest_COPD_prev_logit <- cbind(
-      male =c(Intercept =summary(res_male)$coefficients[1,1],age = summary(res_male)$coefficients[2,1] ,age2 = 0, pack_years = summary(res_male)$coefficients[3,1], smoking_status = 0,year = 0,asthma = 0)
-      ,female =c(Intercept =summary(res_female)$coefficients[1,1] ,age = summary(res_female)$coefficients[2,1], age2 =0, pack_years = summary(res_female)$coefficients[3,1], smoking_status = 0 ,year = 0,asthma = 0))
+      male =c(Intercept =summary(res_male)$coefficients[1,1],age = summary(res_male)$coefficients[2,1] ,age2 = 0, pack_years = summary(res_male)$coefficients[3,1], smoking_status = summary(res_male)$coefficients[4,1],year = 0,asthma = 0)
+      ,female =c(Intercept =summary(res_female)$coefficients[1,1] ,age = summary(res_female)$coefficients[2,1], age2 =0, pack_years = summary(res_female)$coefficients[3,1], smoking_status = summary(res_female)$coefficients[4,1] ,year = 0,asthma = 0))
 
     p50 <-  input$COPD$logit_p_COPD_betas_by_sex-latest_COPD_prev_logit
     print(c(i, "th loop:"))
@@ -61,7 +61,8 @@ iterate_COPD_inc<-function(nIterations=1000,
     cat(i, p50[1,1], p50[2,1], p50[4,1], p50[1,2], p50[2,2], p50[4,2], file="iteration_resid.csv",sep=",",append=TRUE, fill=FALSE)
     cat("\n",file="iteration_resid.csv",sep=",",append=TRUE)
 
-    p1 <- p50
+    p1 <- 1 - (1 - p50)^(1/time_horizon) #adjusting the probablity for one year
+    #p1 <- p50
     latest_COPD_inc_logit <- latest_COPD_inc_logit+p1;
 
     print ("latest inc logit is:")
