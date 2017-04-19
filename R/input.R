@@ -220,8 +220,8 @@ init_input<-function()
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
 
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(
-    male=c(intercept= 1.4895,age=-0.0322,height=1.27,pack_years=-0.00428,current_smoker=0,sgrq=0),#TO BE ADDED: (-0.6831)(has_copd_incidence==TRUE);  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
-    female=c(intercept=1.5737,age=-0.0275,height=0.97,pack_years=-0.00465 ,current_smoker=0,sgrq=0)) # TO BE ADDED: (-0.425)(has_copd_incidence==TRUE)  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
+    male=c(intercept= 1.4895-0.6831,age=-0.0322,height=1.27,pack_years=-0.00428,current_smoker=0,sgrq=0),# Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
+    female=c(intercept=1.5737-0.425,age=-0.0275,height=0.97,pack_years=-0.00465 ,current_smoker=0,sgrq=0)) # Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
   input_help$lung_function$fev1_0_inc_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
   input$lung_function$fev1_0_inc_sd_by_sex<-c(male=0.54,female=0.36)
   input_help$lung_function$fev1_0_inc_sd_by_sex<-"SD of FEV1 at time of development of COPD (separately by sex)"
