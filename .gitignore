@@ -1,3 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
+iteration_coeff.csv
+iteration_resid.csv
