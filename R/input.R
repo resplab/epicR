@@ -206,8 +206,8 @@ init_input<-function()
     female=c(intercept=-4.377285,age=0.031689,age2=0,pack_years=0.025183,current_smoking=0.636127,year=0,asthma=0)) #Updated on 2017-04-19 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
   input_help$COPD$logit_p_COPD_betas_by_sex<-"Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)"
   input$COPD$ln_h_COPD_betas_by_sex<-cbind(
-    male =c(Intercept =-7.53034878,age = 0.05169510 ,age2 = 0,pack_years = 0.01436641, smoking_status = 0,year = 0,asthma = 0) #NEEDS TO BE RECALCULATED. Values based on Amin's iterative solution for pre-LLN modification version (v0.1.5)
-    ,female =c(Intercept =-7.75310133 ,age = 0.05380265, age2 =0,pack_years = 0.01466302, smoking_status = 0 ,year = 0,asthma = 0)) #NEEDS TO BE RECALCULATED. Values based on Amin's iterative solution for pre-LLN modification version (v0.1.5)
+    male =c(Intercept =-7.99,age = 0.051 ,age2 = 0,pack_years = 0.0090, smoking_status = 1.47,year = 0,asthma = 0) # Based on https://github.com/aminadibi/epicR/issues/8#issuecomment-295457747 (v0.2.0)
+    ,female =c(Intercept =-6.95 ,age = 0.035, age2 =0,pack_years = 0.018, smoking_status = 0.94 ,year = 0,asthma = 0)) # Based on https://github.com/aminadibi/epicR/issues/8#issuecomment-295457747 (v0.2.0)
   input_help$COPD$ln_h_COPD_betas_by_sex<-"Log-hazard of developing COPD (FEV1/FVC<0.7) for those who did not have COPD at creation time (separately by sex)"
 
 
