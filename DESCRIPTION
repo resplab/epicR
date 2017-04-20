@@ -20,6 +20,7 @@ Imports:
     RSQLite,
     tcltk,
     DBI,
-    chron
+    chron,
+    readr
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
