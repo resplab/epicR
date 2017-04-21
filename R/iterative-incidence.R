@@ -1,11 +1,12 @@
 
 #' @export
 iterate_COPD_inc<-function(nIterations=1000,
-                            nPatients=10000,
-                            time_horizon=20)
+                           nPatients=10000,
+                           time_horizon=20)
 {
 
-  latest_COPD_inc_logit <- cbind(
+
+    latest_COPD_inc_logit <- cbind(
     male =c(Intercept =0,age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0,year = 0,asthma = 0)
     ,female =c(Intercept =0 ,age = 0, age2 =0, pack_years = 0, smoking_status = 0 ,year = 0,asthma = 0))
 
