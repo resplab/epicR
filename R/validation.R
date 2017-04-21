@@ -333,7 +333,7 @@ validate_COPD<-function(incident_COPD_k=1)
   init_session(settings=settings)
   input<-model_input
 
-  if(incident_COPD_k==0)  #What is this part of the code doing? Amin
+  if(incident_COPD_k==0)
     input$COPD$ln_h_COPD_betas_by_sex<-input$COPD$ln_h_COPD_betas_by_sex*0-100 else
       input$COPD$ln_h_COPD_betas_by_sex[1,]<-model_input$COPD$ln_h_COPD_betas_by_sex[1,]+log(incident_COPD_k)
 
