@@ -5,7 +5,6 @@ iterate_COPD_inc<-function(nIterations=1000,
                            time_horizon=20)
 {
 
-
     latest_COPD_inc_logit <- cbind(
     male =c(Intercept =0,age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0,year = 0,asthma = 0)
     ,female =c(Intercept =0 ,age = 0, age2 =0, pack_years = 0, smoking_status = 0 ,year = 0,asthma = 0))
@@ -62,8 +61,8 @@ iterate_COPD_inc<-function(nIterations=1000,
     cat(i, p50[1,1], p50[2,1], p50[4,1], p50[1,2], p50[2,2], p50[4,2], file="iteration_resid.csv",sep=",",append=TRUE, fill=FALSE)
     cat("\n",file="iteration_resid.csv",sep=",",append=TRUE)
 
-    p1 <- 1 - (1 - p50)^(1/time_horizon) #adjusting the probablity for one year
-    #p1 <- p50
+    #p1 <- 1 - (1 - p50)^(1/time_horizon) #adjusting the probablity for one year
+    p1 <- p50
     latest_COPD_inc_logit <- latest_COPD_inc_logit+p1;
 
     print ("latest inc logit is:")
