@@ -321,7 +321,7 @@ sanity_COPD<-function()
 
 
 #' @export
-validate_COPD<-function(incident_COPD_k=1)
+validate_COPD<-function(incident_COPD_k=1) #The incidence rate is multiplied by K
 {
   out<-list()
 
@@ -380,19 +380,19 @@ validate_COPD<-function(incident_COPD_k=1)
   dataF[,'gold3p']<-(dataF[,'gold']>2)*1
   dataF[,'year']<-dataF[,'local_time']+dataF[,'time_at_creation']
 
-  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_copd_reg_coeffs_male<-coefficients(res)
-  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_copd_reg_coeffs_female<-coefficients(res)
 
-  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=gold2p~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=gold2p~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_gold2p_reg_coeffs_male<-coefficients(res)
-  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=gold2p~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=gold2p~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_gold2p_reg_coeffs_female<-coefficients(res)
 
-  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=gold3p~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==0),],formula=gold3p~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_gold3p_reg_coeffs_male<-coefficients(res)
-  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=gold3p~age+pack_years+year,family=binomial(link=logit))
+  res<-glm(data=dataF[which(dataF[,'sex']==1),],formula=gold3p~age+pack_years+smoking_status+year,family=binomial(link=logit))
   out$calib_prev_gold3p_reg_coeffs_female<-coefficients(res)
 
   terminate_session()
