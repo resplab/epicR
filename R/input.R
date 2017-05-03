@@ -202,8 +202,8 @@ init_input<-function()
 
   ##COPD
   input$COPD$logit_p_COPD_betas_by_sex<-cbind(
-    male=c(intercept=-5.337997,age= 0.044918,age2=0,pack_years= 0.018734,current_smoking=1.093586,year=0,asthma=0), #Updated on 2017-04-19 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
-    female=c(intercept=-4.377285,age=0.031689,age2=0,pack_years=0.025183,current_smoking=0.636127,year=0,asthma=0)) #Updated on 2017-04-19 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
+    male=c(intercept=-5.337997,age= 0.044918,age2=0,pack_years= 0.018734,current_smoking=1.093586,year=0,asthma=0), #Updated on 2017-05-03 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
+    female=c(intercept=-4.377285,age=0.031689,age2=0,pack_years=0.025183,current_smoking=0.636127,year=0,asthma=0)) #Updated on 2017-05-03 for LLN based on Shahzad's calculations on CanCold. See https://github.com/aminadibi/epicR/issues/8
   input_help$COPD$logit_p_COPD_betas_by_sex<-"Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)"
   input$COPD$ln_h_COPD_betas_by_sex<-cbind(
     male =c(Intercept = -8.341626527, age = 0.053539987,age2 = 0,pack_years = 0.004274558 , smoking_status = 1.523356867 ,year = 0,asthma = 0) # Based on average values in https://github.com/aminadibi/epicR/issues/8#issuecomment-295457747 (v0.2.0)
