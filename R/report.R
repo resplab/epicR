@@ -77,17 +77,6 @@ report_COPD_by_ctime<-function(n_sim=10^6)
   lines(2015:2034,y4,type='l',col="red")
   legend("topright",c("GOLD I","GOLD II","GOLD III", "GOLD IV"),lty=c(1,1,1,1),col=c("black","blue","orange","red"))
   title(cex.main=1,"Prevalence by GOLD stage (simulated)")
-
-  #Prevalence of Gold Stages in Prevalent and Incident Cases
-  all_events_raw <- Cget_all_events_matrix()
-  all_events <- as.data.frame(all_events_raw)
-  COPD_inc_events <- subset (all_events, event==4)
-  hist(COPD_inc_events $gold)
-#  ggplot2::qplot(COPD_inc_events$gold, geom="histogram")
-
-  COPD_prev_events <- subset (all_events, local_time==0 & gold != 0)
- # ggplot2::qplot(COPD_prev_events$gold, geom="histogram")
-  hist(COPD_prev_events $gold)
 }
 
 
