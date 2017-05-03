@@ -1001,11 +1001,14 @@ List Cget_smith()
                       +input.comorbidity.logit_p_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold));\
 
 
+//#define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex]\
+  //                  +input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)  \
+    //                +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*(*ag).height)  \
+
 #define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex]\
                     +input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)  \
-                    +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*(*ag).height)  \
-
-
+                    +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time)                               \
+                    +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
 
 agent *create_agent(agent *ag,int id)
 {
@@ -1129,7 +1132,7 @@ agent *create_agent(agent *ag,int id)
   {
     (*ag).fev1=input.lung_function.fev1_0_prev_betas_by_sex[0][(*ag).sex]
     +input.lung_function.fev1_0_prev_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-    +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height
+    +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
     +input.lung_function.fev1_0_prev_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
     +rand_norm()*input.lung_function.fev1_0_prev_sd_by_sex[(*ag).sex];
 
@@ -1954,7 +1957,7 @@ void event_COPD_process(agent *ag)
 {
   (*ag).fev1=input.lung_function.fev1_0_inc_betas_by_sex[0][(*ag).sex]
             +input.lung_function.fev1_0_inc_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-            +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height
+            +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
             +input.lung_function.fev1_0_inc_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
 
