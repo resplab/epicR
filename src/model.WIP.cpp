@@ -1957,7 +1957,7 @@ void event_COPD_process(agent *ag)
 {
   (*ag).fev1=input.lung_function.fev1_0_inc_betas_by_sex[0][(*ag).sex]
             +input.lung_function.fev1_0_inc_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-            +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height
+            +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
             +input.lung_function.fev1_0_inc_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
 
