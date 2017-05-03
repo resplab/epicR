@@ -213,15 +213,15 @@ init_input<-function()
 
   ##Lung function
   input$lung_function$fev1_0_prev_betas_by_sex<-cbind(
-    male=c(intercept=1.546161,age=-0.031296,height=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0),  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
-    female=c(intercept= 1.329805 ,age=-0.031296 ,height=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0))  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
+    male=c(intercept=-1.969651,age=-0.027212,height=3.786599,pack_years=-0.005458,current_smoker=0,sgrq=0),
+    female=c(intercept=-0.8339577 ,age=-0.0252077 ,height=2.7785297,pack_years=-0.0063040,current_smoker=0,sgrq=0))
   input_help$lung_function$fev1_0_prev_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
   input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
 
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(
-    male=c(intercept=-1.969651,age=-0.027212,height=3.786599,pack_years=-0.005458,current_smoker=0,sgrq=0),
-    female=c(intercept=-0.8339577 ,age=-0.0252077 ,height=2.7785297,pack_years=-0.0063040,current_smoker=0,sgrq=0))
+    male=c(intercept=-5.9429280+3.2719928*0.7,age=-0.0253224,height=4.7959326,pack_years=-0.0033031,current_smoker=0,sgrq=0),
+    female=c(intercept=-3.1143794+2.1388758*0.7,age=-0.0234219,height=3.2741914,pack_years=-0.0032205,current_smoker=0,sgrq=0))
   input_help$lung_function$fev1_0_inc_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
   input$lung_function$fev1_0_inc_sd_by_sex<-c(male=0.54,female=0.36)
   input_help$lung_function$fev1_0_inc_sd_by_sex<-"SD of FEV1 at time of development of COPD (separately by sex)"
