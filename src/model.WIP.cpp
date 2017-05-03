@@ -1001,10 +1001,6 @@ List Cget_smith()
                       +input.comorbidity.logit_p_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold));\
 
 
-//#define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex]\
-  //                  +input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)  \
-    //                +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*(*ag).height)  \
-
 #define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex]\
                     +input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)  \
                     +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time)                               \
