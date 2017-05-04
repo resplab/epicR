@@ -522,7 +522,7 @@ struct input
 
     double pred_fev1_betas_by_sex[4][2]; //Predicted FEV1, intercept, age, height, RESERVED
 
-    double dfev1_betas[6];  //intercept, sex, age, FEV1_0, smoking
+    double dfev1_betas_by_sex[7][2];  //intercept, sex, age, FEV1_0, smoking
     double dfev1_re_sds[2];
     double dfev1_re_rho;
   } lung_function;
@@ -653,7 +653,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_prev_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_0_inc_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_prev_betas_by_sex),
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
-      Rcpp::Named("dfev1_betas")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_betas),
+      Rcpp::Named("dfev1_betas_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_betas_by_sex),
       Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
@@ -750,7 +750,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_0_inc_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_inc_betas_by_sex);
   if(name=="lung_function$fev1_0_inc_sd_by_sex") READ_R_VECTOR(value,input.lung_function.fev1_0_inc_sd_by_sex);
   if(name=="lung_function$pred_fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.pred_fev1_betas_by_sex);
-  if(name=="lung_function$dfev1_betas") READ_R_VECTOR(value,input.lung_function.dfev1_betas);
+  if(name=="lung_function$dfev1_betas_by_sex") READ_R_VECTOR(value,input.lung_function.dfev1_betas_by_sex);
   if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
 
@@ -1966,18 +1966,20 @@ void event_COPD_process(agent *ag)
       if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
       else (*ag).gold=1;
 
-  double temp[2];
+      // FEV Decline
+
+      /*  double temp[2];
   rbvnorm(input.lung_function.dfev1_re_rho,temp);
-  (*ag).fev1_slope=input.lung_function.dfev1_betas[0]
+  (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0]
                    +temp[0]*input.lung_function.dfev1_re_sds[0]
-                   +input.lung_function.dfev1_betas[1]*(*ag).sex
-                   +input.lung_function.dfev1_betas[2]*((*ag).age_at_creation+(*ag).local_time)
-                   +input.lung_function.dfev1_betas[3]*(*ag).fev1
-                   +input.lung_function.dfev1_betas[4]*(*ag).smoking_status;
+                   +input.lung_function.dfev1_betas_by_sex[1]*(*ag).sex
+                   +input.lung_function.dfev1_betas_by_sex[2]*((*ag).age_at_creation+(*ag).local_time)
+                   +input.lung_function.dfev1_betas_by_sex[3]*(*ag).fev1
+                   +input.lung_function.dfev1_betas_by_sex[4]*(*ag).smoking_status;
 
-  (*ag).fev1_slope_t=input.lung_function.dfev1_betas[5]+temp[1]*input.lung_function.dfev1_re_sds[1];
+  (*ag).fev1_slope_t=input.lung_function.dfev1_betas_by_sex[5]+temp[1]*input.lung_function.dfev1_re_sds[1];
   (*ag).lung_function_LPT=(*ag).local_time;
-
+       */
 #if OUTPUT_EX>1
   output_ex.cumul_non_COPD_time+=(*ag).local_time;
 #endif
