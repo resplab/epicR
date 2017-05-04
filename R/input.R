@@ -239,7 +239,10 @@ init_input<-function()
 
 
   #input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
-  input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=0,sex=0,age0=0,fev1_0=0,smoking=0.0,time=-0)))
+
+  input$lung_function$dfev1_betas_by_sex<-cbind(
+    male=c(intercept=-177.9e-3-8.86e-3, baseline_age=2.31e-3, baseline_weight_kg=0.15e-3 ,height=74.13e-3, height_sq=11.39e-3, current_smoker=-25.79e-3, age_height_sq=-0.92e-3),
+    female=c(intercept=-177.9e-3, baseline_age=2.31e-3, baseline_weight_kg=0.15e-3, height=74.13e-3, height_sq=11.39e-3, current_smoker=-25.79e-3, age_height_sq=-0.92e-3))
   input_help$lung_function$dfev1_betas<-"Regression equations (mixed-effects model) for rate of FEV1 decline"
 
   input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.0,time=0)))
