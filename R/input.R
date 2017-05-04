@@ -238,12 +238,13 @@ init_input<-function()
   input_help$lung_function$pred_fev1_betas_by_sex<-"Coefficients for calculation of predicted FEV1 based on individual characteristics"
 
 
-  input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
+  #input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
+  input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=0,sex=0,age0=0,fev1_0=0,smoking=0.0,time=-0)))
   input_help$lung_function$dfev1_betas<-"Regression equations (mixed-effects model) for rate of FEV1 decline"
 
-  input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.01,time=0)))
+  input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.0,time=0)))
   input_help$lung_function$dfev1_re_sds<-"SD of random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_rho<--0.5
+  input$lung_function$dfev1_re_rho<--0
   input_help$lung_function$dfev1_re_rho<-"Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline"
 
 
