@@ -522,7 +522,7 @@ struct input
 
     double pred_fev1_betas_by_sex[4][2]; //Predicted FEV1, intercept, age, height, RESERVED
 
-    double dfev1_betas_by_sex[7][2];  //intercept, sex, age, FEV1_0, smoking
+    double dfev1_betas_by_sex[8][2];  //intercept, sex, age, FEV1_0, smoking
     double dfev1_re_sds[2];
     double dfev1_re_rho;
   } lung_function;
@@ -1966,7 +1966,15 @@ void event_COPD_process(agent *ag)
       if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
       else (*ag).gold=1;
 
-      // FEV Decline
+      // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE
+      (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0]
+      +input.lung_function.dfev1_betas_by_sex[1]*((*ag).age_baseline //(*ag).age_baseline to be created.
+      +input.lung_function.dfev1_betas_by_sex[2]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
+      +input.lung_function.dfev1_betas_by_sex[3]*(*ag).height
+      +input.lung_function.dfev1_betas_by_sex[4]*(*ag).height*(*ag).height
+      +input.lung_function.dfev1_betas_by_sex[5]*(*ag).smoking_status
+      +input.lung_function.dfev1_betas_by_sex[6]*(*ag).age_baseline*(*ag).height*(*ag).height
+      +input.lung_function.dfev1_betas_by_sex[7]*(*ag).followup_time; //(*ag).followup_time to be calculated
 
       /*  double temp[2];
   rbvnorm(input.lung_function.dfev1_re_rho,temp);
