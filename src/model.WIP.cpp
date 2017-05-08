@@ -825,11 +825,15 @@ struct agent
   bool sex;
 
   double age_at_creation;
+  double age_baseline; //Age at the time of getting COPD. Used for FEV1 Decline. Amin
+
   double time_at_creation;
+  double followup_time; //Time since COPD?  Used for FEV1 Decline. Amin
 
   double height;
   double weight;
   double weight_LPT;
+  double weight_baseline; //Weight at the time of getting COPD. Used for FEV1 Decline. Amin
 
   int smoking_status;   //0:not smoking, positive: current smoking rate (py per year), note that ex smoker status os determined also by pack_years
   double pack_years;
@@ -914,13 +918,16 @@ List get_agent(agent *ag)
   List out=Rcpp::List::create(
       Rcpp::Named("id")=(*ag).id,
       Rcpp::Named("local_time")=(*ag).local_time,
+      Rcpp::Named("followup_time")=(*ag).followup_time, // Used for FEV1 Decline. Amin
       Rcpp::Named("alive")=(*ag).alive,
       Rcpp::Named("sex")=(int)(*ag).sex,
 
       Rcpp::Named("height")=(*ag).height,
       Rcpp::Named("weight")=(*ag).weight,
+      Rcpp::Named("weight_baseline")=(*ag).weight_baseline, //Weight at the time of getting COPD. Used for FEV1 Decline. Amin
 
       Rcpp::Named("age_at_creation")=(*ag).age_at_creation,
+      Rcpp::Named("age_baseline")=(*ag).age_baseline, //age at the time of getting COPD. Used for FEV1 Decline. Amin
       Rcpp::Named("time_at_creation")=(*ag).time_at_creation,
 
       Rcpp::Named("smoking_status")=(*ag).smoking_status,
@@ -1966,7 +1973,7 @@ void event_COPD_process(agent *ag)
       if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
       else (*ag).gold=1;
 
-      // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE
+      // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE - Amin
       (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0]
       +input.lung_function.dfev1_betas_by_sex[1]*((*ag).age_baseline //(*ag).age_baseline to be created.
       +input.lung_function.dfev1_betas_by_sex[2]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
