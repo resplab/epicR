@@ -1152,8 +1152,13 @@ agent *create_agent(agent *ag,int id)
   }
   else
   {
+    //resettnig  values for new agent
     (*ag).gold=0;
     (*ag).fev1=0;
+    (*ag).age_baseline = 0;
+    (*ag).weight_baseline = 0;
+    (*ag).followup_time = 0;
+    (*ag).local_time_at_COPD = 0;
   }
 
 
@@ -1548,6 +1553,8 @@ void lung_function_LPT(agent *ag)
   }
   else  //apply LHS equations
   {
+    (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
+
     double dt=(*ag).local_time-(*ag).lung_function_LPT;
     (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
@@ -1561,7 +1568,6 @@ void lung_function_LPT(agent *ag)
         else (*ag).gold=1;
   }
   (*ag).lung_function_LPT=(*ag).local_time;
-  (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
 }
 
 
@@ -1861,7 +1867,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,13);
+  NumericMatrix outm(event_stack_pointer,17);
   colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","_pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "followup_after_COPD","ROC16_exac_rate","ROC16_biomarker");
   for(int i=0;i<event_stack_pointer;i++)
   {
@@ -1982,7 +1988,7 @@ void event_COPD_process(agent *ag)
 
       // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE - Amin
       (*ag).weight_baseline = (*ag).weight; //TODO Baseline definition for FEV1 decline. To be checked. Amin.
-      (*ag).age_baseline = (*ag).local_time-(*ag).time_at_creation;  //TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;  //TODO Baseline definition for FEV1 decline. To be checked. Amin.
       (*ag).followup_time = 0 ;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
       (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
 
