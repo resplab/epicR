@@ -1561,6 +1561,7 @@ void lung_function_LPT(agent *ag)
         else (*ag).gold=1;
   }
   (*ag).lung_function_LPT=(*ag).local_time;
+  (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
 }
 
 
@@ -1959,6 +1960,7 @@ double event_COPD_tte(agent *ag)
 
 void event_COPD_process(agent *ag)
 {
+
   (*ag).fev1=input.lung_function.fev1_0_inc_betas_by_sex[0][(*ag).sex]
             +input.lung_function.fev1_0_inc_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
             +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
@@ -1975,6 +1977,11 @@ void event_COPD_process(agent *ag)
       else (*ag).gold=1;
 
       // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE - Amin
+      (*ag).weight_baseline = (*ag).weight; //TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      (*ag).age_baseline = (*ag).local_time-(*ag).time_at_creation;  //TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      (*ag).followup_time = 0 ;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
+
       (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0][(*ag).sex]
       +input.lung_function.dfev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline //(*ag).age_baseline to be created.
       +input.lung_function.dfev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
