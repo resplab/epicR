@@ -828,7 +828,7 @@ struct agent
   double age_baseline; //Age at the time of getting COPD. Used for FEV1 Decline. Amin
 
   double time_at_creation;
-  double followup_time; //Time since COPD?  Used for FEV1 Decline. Amin
+  double followup_time; //Time since COPD?
 
   double height;
   double weight;
@@ -918,16 +918,13 @@ List get_agent(agent *ag)
   List out=Rcpp::List::create(
       Rcpp::Named("id")=(*ag).id,
       Rcpp::Named("local_time")=(*ag).local_time,
-      Rcpp::Named("followup_time")=(*ag).followup_time, // Used for FEV1 Decline. Amin
       Rcpp::Named("alive")=(*ag).alive,
       Rcpp::Named("sex")=(int)(*ag).sex,
 
       Rcpp::Named("height")=(*ag).height,
       Rcpp::Named("weight")=(*ag).weight,
-      Rcpp::Named("weight_baseline")=(*ag).weight_baseline, //Weight at the time of getting COPD. Used for FEV1 Decline. Amin
 
       Rcpp::Named("age_at_creation")=(*ag).age_at_creation,
-      Rcpp::Named("age_baseline")=(*ag).age_baseline, //age at the time of getting COPD. Used for FEV1 Decline. Amin
       Rcpp::Named("time_at_creation")=(*ag).time_at_creation,
 
       Rcpp::Named("smoking_status")=(*ag).smoking_status,
@@ -946,6 +943,10 @@ List get_agent(agent *ag)
       Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2]
 
       );
+
+    out["weight_baseline"]=(*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
+    out["followup_time"]=(*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
+    out["age_baseline"]=(*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
 
     out["gold"]=(*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
@@ -1983,7 +1984,7 @@ void event_COPD_process(agent *ag)
       +input.lung_function.dfev1_betas_by_sex[6]*(*ag).age_baseline*(*ag).height*(*ag).height
       +input.lung_function.dfev1_betas_by_sex[7]*(*ag).followup_time; //(*ag).followup_time to be calculated
 
-      /*  double temp[2];
+        double temp[2];
   rbvnorm(input.lung_function.dfev1_re_rho,temp);
   (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0]
                    +temp[0]*input.lung_function.dfev1_re_sds[0]
@@ -1994,7 +1995,7 @@ void event_COPD_process(agent *ag)
 
   (*ag).fev1_slope_t=input.lung_function.dfev1_betas_by_sex[5]+temp[1]*input.lung_function.dfev1_re_sds[1];
   (*ag).lung_function_LPT=(*ag).local_time;
-       */
+
 #if OUTPUT_EX>1
   output_ex.cumul_non_COPD_time+=(*ag).local_time;
 #endif
