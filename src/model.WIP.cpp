@@ -653,7 +653,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_prev_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_0_inc_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_prev_betas_by_sex),
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
-      Rcpp::Named("dfev1_betas_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_betas_by_sex),
+      Rcpp::Named("dfev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.dfev1_betas_by_sex),
       Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
@@ -750,7 +750,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_0_inc_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_inc_betas_by_sex);
   if(name=="lung_function$fev1_0_inc_sd_by_sex") READ_R_VECTOR(value,input.lung_function.fev1_0_inc_sd_by_sex);
   if(name=="lung_function$pred_fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.pred_fev1_betas_by_sex);
-  if(name=="lung_function$dfev1_betas_by_sex") READ_R_VECTOR(value,input.lung_function.dfev1_betas_by_sex);
+  if(name=="lung_function$dfev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.dfev1_betas_by_sex);
   if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
 
@@ -1984,9 +1984,9 @@ void event_COPD_process(agent *ag)
       +input.lung_function.dfev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height
       +input.lung_function.dfev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time; //(*ag).followup_time to be calculated
 
-      //temporariliy disabled. BiVariate section.
+      // BiVariate section.
         double temp[2];
-  rbvnorm(input.lung_function.dfev1_re_rho,temp);
+  rbvnorm(input.lung_function.dfev1_re_rho,temp); //rbvnorm Mohsen wrote
   (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0][(*ag).sex]
                    +temp[0]*input.lung_function.dfev1_re_sds[0]
                    +input.lung_function.dfev1_betas_by_sex[1][(*ag).sex]*(*ag).sex
