@@ -1993,13 +1993,13 @@ void event_COPD_process(agent *ag)
       (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
 
       (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-      +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline //(*ag).age_baseline to be created.
-      +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
+      +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
       +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
       +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
       +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
       +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height
-      +input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time; //(*ag).followup_time to be calculated
+      +input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time;
 
       // BiVariate section.
         double temp[2];
