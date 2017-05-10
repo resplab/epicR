@@ -215,9 +215,9 @@ init_input<-function()
   input$lung_function$fev1_0_prev_betas_by_sex<-cbind(
     male=c(intercept=1.546161,age=-0.031296,height_sq=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0),  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
     female=c(intercept= 1.329805 ,age=-0.031296 ,height_sq=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0))  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
-
   input_help$lung_function$fev1_0_prev_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
-  input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
+
+   input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
 
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(

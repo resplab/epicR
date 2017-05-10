@@ -840,6 +840,7 @@ struct agent
   double smoking_status_LPT;
 
   double fev1;
+  double fev1_baseline;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double lung_function_LPT;
@@ -947,6 +948,7 @@ List get_agent(agent *ag)
     out["weight_baseline"]=(*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
     out["followup_time"]=(*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"]=(*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
+    out["fev1_baseline"] = (*ag).fev1_baseline; //added for new implementation of FEV1 decline -- Shahzad!
 
     out["gold"]=(*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
@@ -1156,6 +1158,7 @@ agent *create_agent(agent *ag,int id)
     (*ag).gold=0;
     (*ag).fev1=0;
     (*ag).age_baseline = 0;
+    (*ag).fev1_baseline = 0;
     (*ag).weight_baseline = 0;
     (*ag).followup_time = 0;
     (*ag).local_time_at_COPD = 0;
@@ -1555,9 +1558,10 @@ void lung_function_LPT(agent *ag)
   {
     (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
 
-    double dt=(*ag).local_time-(*ag).lung_function_LPT;
-    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
+  //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
+  //  (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
+  (*ag).fev1 =
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
     if ((*ag).fev1/pred_fev1<0.3) (*ag).gold=4;
@@ -1991,6 +1995,7 @@ void event_COPD_process(agent *ag)
       (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;  //TODO Baseline definition for FEV1 decline. To be checked. Amin.
       (*ag).followup_time = 0 ;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
       (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      (*ag).fev1_baseline = (*ag).fev1;
 
       (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
       +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
@@ -2002,7 +2007,7 @@ void event_COPD_process(agent *ag)
       +input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time;
 
       // BiVariate section.
-        double temp[2];
+/*        double temp[2];
   rbvnorm(input.lung_function.dfev1_re_rho,temp); //rbvnorm Mohsen wrote
   (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
                    +temp[0]*input.lung_function.dfev1_re_sds[0]
@@ -2012,6 +2017,10 @@ void event_COPD_process(agent *ag)
                    +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status;
 
   (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[5][(*ag).sex]+temp[1]*input.lung_function.dfev1_re_sds[1];
+
+ */
+
+
   (*ag).lung_function_LPT=(*ag).local_time;
 
 #if OUTPUT_EX>1
