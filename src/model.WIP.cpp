@@ -522,7 +522,7 @@ struct input
 
     double pred_fev1_betas_by_sex[4][2]; //Predicted FEV1, intercept, age, height, RESERVED
 
-    double dfev1_betas_by_sex[8][2];  //intercept, sex, age, FEV1_0, smoking
+    double fev1_betas_by_sex[8][2];  //intercept, sex, age, FEV1_0, smoking
     double dfev1_re_sds[2];
     double dfev1_re_rho;
   } lung_function;
@@ -653,7 +653,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_prev_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_0_inc_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_prev_betas_by_sex),
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
-      Rcpp::Named("dfev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.dfev1_betas_by_sex),
+      Rcpp::Named("fev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_betas_by_sex),
       Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
@@ -750,7 +750,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_0_inc_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_inc_betas_by_sex);
   if(name=="lung_function$fev1_0_inc_sd_by_sex") READ_R_VECTOR(value,input.lung_function.fev1_0_inc_sd_by_sex);
   if(name=="lung_function$pred_fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.pred_fev1_betas_by_sex);
-  if(name=="lung_function$dfev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.dfev1_betas_by_sex);
+  if(name=="lung_function$fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_betas_by_sex);
   if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
 
@@ -1992,26 +1992,26 @@ void event_COPD_process(agent *ag)
       (*ag).followup_time = 0 ;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
       (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
 
-      (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0][(*ag).sex]
-      +input.lung_function.dfev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline //(*ag).age_baseline to be created.
-      +input.lung_function.dfev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
-      +input.lung_function.dfev1_betas_by_sex[3][(*ag).sex]*(*ag).height
-      +input.lung_function.dfev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-      +input.lung_function.dfev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
-      +input.lung_function.dfev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height
-      +input.lung_function.dfev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time; //(*ag).followup_time to be calculated
+      (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline //(*ag).age_baseline to be created.
+      +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline //Should be created! Baseline means at the beginnig for prevalent cases and at the time of COPD incidence for incident cases.
+      +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
+      +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height
+      +input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time; //(*ag).followup_time to be calculated
 
       // BiVariate section.
         double temp[2];
   rbvnorm(input.lung_function.dfev1_re_rho,temp); //rbvnorm Mohsen wrote
-  (*ag).fev1_slope=input.lung_function.dfev1_betas_by_sex[0][(*ag).sex]
+  (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
                    +temp[0]*input.lung_function.dfev1_re_sds[0]
-                   +input.lung_function.dfev1_betas_by_sex[1][(*ag).sex]*(*ag).sex
-                   +input.lung_function.dfev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-                   +input.lung_function.dfev1_betas_by_sex[3][(*ag).sex]*(*ag).fev1
-                   +input.lung_function.dfev1_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status;
+                   +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).sex
+                   +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
+                   +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).fev1
+                   +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status;
 
-  (*ag).fev1_slope_t=input.lung_function.dfev1_betas_by_sex[5][(*ag).sex]+temp[1]*input.lung_function.dfev1_re_sds[1];
+  (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[5][(*ag).sex]+temp[1]*input.lung_function.dfev1_re_sds[1];
   (*ag).lung_function_LPT=(*ag).local_time;
 
 #if OUTPUT_EX>1
