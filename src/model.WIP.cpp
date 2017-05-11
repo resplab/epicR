@@ -846,7 +846,7 @@ struct agent
 
   double fev1;
   double fev1_baseline;
-  double fev1_baseline_zafarCMAJ;
+  double fev1_baseline_ZafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double lung_function_LPT;
@@ -955,7 +955,7 @@ List get_agent(agent *ag)
     out["followup_time"]=(*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"]=(*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
     out["fev1_baseline"] = (*ag).fev1_baseline; //added for new implementation of FEV1 decline -- Shahzad!
-    out["fev1_baseline_zafarCMAJ"] = (*ag).fev1_baseline_zafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
+    out["fev1_baseline_ZafarCMAJ"] = (*ag).fev1_baseline_ZafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
 
     out["gold"]=(*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
@@ -1032,6 +1032,7 @@ agent *create_agent(agent *ag,int id)
   (*ag).local_time=0;
   (*ag).age_baseline = 0; //resetting the value for new agent
   (*ag).fev1_baseline = 0; //resetting the value for new agent
+  (*ag).fev1_baseline_ZafarCMAJ = 0;
   (*ag).weight_baseline = 0; //resetting the value for new agent
   (*ag).followup_time = 0; //resetting the value for new agent
   (*ag).local_time_at_COPD = 0; //resetting the value for new agent
@@ -1162,6 +1163,14 @@ agent *create_agent(agent *ag,int id)
     (*ag).followup_time = 0 ;
     (*ag).local_time_at_COPD = (*ag).local_time;
     (*ag).fev1_baseline = (*ag).fev1;
+
+    // Calcuating FEV1_baseline based on Zafat's CMAJ paper, excluding the intercept term
+    (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
 
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
@@ -2017,6 +2026,14 @@ void event_COPD_process(agent *ag)
       (*ag).followup_time = 0 ;
       (*ag).local_time_at_COPD = (*ag).local_time;
       (*ag).fev1_baseline = (*ag).fev1;
+
+      // Calcuating FEV1_baseline based on Zafat's CMAJ paper, excluding the intercept term
+      (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
+        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
+        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
+        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
 
       (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
       +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
