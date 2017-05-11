@@ -523,7 +523,7 @@ struct input
     double pred_fev1_betas_by_sex[4][2]; //Predicted FEV1, intercept, age, height, RESERVED
 
     double fev1_betas_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
-    double fev1_0_zafarCMAJ_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
+    double fev1_0_ZafarCMAJ_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
 
     double dfev1_re_sds[2];
     double dfev1_re_rho;
@@ -656,7 +656,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_inc_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_prev_betas_by_sex),
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_betas_by_sex),
-      Rcpp::Named("fev1_0_zafarCMAJ_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_zafarCMAJ_by_sex),
+      Rcpp::Named("fev1_0_ZafarCMAJ_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_ZafarCMAJ_by_sex),
       Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
@@ -754,7 +754,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_0_inc_sd_by_sex") READ_R_VECTOR(value,input.lung_function.fev1_0_inc_sd_by_sex);
   if(name=="lung_function$pred_fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.pred_fev1_betas_by_sex);
   if(name=="lung_function$fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_betas_by_sex);
-  if(name=="lung_function$fev1_0_zafarCMAJ_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_zafarCMAJ_by_sex);
+  if(name=="lung_function$fev1_0_ZafarCMAJ_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_ZafarCMAJ_by_sex);
 
   if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
