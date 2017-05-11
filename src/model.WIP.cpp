@@ -1567,10 +1567,13 @@ void lung_function_LPT(agent *ag)
   {
     (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
 
+    //Applying FEV1 decline
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
-  //  (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
+//    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
- // (*ag).fev1 =
+    (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
+
+
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
     if ((*ag).fev1/pred_fev1<0.3) (*ag).gold=4;
