@@ -1023,6 +1023,11 @@ agent *create_agent(agent *ag,int id)
   (*ag).id=id;
   (*ag).alive=1;
   (*ag).local_time=0;
+  (*ag).age_baseline = 0; //resetting the value for new agent
+  (*ag).fev1_baseline = 0; //resetting the value for new agent
+  (*ag).weight_baseline = 0; //resetting the value for new agent
+  (*ag).followup_time = 0; //resetting the value for new agent
+  (*ag).local_time_at_COPD = 0; //resetting the value for new agent
   (*ag).time_at_creation=calendar_time;
 
   (*ag).sex=rand_unif()<input.agent.p_female;
@@ -1136,11 +1141,20 @@ agent *create_agent(agent *ag,int id)
 
   if(rand_unif()<COPD_odds/(1+COPD_odds))
   {
+
+
     (*ag).fev1=input.lung_function.fev1_0_prev_betas_by_sex[0][(*ag).sex]
     +input.lung_function.fev1_0_prev_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
     +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
     +input.lung_function.fev1_0_prev_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
     +rand_norm()*input.lung_function.fev1_0_prev_sd_by_sex[(*ag).sex];
+
+    //Setting values for COPD prevalence cases
+    (*ag).weight_baseline = (*ag).weight;
+    (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
+    (*ag).followup_time = 0 ;
+    (*ag).local_time_at_COPD = (*ag).local_time;
+    (*ag).fev1_baseline = (*ag).fev1;
 
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
@@ -1154,14 +1168,9 @@ agent *create_agent(agent *ag,int id)
   }
   else
   {
-    //resettnig  values for new agent
     (*ag).gold=0;
     (*ag).fev1=0;
-    (*ag).age_baseline = 0;
-    (*ag).fev1_baseline = 0;
-    (*ag).weight_baseline = 0;
-    (*ag).followup_time = 0;
-    (*ag).local_time_at_COPD = 0;
+
   }
 
 
@@ -1561,7 +1570,7 @@ void lung_function_LPT(agent *ag)
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
   //  (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-  (*ag).fev1 =
+ // (*ag).fev1 =
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
     if ((*ag).fev1/pred_fev1<0.3) (*ag).gold=4;
@@ -1871,8 +1880,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,17);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","_pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "followup_after_COPD","ROC16_exac_rate","ROC16_biomarker");
+  NumericMatrix outm(event_stack_pointer,18);
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","_pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "followup_after_COPD", "FEV1_baseline","ROC16_exac_rate","ROC16_biomarker");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -1891,6 +1900,8 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,12)=(*ag).age_baseline;
     outm(i,13)=(*ag).weight_baseline;
     outm(i,14)=(*ag).followup_time;
+    outm(i,15)=(*ag).fev1_baseline;
+
   }
   return(outm);
 }
