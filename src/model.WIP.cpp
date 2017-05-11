@@ -1578,7 +1578,7 @@ void lung_function_LPT(agent *ag)
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
 //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-    (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
+    (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
 
     double pred_fev1=CALC_PRED_FEV1(ag);
@@ -2024,8 +2024,9 @@ void event_COPD_process(agent *ag)
       +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
       +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
       +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
-      +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height
-      +input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time;
+      +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+      //Follow_up term is not used here because this part of code is executed once and should be time independent
+
 
       // BiVariate section.
 /*        double temp[2];
