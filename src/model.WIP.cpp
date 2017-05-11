@@ -846,6 +846,7 @@ struct agent
 
   double fev1;
   double fev1_baseline;
+  double fev1_baseline_zafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double lung_function_LPT;
@@ -954,6 +955,7 @@ List get_agent(agent *ag)
     out["followup_time"]=(*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"]=(*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
     out["fev1_baseline"] = (*ag).fev1_baseline; //added for new implementation of FEV1 decline -- Shahzad!
+    out["fev1_baseline_zafarCMAJ"] = (*ag).fev1_baseline_zafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
 
     out["gold"]=(*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
