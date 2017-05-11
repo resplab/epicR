@@ -2001,11 +2001,11 @@ void event_COPD_process(agent *ag)
       if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
       else (*ag).gold=1;
 
-      // FEV Decline - A FOLLOWUP TIME SHOULD BE ADDED TO ALL THESE - Amin
-      (*ag).weight_baseline = (*ag).weight; //TODO Baseline definition for FEV1 decline. To be checked. Amin.
-      (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;  //TODO Baseline definition for FEV1 decline. To be checked. Amin.
-      (*ag).followup_time = 0 ;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
-      (*ag).local_time_at_COPD = (*ag).local_time;//TODO Baseline definition for FEV1 decline. To be checked. Amin.
+      // FEV Decline
+      (*ag).weight_baseline = (*ag).weight;
+      (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
+      (*ag).followup_time = 0 ;
+      (*ag).local_time_at_COPD = (*ag).local_time;
       (*ag).fev1_baseline = (*ag).fev1;
 
       (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
