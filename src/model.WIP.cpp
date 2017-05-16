@@ -1590,6 +1590,7 @@ void lung_function_LPT(agent *ag)
     (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
 
+
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
     if ((*ag).fev1/pred_fev1<0.3) (*ag).gold=4;
@@ -2027,7 +2028,7 @@ void event_COPD_process(agent *ag)
       (*ag).local_time_at_COPD = (*ag).local_time;
       (*ag).fev1_baseline = (*ag).fev1;
 
-      // Calcuating FEV1_baseline based on Zafat's CMAJ paper, excluding the intercept term
+      // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
       (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
@@ -2059,6 +2060,12 @@ void event_COPD_process(agent *ag)
 
  */
 
+    // TODO check. Trying to implement conditional normal.
+    //TODO make it tidy
+    double mean_conditional_N=-177.9e-3+sqrt(0.000753)/sqrt(0.09711)*((*ag).fev1_baseline-(*ag).fev1_baseline_ZafarCMAJ-1421.2e-3);
+    double rho_conditional_N=0.0725;
+    double variance_conditional_N=sqrt((1-rho_conditional_N*rho_conditional_N)*0.000753);
+   // double beta_0_conditional_N=rand_norm()*sqrt(variance_conditional_N)+mean_conditional_N;
 
   (*ag).lung_function_LPT=(*ag).local_time;
 
