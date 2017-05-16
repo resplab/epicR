@@ -1164,7 +1164,7 @@ agent *create_agent(agent *ag,int id)
     (*ag).local_time_at_COPD = (*ag).local_time;
     (*ag).fev1_baseline = (*ag).fev1;
 
-    // Calcuating FEV1_baseline based on Zafat's CMAJ paper, excluding the intercept term
+    // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
     (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
       +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
       +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
