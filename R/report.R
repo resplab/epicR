@@ -159,7 +159,7 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   lines(2015:2034,y2,type='l',col="blue")
   lines(2015:2034,y3,type='l',col="black")
   legend("topright",c("mild","moderate","severe"),lty=c(1,1,1),col=c("green","blue","black"))
-  title(cex.main=1,"Exacerbation rate by severety (within COPD)")
+  title(cex.main=1,"Exacerbation rate by severity (within COPD)")
 
   pie(colSums(opx$n_exac_by_ctime_severity),labels=c("Mild","Moderate","severe"))
 

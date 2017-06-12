@@ -276,7 +276,7 @@ init_input<-function()
   input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/10,severe=365/15)))
   input_help$exacerbation$exac_end_rate<-"Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level"
 
-  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0.01, severe=0.156)))
+  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.156)))
   input_help$exacerbation$p_death<-"Probability of deatth due to exacerbation according to its severity level"
 
   #Outpatient;
