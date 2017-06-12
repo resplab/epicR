@@ -261,6 +261,9 @@ init_input<-function()
 
 
   ##Exacerbation;
+ # input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0,gold3p=0)))
+
+  #Manually changed to match validation goals of Najafzadeh et al (2012)
   input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0,gold3p=0)))
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
   input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.1685/10,fev1=-0.4279,smoking_status=0)))
