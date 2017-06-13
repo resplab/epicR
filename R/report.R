@@ -164,6 +164,19 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   pie(colSums(opx$n_exac_by_ctime_severity),labels=c("Mild","Moderate","severe"))
 
   cat("Proportion by exacerbation severity:",format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),digits=2),"\n")
+  terminate_session()
 
+# Calculating Exacerbation Rate by GOLD Stage
+  init_session()
+  run()
+  all_events <- as.data.frame(Cget_all_events_matrix())
+  exac_events <- subset(all_events, event==5)
+  exit_events <- subset (all_events, event==14)
+
+  cat("Rates of exacerbation per GOLD stage:\n")
+
+  cat("GOLD I: ", sum(subset(exit_events, gold==1)$followup_after_COPD) / as.data.frame(table(exac_events[, "gold"]))[1,2],"\n")
+  cat("GOLD II: ", sum(subset(exit_events, gold==2)$followup_after_COPD) /as.data.frame(table(exac_events[, "gold"]))[2,2],"\n")
+  cat("GOLD III and IV :", sum(subset(exit_events, gold>=2)$followup_after_COPD) / ( as.data.frame(table(exac_events[, "gold"]))[3,2]+as.data.frame(table(exac_events[, "gold"]))[4,2]),"\n")
   terminate_session()
 }
