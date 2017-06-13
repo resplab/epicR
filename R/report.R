@@ -148,7 +148,7 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   legend("topright",c("40-54","55-64","65-74","75+"),lty=c(1,1,1,1),col=c("green","blue","black","red"))
   title(cex.main=1,"Exacerbation rate by age group (within COPD)")
 
-  #Rate by severity (within COPD)
+  #Rate by exacerbation severity (within COPD)
   a<-opx$n_exac_by_ctime_severity
   b<-opx$n_COPD_by_ctime_sex
   y1<-(a[,1])/rowSums(b)
@@ -159,11 +159,11 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   lines(2015:2034,y2,type='l',col="blue")
   lines(2015:2034,y3,type='l',col="black")
   legend("topright",c("mild","moderate","severe"),lty=c(1,1,1),col=c("green","blue","black"))
-  title(cex.main=1,"Exacerbation rate by severity (within COPD)")
+  title(cex.main=1,"Exacerbation rate by exacerbation severity (within COPD)")
 
   pie(colSums(opx$n_exac_by_ctime_severity),labels=c("Mild","Moderate","severe"))
 
-  cat("Proportion by severity:",format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),digits=2),"\n")
+  cat("Proportion by exacerbation severity:",format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),digits=2),"\n")
 
   terminate_session()
 }
