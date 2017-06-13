@@ -168,7 +168,7 @@ report_exacerbation_by_time<-function(n_sim=10^6)
 
 # Calculating Exacerbation Rate by GOLD Stage
   init_session()
-  run()
+  run(n_sim)
   all_events <- as.data.frame(Cget_all_events_matrix())
   exac_events <- subset(all_events, event==5)
   exit_events <- subset (all_events, event==14)
