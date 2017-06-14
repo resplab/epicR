@@ -261,11 +261,8 @@ init_input<-function()
 
 
   ##Exacerbation;
- # input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0,gold3p=0)))
 
-  #Manually changed to match validation goals of Najafzadeh et al (2012) Get rid of everything but GOLD
- # input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256-0.75,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0.53,gold3p=2.5)))
-  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=-0.83,female=0,age=0,fev1=-0,smoking_status=0,gold2=0.76,gold3p=3.7)))
+  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=-0.83,female=0,age=0,fev1=-0,smoking_status=0,gold2=0.76,gold3p=3.7)))   #Najafzadeh et al (2012). Only function of GOLD for minimalism
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
   input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.1685/10,fev1=-0.4279,smoking_status=0)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
@@ -280,8 +277,7 @@ init_input<-function()
   input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/10,severe=365/15)))
   input_help$exacerbation$exac_end_rate<-"Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level"
 
-#  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.156)))
-  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.1)))
+  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.1))) #Based on MACRO study
   input_help$exacerbation$p_death<-"Probability of death due to exacerbation according to its severity level"
 
   #Outpatient;
