@@ -2131,16 +2131,19 @@ void event_exacerbation_process(agent *ag)
   l1=temp+input.exacerbation.logit_severity_betas[0];
   l2=temp+input.exacerbation.logit_severity_betas[1];
   l3=temp+input.exacerbation.logit_severity_betas[2];
-  double p0,p1,p2,p3;
-// p1=exp(l1)/(1+exp(l1)+exp(l2));
-//  p2=exp(l2)/(1+exp(l1)+exp(l2));
+  double p1,p2,p3,p4;
 
-  p1=
-  p0=1-p1-p2-p3;
+  p1=1/(1+exp(-l1));
+  p2=1/(1+exp(-l2))-1/(1+exp(-l1));
+  p3=1/(1+exp(-l3))-1/(1+exp(-l2));
+  p4=1-p1-p2-p3;
 
   double r=rand_unif();
 
-  if(r<p0) (*ag).exac_status=1; else if(r<p0+p1) (*ag).exac_status=2; else (*ag).exac_status=3;
+  if(r<p1) (*ag).exac_status=1;
+  else if(r<p1+p2) (*ag).exac_status=2;
+  else if(r<p1+p2+p3) (*ag).exac_status=3;
+  else (*ag).exac_status=4;
 
   (*ag).cumul_exac[(*ag).exac_status-1]+=1;
   (*ag).exac_LPT=(*ag).local_time;
