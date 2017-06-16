@@ -264,7 +264,7 @@ init_input<-function()
 
   input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=-0.785,female=0.174353,age=0.04082*0.1,fev1=-0,smoking_status=0,gold2=0.46,gold3p=0.65)))   #Najafzadeh et al (2012). Only function of GOLD for minimalism
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.0076,fev1=-0.002945,smoking_status=0)))
+  input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.0076,fev1=-0.002945,smoking_status=0, pack_years=-0.001127, BMI=0.017820)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
 
   input$exacerbation$ln_rate_intercept_sd=sqrt(0.6393)
