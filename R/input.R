@@ -267,7 +267,7 @@ init_input<-function()
   input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=1.091,intercept2=1.902, intercept3=5.208, female=-0.0431,age=-0.0076,fev1=-0.002945,smoking_status=0, pack_years=-0.001127, BMI=0.017820)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
 
-  input$exacerbation$ln_rate_intercept_sd=sqrt(0.6393)
+  input$exacerbation$ln_rate_intercept_sd=sqrt(0.55)
   input_help$exacerbation$ln_rate_intercept_sd="SD of the random intercept for log-hazard of exacerbation"
   input$exacerbation$logit_severity_intercept_sd=sqrt(2.6560)
   input_help$exacerbation$logit_severity_intercept_sd="SD of the random intercept for proportional odds model of exacerbation severity"
