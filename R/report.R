@@ -153,15 +153,16 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   b<-opx$n_COPD_by_ctime_sex
   y1<-(a[,1])/rowSums(b)
   y2<-(a[,2])/rowSums(b)
-  y3<-(a[,3])/rowSums(b)
+  y3<-(a[,3]+a[,4])/rowSums(b)
   max_y<-max(c(y1,y2,y3))
   plot(2015:2034,y1,type='l',ylim=c(0,max_y*1.5),xlab="Year",ylab="Annual rate",col="green")
   lines(2015:2034,y2,type='l',col="blue")
   lines(2015:2034,y3,type='l',col="black")
-  legend("topright",c("mild","moderate","severe"),lty=c(1,1,1),col=c("green","blue","black"))
+
+  legend("topright",c("mild","moderate","severe and very severe"),lty=c(1,1,1,1),col=c("green","blue","black"))
   title(cex.main=1,"Exacerbation rate by exacerbation severity (within COPD)")
 
-  pie(colSums(opx$n_exac_by_ctime_severity),labels=c("Mild","Moderate","severe"))
+  pie(colSums(opx$n_exac_by_ctime_severity),labels=c("Mild","Moderate","severe", "very severe"))
 
   cat("Proportion by exacerbation severity:",format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),digits=2),"\n")
   terminate_session()
@@ -173,10 +174,24 @@ report_exacerbation_by_time<-function(n_sim=10^6)
   exac_events <- subset(all_events, event==5)
   exit_events <- subset (all_events, event==14)
 
-  cat("Rates of exacerbation per GOLD stage:\n")
+  Follow_up_Gold <- c(0,0,0,0)
+  last_GOLD_transition_time <- 0
+  for (i in 2:dim(all_events)[1]) {
+    if (all_events[i,'id']!=all_events[i-1,'id'])
+      last_GOLD_transition_time <- 0
+    if ((all_events[i,'id']==all_events[i-1,'id']) & (all_events[i,'gold']!=all_events[i-1,'gold'])) {
+      Follow_up_Gold[all_events[i-1,'gold']] = Follow_up_Gold[all_events[i-1,'gold']] + all_events[i-1, 'followup_after_COPD'] - last_GOLD_transition_time
+      last_GOLD_transition_time <- all_events[i-1, 'followup_after_COPD']
+    }
+    if (all_events[i,'event']==14)
+      Follow_up_Gold[all_events[i,'gold']] = Follow_up_Gold[all_events[i,'gold']] + all_events[i, 'followup_after_COPD'] - last_GOLD_transition_time
+  }
 
-  cat("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1,2]/sum(subset(exit_events, gold==1)$followup_after_COPD),"\n")
-  cat("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2,2]/sum(subset(exit_events, gold==2)$followup_after_COPD),"\n")
-  cat("GOLD III and IV :", (as.data.frame(table(exac_events[, "gold"]))[3,2]+as.data.frame(table(exac_events[, "gold"]))[4,2])/sum(subset(exit_events, gold>=2)$followup_after_COPD),"\n")
+  terminate_session()
+
+  cat("Rates of exacerbation per GOLD stage:\n")
+  cat("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1,2]/Follow_up_Gold[1],"\n")
+  cat("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2,2]/Follow_up_Gold[2],"\n")
+  cat("GOLD III and IV :", (as.data.frame(table(exac_events[, "gold"]))[3,2]+as.data.frame(table(exac_events[, "gold"]))[4,2])/(Follow_up_Gold[3]+Follow_up_Gold[4]),"\n")
   terminate_session()
 }

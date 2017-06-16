@@ -538,8 +538,8 @@ struct input
     double logit_severity_intercept_sd;       //sd of the intercept (random-effects)
     double rate_severity_intercept_rho;
     //double p_moderate_severe[2]; //probability of moderate or severe, compared with mild, exacerbation
-    double exac_end_rate[3]; //rate of exiting exacerbation per type;
-    double p_death[3]; //rate of mortality per type;
+    double exac_end_rate[4]; //rate of exiting exacerbation per type;
+    double p_death[4]; //rate of mortality per type;
   } exacerbation;
 
 
@@ -857,8 +857,8 @@ struct agent
   double ln_exac_rate_intercept;   //backround rate of exacerbation (intercept only);
   double logit_exac_severity_intercept;   //backround severity of exacerbation (intercept only);
 
-  int cumul_exac[3];    //0:mild, 1:moderate, 2:severe;
-  double cumul_exac_time[3];
+  int cumul_exac[4];    //0:mild, 1:moderate, 2:severe, 3: very severe;
+  double cumul_exac_time[4];
   double exac_LPT;  //the last time cumul exacerbation time was processed;
   int exac_status;    //current exacerbation status 0: no exacerbation, in 1: mild, 2:moderate, 3:severe exacerbation
 
@@ -947,7 +947,9 @@ List get_agent(agent *ag)
 
       Rcpp::Named("cumul_exac0")=(*ag).cumul_exac[0],
       Rcpp::Named("cumul_exac1")=(*ag).cumul_exac[1],
-      Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2]
+      Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2],
+      Rcpp::Named("cumul_exac3")=(*ag).cumul_exac[3]
+
 
       );
 
@@ -1128,9 +1130,11 @@ agent *create_agent(agent *ag,int id)
   (*ag).cumul_exac[0]=0;
   (*ag).cumul_exac[1]=0;
   (*ag).cumul_exac[2]=0;
+  (*ag).cumul_exac[3]=0;
   (*ag).cumul_exac_time[0]=0;
   (*ag).cumul_exac_time[1]=0;
   (*ag).cumul_exac_time[2]=0;
+  (*ag).cumul_exac_time[3]=0;
   (*ag).exac_status=0;
   (*ag).exac_LPT=0;
 
@@ -1298,8 +1302,8 @@ struct output
   int n_deaths;         //End variable by nature.
   int n_COPD;
   double total_pack_years;    //END  because agent records
-  int total_exac[3];    //0:mild, 1:moderae, 2:severe;    END because agent records
-  double total_exac_time[3];  //END because agent records
+  int total_exac[4];    //0:mild, 1:moderae, 2:severe; 3=very severe    END because agent records
+  double total_exac_time[4];  //END because agent records
 
   int total_doctor_visit[2];  //0: GP, 1:SP
 
@@ -1384,7 +1388,7 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
   int n_exac_by_ctime_age[100][111];
-  int n_exac_by_ctime_severity[100][3];
+  int n_exac_by_ctime_severity[100][4];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
@@ -1738,10 +1742,13 @@ agent *event_end_process(agent *ag)
   output.total_exac[0]+=(*ag).cumul_exac[0];
   output.total_exac[1]+=(*ag).cumul_exac[1];
   output.total_exac[2]+=(*ag).cumul_exac[2];
+  output.total_exac[3]+=(*ag).cumul_exac[3];
 
   output.total_exac_time[0]+=(*ag).cumul_exac_time[0];
   output.total_exac_time[1]+=(*ag).cumul_exac_time[1];
   output.total_exac_time[2]+=(*ag).cumul_exac_time[2];
+  output.total_exac_time[3]+=(*ag).cumul_exac_time[3];
+
 
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;

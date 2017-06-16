@@ -271,13 +271,13 @@ init_input<-function()
   input_help$exacerbation$ln_rate_intercept_sd="SD of the random intercept for log-hazard of exacerbation"
   input$exacerbation$logit_severity_intercept_sd=sqrt(2.0736)
   input_help$exacerbation$logit_severity_intercept_sd="SD of the random intercept for proportional odds model of exacerbation severity"
-  input$exacerbation$rate_severity_intercept_rho=-0.02162
+  input$exacerbation$rate_severity_intercept_rho=-0
   input_help$exacerbation$rate_severity_intercept_rho="Correlation coefficient between the random effect terms of rate and severity"
 
-  input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/10,severe=365/15)))
+  input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/5,severe=365/5, verysevere=365/5)))
   input_help$exacerbation$exac_end_rate<-"Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level"
 
-  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.1))) #Based on MACRO study
+  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.046,verysevere=0.046))) #Based on Shahzad
   input_help$exacerbation$p_death<-"Probability of death due to exacerbation according to its severity level"
 
   #Outpatient;
