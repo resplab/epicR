@@ -533,7 +533,7 @@ struct input
   struct
   {
     double ln_rate_betas[7];     //intercept sex age fev1 smoking status
-    double logit_severity_betas[8];     //intercept1, intercept2, sex age fev1 smoking_status
+    double logit_severity_betas[9];     //intercept1, intercept2, sex age fev1 smoking_status
     double ln_rate_intercept_sd;
     double logit_severity_intercept_sd;       //sd of the intercept (random-effects)
     double rate_severity_intercept_rho;
@@ -2120,20 +2120,22 @@ double event_exacerbation_tte(agent *ag)
 void event_exacerbation_process(agent *ag)
 {
   double temp=(*ag).logit_exac_severity_intercept
-    +input.exacerbation.logit_severity_betas[2]*(*ag).sex
-    +input.exacerbation.logit_severity_betas[3]*((*ag).age_at_creation+(*ag).local_time)
-    +input.exacerbation.logit_severity_betas[4]*(*ag).fev1
-    +input.exacerbation.logit_severity_betas[5]*(*ag).smoking_status
-    +input.exacerbation.logit_severity_betas[6]*(*ag).pack_years
-    +input.exacerbation.logit_severity_betas[7]*(*ag).weight/((*ag).height*(*ag).height);
+    +input.exacerbation.logit_severity_betas[3]*(*ag).sex
+    +input.exacerbation.logit_severity_betas[4]*((*ag).age_at_creation+(*ag).local_time)
+    +input.exacerbation.logit_severity_betas[5]*(*ag).fev1
+    +input.exacerbation.logit_severity_betas[6]*(*ag).smoking_status
+    +input.exacerbation.logit_severity_betas[7]*(*ag).pack_years
+    +input.exacerbation.logit_severity_betas[8]*(*ag).weight/((*ag).height*(*ag).height);
 
-  double l1,l2;
+  double l1,l2,l3;
   l1=temp+input.exacerbation.logit_severity_betas[0];
   l2=temp+input.exacerbation.logit_severity_betas[1];
-  double p0,p1,p2;
+  l3=temp+input.exacerbation.logit_severity_betas[2];
+  double p0,p1,p2,p3;
   p1=exp(l1)/(1+exp(l1)+exp(l2));
   p2=exp(l2)/(1+exp(l1)+exp(l2));
-  p0=1-p1-p2;
+  p3=exp(l3)/(1+exp(l1)+exp(l3));
+  p0=1-p1-p2-p3;
 
   double r=rand_unif();
 
