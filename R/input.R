@@ -269,7 +269,7 @@ init_input<-function()
 
   input$exacerbation$ln_rate_intercept_sd=sqrt(0.55)
   input_help$exacerbation$ln_rate_intercept_sd="SD of the random intercept for log-hazard of exacerbation"
-  input$exacerbation$logit_severity_intercept_sd=sqrt(2.6560)
+  input$exacerbation$logit_severity_intercept_sd=sqrt(2.0736)
   input_help$exacerbation$logit_severity_intercept_sd="SD of the random intercept for proportional odds model of exacerbation severity"
   input$exacerbation$rate_severity_intercept_rho=-0.02162
   input_help$exacerbation$rate_severity_intercept_rho="Correlation coefficient between the random effect terms of rate and severity"
