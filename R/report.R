@@ -84,7 +84,7 @@ report_COPD_by_ctime<-function(n_sim=10^6)
 
 
 #' @export
-report_exacerbation_by_time<-function(n_sim=10^6)
+report_exacerbation_by_time<-function(n_sim=10^5)
 {
   settings<-default_settings
   settings$record_mode<-record_mode["record_mode_none"]
