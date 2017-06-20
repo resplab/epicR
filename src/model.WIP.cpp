@@ -1161,6 +1161,11 @@ agent *create_agent(agent *ag,int id)
     +input.lung_function.fev1_0_prev_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
     +rand_norm()*input.lung_function.fev1_0_prev_sd_by_sex[(*ag).sex];
 
+    //Adjusting FEV1 tail
+    if ((*ag).fev1<0.8) {
+      (*ag).fev1=0.8;
+    }
+
     //Setting values for COPD prevalence cases
     (*ag).weight_baseline = (*ag).weight;
     (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
@@ -1593,6 +1598,10 @@ void lung_function_LPT(agent *ag)
 
     (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
+    //Adjusting FEV1 tail
+    if ((*ag).fev1<0.8) {
+      (*ag).fev1=0.8;
+    }
 
 
     double pred_fev1=CALC_PRED_FEV1(ag);
@@ -2018,6 +2027,11 @@ void event_COPD_process(agent *ag)
             +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
             +input.lung_function.fev1_0_inc_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
+
+  //Adjusting FEV1 tail
+  if ((*ag).fev1<0.8) {
+    (*ag).fev1=0.8;
+    }
 
   double pred_fev1=CALC_PRED_FEV1(ag);
   (*ag)._pred_fev1=pred_fev1;

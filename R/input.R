@@ -232,7 +232,7 @@ init_input<-function()
   input$lung_function$fev1_0_ZafarCMAJ_by_sex<-cbind(
     male=c(intercept=1421.2e-3+462.5e-3, baseline_age=-5.19e-3, baseline_weight_kg=-0.11e-3 ,height=-1760.3e-3, height_sq=1893.1e-3, current_smoker=-77.22e-3, age_height_sq=-8.2e-3, followup_time = 0),
     female=c(intercept=1421.2e-3, baseline_age=-5.19e-3, baseline_weight_kg=-0.11e-3, height=-1760.3e-3, height_sq=1893.1e-3, current_smoker=-77.22e-3, age_height_sq=-8.2e-3, followup_time = 0))
-  input_help$lung_function$fev1_0_ZafarCMAJ_by_sex<-"Regression coefficients for mean of FEV1 at time of creation with COPD or cevelopment of COPD based on Zafar's CMAJ. Used for conditional normal distribution in FEV1 decline equations.  (separately by sex)"
+  input_help$lung_function$fev1_0_ZafarCMAJ_by_sex<-"Regression coefficients for mean of FEV1 at time of creation with COPD or development of COPD based on Zafar's CMAJ. Used for conditional normal distribution in FEV1 decline equations.  (separately by sex)"
 
 
   #NHANES: input$lung_function$pred_fev1_betas_by_sex<-rbind(c(intercept=-0.7453,age=-0.04106,age2=0.004477,height2=0.00014098),c(-0.871,0.06537,0,0.00011496))
