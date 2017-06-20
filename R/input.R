@@ -215,9 +215,9 @@ init_input<-function()
   input$lung_function$fev1_0_prev_betas_by_sex<-cbind(
     male=c(intercept=1.546161,age=-0.031296,height_sq=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0),  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
     female=c(intercept= 1.329805 ,age=-0.031296 ,height_sq=1.012579,pack_years=-0.006925,current_smoker=0,sgrq=0))  #Updated on 2017-04-19 for LLN based on Shahzad's calculations. See https://github.com/aminadibi/epicR/issues/8
-
   input_help$lung_function$fev1_0_prev_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
-  input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
+
+   input$lung_function$fev1_0_prev_sd_by_sex<-c(male=0.6148,female=0.4242)
   input_help$lung_function$fev1_0_prev_sd_by_sex<-"SD of FEV1 at time of creation for those with COPD (separately by sex)"
 
   input$lung_function$fev1_0_inc_betas_by_sex<-cbind(
@@ -227,6 +227,13 @@ init_input<-function()
   input_help$lung_function$fev1_0_inc_betas_by_sex<-"Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
   input$lung_function$fev1_0_inc_sd_by_sex<-c(male=0.54,female=0.36)
   input_help$lung_function$fev1_0_inc_sd_by_sex<-"SD of FEV1 at time of development of COPD (separately by sex)"
+
+
+  input$lung_function$fev1_0_ZafarCMAJ_by_sex<-cbind(
+    male=c(intercept=1421.2e-3+462.5e-3, baseline_age=-5.19e-3, baseline_weight_kg=-0.11e-3 ,height=-1760.3e-3, height_sq=1893.1e-3, current_smoker=-77.22e-3, age_height_sq=-8.2e-3, followup_time = 0),
+    female=c(intercept=1421.2e-3, baseline_age=-5.19e-3, baseline_weight_kg=-0.11e-3, height=-1760.3e-3, height_sq=1893.1e-3, current_smoker=-77.22e-3, age_height_sq=-8.2e-3, followup_time = 0))
+  input_help$lung_function$fev1_0_ZafarCMAJ_by_sex<-"Regression coefficients for mean of FEV1 at time of creation with COPD or cevelopment of COPD based on Zafar's CMAJ. Used for conditional normal distribution in FEV1 decline equations.  (separately by sex)"
+
 
   #NHANES: input$lung_function$pred_fev1_betas_by_sex<-rbind(c(intercept=-0.7453,age=-0.04106,age2=0.004477,height2=0.00014098),c(-0.871,0.06537,0,0.00011496))
 
@@ -238,35 +245,40 @@ init_input<-function()
   input_help$lung_function$pred_fev1_betas_by_sex<-"Coefficients for calculation of predicted FEV1 based on individual characteristics"
 
 
-  input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
+  #input$lung_function$dfev1_betas<-t(as.matrix(c(intercept=-0.04,sex=0,age0=0,fev1_0=0,smoking=-0.0,time=-0)))
+
+  input$lung_function$fev1_betas_by_sex<-cbind(
+    male=c(intercept=-177.9e-3-8.86e-3, baseline_age=2.31e-3, baseline_weight_kg=0.15e-3 ,height=74.13e-3, height_sq=11.39e-3, current_smoker=-25.79e-3, age_height_sq=-0.92e-3, followup_time = -0.44e-3),
+    female=c(intercept=-177.9e-3, baseline_age=2.31e-3, baseline_weight_kg=0.15e-3, height=74.13e-3, height_sq=11.39e-3, current_smoker=-25.79e-3, age_height_sq=-0.92e-3, followup_time = -0.44e-3))
   input_help$lung_function$dfev1_betas<-"Regression equations (mixed-effects model) for rate of FEV1 decline"
 
-  input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.01,time=0)))
+  input$lung_function$dfev1_re_sds<-t(as.matrix(c(intercept=0.0,time=0)))
   input_help$lung_function$dfev1_re_sds<-"SD of random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_rho<--0.5
+  input$lung_function$dfev1_re_rho<--0
   input_help$lung_function$dfev1_re_rho<-"Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline"
 
 
 
 
   ##Exacerbation;
-  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=1.2746-1.3256,female=0.1256,age=0.09066/10,fev1=-0.3159,smoking_status=0,gold2=0,gold3p=0)))
+
+  input$exacerbation$ln_rate_betas=t(as.matrix(c(intercept=-0.785,female=0.174353,age=0.04082*0.1,fev1=-0,smoking_status=0,gold2=0.46,gold3p=0.65)))   #Najafzadeh et al (2012). Only function of GOLD for minimalism
   input_help$exacerbation$ln_rate_betas="Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=2,intercept2=1.6655,female=-0.0431,age=-0.1685/10,fev1=-0.4279,smoking_status=0)))
+  input$exacerbation$logit_severity_betas=t(as.matrix(c(intercept1=1.091,intercept2=1.902, intercept3=5.208, female=-0.0431,age=-0.0076,fev1=-0.002945,smoking_status=0, pack_years=-0.001127, BMI=0.017820)))
   input_help$exacerbation$logit_severity_betas="Regression coefficients for the proportional odds model of exacerbation severity"
 
-  input$exacerbation$ln_rate_intercept_sd=sqrt(0.6393)
+  input$exacerbation$ln_rate_intercept_sd=sqrt(0.55)
   input_help$exacerbation$ln_rate_intercept_sd="SD of the random intercept for log-hazard of exacerbation"
-  input$exacerbation$logit_severity_intercept_sd=sqrt(2.6560)
+  input$exacerbation$logit_severity_intercept_sd=sqrt(2.0736)
   input_help$exacerbation$logit_severity_intercept_sd="SD of the random intercept for proportional odds model of exacerbation severity"
-  input$exacerbation$rate_severity_intercept_rho=-0.02162
+  input$exacerbation$rate_severity_intercept_rho=-0
   input_help$exacerbation$rate_severity_intercept_rho="Correlation coefficient between the random effect terms of rate and severity"
 
-  input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/10,severe=365/15)))
+  input$exacerbation$exac_end_rate<-t(as.matrix(c(mild=365/5,moderate=365/5,severe=365/5, verysevere=365/5)))
   input_help$exacerbation$exac_end_rate<-"Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level"
 
-  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0.01, severe=0.156)))
-  input_help$exacerbation$p_death<-"Probability of deatth due to exacerbation according to its severity level"
+  input$exacerbation$p_death<-t(as.matrix(c(mild=0, moderate=0, severe=0.046,verysevere=0.046))) #Based on Shahzad
+  input_help$exacerbation$p_death<-"Probability of death due to exacerbation according to its severity level"
 
   #Outpatient;
   input$outpatient$rate_doctor_visit<-0.1

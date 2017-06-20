@@ -6,17 +6,18 @@ Rcpp::sourceCpp("./src/model.WIP.cpp")
   library.dynam.unload("epicR", libpath)
 }
 
+
 default_settings<-list(
   record_mode=record_mode["record_mode_event"], #RECORD_MODE_NONE,
   events_to_record=c(0),
   agent_creation_mode=agent_creation_mode["agent_creation_mode_one"],
   update_continuous_outcomes_mode=0,
-  n_base_agents=10000,
+  n_base_agents=500000,
   runif_buffer_size=1000000,
   rnorm_buffer_size=1000000,
   rexp_buffer_size=1000000,
   agent_stack_size=0,
-  event_stack_size=10000000
+  event_stack_size=500000*1.7*30
 )
 
 
@@ -208,7 +209,9 @@ resume<-function(max_n_agents=NULL)
 #' @export
 process_input<-function(ls, decision=1)
 {
-  ls$agent$p_bgd_by_sex<-ls$agent$p_bgd_by_sex+ls$manual$explicit_mortality_by_age_sex
+ # ls$agent$p_bgd_by_sex<-ls$agent$p_bgd_by_sex+ls$manual$explicit_mortality_by_age_sex
+  ls$agent$p_bgd_by_sex<-ls$agent$p_bgd_by_sex
+
   ls$smoking$ln_h_inc_betas[1]<-ls$smoking$ln_h_inc_betas[1]+log(ls$manual$smoking$intercept_k)
 
   #ls$manual$MORT_COEFF<-NULL

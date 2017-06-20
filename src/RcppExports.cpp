@@ -268,3 +268,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"epicR_Cset_settings_var", (DL_FUNC) &epicR_Cset_settings_var, 2},
+    {"epicR_Cget_settings", (DL_FUNC) &epicR_Cget_settings, 0},
+    {"epicR_Cget_version", (DL_FUNC) &epicR_Cget_version, 0},
+    {"epicR_Cget_runtime_stats", (DL_FUNC) &epicR_Cget_runtime_stats, 0},
+    {"epicR_Xrexp", (DL_FUNC) &epicR_Xrexp, 2},
+    {"epicR_Cget_inputs", (DL_FUNC) &epicR_Cget_inputs, 0},
+    {"epicR_Cset_input_var", (DL_FUNC) &epicR_Cset_input_var, 2},
+    {"epicR_get_sample_output", (DL_FUNC) &epicR_get_sample_output, 2},
+    {"epicR_Cget_agent", (DL_FUNC) &epicR_Cget_agent, 1},
+    {"epicR_Cget_smith", (DL_FUNC) &epicR_Cget_smith, 0},
+    {"epicR_Ccreate_agents", (DL_FUNC) &epicR_Ccreate_agents, 0},
+    {"epicR_Cget_output", (DL_FUNC) &epicR_Cget_output, 0},
+    {"epicR_Cget_output_ex", (DL_FUNC) &epicR_Cget_output_ex, 0},
+    {"epicR_Cget_event", (DL_FUNC) &epicR_Cget_event, 1},
+    {"epicR_Cget_n_events", (DL_FUNC) &epicR_Cget_n_events, 0},
+    {"epicR_Cget_agent_events", (DL_FUNC) &epicR_Cget_agent_events, 1},
+    {"epicR_Cget_events_by_type", (DL_FUNC) &epicR_Cget_events_by_type, 1},
+    {"epicR_Cget_all_events", (DL_FUNC) &epicR_Cget_all_events, 0},
+    {"epicR_Cget_all_events_matrix", (DL_FUNC) &epicR_Cget_all_events_matrix, 0},
+    {"epicR_Callocate_resources", (DL_FUNC) &epicR_Callocate_resources, 0},
+    {"epicR_Cget_pointers", (DL_FUNC) &epicR_Cget_pointers, 0},
+    {"epicR_Cdeallocate_resources", (DL_FUNC) &epicR_Cdeallocate_resources, 0},
+    {"epicR_Cdeallocate_resources2", (DL_FUNC) &epicR_Cdeallocate_resources2, 0},
+    {"epicR_Cinit_session", (DL_FUNC) &epicR_Cinit_session, 0},
+    {"epicR_Cmodel", (DL_FUNC) &epicR_Cmodel, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_epicR(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}

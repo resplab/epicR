@@ -543,14 +543,14 @@ validate_comorbidity<-function(n_sim=100000)
 #' @export
 validate_lung_function<-function()
 {
-  cat("This function examines FEV1 values")
+  cat("This function examines FEV1 values\n")
   petoc()
 
   settings<-default_settings
   settings$record_mode<-record_mode["record_mode_some_event"]
   settings$events_to_record<-events[c("event_start","event_COPD","event_fixed")]
   settings$agent_stack_size<-0
-  settings$n_base_agents<-50000
+  settings$n_base_agents<-100000
   settings$event_stack_size<-settings$n_base_agents*100
 
   init_session(settings=settings)
@@ -560,31 +560,43 @@ validate_lung_function<-function()
 
   run(input=input)
 
-  x<-as.data.frame(Cget_all_events_matrix())
+  all_events<-as.data.frame(Cget_all_events_matrix())
 
-  COPD_events<-which(x[,'event']==events["event_COPD"])
-  start_events<-which(x[,'event']==events["event_start"])
+  COPD_events<-which(all_events[,'event']==events["event_COPD"])
+  start_events<-which(all_events[,'event']==events["event_start"])
 
-  out_FEV1_prev<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
-  out_FEV1_inc<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
+  out_FEV1_prev<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM all_events WHERE event=",events["event_start"]," GROUP BY gold"))
+  out_FEV1_inc<-sqldf::sqldf(paste("SELECT gold, AVG(FEV1) AS 'Mean', STDEV(FEV1) AS 'SD' FROM all_events WHERE event=",events["event_COPD"]," GROUP BY gold"))
 
-  out_gold_prev<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_start"]," GROUP BY gold"))
+  out_gold_prev<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM all_events WHERE event=",events["event_start"]," GROUP BY gold"))
   out_gold_prev[,'Percent']<-round(out_gold_prev[,'N']/sum(out_gold_prev[,'N']),3)
-  out_gold_inc<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM x WHERE event=",events["event_COPD"]," GROUP BY gold"))
+  out_gold_inc<-sqldf::sqldf(paste("SELECT gold, COUNT(*) AS N FROM all_events WHERE event=",events["event_COPD"]," GROUP BY gold"))
   out_gold_inc[,'Percent']<-round(out_gold_inc[,'N']/sum(out_gold_inc[,'N']),3)
 
-  COPD_ids<-x[COPD_events,'id']
+  COPD_events_patients <- subset(all_events, event==4)
+  start_events_patients <- subset(all_events, event==0 & gold>0)
+
+  table(COPD_events_patients[,"gold"])/sum(table(COPD_events_patients[,"gold"]))
+
+  table(start_events_patients[,"gold"])/sum(table(start_events_patients[,"gold"]))
+
+
+  out_gold_inc_patients <- table(COPD_events_patients[,"gold"])/sum(table(COPD_events_patients[,"gold"]))
+
+  out_gold_prev_patients <- table(start_events_patients[,"gold"])/sum(table(start_events_patients[,"gold"]))
+
+  COPD_ids<-all_events[COPD_events,'id']
 
   for(i in 1:100)
   {
-    y<-which(x[,'id']==COPD_ids[i] & x[,'gold']>0)
+    y<-which(all_events[,'id']==COPD_ids[i] & all_events[,'gold']>0)
     if(i==1)
-      plot(x[y,'local_time'],x[y,'FEV1'],type='l',xlim=c(0,20),ylim=c(0,5),xlab="local time",ylab="FEV1") else
-        lines(x[y,'local_time'],x[y,'FEV1'],type='l') ;
+      plot(all_events[y,'local_time'],all_events[y,'FEV1'],type='l',xlim=c(0,20),ylim=c(0,5),xlab="local time",ylab="FEV1") else
+        lines(all_events[y,'local_time'],all_events[y,'FEV1'],type='l') ;
   }
   title(cex.main=0.5,"Trajectories of FEV1 in 100 individuals")
 
-  return(list(FEV1_prev=out_FEV1_prev,FEV1_inc=out_FEV1_inc,gold_prev=out_gold_prev,gold_inc=out_gold_inc))
+  return(list(FEV1_prev=out_FEV1_prev,FEV1_inc=out_FEV1_inc,gold_prev=out_gold_prev,gold_inc=out_gold_inc, gold_prev_patients=out_gold_prev_patients, gold_inc_patients=out_gold_inc_patients))
 }
 
 
