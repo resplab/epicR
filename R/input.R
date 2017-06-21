@@ -377,35 +377,3 @@ init_input<-function()
   model_input<<-input
   model_input_help<<-input_help
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-tabulate_input<-function(input=model_input,input_help=model_input_help,show_values=FALSE)
-{
-  items<-get_list_elements(input)
-  n<-length(items)
-  out1<-items
-  out2<-rep("",n)
-  out3<-out2
-  for(i in 1:n)
-  {
-    str=eval(parse(text=paste("input_help","$",items[i],sep="")))
-    if(is.null(str)) out2[i]="<NO DESCRIPTION>" else out2[i]<-str
-    if(show_values)
-      out3[i]<-paste(eval(parse(text=paste("input","$",items[i],sep=""))),collapse=",")
-  }
-  out<-data.frame(Parameter=out1,Description=out2)
-  if(show_values) out[,'Value']<-out3
-  return(out)
-}
