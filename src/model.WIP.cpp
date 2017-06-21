@@ -849,6 +849,7 @@ struct agent
   double fev1_baseline_ZafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
+  double fev1_tail;
   double lung_function_LPT;
   int gold;
   int local_time_at_COPD;
@@ -953,28 +954,28 @@ List get_agent(agent *ag)
 
       );
 
-    out["weight_baseline"]=(*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
-    out["followup_time"]=(*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
-    out["age_baseline"]=(*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
+    out["weight_baseline"] = (*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
+    out["followup_time"] = (*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
+    out["age_baseline"] = (*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
     out["fev1_baseline"] = (*ag).fev1_baseline; //added for new implementation of FEV1 decline -- Shahzad!
     out["fev1_baseline_ZafarCMAJ"] = (*ag).fev1_baseline_ZafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
-
-    out["gold"]=(*ag).gold;
+    out["fev1_tail"] = (*ag).fev1_tail;
+    out["gold"] = (*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
 
-    out["cumul_cost"]=(*ag).cumul_cost;
-    out["cumul_qaly"]=(*ag).cumul_qaly;
-    out["tte"]=(*ag).tte;
-    out["event"]=(*ag).event;
-    out["symptom_score"]=(*ag).symptom_score;
-    out["last_doctor_visit_time"]=(*ag).last_doctor_visit_time;
-    out["last_doctor_visit_type"]=(*ag).last_doctor_visit_type;
-    out["medication_status"]=(*ag).medication_status;
+    out["cumul_cost"] = (*ag).cumul_cost;
+    out["cumul_qaly"] = (*ag).cumul_qaly;
+    out["tte"] = (*ag).tte;
+    out["event"] = (*ag).event;
+    out["symptom_score"] = (*ag).symptom_score;
+    out["last_doctor_visit_time"] = (*ag).last_doctor_visit_time;
+    out["last_doctor_visit_type"] = (*ag).last_doctor_visit_type;
+    out["medication_status"] = (*ag).medication_status;
 
-    out["n_mi"]=(*ag).n_mi;
-    out["n_stroke"]=(*ag).n_stroke;
+    out["n_mi"] = (*ag).n_mi;
+    out["n_stroke"] = (*ag).n_stroke;
 
-    out["p_COPD"]=(*ag).p_COPD;
+    out["p_COPD"] = (*ag).p_COPD;
 
     return out;
 }
@@ -1039,8 +1040,8 @@ agent *create_agent(agent *ag,int id)
   (*ag).followup_time = 0; //resetting the value for new agent
   (*ag).local_time_at_COPD = 0; //resetting the value for new agent
   (*ag).time_at_creation=calendar_time;
-
   (*ag).sex=rand_unif()<input.agent.p_female;
+  (*ag).fev1_tail = sqrt(0.1845) * rand_norm() + 0.827;
 
   double r=rand_unif();
   double cum_p=0;
@@ -1162,13 +1163,13 @@ agent *create_agent(agent *ag,int id)
     +rand_norm()*input.lung_function.fev1_0_prev_sd_by_sex[(*ag).sex];
 
     //Adjusting FEV1 tail
-    if ((*ag).fev1<0.8) {
-      (*ag).fev1=0.8;
+    if ((*ag).fev1 < RAND_TAIL_FEV1_t) {
+      (*ag).fev1 = RAND_TAIL_FEV1_t;
     }
 
     //Setting values for COPD prevalence cases
     (*ag).weight_baseline = (*ag).weight;
-    (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
+    (*ag).age_baseline = (*ag).local_time + (*ag).age_at_creation;
     (*ag).followup_time = 0 ;
     (*ag).local_time_at_COPD = (*ag).local_time;
     (*ag).fev1_baseline = (*ag).fev1;
@@ -1599,8 +1600,8 @@ void lung_function_LPT(agent *ag)
     (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
     //Adjusting FEV1 tail
-    if ((*ag).fev1<0.8) {
-      (*ag).fev1=0.8;
+    if ((*ag).fev1 < RAND_TAIL_FEV1_t) {
+      (*ag).fev1 = RAND_TAIL_FEV1_t;
     }
 
 
@@ -2029,8 +2030,8 @@ void event_COPD_process(agent *ag)
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
 
   //Adjusting FEV1 tail
-  if ((*ag).fev1<0.8) {
-    (*ag).fev1=0.8;
+  if ((*ag).fev1 < RAND_TAIL_FEV1_t) {
+    (*ag).fev1 = RAND_TAIL_FEV1_t;
     }
 
   double pred_fev1=CALC_PRED_FEV1(ag);
