@@ -27,16 +27,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Cget_version
-List Cget_version();
-RcppExport SEXP epicR_Cget_version() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(Cget_version());
-    return rcpp_result_gen;
-END_RCPP
-}
 // Cget_runtime_stats
 List Cget_runtime_stats();
 RcppExport SEXP epicR_Cget_runtime_stats() {
@@ -272,7 +262,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"epicR_Cset_settings_var", (DL_FUNC) &epicR_Cset_settings_var, 2},
     {"epicR_Cget_settings", (DL_FUNC) &epicR_Cget_settings, 0},
-    {"epicR_Cget_version", (DL_FUNC) &epicR_Cget_version, 0},
     {"epicR_Cget_runtime_stats", (DL_FUNC) &epicR_Cget_runtime_stats, 0},
     {"epicR_Xrexp", (DL_FUNC) &epicR_Xrexp, 2},
     {"epicR_Cget_inputs", (DL_FUNC) &epicR_Cget_inputs, 0},

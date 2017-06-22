@@ -12,11 +12,6 @@ Cget_settings <- function() {
 }
 
 #' @export
-Cget_version <- function() {
-    .Call('epicR_Cget_version', PACKAGE = 'epicR')
-}
-
-#' @export
 Cget_runtime_stats <- function() {
     .Call('epicR_Cget_runtime_stats', PACKAGE = 'epicR')
 }
