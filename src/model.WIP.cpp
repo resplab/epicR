@@ -1045,6 +1045,7 @@ agent *create_agent(agent *ag,int id)
 
   double r=rand_unif();
   double cum_p=0;
+
   if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases; the rest are incident ones;
     for(int i=input.global_parameters.age0;i<111;i++)
     {
@@ -1055,6 +1056,7 @@ agent *create_agent(agent *ag,int id)
     for(int i=input.global_parameters.age0;i<111;i++)
     {
       cum_p=cum_p+input.agent.p_incidence_age[i];
+      //if(i==40) Rprintf("r=%f,cum_p=%f\n",r,cum_p);
       if(r<cum_p) {(*ag).age_at_creation=i; break;}
     }
 
@@ -1770,7 +1772,7 @@ agent *event_end_process(agent *ag)
 #endif
 #if OUTPUT_EX>1
   int age=floor((*ag).local_time+(*ag).age_at_creation);
-  //Rprintf("age at death=%d\n",age);
+  //Rprintf("age at death=%f\n",age);
   if((*ag).gold==0) output_ex.cumul_non_COPD_time+=(*ag).local_time;
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age][(*ag).sex]+=1;
 
@@ -1785,14 +1787,25 @@ agent *event_end_process(agent *ag)
   }
 
 
+  //double _age=(*ag).age_at_creation+(*ag).local_time;
+  //while(_age>(*ag).age_at_creation)
+  //{
+  //  int age_cut=floor(_age);
+  //  double delta=min(_age-age_cut,_age-(*ag).age_at_creation);
+  //  if(delta==0) {age_cut-=1; delta=min(_age-age_cut,_age-(*ag).age_at_creation);}
+  //  output_ex.sum_time_by_age_sex[age_cut][(*ag).sex]+=delta;
+  //  _age-=delta;
+  //}
+
   double _age=(*ag).age_at_creation+(*ag).local_time;
-  while(_age>(*ag).age_at_creation)
+  int _low=floor((*ag).age_at_creation);
+  int _high=ceil(_age);
+  for(int i=_low;i<=_high;i++)
   {
-    int age_cut=floor(_age);
-    double delta=min(_age-age_cut,_age-(*ag).age_at_creation);
-    if(delta==0) {age_cut-=1; delta=min(_age-age_cut,_age-(*ag).age_at_creation);}
-    output_ex.sum_time_by_age_sex[age_cut][(*ag).sex]+=delta;
-    _age-=delta;
+    double delta=min(i+1,_age)-max(i,(*ag).age_at_creation);
+    if(delta>1e-10) {
+      output_ex.sum_time_by_age_sex[i][(*ag).sex]+=delta;
+    }
   }
 
 #endif
