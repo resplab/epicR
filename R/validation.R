@@ -52,7 +52,7 @@ sanity_check<-function()
   input<-model_input
   input$exacerbation$p_death<-input$exacerbation$p_death*0;
   input$agent$p_bgd_by_sex<-input$agent$p_bgd_by_sex*0;
-  input$manual$explicit_mortality<-input$manual$explicit_mortality*0;
+  input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0;
   res<-run(input=input)
   if(Cget_output()$n_deaths!=0) {stop("Test failed!")} else message("Test passed!")
   terminate_session()
@@ -74,7 +74,7 @@ validate_population<-function(remove_COPD=0,incidence_k=1)
   settings<-default_settings
   settings$record_mode<-record_mode["record_mode_none"]
   settings$agent_stack_size<-0
-  settings$n_base_agents<-100000
+  settings$n_base_agents<-1000000
   settings$event_stack_size<-1
   init_session(settings=settings)
   input<-model_input #We can work with local copy more conveniently and submit it to the Run function
@@ -404,7 +404,7 @@ validate_COPD<-function(incident_COPD_k=1) #The incidence rate is multiplied by 
 
 
 #' @export
-validate_mortality<-function(n_sim=5e4,bgd=1,bgd_h=1,manual=1,exacerbation=1,comorbidity=1)
+validate_mortality<-function(n_sim=5e5,bgd=1,bgd_h=1,manual=1,exacerbation=1,comorbidity=1)
 {
   cat("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
   petoc()
