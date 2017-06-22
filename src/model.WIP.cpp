@@ -12,14 +12,6 @@ Layout:
 
 
 
-
-
-#define _VERSION_ "20170405"
-#define _VERSION_DESC_ "NOTEs:                                 \
-  1. comorbidity events are disabled (in the main loop)        \
-  2.                                                           \
-  "
-//TODO;
 #define OUTPUT_EX_BIOMETRICS 1 //height, weight etc;
 #define OUTPUT_EX_SMOKING 2
 #define OUTPUT_EX_COMORBIDITY 4
@@ -285,22 +277,6 @@ List Cget_settings()
       Rcpp::Named("event_stack_size")=settings.event_stack_size
     );
 }
-
-
-
-//' @export
-// [[Rcpp::export]]
-List Cget_version()
-{
-  return Rcpp::List::create(
-    Rcpp::Named("version")=_VERSION_,
-    Rcpp::Named("version_desc")=_VERSION_DESC_
-  );
-}
-
-
-
-
 
 
 struct runtime_stats
