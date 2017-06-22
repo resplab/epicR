@@ -55,6 +55,7 @@ sanity_check<-function()
   input$manual$explicit_mortality<-input$manual$explicit_mortality*0;
   res<-run(input=input)
   if(Cget_output()$n_deaths!=0) {stop("Test failed!")} else message("Test passed!")
+  terminate_session()
 }
 
 
