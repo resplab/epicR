@@ -402,21 +402,8 @@ validate_COPD<-function(incident_COPD_k=1) #The incidence rate is multiplied by 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #' @export
-validate_mortality<-function(n_sim=10^7,bgd=1,bgd_h=1,manual=1,exacerbation=1,comorbidity=1)
+validate_mortality<-function(n_sim=5e4,bgd=1,bgd_h=1,manual=1,exacerbation=1,comorbidity=1)
 {
   cat("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
   petoc()
