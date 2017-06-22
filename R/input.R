@@ -1,16 +1,62 @@
-# The following declarations are already defined in mode.WIP.cpp they are replicated here to make it compatible with epicR as a
-# pakcage. Amin
+# The following declarations are already defined in mode.WIP.cpp
+# they are replicated here to make it compatible with epicR as a pakcage. Amin
 
-record_mode <- c(record_mode_none = 0, record_mode_agent = 1, record_mode_event = 2, record_mode_some_event = 3)
-medication_classes <- c(MED_CLASS_SABA = 1, MED_CLASS_LABA = 2, MED_CLASS_LAMA = 4, MED_CLASS_ICS = 8, MED_CLASS_MACRO = 16)
-events <- c(event_start = 0, event_fixed = 1, event_birthday = 2, event_smoking_change = 3, event_COPD = 4, event_exacerbation = 5,
-            event_exacerbation_end = 6, event_exacerbation_death = 7, event_doctor_visit = 8, event_medication_change = 9, event_mi = 10,
-            event_stroke = 11, event_hf = 12, event_bgd = 13, event_end = 14)
-agent_creation_mode <- c(agent_creation_mode_one = 0, agent_creation_mode_all = 1, agent_creation_mode_pre = 2)
-errors <- c(ERR_INCORRECT_SETTING_VARIABLE = -1, ERR_INCORRECT_VECTOR_SIZE = -2, ERR_INCORRECT_INPUT_VAR = -3, ERR_EVENT_STACK_FULL = -4,
-            ERR_MEMORY_ALLOCATION_FAILED = -5)
+record_mode<-c(
+  record_mode_none=0,
+  record_mode_agent=1,
+  record_mode_event=2,
+  record_mode_some_event=3
+)
 
 
+medication_classes<-c(
+  MED_CLASS_SABA=1,
+  MED_CLASS_LABA=2,
+  MED_CLASS_LAMA=4,
+  MED_CLASS_ICS=8,
+  MED_CLASS_MACRO=16
+)
+
+
+
+events<-c(
+  event_start=0,
+  event_fixed=1,
+  event_birthday=2,
+  event_smoking_change=3,
+  event_COPD=4,
+  event_exacerbation=5,
+  event_exacerbation_end=6,
+  event_exacerbation_death=7,
+  event_doctor_visit=8,
+  event_medication_change=9,
+
+  event_mi=10,
+  event_stroke=11,
+  event_hf=12,
+
+  event_bgd=13,
+  event_end=14
+)
+
+
+agent_creation_mode<-c(
+  agent_creation_mode_one=0,
+  agent_creation_mode_all=1,
+  agent_creation_mode_pre=2
+)
+
+
+
+errors<-c(
+  ERR_INCORRECT_SETTING_VARIABLE=-1,
+  ERR_INCORRECT_VECTOR_SIZE=-2,
+  ERR_INCORRECT_INPUT_VAR=-3,
+  ERR_EVENT_STACK_FULL=-4,
+  ERR_MEMORY_ALLOCATION_FAILED=-5
+)
+
+# End of declarations
 
 #' @export
 init_input <- function() {
@@ -279,86 +325,67 @@ init_input <- function() {
   input$comorbidity$p_mi_death <- 0.05
 
 
-  # stroke
-  input$comorbidity$logit_p_stroke_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01,
-                                                                 smoking = 0.001, calendar_time = 0, b_mi = 0, gold = 0.05, b_mi = 0, n_mi = 0), female = c(intercept = -3000, age = 0.001,
-                                                                                                                                                            age2 = 0, pack_years = 0.01, smoking = 0.001, calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0))
-  input$comorbidity$ln_h_stroke_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
-                                                              calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01, b_stroke = 0, n_stroke = 0), female = c(intercept = -3000,
-                                                                                                                                                                         age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001, calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01,
-                                                                                                                                                                         b_stroke = 0, n_stroke = 0))
-  input$comorbidity$p_stroke_death <- 0.18
+  #stroke
+  input$comorbidity$logit_p_stroke_betas_by_sex=cbind(
+    male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, b_mi=0, gold=0.05, b_mi=0, n_mi=0),
+    female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0)
+  );
+  input$comorbidity$ln_h_stroke_betas_by_sex=cbind(
+    male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
+    female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
+  );
+  input$comorbidity$p_stroke_death<-0.18;
 
 
-  # hf
-  input$comorbidity$logit_p_hf_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
-                                                             calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01, b_stroke = 0, n_stroke = 0), female = c(intercept = -3000,
-                                                                                                                                                                        age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001, calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01,
-                                                                                                                                                                        b_stroke = 0, n_stroke = 0))
-  input$comorbidity$ln_h_hf_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
-                                                          calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01, b_stroke = 0, n_stroke = 0), female = c(intercept = -3000,
-                                                                                                                                                                     age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001, calendar_time = 0, bmi = 0.01, gold = 0.05, b_mi = 0, n_mi = 0.01,
-                                                                                                                                                                     b_stroke = 0, n_stroke = 0))
+  #hf
+  input$comorbidity$logit_p_hf_betas_by_sex=cbind(
+    male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
+    female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
+  );
+  input$comorbidity$ln_h_hf_betas_by_sex=cbind(
+    male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05,b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
+    female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05,b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
+  );
 
 
-  ## cost and utility
-  input_help$cost$bg_cost_by_stage = "Annual direct costs for non-COPD, and COPD by GOLD grades"
-  input$cost$bg_cost_by_stage = t(as.matrix(c(N = 0, I = 36, II = 215, III = 524, IV = 524)))
-  input_ref$cost$bg_cost_by_stage = ""
+  ##cost and utility
+  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=36,II=215,III=524,IV=524)))
+  input_help$cost$bg_cost_by_stage="Annual direct costs for non-COPD, and COPD by GOLD grades"
+  input$cost$exac_dcost=t(as.matrix(c(mild=160,moderate=1500,severe=6500)))
+  input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
+
+  #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
+
+  input$utility$bg_util_by_stage=t(as.matrix(c(N=1, I=0.81,II=0.72,III=0.67,IV=0.67)))
+  input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
+  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07,moderate=-0.37/2,severe=-0.3)))
+  input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
+
+  input$manual$MORT_COEFF<-1
+  input$manual$smoking$intercept_k<-1
 
 
-  input_help$cost$exac_dcost = "Incremental direct costs of exacerbations by severity levels"
-  input$cost$exac_dcost = t(as.matrix(c(mild = 160, moderate = 1500, severe = 6500)))
-  input_ref$cost$exac_dcost = ""
-
-  input_help$utility$bg_util_by_stage = "Background utilities for non-COPD, and COPD by GOLD grades"
-  input$utility$bg_util_by_stage = t(as.matrix(c(N = 1, I = 0.81, II = 0.72, III = 0.67, IV = 0.67)))
-  input_ref$utility$bg_util_by_stage = ""
-
-
-  input_help$utility$exac_dutil = "Incremental change in utility during exacerbations by severity level"
-  input$utility$exac_dutil = t(as.matrix(c(mild = -0.07, moderate = -0.37/2, severe = -0.3)))
-  input_ref$utility$exac_dutil = "Incremental change in utility during exacerbations by severity level"
-
-  input$manual$MORT_COEFF <- 1
-  input$manual$smoking$intercept_k <- 1
+  #Proportion of death by COPD that should be REMOVED from background mortality
+  input$manual$explicit_mortality_by_age_sex<-cbind(
+    #   0 for <35         35-39           40-44           45-49          50-54      55-59           60-64        65-69          70-74       75-79       80+
+    male =c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.000163941665534839,0.000177281579297931,0.000183419528865015,0.000185930844874066,0.000193139901148987,0.000182250101986192,0.000187177173372192,0.000180835455719766,0.000167980610339279,0.000158414060952437,0.000155888692752317,0.000121967404053794,0.000105155038768934,6.71808169796515e-05,5.12032143316138e-05,-1.03556623142808e-05,-1.67158919228624e-05,-0.000103205512605721,-0.000168044825857377,-0.000235489762896841,-0.00035654446669205,-0.000523716433344449,-0.000670919726318574,-0.000769909282625769,-0.000981280099244281,-0.00114940435917177,-0.00139175338386252,-0.00163526450472445,-0.00193965207801502,-0.00222066636430431,-0.00261632556650098,-0.00300597774359607,-0.00346365781655938,-0.00391715661120587,-0.00450685373401604,-0.00511248474574893,-0.00572568940674873,-0.00657642741135896,-0.00734093478606771,-0.00823790999673855,-0.00913624152249536,-0.0101695129086911,-0.0112043368289842,-0.0125207851790845,-0.0137057524340864,-0.0147283202381141,-0.0161146292513862,-0.0176398301860876,-0.0189220711397449,-0.0201762732184097,-0.0214997960901728,-0.0223607826010634,-0.0234658479270475,-0.0244565023031272,-0.0244268275135947,-0.0232086890885717,-0.0247819241360003,-0.025003792295976,-0.0241094908754576,-0.0239166874949543,-0.0211004867217414,-0.0187823250788689,-0.0191712488194818,-0.0191809297667866,-0.0157411575517537,-0.013790120535468,-0.00845395655369852,-0.00853119854719392,0.00405745682840175,0.00104738079580258,-0.767947075528384
+    )
+    ,female =c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.000485635413744651,0.000516293816306262,0.000537517103843365,0.000554419526341991,0.000576508445819078,0.000611181342216226,0.000644361038346337,0.000667273401384262,0.000669311398029131,0.000709614745083301,0.000732308949905251,0.000755454130200232,0.000799760705581307,0.000795517274684197,0.000850490173057457,0.000842158433180149,0.000856252178408046,0.000885018558205534,0.000887845161843451,0.000900903707309841,0.000869230322136838,0.000803500688334878,0.00078667107051465,0.000737933447097524,0.000653895409054983,0.000620117131182082,0.000534138796834628,0.000401590515069166,0.000242845292253893,8.36053936838672e-05,-0.000130864788731602,-0.000368098578567837,-0.00061896256164686,-0.000954493177089229,-0.00125441588381001,-0.00168465178022631,-0.00213773720304749,-0.00267751998972103,-0.00326650546064724,-0.00391818185224616,-0.00478790439531598,-0.00558920845072206,-0.00646488742598327,-0.00747114586787497,-0.00877854339549181,-0.00998217617399463,-0.0115653018910229,-0.0130190086711489,-0.0145200653213204,-0.0163685389718415,-0.0184413489323451,-0.0203247083111524,-0.0219052140276995,-0.0240180271273228,-0.0255658663790603,-0.026440701953257,-0.0276619340081734,-0.0293094774401177,-0.0297282534093593,-0.0309569813756568,-0.0298008551922364,-0.0281202014017937,-0.0287414594172258,-0.0280647808876243,-0.0263369614784233,-0.0244856534119344,-0.0153182757926906,-0.0154268815455174,-0.00791720523676431,0.00394329745374039,-0.759039003975861
+    ))
 
 
+  #input$project_specific$ROC16_biomarker_threshold<-1
+  #input_help$project_specific$ROC16_biomarker_threshold<-"Threshold on the biomarker value that prompts treatment"
+  #input$project_specific$ROC16_biomarker_noise_sd<-0
+  #input_help$project_specific$ROC16_biomarker_noise_sd<-"SD of the multiplicative log-normally distirbuted noise arround the actual exacerbation rate - this noise is added to make the biomarker 'imperfect'"
+  #input$project_specific$ROC16_biomarker_cost<-100
+  #input_help$project_specific$ROC16_biomarker_cost<-"Cost of the biomarker (per patient)"
+  #input$project_specific$ROC16_treatment_cost<-4000
+  #input_help$project_specific$ROC16_treatment_cost<-"Cost of treatment that will reduce the exacerbation rate"
+  #input$project_specific$ROC16_treatment_RR<-0.75
+  #input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
 
-  input$help$explicit_mortality_by_age_sex <- "COPD-caused mortality rate that is REMOVED from background mortality"
-  input$manual$explicit_mortality_by_age_sex <- cbind(male = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000163941665534839, 0.000177281579297931, 0.000183419528865015,
-                                                               0.000185930844874066, 0.000193139901148987, 0.000182250101986192, 0.000187177173372192, 0.000180835455719766, 0.000167980610339279,
-                                                               0.000158414060952437, 0.000155888692752317, 0.000121967404053794, 0.000105155038768934, 6.71808169796515e-05, 5.12032143316138e-05,
-                                                               -1.03556623142808e-05, -1.67158919228624e-05, -0.000103205512605721, -0.000168044825857377, -0.000235489762896841, -0.00035654446669205,
-                                                               -0.000523716433344449, -0.000670919726318574, -0.000769909282625769, -0.000981280099244281, -0.00114940435917177, -0.00139175338386252,
-                                                               -0.00163526450472445, -0.00193965207801502, -0.00222066636430431, -0.00261632556650098, -0.00300597774359607, -0.00346365781655938,
-                                                               -0.00391715661120587, -0.00450685373401604, -0.00511248474574893, -0.00572568940674873, -0.00657642741135896, -0.00734093478606771,
-                                                               -0.00823790999673855, -0.00913624152249536, -0.0101695129086911, -0.0112043368289842, -0.0125207851790845, -0.0137057524340864,
-                                                               -0.0147283202381141, -0.0161146292513862, -0.0176398301860876, -0.0189220711397449, -0.0201762732184097, -0.0214997960901728,
-                                                               -0.0223607826010634, -0.0234658479270475, -0.0244565023031272, -0.0244268275135947, -0.0232086890885717, -0.0247819241360003,
-                                                               -0.025003792295976, -0.0241094908754576, -0.0239166874949543, -0.0211004867217414, -0.0187823250788689, -0.0191712488194818,
-                                                               -0.0191809297667866, -0.0157411575517537, -0.013790120535468, -0.00845395655369852, -0.00853119854719392, 0.00405745682840175,
-                                                               0.00104738079580258, -0.767947075528384),
-                                                      female = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000485635413744651, 0.000516293816306262, 0.000537517103843365, 0.000554419526341991,
-                                                               0.000576508445819078, 0.000611181342216226, 0.000644361038346337, 0.000667273401384262, 0.000669311398029131, 0.000709614745083301,
-                                                               0.000732308949905251, 0.000755454130200232, 0.000799760705581307, 0.000795517274684197, 0.000850490173057457, 0.000842158433180149,
-                                                               0.000856252178408046, 0.000885018558205534, 0.000887845161843451, 0.000900903707309841, 0.000869230322136838, 0.000803500688334878,
-                                                               0.00078667107051465, 0.000737933447097524, 0.000653895409054983, 0.000620117131182082, 0.000534138796834628, 0.000401590515069166,
-                                                               0.000242845292253893, 8.36053936838672e-05, -0.000130864788731602, -0.000368098578567837, -0.00061896256164686, -0.000954493177089229,
-                                                               -0.00125441588381001, -0.00168465178022631, -0.00213773720304749, -0.00267751998972103, -0.00326650546064724, -0.00391818185224616,
-                                                               -0.00478790439531598, -0.00558920845072206, -0.00646488742598327, -0.00747114586787497, -0.00877854339549181, -0.00998217617399463,
-                                                               -0.0115653018910229, -0.0130190086711489, -0.0145200653213204, -0.0163685389718415, -0.0184413489323451, -0.0203247083111524,
-                                                               -0.0219052140276995, -0.0240180271273228, -0.0255658663790603, -0.026440701953257, -0.0276619340081734, -0.0293094774401177,
-                                                               -0.0297282534093593, -0.0309569813756568, -0.0298008551922364, -0.0281202014017937, -0.0287414594172258, -0.0280647808876243,
-                                                              -0.0263369614784233, -0.0244856534119344, -0.0153182757926906, -0.0154268815455174, -0.00791720523676431, 0.00394329745374039,
-                                                               -0.759039003975861))
-  input$ref$explicit_mortality_by_age_sex <- "Calculates based on differences in expected and simulated mortality rate, n=10^8. Last updated 2017-06-22"
-
-
-
-  model_input <<- input
-  model_input_help <<- input_help
-  model_input_ref <<- input_ref
+  model_input<<-input
+  model_input_help<<-input_help
+  model_input_ref<<-input_ref
 }
