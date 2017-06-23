@@ -297,7 +297,7 @@ init_input <- function() {
 
   input_help$exacerbation$p_death <- "Probability of death due to exacerbation according to its severity level"
   input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
-  input_ref$exacerbation$p_death <- "Najafzadeh M, Marra CA, Lynd LD, Sadatsafavi M, FitzGerald JM, McManus B, Sin D. Future impact of various interventions on the burden of COPD in Canada: a dynamic population model. PloS one. 2012 Oct 11;7(10):e46746."
+  input_ref$exacerbation$p_death <- "Aaron SD. Management and prevention of exacerbations of COPD. bmj. 2014 Sep 22;349:g5237., doi: 10.1136/bmj.g5237"
 
   # Outpatient;
   input$outpatient$rate_doctor_visit <- 0.1
