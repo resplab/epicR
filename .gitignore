@@ -3,3 +3,5 @@
 .RData
 iteration_coeff.csv
 iteration_resid.csv
+female_mortality.csv
+male_mortality.csv
