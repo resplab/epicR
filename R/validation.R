@@ -108,7 +108,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   lines(x[1:model_input$global_parameters$time_horizon, 1], rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/n_y1_agents, col = "red")
   legend("topright", c("Predicted", "Simulated"), lty = c(1, 1), col = c("black", "red"))
 
-  cat("And the green one is the pbserved (simulated) growth\n")
+  cat("And the green one is the observed (simulated) growth\n")
 
   pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(Cget_output_ex()$n_alive_by_ctime_age[1, ]) -
                       input$global_parameters$age0)
@@ -129,7 +129,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
     barplot(x, xlab = "Age")
     title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
 
-    cat("PRedicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
+    cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
     petoc()
 
@@ -170,7 +170,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
     input$exacerbation$p_death <- input$exacerbation$p_death * 0
-    input$manual$PROP_COPD_DEATH_BY_SEX_AGE <- input$manual$PROP_COPD_DEATH_BY_SEX_AGE * 0
   }
 
   if (!is.null(intercept_k))
@@ -197,8 +196,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   # remove COPD stuff;
   input$exacerbation$p_death <- input$exacerbation$p_death * 0
-  input$manual$PROP_COPD_DEATH_BY_SEX_AGE <- input$manual$PROP_COPD_DEATH_BY_SEX_AGE * 0
-  # input$smoking$logit_p_smoker_0_betas<-input$smoking$logit_p_smoker_0_betas*0
   run(input = input)
   dataS <- Cget_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
