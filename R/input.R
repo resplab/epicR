@@ -111,7 +111,7 @@ init_input <- function() {
 
 
   input_help$agent$p_incidence_age <- "Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration"
-  input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.03 * exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
+  input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.02 * exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
   input$agent$p_incidence_age <- input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
   input_ref$agent$p_incidence_age <- ""
 
