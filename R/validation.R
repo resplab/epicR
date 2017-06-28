@@ -126,7 +126,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
     cat("The observed population pyramid in", year, "is just drawn\n")
     x <- CanSim.052.0005[which(CanSim.052.0005[, "year"] == year & CanSim.052.0005[, "sex"] == "both"), "value"]
     x <- c(x, rep(0, 111 - length(x) - 40))
-    barplot(x, xlab = "Age")
+    barplot(x,  names.arg=40:110, xlab = "Age")
     title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
 
     cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
@@ -135,7 +135,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
 
     # cat('The predicted population pyramid in 2015 is just drawn\n')
     x <- pyramid[year - 2015 + 1, ]
-    barplot(x, col = "blue", xlab = "Age")
+    barplot(x, names.arg=40:110, col = "blue", xlab = "Age")
     title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
