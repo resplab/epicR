@@ -297,8 +297,8 @@ init_input <- function() {
 
   input_help$exacerbation$p_death_by_sex <- "Probability of death due to exacerbation according to its severity level"
 #  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
-  input$exacerbation$p_death_by_sex <- cbind(male = c(intercept = -1, age = log(1.05), moderate_to_mild = 0, severe_to_moderate = 0, n_hist_severe_exac = 0),
-                                      female = c(intercept = -1, age = log(1.05), moderate_to_mild = 0, severe_to_moderate = 0, n_hist_severe_exac = 0))
+  input$exacerbation$p_death_by_sex <- cbind(male = c(intercept = 0, age = log(1.03), moderate_to_mild = 0, severe_to_moderate = 0, n_hist_severe_exac = 0),
+                                      female = c(intercept = 0, age = log(1.03), moderate_to_mild = 0, severe_to_moderate = 0, n_hist_severe_exac = 0))
   input_ref$exacerbation$p_death_by_sex <- "Aaron SD. Management and prevention of exacerbations of COPD. bmj. 2014 Sep 22;349:g5237., doi: 10.1136/bmj.g5237"
 
   # Outpatient;
