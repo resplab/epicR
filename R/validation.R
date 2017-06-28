@@ -46,11 +46,12 @@ sanity_check <- function() {
 
   cat("test 4: zero mortality (both bg and exac)\n")
   input <- model_input
-  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
+  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(input = input)
   if (Cget_output()$n_deaths != 0) {
+    cat (Cget_output()$n_deaths)
     stop("Test failed!")
   } else message("Test passed!")
   terminate_session()
