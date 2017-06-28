@@ -251,14 +251,14 @@ init_input <- function() {
   input_ref$lung_function$dfev1_betas <- ""
 
 
-  input_help$lung_function$dfev1_re_sds <- "SD of random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_sds <- t(as.matrix(c(intercept = 0, time = 0)))
-  input_ref$lung_function$dfev1_re_sds <- ""
+  input_help$lung_function$dfev1_sigmas <- "Sigmas in G Matrix for FEV1 decline"
+  input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.09711), sigma2 = sqrt(0.000753))))
+  input_ref$lung_function$dfev1_sigmas <- ""
 
 
   input_help$lung_function$dfev1_re_rho <- "Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_rho <- -0
-  input_ref$lung_function$dfev1_re_rho <- ""
+  input$lung_function$dfev1_re_rho <- 0.0725
+  input_ref$lung_function$dfev1_re_rho <- "G Matrix Zafari CMAJ 2016"
 
 
 

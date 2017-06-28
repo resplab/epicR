@@ -501,7 +501,7 @@ struct input
     double fev1_betas_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
     double fev1_0_ZafarCMAJ_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
 
-    double dfev1_re_sds[2];
+    double dfev1_sigmas[2];
     double dfev1_re_rho;
   } lung_function;
 
@@ -633,7 +633,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_betas_by_sex),
       Rcpp::Named("fev1_0_ZafarCMAJ_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_ZafarCMAJ_by_sex),
-      Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
+      Rcpp::Named("dfev1_sigmas")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_sigmas),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
     Rcpp::Named("exacerbation")=Rcpp::List::create(
@@ -732,7 +732,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_betas_by_sex);
   if(name=="lung_function$fev1_0_ZafarCMAJ_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_ZafarCMAJ_by_sex);
 
-  if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
+  if(name=="lung_function$dfev1_sigmas") READ_R_VECTOR(value,input.lung_function.dfev1_sigmas);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
 
   if(name=="exacerbation$ln_rate_betas") READ_R_VECTOR(value,input.exacerbation.ln_rate_betas);
@@ -1156,12 +1156,10 @@ agent *create_agent(agent *ag,int id)
     (*ag).fev1_baseline = (*ag).fev1;
 
     // Intercept for FEV1 decline in prevalent cases
-    double fev1_sigma2 = sqrt(0.000753);
-    double fev1_sigma1 = sqrt(0.09711);
-    double fev1_rho    = 0.0725;
+
     double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-                               + (fev1_sigma2/fev1_sigma1*fev1_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
-    double fev1_variance_bivariate = sqrt ((1-fev1_rho*fev1_rho)*fev1_sigma2*fev1_sigma2);
+                               + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+    double fev1_variance_bivariate = sqrt ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
 
     (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
 
@@ -2059,12 +2057,10 @@ void event_COPD_process(agent *ag)
       (*ag).fev1_baseline = (*ag).fev1;
 
       // Intercept for FEv1 decline in COPD incidence cases
-      double fev1_sigma2 = sqrt(0.000753);
-      double fev1_sigma1 = sqrt(0.09711);
-      double fev1_rho    = 0.0725;
-      double fev1_mean_bivariate =  input.lung_function.fev1_betas_by_sex[0][(*ag).sex] +
-        (fev1_sigma2/fev1_sigma1*fev1_rho)*  ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
-      double fev1_variance_bivariate = sqrt ((1-fev1_rho*fev1_rho)*fev1_sigma2*fev1_sigma2);
+      double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+      double fev1_variance_bivariate = sqrt ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
+
       (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
 
       // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
