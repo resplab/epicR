@@ -46,11 +46,12 @@ sanity_check <- function() {
 
   cat("test 4: zero mortality (both bg and exac)\n")
   input <- model_input
-  input$exacerbation$p_death <- input$exacerbation$p_death * 0
+  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(input = input)
   if (Cget_output()$n_deaths != 0) {
+    cat (Cget_output()$n_deaths)
     stop("Test failed!")
   } else message("Test passed!")
   terminate_session()
@@ -91,7 +92,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   petoc()
 
   if (remove_COPD) {
-    input$exacerbation$p_death <- input$exacerbation$p_death * 0
+    input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
     input$manual$PROP_COPD_DEATH_BY_SEX_AGE <- input$manual$PROP_COPD_DEATH_BY_SEX_AGE * 0
   }
 
@@ -126,7 +127,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
     cat("The observed population pyramid in", year, "is just drawn\n")
     x <- CanSim.052.0005[which(CanSim.052.0005[, "year"] == year & CanSim.052.0005[, "sex"] == "both"), "value"]
     x <- c(x, rep(0, 111 - length(x) - 40))
-    barplot(x, xlab = "Age")
+    barplot(x,  names.arg=40:110, xlab = "Age")
     title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
 
     cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
@@ -135,7 +136,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
 
     # cat('The predicted population pyramid in 2015 is just drawn\n')
     x <- pyramid[year - 2015 + 1, ]
-    barplot(x, col = "blue", xlab = "Age")
+    barplot(x, names.arg=40:110, col = "blue", xlab = "Age")
     title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
@@ -169,7 +170,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
-    input$exacerbation$p_death <- input$exacerbation$p_death * 0
+    input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
   }
 
   if (!is.null(intercept_k))
@@ -195,7 +196,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("running the model\n")
 
   # remove COPD stuff;
-  input$exacerbation$p_death <- input$exacerbation$p_death * 0
+  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
   run(input = input)
   dataS <- Cget_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
@@ -429,7 +430,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * manual
 
-  input$exacerbation$p_death <- input$exacerbation$p_death * exacerbation
+  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * exacerbation
 
   if (comorbidity == 0) {
     input$comorbidity$p_mi_death <- 0
@@ -444,11 +445,11 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   if (Cget_output()$n_death > 0) {
 
-    difference <- (Cget_output_ex()$n_death_by_age_sex[41:111, ]/Cget_output_ex()$sum_time_by_age_sex[41:111, ]) - model_input$agent$p_bgd_by_sex[41:111,
+    difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$agent$p_bgd_by_sex[41:91,
                                                                                                                                                   ]
-    plot(40:110, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference")
+    plot(40:90, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference", ylim = c(-.1, .1))
     legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
-    lines(40:110, difference[, 2], type = "l", col = "red")
+    lines(40:90, difference[, 2], type = "l", col = "red")
     title(cex.main = 0.5, "Difference between simulated and expected (life table) mortality, by sex and age")
 
     return(list(difference = difference))

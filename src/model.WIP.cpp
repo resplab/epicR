@@ -501,7 +501,7 @@ struct input
     double fev1_betas_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
     double fev1_0_ZafarCMAJ_by_sex[8][2];  //intercept, age, weight, height, height_sq, smoking_status_age*height_sq, followup_year
 
-    double dfev1_re_sds[2];
+    double dfev1_sigmas[2];
     double dfev1_re_rho;
   } lung_function;
 
@@ -515,7 +515,7 @@ struct input
     double rate_severity_intercept_rho;
     //double p_moderate_severe[2]; //probability of moderate or severe, compared with mild, exacerbation
     double exac_end_rate[4]; //rate of exiting exacerbation per type;
-    double p_death[4]; //rate of mortality per type;
+    double logit_p_death_by_sex[4][2]; //rate of mortality per type;
   } exacerbation;
 
 
@@ -633,7 +633,7 @@ List Cget_inputs()
       Rcpp::Named("fev1_0_inc_sd_by_sex")=AS_VECTOR_DOUBLE(input.lung_function.fev1_0_prev_sd_by_sex),
       Rcpp::Named("fev1_betas_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_betas_by_sex),
       Rcpp::Named("fev1_0_ZafarCMAJ_by_sex")=AS_MATRIX_DOUBLE(input.lung_function.fev1_0_ZafarCMAJ_by_sex),
-      Rcpp::Named("dfev1_re_sds")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_re_sds),
+      Rcpp::Named("dfev1_sigmas")=AS_VECTOR_DOUBLE(input.lung_function.dfev1_sigmas),
       Rcpp::Named("dfev1_re_rho")=input.lung_function.dfev1_re_rho
       ),
     Rcpp::Named("exacerbation")=Rcpp::List::create(
@@ -644,7 +644,7 @@ List Cget_inputs()
       Rcpp::Named("rate_severity_intercept_rho")=input.exacerbation.rate_severity_intercept_rho,
       //Rcpp::Named("p_moderate_severe")=AS_VECTOR_DOUBLE(input.exacerbation.p_moderate_severe),
       Rcpp::Named("exac_end_rate")=AS_VECTOR_DOUBLE(input.exacerbation.exac_end_rate),
-      Rcpp::Named("p_death")=AS_VECTOR_DOUBLE(input.exacerbation.p_death)
+      Rcpp::Named("logit_p_death_by_sex")=AS_MATRIX_DOUBLE(input.exacerbation.logit_p_death_by_sex)
       ),
     Rcpp::Named("outpatient")=Rcpp::List::create(
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
@@ -732,7 +732,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="lung_function$fev1_betas_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_betas_by_sex);
   if(name=="lung_function$fev1_0_ZafarCMAJ_by_sex") READ_R_MATRIX(value,input.lung_function.fev1_0_ZafarCMAJ_by_sex);
 
-  if(name=="lung_function$dfev1_re_sds") READ_R_VECTOR(value,input.lung_function.dfev1_re_sds);
+  if(name=="lung_function$dfev1_sigmas") READ_R_VECTOR(value,input.lung_function.dfev1_sigmas);
   if(name=="lung_function$dfev1_re_rho") {input.lung_function.dfev1_re_rho=value[0]; return(0);}
 
   if(name=="exacerbation$ln_rate_betas") READ_R_VECTOR(value,input.exacerbation.ln_rate_betas);
@@ -742,7 +742,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="exacerbation$rate_severity_intercept_rho") {input.exacerbation.rate_severity_intercept_rho=value[0]; return(0);}
   //if(name=="exacerbation$p_moderate_severe") READ_R_VECTOR(value,input.exacerbation.p_moderate_severe);
   if(name=="exacerbation$exac_end_rate") READ_R_VECTOR(value,input.exacerbation.exac_end_rate);
-  if(name=="exacerbation$p_death") READ_R_VECTOR(value,input.exacerbation.p_death);
+  if(name=="exacerbation$logit_p_death_by_sex") READ_R_MATRIX(value,input.exacerbation.logit_p_death_by_sex);
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
@@ -821,11 +821,13 @@ struct agent
   double smoking_status_LPT;
 
   double fev1;
-  double fev1_baseline;
+  double fev1_baseline;  //Derived from CanCOLD
   double fev1_baseline_ZafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double fev1_tail;
+  double fev1_decline_intercept;
+
   double lung_function_LPT;
   int gold;
   int local_time_at_COPD;
@@ -929,7 +931,7 @@ List get_agent(agent *ag)
 
 
       );
-
+    out["fev1_decline_intercept"] = (*ag).fev1_decline_intercept;
     out["weight_baseline"] = (*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
     out["followup_time"] = (*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"] = (*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
@@ -1011,7 +1013,8 @@ agent *create_agent(agent *ag,int id)
   (*ag).local_time=0;
   (*ag).age_baseline = 0; //resetting the value for new agent
   (*ag).fev1_baseline = 0; //resetting the value for new agent
-  (*ag).fev1_baseline_ZafarCMAJ = 0;
+  (*ag).fev1_decline_intercept = 0;
+  (*ag).fev1_baseline_ZafarCMAJ = 0; // Only used for calculating intercept of FEV1 rate of decline
   (*ag).weight_baseline = 0; //resetting the value for new agent
   (*ag).followup_time = 0; //resetting the value for new agent
   (*ag).local_time_at_COPD = 0; //resetting the value for new agent
@@ -1151,6 +1154,14 @@ agent *create_agent(agent *ag,int id)
     (*ag).followup_time = 0 ;
     (*ag).local_time_at_COPD = (*ag).local_time;
     (*ag).fev1_baseline = (*ag).fev1;
+
+    // Intercept for FEV1 decline in prevalent cases
+
+    double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+                               + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+    double fev1_variance_bivariate = sqrt ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
+
+    (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
 
     // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
     (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
@@ -1372,6 +1383,8 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
   int n_exac_by_ctime_age[100][111];
+  int n_severep_exac_by_ctime_age[100][111];
+  int n_exac_death_by_ctime_age [100][111];
   int n_exac_by_ctime_severity[100][4];
 #endif
 
@@ -1457,6 +1470,8 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   out["n_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_age,input.global_parameters.time_horizon);
+  out["n_severep_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex. n_severep_exac_by_ctime_age,input.global_parameters.time_horizon);
+  out["n_exac_death_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_ctime_age,input.global_parameters.time_horizon);
   out["n_exac_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity,input.global_parameters.time_horizon);
 #endif
 
@@ -1569,13 +1584,15 @@ void lung_function_LPT(agent *ag)
   }
   else  //apply LHS equations
   {
-    (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
+    (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEV1 decline. To be checked.
 
     //Applying FEV1 decline
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
 //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-    (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
+    (*ag).fev1 = (*ag).fev1_baseline
+               + (*ag).fev1_slope*(*ag).followup_time
+               + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
     //Adjusting FEV1 tail
     if ((*ag).fev1 < (*ag).fev1_tail) {
@@ -2039,6 +2056,13 @@ void event_COPD_process(agent *ag)
       (*ag).local_time_at_COPD = (*ag).local_time;
       (*ag).fev1_baseline = (*ag).fev1;
 
+      // Intercept for FEv1 decline in COPD incidence cases
+      double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+      double fev1_variance_bivariate = sqrt ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
+
+      (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
+
       // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
       (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
@@ -2047,7 +2071,7 @@ void event_COPD_process(agent *ag)
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
 
-      (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      (*ag).fev1_slope=  (*ag).fev1_decline_intercept
       +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
       +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
       +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
@@ -2057,26 +2081,6 @@ void event_COPD_process(agent *ag)
       //Follow_up term is not used here because this part of code is executed once and should be time independent
 
 
-      // BiVariate section.
-/*        double temp[2];
-  rbvnorm(input.lung_function.dfev1_re_rho,temp); //rbvnorm Mohsen wrote
-  (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-                   +temp[0]*input.lung_function.dfev1_re_sds[0]
-                   +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).sex
-                   +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-                   +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).fev1
-                   +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status;
-
-  (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[5][(*ag).sex]+temp[1]*input.lung_function.dfev1_re_sds[1];
-
- */
-
-    // TODO check. Trying to implement conditional normal.
-    //TODO make it tidy
-    double mean_conditional_N=-177.9e-3+sqrt(0.000753)/sqrt(0.09711)*((*ag).fev1_baseline-(*ag).fev1_baseline_ZafarCMAJ-1421.2e-3);
-    double rho_conditional_N=0.0725;
-    double variance_conditional_N=sqrt((1-rho_conditional_N*rho_conditional_N)*0.000753);
-   // double beta_0_conditional_N=rand_norm()*sqrt(variance_conditional_N)+mean_conditional_N;
 
   (*ag).lung_function_LPT=(*ag).local_time;
 
@@ -2173,6 +2177,8 @@ void event_exacerbation_process(agent *ag)
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   output_ex.n_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
   output_ex.n_exac_by_ctime_severity[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+
 #endif
 }
 
@@ -2221,17 +2227,29 @@ void event_exacerbation_end_process(agent *ag)
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_DEATH////////////////////////////////////;
 double event_exacerbation_death_tte(agent *ag)
 {
-  if((*ag).exac_status==0) return(HUGE_VAL);
+  if((*ag).exac_status == 0) return(HUGE_VAL);
 
   double tte=HUGE_VAL;
 
-  double p=input.exacerbation.p_death[(*ag).exac_status-1];
+//  double p=input.exacerbation.logit_logit_p_death_by_sex[(*ag).exac_status-1];
 
-  if(rand_unif()<p)
+
+  double p = 0;
+  if ((*ag).exac_status > 2) {
+    p = exp(input.exacerbation.logit_p_death_by_sex[0][(*ag).sex]
+            + input.exacerbation.logit_p_death_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation)
+            + input.exacerbation.logit_p_death_by_sex[2][(*ag).sex]*((*ag).exac_status==4)
+            + input.exacerbation.logit_p_death_by_sex[3][(*ag).sex]*0 //TODO
+              );
+  }
+
+  p = p / (1 + p);
+
+  if (rand_unif() < p)
   {
     tte=1/input.exacerbation.exac_end_rate[(*ag).exac_status-1];
     //All death occur at the end of expected time of exacerbation (for now);
-    (*ag).local_time+=tte;
+    (*ag).local_time += tte;
     return(0);
   }
   else
@@ -2248,6 +2266,9 @@ double event_exacerbation_death_tte(agent *ag)
 void event_exacerbation_death_process(agent *ag)
 {
   (*ag).alive=false;
+  #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
+    output_ex.n_exac_death_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+  #endif
   //Rprintf("Death by chocolate!\n");
 }
 
