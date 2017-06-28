@@ -444,11 +444,11 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   if (Cget_output()$n_death > 0) {
 
-    difference <- (Cget_output_ex()$n_death_by_age_sex[41:111, ]/Cget_output_ex()$sum_time_by_age_sex[41:111, ]) - model_input$agent$p_bgd_by_sex[41:111,
+    difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$agent$p_bgd_by_sex[41:91,
                                                                                                                                                   ]
-    plot(40:110, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference")
+    plot(40:90, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference", ylim = c(-.1, .1))
     legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
-    lines(40:110, difference[, 2], type = "l", col = "red")
+    lines(40:90, difference[, 2], type = "l", col = "red")
     title(cex.main = 0.5, "Difference between simulated and expected (life table) mortality, by sex and age")
 
     return(list(difference = difference))
