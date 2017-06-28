@@ -515,7 +515,7 @@ struct input
     double rate_severity_intercept_rho;
     //double p_moderate_severe[2]; //probability of moderate or severe, compared with mild, exacerbation
     double exac_end_rate[4]; //rate of exiting exacerbation per type;
-    double p_death_by_sex[5][2]; //rate of mortality per type;
+    double logit_p_death_by_sex[4][2]; //rate of mortality per type;
   } exacerbation;
 
 
@@ -644,7 +644,7 @@ List Cget_inputs()
       Rcpp::Named("rate_severity_intercept_rho")=input.exacerbation.rate_severity_intercept_rho,
       //Rcpp::Named("p_moderate_severe")=AS_VECTOR_DOUBLE(input.exacerbation.p_moderate_severe),
       Rcpp::Named("exac_end_rate")=AS_VECTOR_DOUBLE(input.exacerbation.exac_end_rate),
-      Rcpp::Named("p_death_by_sex")=AS_MATRIX_DOUBLE(input.exacerbation.p_death_by_sex)
+      Rcpp::Named("logit_p_death_by_sex")=AS_MATRIX_DOUBLE(input.exacerbation.logit_p_death_by_sex)
       ),
     Rcpp::Named("outpatient")=Rcpp::List::create(
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
@@ -742,7 +742,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="exacerbation$rate_severity_intercept_rho") {input.exacerbation.rate_severity_intercept_rho=value[0]; return(0);}
   //if(name=="exacerbation$p_moderate_severe") READ_R_VECTOR(value,input.exacerbation.p_moderate_severe);
   if(name=="exacerbation$exac_end_rate") READ_R_VECTOR(value,input.exacerbation.exac_end_rate);
-  if(name=="exacerbation$p_death_by_sex") READ_R_MATRIX(value,input.exacerbation.p_death_by_sex);
+  if(name=="exacerbation$logit_p_death_by_sex") READ_R_MATRIX(value,input.exacerbation.logit_p_death_by_sex);
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
@@ -1372,6 +1372,7 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
   int n_exac_by_ctime_age[100][111];
+  int n_severep_exac_by_ctime_age[100][111];
   int n_exac_death_by_ctime_age [100][111];
   int n_exac_by_ctime_severity[100][4];
 #endif
@@ -1458,6 +1459,7 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   out["n_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_age,input.global_parameters.time_horizon);
+  out["n_severep_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex. n_severep_exac_by_ctime_age,input.global_parameters.time_horizon);
   out["n_exac_death_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_ctime_age,input.global_parameters.time_horizon);
   out["n_exac_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity,input.global_parameters.time_horizon);
 #endif
@@ -2175,6 +2177,8 @@ void event_exacerbation_process(agent *ag)
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   output_ex.n_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
   output_ex.n_exac_by_ctime_severity[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+
 #endif
 }
 
@@ -2223,24 +2227,20 @@ void event_exacerbation_end_process(agent *ag)
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_DEATH////////////////////////////////////;
 double event_exacerbation_death_tte(agent *ag)
 {
-  if((*ag).exac_status==0) return(HUGE_VAL);
+  if((*ag).exac_status == 0) return(HUGE_VAL);
 
   double tte=HUGE_VAL;
 
-//  double p=input.exacerbation.p_death_by_sex[(*ag).exac_status-1];
-  double exac_effect = 0;
-  if ((*ag).exac_status >= 2) {
-    exac_effect = input.exacerbation.p_death_by_sex[2][(*ag).sex];
-    if ((*ag).exac_status >= 3) {
-      exac_effect *= input.exacerbation.p_death_by_sex[3][(*ag).sex];
-    }
-  }
+//  double p=input.exacerbation.logit_logit_p_death_by_sex[(*ag).exac_status-1];
+
 
   double p = 0;
   if ((*ag).exac_status > 2) {
-    p = exp(input.exacerbation.p_death_by_sex[0][(*ag).sex]
-                           + exac_effect
-                           + input.exacerbation.p_death_by_sex[1][(*ag).sex]*(*ag).local_time);
+    p = exp(input.exacerbation.logit_p_death_by_sex[0][(*ag).sex]
+            + input.exacerbation.logit_p_death_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation)
+            + input.exacerbation.logit_p_death_by_sex[2][(*ag).sex]*((*ag).exac_status==4)
+            + input.exacerbation.logit_p_death_by_sex[3][(*ag).sex]*0 //TODO
+              );
   }
 
   p = p / (1 + p);
