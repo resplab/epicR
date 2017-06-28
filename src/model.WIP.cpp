@@ -515,7 +515,7 @@ struct input
     double rate_severity_intercept_rho;
     //double p_moderate_severe[2]; //probability of moderate or severe, compared with mild, exacerbation
     double exac_end_rate[4]; //rate of exiting exacerbation per type;
-    double p_death[4]; //rate of mortality per type;
+    double p_death_by_sex[5][2]; //rate of mortality per type;
   } exacerbation;
 
 
@@ -644,7 +644,7 @@ List Cget_inputs()
       Rcpp::Named("rate_severity_intercept_rho")=input.exacerbation.rate_severity_intercept_rho,
       //Rcpp::Named("p_moderate_severe")=AS_VECTOR_DOUBLE(input.exacerbation.p_moderate_severe),
       Rcpp::Named("exac_end_rate")=AS_VECTOR_DOUBLE(input.exacerbation.exac_end_rate),
-      Rcpp::Named("p_death")=AS_VECTOR_DOUBLE(input.exacerbation.p_death)
+      Rcpp::Named("p_death_by_sex")=AS_MATRIX_DOUBLE(input.exacerbation.p_death_by_sex)
       ),
     Rcpp::Named("outpatient")=Rcpp::List::create(
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
@@ -742,7 +742,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="exacerbation$rate_severity_intercept_rho") {input.exacerbation.rate_severity_intercept_rho=value[0]; return(0);}
   //if(name=="exacerbation$p_moderate_severe") READ_R_VECTOR(value,input.exacerbation.p_moderate_severe);
   if(name=="exacerbation$exac_end_rate") READ_R_VECTOR(value,input.exacerbation.exac_end_rate);
-  if(name=="exacerbation$p_death") READ_R_VECTOR(value,input.exacerbation.p_death);
+  if(name=="exacerbation$p_death_by_sex") READ_R_MATRIX(value,input.exacerbation.p_death_by_sex);
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
@@ -2225,13 +2225,29 @@ double event_exacerbation_death_tte(agent *ag)
 
   double tte=HUGE_VAL;
 
-  double p=input.exacerbation.p_death[(*ag).exac_status-1];
+//  double p=input.exacerbation.p_death_by_sex[(*ag).exac_status-1];
+  double exac_effect = 0;
+  if ((*ag).exac_status >= 2) {
+    exac_effect = input.exacerbation.p_death_by_sex[1][(*ag).sex];
+    if ((*ag).exac_status >= 3) {
+      exac_effect *= input.exacerbation.p_death_by_sex[2][(*ag).sex];
+    }
+  }
 
-  if(rand_unif()<p)
+  double p = 0;
+  if ((*ag).exac_status > 2) {
+    p = exp(input.exacerbation.p_death_by_sex[0][(*ag).sex]
+                           + exac_effect
+                           + input.exacerbation.p_death_by_sex[3][(*ag).sex]*(*ag).local_time);
+  }
+
+  p = p / (1 + p);
+
+  if (rand_unif() < p)
   {
     tte=1/input.exacerbation.exac_end_rate[(*ag).exac_status-1];
     //All death occur at the end of expected time of exacerbation (for now);
-    (*ag).local_time+=tte;
+    (*ag).local_time += tte;
     return(0);
   }
   else

@@ -46,7 +46,7 @@ sanity_check <- function() {
 
   cat("test 4: zero mortality (both bg and exac)\n")
   input <- model_input
-  input$exacerbation$p_death <- input$exacerbation$p_death * 0
+  input$exacerbation$p_death_by_sex <- input$exacerbation$p_death_by_sex * 0
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(input = input)
@@ -91,7 +91,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   petoc()
 
   if (remove_COPD) {
-    input$exacerbation$p_death <- input$exacerbation$p_death * 0
+    input$exacerbation$p_death_by_sex <- input$exacerbation$p_death_by_sex * 0
     input$manual$PROP_COPD_DEATH_BY_SEX_AGE <- input$manual$PROP_COPD_DEATH_BY_SEX_AGE * 0
   }
 
@@ -169,7 +169,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
-    input$exacerbation$p_death <- input$exacerbation$p_death * 0
+    input$exacerbation$p_death_by_sex <- input$exacerbation$p_death_by_sex * 0
   }
 
   if (!is.null(intercept_k))
@@ -195,7 +195,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("running the model\n")
 
   # remove COPD stuff;
-  input$exacerbation$p_death <- input$exacerbation$p_death * 0
+  input$exacerbation$p_death_by_sex <- input$exacerbation$p_death_by_sex * 0
   run(input = input)
   dataS <- Cget_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
@@ -429,7 +429,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * manual
 
-  input$exacerbation$p_death <- input$exacerbation$p_death * exacerbation
+  input$exacerbation$p_death_by_sex <- input$exacerbation$p_death_by_sex * exacerbation
 
   if (comorbidity == 0) {
     input$comorbidity$p_mi_death <- 0

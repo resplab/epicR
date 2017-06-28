@@ -295,9 +295,11 @@ init_input <- function() {
   input$exacerbation$exac_end_rate <- t(as.matrix(c(mild = 365/5, moderate = 365/5, severe = 365/5, verysevere = 365/5)))
   input_ref$exacerbation$exac_end_rate <- ""
 
-  input_help$exacerbation$p_death <- "Probability of death due to exacerbation according to its severity level"
-  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
-  input_ref$exacerbation$p_death <- "Aaron SD. Management and prevention of exacerbations of COPD. bmj. 2014 Sep 22;349:g5237., doi: 10.1136/bmj.g5237"
+  input_help$exacerbation$p_death_by_sex <- "Probability of death due to exacerbation according to its severity level"
+#  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
+  input$exacerbation$p_death_by_sex <- cbind(male = c(intercept = 0, moderate_to_mild = 0, severe_to_moderate = 0, age = log(1.05), n_hist_severe_exac = 0),
+                                      female = c(intercept = 0, moderate_to_mild = 0, severe_to_moderate = 0, age = log(1.05), n_hist_severe_exac = 0))
+  input_ref$exacerbation$p_death_by_sex <- "Aaron SD. Management and prevention of exacerbations of COPD. bmj. 2014 Sep 22;349:g5237., doi: 10.1136/bmj.g5237"
 
   # Outpatient;
   input$outpatient$rate_doctor_visit <- 0.1
