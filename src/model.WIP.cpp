@@ -1372,6 +1372,7 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
   int n_exac_by_ctime_age[100][111];
+  int n_exac_death_by_ctime_age [100][111];
   int n_exac_by_ctime_severity[100][4];
 #endif
 
@@ -1457,6 +1458,7 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   out["n_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_age,input.global_parameters.time_horizon);
+  out["n_exac_death_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_ctime_age,input.global_parameters.time_horizon);
   out["n_exac_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity,input.global_parameters.time_horizon);
 #endif
 
@@ -2264,6 +2266,9 @@ double event_exacerbation_death_tte(agent *ag)
 void event_exacerbation_death_process(agent *ag)
 {
   (*ag).alive=false;
+  #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
+    output_ex.n_exac_death_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+  #endif
   //Rprintf("Death by chocolate!\n");
 }
 
