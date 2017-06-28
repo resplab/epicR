@@ -821,11 +821,13 @@ struct agent
   double smoking_status_LPT;
 
   double fev1;
-  double fev1_baseline;
+  double fev1_baseline;  //Derived from CanCOLD
   double fev1_baseline_ZafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double fev1_tail;
+  double fev1_decline_intercept;
+
   double lung_function_LPT;
   int gold;
   int local_time_at_COPD;
@@ -929,7 +931,7 @@ List get_agent(agent *ag)
 
 
       );
-
+    out["fev1_decline_intercept"] = (*ag).fev1_decline_intercept;
     out["weight_baseline"] = (*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
     out["followup_time"] = (*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"] = (*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
@@ -1011,7 +1013,8 @@ agent *create_agent(agent *ag,int id)
   (*ag).local_time=0;
   (*ag).age_baseline = 0; //resetting the value for new agent
   (*ag).fev1_baseline = 0; //resetting the value for new agent
-  (*ag).fev1_baseline_ZafarCMAJ = 0;
+  (*ag).fev1_decline_intercept = 0;
+  (*ag).fev1_baseline_ZafarCMAJ = 0; // Only used for calculating intercept of FEV1 rate of decline
   (*ag).weight_baseline = 0; //resetting the value for new agent
   (*ag).followup_time = 0; //resetting the value for new agent
   (*ag).local_time_at_COPD = 0; //resetting the value for new agent
@@ -1151,6 +1154,16 @@ agent *create_agent(agent *ag,int id)
     (*ag).followup_time = 0 ;
     (*ag).local_time_at_COPD = (*ag).local_time;
     (*ag).fev1_baseline = (*ag).fev1;
+
+    // Intercept for FEV1 decline in prevalent cases
+    double fev1_sigma2 = sqrt(0.000753);
+    double fev1_sigma1 = sqrt(0.09711);
+    double fev1_rho    = 0.0725;
+    double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+                               + (fev1_sigma2/fev1_sigma1*fev1_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+    double fev1_variance_bivariate = sqrt ((1-fev1_rho*fev1_rho)*fev1_sigma2*fev1_sigma2);
+
+    (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
 
     // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
     (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
@@ -1573,13 +1586,15 @@ void lung_function_LPT(agent *ag)
   }
   else  //apply LHS equations
   {
-    (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEC1 decline. To be checked.
+    (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD; //TODO Added for FEV1 decline. To be checked.
 
     //Applying FEV1 decline
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
 //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-    (*ag).fev1 = (*ag).fev1_baseline + (*ag).fev1_slope*(*ag).followup_time + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
+    (*ag).fev1 = (*ag).fev1_baseline
+               + (*ag).fev1_slope*(*ag).followup_time
+               + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
     //Adjusting FEV1 tail
     if ((*ag).fev1 < (*ag).fev1_tail) {
@@ -2043,6 +2058,15 @@ void event_COPD_process(agent *ag)
       (*ag).local_time_at_COPD = (*ag).local_time;
       (*ag).fev1_baseline = (*ag).fev1;
 
+      // Intercept for FEv1 decline in COPD incidence cases
+      double fev1_sigma2 = sqrt(0.000753);
+      double fev1_sigma1 = sqrt(0.09711);
+      double fev1_rho    = 0.0725;
+      double fev1_mean_bivariate =  input.lung_function.fev1_betas_by_sex[0][(*ag).sex] +
+        (fev1_sigma2/fev1_sigma1*fev1_rho)*  ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+      double fev1_variance_bivariate = sqrt ((1-fev1_rho*fev1_rho)*fev1_sigma2*fev1_sigma2);
+      (*ag).fev1_decline_intercept = rand_norm()*fev1_variance_bivariate + fev1_mean_bivariate;
+
       // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
       (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
@@ -2051,7 +2075,7 @@ void event_COPD_process(agent *ag)
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
 
-      (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      (*ag).fev1_slope=  (*ag).fev1_decline_intercept
       +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
       +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
       +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
@@ -2061,26 +2085,6 @@ void event_COPD_process(agent *ag)
       //Follow_up term is not used here because this part of code is executed once and should be time independent
 
 
-      // BiVariate section.
-/*        double temp[2];
-  rbvnorm(input.lung_function.dfev1_re_rho,temp); //rbvnorm Mohsen wrote
-  (*ag).fev1_slope=input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-                   +temp[0]*input.lung_function.dfev1_re_sds[0]
-                   +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).sex
-                   +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
-                   +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).fev1
-                   +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status;
-
-  (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[5][(*ag).sex]+temp[1]*input.lung_function.dfev1_re_sds[1];
-
- */
-
-    // TODO check. Trying to implement conditional normal.
-    //TODO make it tidy
-    double mean_conditional_N=-177.9e-3+sqrt(0.000753)/sqrt(0.09711)*((*ag).fev1_baseline-(*ag).fev1_baseline_ZafarCMAJ-1421.2e-3);
-    double rho_conditional_N=0.0725;
-    double variance_conditional_N=sqrt((1-rho_conditional_N*rho_conditional_N)*0.000753);
-   // double beta_0_conditional_N=rand_norm()*sqrt(variance_conditional_N)+mean_conditional_N;
 
   (*ag).lung_function_LPT=(*ag).local_time;
 
