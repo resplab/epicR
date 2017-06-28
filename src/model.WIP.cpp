@@ -2228,9 +2228,9 @@ double event_exacerbation_death_tte(agent *ag)
 //  double p=input.exacerbation.p_death_by_sex[(*ag).exac_status-1];
   double exac_effect = 0;
   if ((*ag).exac_status >= 2) {
-    exac_effect = input.exacerbation.p_death_by_sex[1][(*ag).sex];
+    exac_effect = input.exacerbation.p_death_by_sex[2][(*ag).sex];
     if ((*ag).exac_status >= 3) {
-      exac_effect *= input.exacerbation.p_death_by_sex[2][(*ag).sex];
+      exac_effect *= input.exacerbation.p_death_by_sex[3][(*ag).sex];
     }
   }
 
@@ -2238,7 +2238,7 @@ double event_exacerbation_death_tte(agent *ag)
   if ((*ag).exac_status > 2) {
     p = exp(input.exacerbation.p_death_by_sex[0][(*ag).sex]
                            + exac_effect
-                           + input.exacerbation.p_death_by_sex[3][(*ag).sex]*(*ag).local_time);
+                           + input.exacerbation.p_death_by_sex[1][(*ag).sex]*(*ag).local_time);
   }
 
   p = p / (1 + p);
