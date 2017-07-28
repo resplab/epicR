@@ -443,7 +443,15 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
 
+
   if (Cget_output()$n_death > 0) {
+
+    ratio<-(Cget_output_ex()$n_death_by_age_sex[41:111,]/Cget_output_ex()$sum_time_by_age_sex[41:111,])/model_input$agent$p_bgd_by_sex[41:111,]
+    plot(40:110,ratio[,1],type='l',col='blue',xlab="age",ylab="Ratio", ylim = c(0, 4))
+    legend("topright",c("male","female"),lty=c(1,1),col=c("blue","red"))
+    lines(40:110,ratio[,2],type='l',col='red')
+    title(cex.main=0.5,"Ratio of simulated to expected (life table) mortality, by sex and age")
+
 
     difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$agent$p_bgd_by_sex[41:91,
                                                                                                                                                   ]
