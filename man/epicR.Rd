@@ -10,5 +10,5 @@ Evaluation Platform in COPD (EPIC) R Package
 }
 \details{
 See the README on
- \href{https://github.com/aminadibi/epicR#readme}{GitHub}
+\href{https://github.com/aminadibi/epicR#readme}{GitHub}
 }
