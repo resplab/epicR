@@ -2146,12 +2146,12 @@ void event_exacerbation_process(agent *ag)
   l1=temp+input.exacerbation.logit_severity_betas[0];
   l2=temp+input.exacerbation.logit_severity_betas[1];
   l3=temp+input.exacerbation.logit_severity_betas[2];
-  double p1,p2,p3,p4;
+  double p1,p2,p3;
 
   p1=1/(1+exp(-l1));
   p2=1/(1+exp(-l2))-1/(1+exp(-l1));
   p3=1/(1+exp(-l3))-1/(1+exp(-l2));
-  p4=1-p1-p2-p3;
+
 
   double r=rand_unif();
 
