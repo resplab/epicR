@@ -523,7 +523,7 @@ struct input
   struct
   {
     double bg_cost_by_stage[5];
-    double exac_dcost[3];
+    double exac_dcost[4];
     double doctor_visit_by_type[2];
 
     double mi_dcost;
@@ -535,7 +535,7 @@ struct input
   struct
   {
     double bg_util_by_stage[5];
-    double exac_dutil[3];
+    double exac_dutil[4][4];
 
     double mi_dutil;
     double mi_post_dutil;
@@ -668,7 +668,7 @@ List Cget_inputs()
       ),
     Rcpp::Named("utility")=Rcpp::List::create(
       Rcpp::Named("bg_util_by_stage")=AS_VECTOR_DOUBLE(input.utility.bg_util_by_stage),
-      Rcpp::Named("exac_dutil")=AS_VECTOR_DOUBLE(input.utility.exac_dutil)
+      Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil)
       )
       ,
     Rcpp::Named("medication")=Rcpp::List::create(
@@ -758,7 +758,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="cost$doctor_visit_by_type") READ_R_VECTOR(value,input.cost.doctor_visit_by_type);
 
   if(name=="utility$bg_util_by_stage") READ_R_VECTOR(value,input.utility.bg_util_by_stage);
-  if(name=="utility$exac_dutil") READ_R_VECTOR(value,input.utility.exac_dutil);
+  if(name=="utility$exac_dutil") READ_R_MATRIX(value,input.utility.exac_dutil);
 
   if(name=="comorbidity$logit_p_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_mi_betas_by_sex);
   if(name=="comorbidity$ln_h_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_mi_betas_by_sex);
@@ -1729,7 +1729,7 @@ agent *event_end_process(agent *ag)
   {
     //NOTE: exacerbation timing is an LPT process and is treated separately.
     (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-    (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+    (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
   }
 
   ++output.n_agents;
@@ -2209,7 +2209,7 @@ double event_exacerbation_end_tte(agent *ag)
 void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
-  (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+  (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
   (*ag).exac_status=0;
 }
 

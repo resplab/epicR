@@ -351,16 +351,24 @@ init_input <- function() {
 
 
   ##cost and utility
-  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=36,II=215,III=524,IV=524)))
+  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=144, II=430, III=628, IV=628)))
   input_help$cost$bg_cost_by_stage="Annual direct costs for non-COPD, and COPD by GOLD grades"
-  input$cost$exac_dcost=t(as.matrix(c(mild=160,moderate=1500,severe=6500)))
+#  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
+#  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
+  input$cost$exac_dcost=t(as.matrix(c(mild=161,moderate=161,severe=6501, verysevere=6501)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
-  input$utility$bg_util_by_stage=t(as.matrix(c(N=1, I=0.81,II=0.72,III=0.67,IV=0.67)))
+  input$utility$bg_util_by_stage=t(as.matrix(c(N=0.85, I=0.81,II=0.72,III=0.67,IV=0.67)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
-  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07,moderate=-0.37/2,severe=-0.3)))
+#  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
+  input$utility$exac_dutil=cbind(
+    gold1=c(mild=-0.00246, moderate=-0.00246, severe=-0.00797, verysevere=-0.00797),
+    gold2=c(mild=-0.001698, moderate=-0.001698, severe=-0.00747, verysevere=-0.00747),
+    gold3=c(mild=-0.00534, moderate=-0.00534, severe=-0.00717, verysevere=-0.00717),
+    gold4=c(mild=-0.00534, moderate=-0.00534, severe=-0.00717, verysevere=-0.00717)
+  );
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
 
   input$manual$MORT_COEFF<-1
