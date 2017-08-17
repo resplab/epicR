@@ -230,7 +230,7 @@ init_input <- function() {
                                                                 height = -1.7603, height_sq = 1.8931, current_smoker = -0.07722, age_height_sq = -0.0082, followup_time = 0),
                                                        female = c(intercept = 1.4212, baseline_age = -0.00519, baseline_weight_kg = -0.00011,
                                                                 height = -1.7603, height_sq = 1.8931, current_smoker = -0.07722, age_height_sq = -0.0082, followup_time = 0))
-  input_ref$lung_function$fev1_0_ZafarCMAJ_by_sex <- "Zafari Z, Sin DD, Postma DS, Löfdahl CG, Vonk J, Bryan S, Lam S, Tammemagi CM, Khakban R, Man SP, Tashkin D. Individualized prediction of lung-function decline in chronic obstructive pulmonary disease. Canadian Medical Association Journal. 2016 Oct 4;188(14):1004-11."
+  input_ref$lung_function$fev1_0_ZafarCMAJ_by_sex <- "Zafari Z, Sin DD, Postma DS, Lofdahl CG, Vonk J, Bryan S, Lam S, Tammemagi CM, Khakban R, Man SP, Tashkin D. Individualized prediction of lung-function decline in chronic obstructive pulmonary disease. Canadian Medical Association Journal. 2016 Oct 4;188(14):1004-11."
 
 
   # NHANES:
