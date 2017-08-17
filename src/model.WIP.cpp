@@ -2151,7 +2151,7 @@ void event_exacerbation_process(agent *ag)
   p1=1/(1+exp(-l1));
   p2=1/(1+exp(-l2))-1/(1+exp(-l1));
   p3=1/(1+exp(-l3))-1/(1+exp(-l2));
-
+// no need for p4, as its value is determined as 1-(p1+p2+p3)
 
   double r=rand_unif();
 
