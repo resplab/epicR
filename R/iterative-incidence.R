@@ -1,6 +1,6 @@
 #' Solves stochastically for COPD incidence rate equation.
-#' @param n_Iterations number of iterations for the numberical solution
-#' @param n_Patients number of simulated agents.
+#' @param nIterations number of iterations for the numberical solution
+#' @param nPatients number of simulated agents.
 #' @param time_horizon in years
 #' @return regression co-efficients as files
 #' @export

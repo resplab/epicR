@@ -9,7 +9,7 @@ validate_population(remove_COPD = 0, incidence_k = 1)
 \arguments{
 \item{remove_COPD}{0 or 1, indicating whether COPD-caused mortality should be removed}
 
-\item{incidence_K}{a number (default=1) by which the incidence rate of population will be multiplied.}
+\item{incidence_k}{a number (default=1) by which the incidence rate of population will be multiplied.}
 }
 \value{
 validation test results

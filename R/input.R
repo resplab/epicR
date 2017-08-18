@@ -58,7 +58,6 @@ errors<-c(
 
 # End of declarations
 
-#' @export
 init_input <- function() {
   input <- list()
   input_help <- list()

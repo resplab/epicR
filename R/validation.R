@@ -65,7 +65,7 @@ sanity_check <- function() {
 
 
 #' Returns results of validation tests for population module
-#' @param incidence_K a number (default=1) by which the incidence rate of population will be multiplied.
+#' @param incidence_k a number (default=1) by which the incidence rate of population will be multiplied.
 #' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
 #' @return validation test results
 #' @export
@@ -157,7 +157,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
 
 
 #' Returns results of validation tests for smoking module.
-#' @param incidence_K a number
+#' @param incidence_k a number
 #' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
 #' @export
@@ -330,7 +330,7 @@ sanity_COPD <- function() {
 
 
 #' Returns results of validation tests for COPD
-#' @param incidence_COPD_K a number (default=1) by which the incidence rate of COPD will be multiplied.
+#' @param incidence_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
 #' @return validation test results
 #' @export
 validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplied by K

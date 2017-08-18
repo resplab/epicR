@@ -7,11 +7,11 @@
 iterate_COPD_inc(nIterations = 1000, nPatients = 10000, time_horizon = 20)
 }
 \arguments{
+\item{nIterations}{number of iterations for the numberical solution}
+
+\item{nPatients}{number of simulated agents.}
+
 \item{time_horizon}{in years}
-
-\item{n_Iterations}{number of iterations for the numberical solution}
-
-\item{n_Patients}{number of simulated agents.}
 }
 \value{
 regression co-efficients as files

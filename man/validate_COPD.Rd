@@ -7,7 +7,7 @@
 validate_COPD(incident_COPD_k = 1)
 }
 \arguments{
-\item{incidence_COPD_K}{a number (default=1) by which the incidence rate of COPD will be multiplied.}
+\item{incidence_COPD_k}{a number (default=1) by which the incidence rate of COPD will be multiplied.}
 }
 \value{
 validation test results
