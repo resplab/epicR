@@ -282,9 +282,10 @@ sanity_COPD <- function() {
 
   cat("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
   petoc()
-  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0 - 100
-  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0 - 100
-  run(input = model_input$values)
+  input <- model_input$values
+  input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
+  input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
+  run(input = input)
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
@@ -295,9 +296,10 @@ sanity_COPD <- function() {
   cat("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
   petoc()
   init_input()
-  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0
-  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0 - 100
-  run(input = model_input$values)
+  input <- model_input$values
+  input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0
+  input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
+  run(input = input)
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
@@ -305,13 +307,13 @@ sanity_COPD <- function() {
   cat("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
-  cat("Now I am going to switch off prevalence and create COPD patients only through incidence (set at 1 per 10 PYs")
+  cat("Now I am going to switch off prevalence and create COPD patients only through incidence\n")
   petoc()
   init_input()
-  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0 - 100
-  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0
-  model_input$values$COPD$ln_h_COPD_betas_by_sex[1, ] <- log(1/10)
-  run(input = model_input$values)
+  input <- model_input$values
+  input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
+
+  run(input = input)
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
