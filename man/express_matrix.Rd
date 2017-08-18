@@ -6,6 +6,9 @@
 \usage{
 express_matrix(mtx)
 }
+\arguments{
+\item{mtx}{a matrix}
+}
 \description{
 Express matrix.
 }

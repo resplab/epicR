@@ -69,6 +69,8 @@ update_run_env_setting <- function(setting_var, value) {
 
 
 #' Get list elements
+#' @param ls ls
+#' @param running_name running_name
 #' @export
 get_list_elements <- function(ls, running_name = "") {
   out <- NULL
@@ -105,6 +107,7 @@ set_Cmodel_inputs <- function(ls) {
 }
 
 #' Express matrix.
+#' @param mtx a matrix
 #' @export
 express_matrix <- function(mtx) {
   nr <- dim(mtx)[1]

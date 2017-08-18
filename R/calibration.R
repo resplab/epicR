@@ -1,7 +1,9 @@
 calib_params <- list(COPD = list(prevalence = 0.193))
 
 
-
+#' Calibrates explicit mortality
+#' @param n_sim number of agents
+#' @return difference in mortality rates and life table
 #' @export
 calibrate_explicit_mortality <- function(n_sim = 10^8) {
   cat("Difference between life table and observed mortality\n")
@@ -41,7 +43,9 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
 }
 
 
-
+#' Calibrates MI incidence.
+#' @param simple true or false.
+#' @return TODO not implemented yet.
 #' @export
 calibrate_mi_incidence <- function(simple = F) {
   settings <- default_settings
@@ -85,7 +89,8 @@ calibrate_mi_incidence <- function(simple = F) {
 
 
 
-
+#' Calibrates smoking
+#' @return TODO
 #' @export
 calibrate_smoking <- function() {
   cat("I will try to estimate the value of input parameters with simulated data")

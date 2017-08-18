@@ -6,6 +6,11 @@
 \usage{
 get_list_elements(ls, running_name = "")
 }
+\arguments{
+\item{ls}{ls}
+
+\item{running_name}{running_name}
+}
 \description{
 Get list elements
 }

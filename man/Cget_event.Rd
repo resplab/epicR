@@ -6,6 +6,9 @@
 \usage{
 Cget_event(i)
 }
+\arguments{
+\item{i}{number of event}
+}
 \value{
 events
 }

@@ -83,6 +83,7 @@ Cget_output_ex <- function() {
 }
 
 #' Returns the events stack.
+#' @param i number of event
 #' @return events
 #' @export
 Cget_event <- function(i) {

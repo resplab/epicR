@@ -1867,6 +1867,7 @@ int push_event(agent *ag)
 
 
 //' Returns the events stack.
+//' @param i number of event
 //' @return events
 //' @export
 // [[Rcpp::export]]
