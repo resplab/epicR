@@ -1,4 +1,8 @@
-
+#' Solves stochastically for COPD incidence rate equation.
+#' @param n_Iterations number of iterations for the numberical solution
+#' @param n_Patients number of simulated agents.
+#' @param time_horizon in years
+#' @return regression co-efficients as files
 #' @export
 iterate_COPD_inc<-function(nIterations=1000,
                            nPatients=10000,

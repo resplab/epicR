@@ -232,7 +232,10 @@ struct settings
 } settings;
 
 
-
+//' Sets model settings.
+//' @param name a name
+//' @param value a value
+//' @return 0 if successful.
 //' @export
 // [[Rcpp::export]]
 int Cset_settings_var(std::string name,NumericVector value)
@@ -259,7 +262,8 @@ int Cset_settings_var(std::string name,NumericVector value)
   return(ERR_INCORRECT_SETTING_VARIABLE);
 }
 
-
+//' Returns current settings.
+//' @return current settings.
 //' @export
 // [[Rcpp::export]]
 List Cget_settings()
@@ -295,6 +299,8 @@ void reset_runtime_stats()
     x[i]=0;
 }
 
+//' Returns run time stats.
+//' @return agent size as well as memory and random variable fill stats.
 //' @export
 // [[Rcpp::export]]
 List Cget_runtime_stats()
@@ -581,7 +587,8 @@ struct input
 
 
 
-
+//' Returns inputs
+//' @return all inputs
 //' @export
 // [[Rcpp::export]]
 List Cget_inputs()
@@ -685,7 +692,10 @@ List Cget_inputs()
 }
 
 
-
+//' Sets input variables.
+//' @param name a string
+//' @param value a number
+//' @return 0 if successful
 //' @export
 // [[Rcpp::export]]
 int Cset_input_var(std::string name,NumericVector value)
@@ -779,7 +789,10 @@ int Cset_input_var(std::string name,NumericVector value)
 
 
 
-
+//' Returns a sample output for a given year and gender.
+//' @param year a number
+//' @param sex a number, 0 for male and 1 for female
+//' @return that specific output
 //' @export
 // [[Rcpp::export]]
 double get_sample_output(int year, int sex)
@@ -972,7 +985,8 @@ List Cget_agent(long id)
  return(get_agent(id,agent_stack));
 }
 
-
+//' Returns agent Smith.
+//' @return agent smith.
 //' @export
 // [[Rcpp::export]]
 List Cget_smith()
@@ -1321,7 +1335,8 @@ void reset_output()
   output.total_qaly=0;
 }
 
-
+//' Main outputs of the current run.
+//' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 //' @export
 // [[Rcpp::export]]
 List Cget_output()
@@ -1428,7 +1443,8 @@ void reset_output_ex()
 #endif
 }
 
-
+//' Extra outputs from the model
+//' @return Extra outputs from the model.
 //' @export
 // [[Rcpp::export]]
 List Cget_output_ex()
@@ -1850,7 +1866,8 @@ int push_event(agent *ag)
 }
 
 
-
+//' Returns the events stack.
+//' @return events
 //' @export
 // [[Rcpp::export]]
 List Cget_event(int i)
@@ -1858,7 +1875,8 @@ List Cget_event(int i)
  return(get_agent(i,event_stack));
 }
 
-
+//' Returns total number of events.
+//' @return number of events
 //' @export
 // [[Rcpp::export]]
 int Cget_n_events() //number of events, not n events themselves;
@@ -1866,7 +1884,9 @@ int Cget_n_events() //number of events, not n events themselves;
  return(event_stack_pointer);
 }
 
-
+//' Returns all events of an agent.
+//' @param id agent ID.
+//' @return all events of agent \code{id}
 //' @export
 // [[Rcpp::export]]
 DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
@@ -1884,7 +1904,9 @@ DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
 }
 
 
-
+//' Returns all events of a certain type.
+//' @param event_type a number
+//' @return all events of the type \code{event_type}
 //' @export
 // [[Rcpp::export]]
 DataFrame Cget_events_by_type(int event_type) //Returns all events of a given type for an agent;
@@ -1902,7 +1924,8 @@ DataFrame Cget_events_by_type(int event_type) //Returns all events of a given ty
 }
 
 
-
+//' Returns all events.
+//' @return all events
 //' @export
 // [[Rcpp::export]]
 DataFrame Cget_all_events() //Returns all events from all agents;
@@ -1916,7 +1939,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
   return(dfout);
 }
 
-
+//' Returns a matrix containing all events
+//' @return a matrix containing all events
 //' @export
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
@@ -2637,7 +2661,7 @@ int Callocate_resources()
   return(0);
 }
 
-//' @export
+
 // [[Rcpp::export]]
 List Cget_pointers()
 {

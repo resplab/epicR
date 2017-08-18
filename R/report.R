@@ -1,3 +1,6 @@
+#' Reports COPD related stats.
+#' @param n_sim number of simulated agents.
+#' @return COPD-related stats
 #' @export
 report_COPD_by_ctime <- function(n_sim = 10^6) {
   settings <- default_settings
@@ -81,7 +84,9 @@ report_COPD_by_ctime <- function(n_sim = 10^6) {
 
 
 
-
+#' Reports exacerbation-related stats.
+#' @param n_sim number of simulated agents.
+#' @return exacerbation-related stats
 #' @export
 report_exacerbation_by_time <- function(n_sim = 10^5) {
   settings <- default_settings

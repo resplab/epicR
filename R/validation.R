@@ -13,7 +13,8 @@ petoc <- function() {
 }
 
 
-
+#' Basic tests of model functionalty. Serious issues if the test does not pass.
+#' @return tests results
 #' @export
 sanity_check <- function() {
   init_session()
@@ -63,7 +64,10 @@ sanity_check <- function() {
 
 
 
-
+#' Returns results of validation tests for population module
+#' @param incidence_K a number (default=1) by which the incidence rate of population will be multiplied.
+#' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
+#' @return validation test results
 #' @export
 validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   cat("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
@@ -152,7 +156,10 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
 
 
 
-
+#' Returns results of validation tests for smoking module.
+#' @param incidence_K a number
+#' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
+#' @return validation test results
 #' @export
 validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
@@ -245,7 +252,8 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
 
-
+#' Basic COPD test.
+#' @return validation test results
 #' @export
 sanity_COPD <- function() {
   settings <- default_settings
@@ -321,7 +329,9 @@ sanity_COPD <- function() {
 
 
 
-
+#' Returns results of validation tests for COPD
+#' @param incidence_COPD_K a number (default=1) by which the incidence rate of COPD will be multiplied.
+#' @return validation test results
 #' @export
 validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplied by K
 {
@@ -407,7 +417,14 @@ validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplie
 
 
 
-
+#' Returns results of validation tests for mortality rate
+#' @param n_sim number of simulated agents
+#' @param bgd a number
+#' @param bgd_h a number
+#' @param manual a number
+#' @param exacerbation a number
+#' @param comorbidity a number
+#' @return validation test results
 #' @export
 validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1, comorbidity = 1) {
   cat("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
@@ -468,7 +485,9 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
 
 
-
+#' Returns results of validation tests for comorbidities
+#' @param n_sim number of agents
+#' @return validation test results
 #' @export
 validate_comorbidity <- function(n_sim = 1e+05) {
   cat("Hello from EPIC! I am going to validate comorbidities for ya\n")
@@ -531,7 +550,8 @@ validate_comorbidity <- function(n_sim = 1e+05) {
 
 
 
-
+#' Returns results of validation tests for lung function
+#' @return validation test results
 #' @export
 validate_lung_function <- function() {
   cat("This function examines FEV1 values\n")
