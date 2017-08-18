@@ -19,7 +19,7 @@ sanity_check <- function() {
   init_session()
 
   cat("test 1: zero all costs\n")
-  input <- model_input
+  input <- model_input$values
   for (el in get_list_elements(input$cost)) input$cost[[el]] <- input$cost[[el]] * 0
   res <- run(1, input = input)
   if (Cget_output()$total_cost != 0)
@@ -27,7 +27,7 @@ sanity_check <- function() {
 
 
   cat("test 2: zero all utilities\n")
-  input <- model_input
+  input <- model_input$values
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0
   res <- run(input = input)
   if (Cget_output()$total_qaly != 0)
@@ -35,7 +35,7 @@ sanity_check <- function() {
 
 
   cat("test 3: one all utilities ad get one QALY without discount\n")
-  input <- model_input
+  input <- model_input$values
   input$global_parameters$discount_qaly <- 0
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0 + 1
   input$utility$exac_dutil = input$utility$exac_dutil * 0
@@ -45,7 +45,7 @@ sanity_check <- function() {
 
 
   cat("test 4: zero mortality (both bg and exac)\n")
-  input <- model_input
+  input <- model_input$values
   input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
@@ -75,7 +75,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   settings$n_base_agents <- 1e+06
   settings$event_stack_size <- 1
   init_session(settings = settings)
-  input <- model_input  #We can work with local copy more conveniently and submit it to the Run function
+  input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   petoc()
@@ -106,7 +106,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   }
 
   n_y1_agents <- sum(Cget_output_ex()$n_alive_by_ctime_sex[1, ])
-  lines(x[1:model_input$global_parameters$time_horizon, 1], rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/n_y1_agents, col = "red")
+  lines(x[1:model_input$values$global_parameters$time_horizon, 1], rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/n_y1_agents, col = "red")
   legend("topright", c("Predicted", "Simulated"), lty = c(1, 1), col = c("black", "red"))
 
   cat("And the green one is the observed (simulated) growth\n")
@@ -114,7 +114,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(Cget_output_ex()$n_alive_by_ctime_age[1, ]) -
                       input$global_parameters$age0)
 
-  for (year in 0:model_input$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +
+  for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +
                                                                                                                                 1, -(1:input$global_parameters$age0)]
 
 
@@ -165,7 +165,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   settings$event_stack_size <- settings$n_base_agents * 2 + 10
 
   init_session(settings = settings)
-  input <- model_input
+  input <- model_input$values
   input$agent$l_inc_betas[1] <- -1000  #No incident cases for now
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
@@ -262,20 +262,20 @@ sanity_COPD <- function() {
 
   cat("COPD incidence and prevalenceparameters are as follows\n")
 
-  cat("model_input$COPD$logit_p_COPD_betas_by_sex:\n")
-  print(model_input$COPD$logit_p_COPD_betas_by_sex)
+  cat("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
+  print(model_input$values$COPD$logit_p_COPD_betas_by_sex)
   petoc()
-  cat("model_input$COPD$p_prevalent_COPD_stage:\n")
-  print(model_input$COPD$p_prevalent_COPD_stage)
+  cat("model_input$values$COPD$p_prevalent_COPD_stage:\n")
+  print(model_input$values$COPD$p_prevalent_COPD_stage)
   petoc()
-  cat("model_input$COPD$ln_h_COPD_betas_by_sex:\n")
-  print(model_input$COPD$ln_h_COPD_betas_by_sex)
+  cat("model_input$values$COPD$ln_h_COPD_betas_by_sex:\n")
+  print(model_input$values$COPD$ln_h_COPD_betas_by_sex)
   petoc()
 
   cat("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
   petoc()
-  model_input$COPD$logit_p_COPD_betas_by_sex <<- model_input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
-  model_input$COPD$ln_h_COPD_betas_by_sex <<- model_input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
+  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0 - 100
+  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run()
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
@@ -287,8 +287,8 @@ sanity_COPD <- function() {
   cat("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
   petoc()
   init_input()
-  model_input$COPD$logit_p_COPD_betas_by_sex <<- model_input$COPD$logit_p_COPD_betas_by_sex * 0
-  model_input$COPD$ln_h_COPD_betas_by_sex <<- model_input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
+  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0
+  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run()
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
@@ -300,9 +300,9 @@ sanity_COPD <- function() {
   cat("Now I am going to switch off prevalence and create COPD patients only through incidence (set at 1 per 10 PYs")
   petoc()
   init_input()
-  model_input$COPD$logit_p_COPD_betas_by_sex <<- model_input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
-  model_input$COPD$ln_h_COPD_betas_by_sex <<- model_input$COPD$ln_h_COPD_betas_by_sex * 0
-  model_input$COPD$ln_h_COPD_betas_by_sex[1, ] <<- log(1/10)
+  model_input$values$COPD$logit_p_COPD_betas_by_sex <- model_input$values$COPD$logit_p_COPD_betas_by_sex * 0 - 100
+  model_input$values$COPD$ln_h_COPD_betas_by_sex <- model_input$values$COPD$ln_h_COPD_betas_by_sex * 0
+  model_input$values$COPD$ln_h_COPD_betas_by_sex[1, ] <- log(1/10)
   run()
   cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
@@ -333,10 +333,10 @@ validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplie
   settings$n_base_agents <- 1e+05
   settings$event_stack_size <- settings$n_base_agents * 50
   init_session(settings = settings)
-  input <- model_input
+  input <- model_input$values
 
   if (incident_COPD_k == 0)
-    input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100 else input$COPD$ln_h_COPD_betas_by_sex[1, ] <- model_input$COPD$ln_h_COPD_betas_by_sex[1, ] + log(incident_COPD_k)
+    input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100 else input$COPD$ln_h_COPD_betas_by_sex[1, ] <- model_input$values$COPD$ln_h_COPD_betas_by_sex[1, ] + log(incident_COPD_k)
 
   cat("working...\n")
   run(input = input)
@@ -420,7 +420,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
   settings$event_stack_size <- 0
   init_session(settings = settings)
 
-  input <- model_input
+  input <- model_input$values
 
   input$global_parameters$time_horizon <- 1
 
@@ -446,14 +446,14 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
   if (Cget_output()$n_death > 0) {
 
-    ratio<-(Cget_output_ex()$n_death_by_age_sex[41:111,]/Cget_output_ex()$sum_time_by_age_sex[41:111,])/model_input$agent$p_bgd_by_sex[41:111,]
+    ratio<-(Cget_output_ex()$n_death_by_age_sex[41:111,]/Cget_output_ex()$sum_time_by_age_sex[41:111,])/model_input$values$agent$p_bgd_by_sex[41:111,]
     plot(40:110,ratio[,1],type='l',col='blue',xlab="age",ylab="Ratio", ylim = c(0, 4))
     legend("topright",c("male","female"),lty=c(1,1),col=c("blue","red"))
     lines(40:110,ratio[,2],type='l',col='red')
     title(cex.main=0.5,"Ratio of simulated to expected (life table) mortality, by sex and age")
 
 
-    difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$agent$p_bgd_by_sex[41:91,
+    difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$values$agent$p_bgd_by_sex[41:91,
                                                                                                                                                   ]
     plot(40:90, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference", ylim = c(-.1, .1))
     legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
@@ -481,7 +481,7 @@ validate_comorbidity <- function(n_sim = 1e+05) {
   settings$event_stack_size <- 0
   init_session(settings = settings)
 
-  input <- model_input
+  input <- model_input$values
 
   res <- run(input = input)
   if (res < 0)
@@ -504,7 +504,7 @@ validate_comorbidity <- function(n_sim = 1e+05) {
   settings$event_stack_size <- settings$n_base_agents * 1.6 * 10
   init_session(settings = settings)
 
-  input <- model_input
+  input <- model_input$values
 
   if (run(input = input) < 0)
     stop("Execution stopped.\n")
@@ -546,7 +546,7 @@ validate_lung_function <- function() {
 
   init_session(settings = settings)
 
-  input <- model_input
+  input <- model_input$values
   input$global_parameters$discount_qaly <- 0
 
   run(input = input)

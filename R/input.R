@@ -393,7 +393,8 @@ init_input <- function() {
   #input$project_specific$ROC16_treatment_RR<-0.75
   #input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
 
-  model_input<<-input
-  model_input_help<<-input_help
-  model_input_ref<<-input_ref
+  model_input <- list ("values" = input, "help" = input_help, "ref" = input_ref)
+  return (model_input)
 }
+
+model_input <- init_input()
