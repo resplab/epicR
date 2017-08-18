@@ -17,7 +17,9 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
                          agent_stack_size = 0,
                          event_stack_size = 5e+05 * 1.7 * 30)
 
-
+#' Initializes a model. Allocates memory to the C engine.
+#' @param settings customized settings.
+#' @return 0 if successful.
 #' @export
 init_session <- function(settings = default_settings) {
   cat("Initializing the session\n")
@@ -29,7 +31,8 @@ init_session <- function(settings = default_settings) {
   return(Callocate_resources())
 }
 
-
+#' Terminates a session and releases allocated memory.
+#' @return 0 if successful.
 #' @export
 terminate_session <- function() {
   cat("Terminating the session\n")
@@ -65,7 +68,7 @@ update_run_env_setting <- function(setting_var, value) {
 
 
 
-
+#' Get list elements
 #' @export
 get_list_elements <- function(ls, running_name = "") {
   out <- NULL
@@ -101,6 +104,7 @@ set_Cmodel_inputs <- function(ls) {
   return(0)
 }
 
+#' Express matrix.
 #' @export
 express_matrix <- function(mtx) {
   nr <- dim(mtx)[1]
@@ -124,6 +128,9 @@ express_matrix <- function(mtx) {
 
 
 
+#' Returns events specific to an agent.
+#' @param id Agent number
+#' @return dataframe consisting all events specific to agent \code{id}
 #' @export
 get_agent_events <- function(id) {
   x <- Cget_agent_events(id)
@@ -132,7 +139,9 @@ get_agent_events <- function(id) {
   return(data)
 }
 
-
+#' Returns certain events by type
+#' @param event_type event_type number
+#' @return dataframe consisting all events of the type \code{event_type}
 #' @export
 get_events_by_type <- function(event_type) {
   x <- Cget_events_by_type(event_type)
@@ -141,6 +150,8 @@ get_events_by_type <- function(event_type) {
   return(data)
 }
 
+#' Returns all events.
+#' @return dataframe consisting all events.
 #' @export
 get_all_events <- function() {
   x <- Cget_all_events()
@@ -151,7 +162,10 @@ get_all_events <- function() {
 
 
 
-
+#' Runs the model, after a session has been initialized.
+#' @param max_n_agents maximum number of agents
+#' @param input customized input criteria
+#' @return 0 if successful.
 #' @export
 run <- function(max_n_agents = NULL, input = NULL) {
   Cinit_session()
@@ -172,7 +186,9 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
 
 
-
+#' Resumes running of model.
+#' @param max_n_agents maximum number of agents
+#' @return 0 if successful.
 #' @export
 resume <- function(max_n_agents = NULL) {
   if (is.null(max_n_agents))

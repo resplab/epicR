@@ -35,7 +35,6 @@ get_sample_output <- function(year, sex) {
     .Call('_epicR_get_sample_output', PACKAGE = 'epicR', year, sex)
 }
 
-#' @export
 Cget_agent <- function(id) {
     .Call('_epicR_Cget_agent', PACKAGE = 'epicR', id)
 }
@@ -45,7 +44,6 @@ Cget_smith <- function() {
     .Call('_epicR_Cget_smith', PACKAGE = 'epicR')
 }
 
-#' @export
 Ccreate_agents <- function() {
     .Call('_epicR_Ccreate_agents', PACKAGE = 'epicR')
 }

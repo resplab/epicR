@@ -965,7 +965,7 @@ List get_agent(int id, agent agent_pointer[])
 }
 
 
-//' @export
+
 // [[Rcpp::export]]
 List Cget_agent(long id)
 {
@@ -1269,7 +1269,6 @@ agent *create_agent(agent *ag,int id)
 
 
 
-//' @export
 // [[Rcpp::export]]
 int Ccreate_agents()
 {
