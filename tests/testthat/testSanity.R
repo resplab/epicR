@@ -41,9 +41,4 @@ test_that ("Zeroing mortality rates (both background and exacerbation-caused) wi
   terminate_session()
 })
 
-#cleaning up
-rm (agent_creation_mode, Callocate_resources, Ccreate_agents,Cdeallocate_resources,Cdeallocate_resources2, Cget_agent,
-    Cget_agent_events, Cget_all_events, Cget_all_events_matrix, Cget_event,Cget_events_by_type, Cget_inputs, Cget_n_events,
-    Cget_output, Cget_output_ex, Cget_pointers, Cget_runtime_stats, Cget_settings, Cget_smith, Cinit_session, Cmodel, Cset_input_var, Cset_settings_var, errors, events,
-    get_sample_output, medication_classes, record_mode, Xrexp)
 
