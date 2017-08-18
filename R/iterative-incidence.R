@@ -24,7 +24,7 @@ iterate_COPD_inc<-function(nIterations=1000,
     settings$n_base_agents<- nPatients
     settings$event_stack_size<-settings$n_base_agents*500
     init_session(settings=settings)
-    input<-model_input
+    input<-model_input$values
 
     input$COPD$ln_h_COPD_betas_by_sex <- latest_COPD_inc_logit
 
