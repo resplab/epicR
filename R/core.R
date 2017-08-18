@@ -36,7 +36,7 @@ terminate_session <- function() {
   return(Cdeallocate_resources())
 }
 
-#' @export
+
 apply_settings <- function(settings = settings) {
   res <- 0
   ls <- Cget_settings()
@@ -54,7 +54,6 @@ apply_settings <- function(settings = settings) {
 
 
 
-#' @export
 update_run_env_setting <- function(setting_var, value) {
   res <- Cset_settings_var(setting_var, value)
   if (res < 0)
@@ -83,7 +82,6 @@ get_list_elements <- function(ls, running_name = "") {
 }
 
 
-#' @export
 set_Cmodel_inputs <- function(ls) {
   nms <- get_list_elements(ls)
   for (i in 1:length(nms)) {
@@ -122,7 +120,7 @@ express_matrix <- function(mtx) {
     if (i < nc)
       cat(",")
   }
-}  #Takes a named matrix and write thr R code to populate it; good for generating input expressions from calibration results
+}  #Takes a named matrix and write the R code to populate it; good for generating input expressions from calibration results
 
 
 
@@ -190,7 +188,6 @@ resume <- function(max_n_agents = NULL) {
 
 
 # processes input and returns the processed one
-#' @export
 process_input <- function(ls, decision = 1) {
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex + ls$manual$explicit_mortality_by_age_sex
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex

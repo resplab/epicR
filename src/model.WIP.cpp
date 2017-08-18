@@ -420,7 +420,6 @@ double rand_exp()
   return(temp);
 }
 
-//' @export
 // [[Rcpp::export]]
 NumericVector Xrexp(int n, double rate)
 {
@@ -2599,7 +2598,6 @@ agent *event_birthday_process(agent *ag)
 
 
 /////////////////////////////////////////////////////////////////////////MODEL///////////////////////////////////////////
-//' @export
 // [[Rcpp::export]]
 int Callocate_resources()
 {
@@ -2655,7 +2653,7 @@ List Cget_pointers()
 }
 
 
-//' @export
+
 // [[Rcpp::export]]
 int Cdeallocate_resources()
 {
@@ -2672,7 +2670,7 @@ int Cdeallocate_resources()
 
 
 
-//' @export
+
 // [[Rcpp::export]]
 int Cdeallocate_resources2()
 {
@@ -2716,7 +2714,6 @@ int Callocate_resources2()
   return(0);
 }
 
-//' @export
 // [[Rcpp::export]]
 int Cinit_session() //Does not deal with memory allocation only resets counters etc;
 {
@@ -2734,7 +2731,6 @@ int Cinit_session() //Does not deal with memory allocation only resets counters 
 
 
 
-//' @export
 // [[Rcpp::export]]
 int Cmodel(int max_n_agents)
 {

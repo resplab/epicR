@@ -16,7 +16,6 @@ Cget_runtime_stats <- function() {
     .Call('_epicR_Cget_runtime_stats', PACKAGE = 'epicR')
 }
 
-#' @export
 Xrexp <- function(n, rate) {
     .Call('_epicR_Xrexp', PACKAGE = 'epicR', n, rate)
 }
@@ -91,7 +90,6 @@ Cget_all_events_matrix <- function() {
     .Call('_epicR_Cget_all_events_matrix', PACKAGE = 'epicR')
 }
 
-#' @export
 Callocate_resources <- function() {
     .Call('_epicR_Callocate_resources', PACKAGE = 'epicR')
 }
@@ -101,22 +99,18 @@ Cget_pointers <- function() {
     .Call('_epicR_Cget_pointers', PACKAGE = 'epicR')
 }
 
-#' @export
 Cdeallocate_resources <- function() {
     .Call('_epicR_Cdeallocate_resources', PACKAGE = 'epicR')
 }
 
-#' @export
 Cdeallocate_resources2 <- function() {
     .Call('_epicR_Cdeallocate_resources2', PACKAGE = 'epicR')
 }
 
-#' @export
 Cinit_session <- function() {
     .Call('_epicR_Cinit_session', PACKAGE = 'epicR')
 }
 
-#' @export
 Cmodel <- function(max_n_agents) {
     .Call('_epicR_Cmodel', PACKAGE = 'epicR', max_n_agents)
 }
