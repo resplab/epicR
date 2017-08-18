@@ -1,5 +1,5 @@
 library(epicR)
-context("Population")
+context("Population Tests")
 
 test_that("Average population age in simulated and predicted pyramids are less than 0.1 years apart", {
   settings <- default_settings
