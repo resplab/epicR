@@ -22,7 +22,7 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
 #' @return 0 if successful.
 #' @export
 init_session <- function(settings = default_settings) {
-  cat("Initializing the session\n")
+  message("Initializing the session")
   if (exists("Cdeallocate_resources"))
     Cdeallocate_resources()
   if (!is.null(settings))
@@ -35,7 +35,7 @@ init_session <- function(settings = default_settings) {
 #' @return 0 if successful.
 #' @export
 terminate_session <- function() {
-  cat("Terminating the session\n")
+  message("Terminating the session")
   return(Cdeallocate_resources())
 }
 
@@ -182,7 +182,7 @@ run <- function(max_n_agents = NULL, input = NULL) {
     res <- Cmodel(max_n_agents)
   }
   if (res < 0) {
-    cat("ERROR:", names(which(errors == res)), "\n")
+    message("ERROR:", names(which(errors == res)))
   }
   return(res)
 }
@@ -198,7 +198,7 @@ resume <- function(max_n_agents = NULL) {
     max_n_agents = settings$n_base_agents
   res <- Cmodel(max_n_agents)
   if (res < 0) {
-    cat("ERROR:", names(which(errors == res)), "\n")
+    message("ERROR:", names(which(errors == res)))
   }
   return(res)
 }
