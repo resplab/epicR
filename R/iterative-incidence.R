@@ -26,7 +26,7 @@ iterate_COPD_inc<-function(nIterations=500,
     settings$record_mode<-record_mode["record_mode_event"]
     settings$agent_stack_size<-0
     settings$n_base_agents<- nPatients
-    settings$event_stack_size<-settings$n_base_agents*500
+    settings$event_stack_size<-settings$n_base_agents* 1.7 * 30
     init_session(settings=settings)
     input<-model_input$values
 
