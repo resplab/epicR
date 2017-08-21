@@ -5,13 +5,13 @@
 #' @return regression co-efficients as files
 #' @export
 iterate_COPD_inc<-function(nIterations=500,
-                           nPatients=500000,
+                           nPatients=100000,
                            time_horizon=20)
 {
 
     latest_COPD_inc_logit <- cbind(
     male =c(Intercept =0,age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0,year = 0,asthma = 0)
-    ,female =c(Intercept =0 ,age = 0, age2 =0, pack_years = 0, smoking_status = 0 ,year = 0,asthma = 0))
+    ,female =c(Intercept =0 ,age = 0, age2 =0, pack_years = 0,umoking_status = 0 ,year = 0,asthma = 0))
 
 
   cat("iteration", "intercept_men", "age_coeff_men", "packyears_coeff_men", "intercept_women", "age_coeff_women", "packyears_coeff_women", file="iteration_coeff.csv",sep=",",append=FALSE, fill=FALSE)
@@ -26,7 +26,7 @@ iterate_COPD_inc<-function(nIterations=500,
     settings$record_mode<-record_mode["record_mode_event"]
     settings$agent_stack_size<-0
     settings$n_base_agents<- nPatients
-    settings$event_stack_size<-settings$n_base_agents* 1.7 * 30
+    settings$event_stack_size<- nPatients * 500
     init_session(settings=settings)
     input<-model_input$values
 
@@ -60,7 +60,7 @@ iterate_COPD_inc<-function(nIterations=500,
     residual <-  input$COPD$logit_p_COPD_betas_by_sex-latest_COPD_prev_logit
     message(c(i, "th loop:"))
     message ("residual is:")
-    message (residual)
+    print (residual)
 
     cat(i, residual[1,1], residual[2,1], residual[4,1], residual[1,2], residual[2,2], residual[4,2], file="iteration_resid.csv",sep=",",append=TRUE, fill=FALSE)
     cat("\n",file="iteration_resid.csv",sep=",",append=TRUE)
@@ -69,7 +69,7 @@ iterate_COPD_inc<-function(nIterations=500,
     latest_COPD_inc_logit <- latest_COPD_inc_logit+residual;
 
     message ("latest inc logit is:")
-    message (latest_COPD_inc_logit)
+    print (latest_COPD_inc_logit)
 
     cat(i, latest_COPD_inc_logit[1,1], latest_COPD_inc_logit[2,1], latest_COPD_inc_logit[4,1], latest_COPD_inc_logit[1,2], latest_COPD_inc_logit[2,2], latest_COPD_inc_logit[4,2], file="iteration_coeff.csv",sep=",",append=TRUE, fill=FALSE)
     cat("\n",file="iteration_coeff.csv",sep=",",append=TRUE)
