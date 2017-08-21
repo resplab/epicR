@@ -5,7 +5,7 @@
 #' @return regression co-efficients as files
 #' @export
 iterate_COPD_inc<-function(nIterations=500,
-                           nPatients=1000000,
+                           nPatients=500000,
                            time_horizon=20)
 {
 
