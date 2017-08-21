@@ -194,7 +194,7 @@ init_input <- function() {
                                                       smoking_status = 1.9877204773, year = 0, asthma = 0),
                                              female = c(Intercept = -8.37811713, age = 0.04478882, age2 = 0, pack_years = 0.01263728,
                                                       smoking_status = 1.48400487, year = 0, asthma = 0))
-  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-05-03 (v0.3.0)"
+  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-08-21 (v0.8.1)"
 
 
   ## Lung function
