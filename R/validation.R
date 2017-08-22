@@ -333,7 +333,7 @@ sanity_COPD <- function() {
 
 #' Returns results of validation tests for COPD
 #' @param incident_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
-#' @param return_CI if TRUE, returns 95% confidence intervals for the "Year" coefficient
+#' @param return_CI if TRUE, returns 95 percent confidence intervals for the "Year" coefficient
 #' @return validation test results
 #' @export
 validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidence rate is multiplied by K

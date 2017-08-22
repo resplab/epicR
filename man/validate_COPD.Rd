@@ -9,7 +9,7 @@ validate_COPD(incident_COPD_k = 1, return_CI = FALSE)
 \arguments{
 \item{incident_COPD_k}{a number (default=1) by which the incidence rate of COPD will be multiplied.}
 
-\item{return_CI}{if TRUE, returns 95% confidence intervals for the "Year" coefficient}
+\item{return_CI}{if TRUE, returns 95 percent confidence intervals for the "Year" coefficient}
 }
 \value{
 validation test results
