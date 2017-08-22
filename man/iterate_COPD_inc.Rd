@@ -4,7 +4,7 @@
 \alias{iterate_COPD_inc}
 \title{Solves stochastically for COPD incidence rate equation.}
 \usage{
-iterate_COPD_inc(nIterations = 1000, nPatients = 10000, time_horizon = 20)
+iterate_COPD_inc(nIterations = 500, nPatients = 1e+05, time_horizon = 20)
 }
 \arguments{
 \item{nIterations}{number of iterations for the numberical solution}
