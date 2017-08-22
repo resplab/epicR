@@ -25,10 +25,11 @@ test_that("COPD incidence is set so that prevalence is independent of calendar y
   res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   expect_lt (coefficients(res)[5], 0.01)
 
+# For GOLD stage III and IV, the sample size is small and higher error is expected.
   res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-  expect_lt (coefficients(res)[5], 0.01)
+  expect_lt (coefficients(res)[5], 0.05)
   res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-  expect_lt (coefficients(res)[5], 0.01)
+  expect_lt (coefficients(res)[5], 0.05)
 
 
 
