@@ -333,9 +333,10 @@ sanity_COPD <- function() {
 
 #' Returns results of validation tests for COPD
 #' @param incident_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
+#' @param return_CI if TRUE, returns 95% confidence intervals for the "Year" coefficient
 #' @return validation test results
 #' @export
-validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplied by K
+validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidence rate is multiplied by K
 {
   out <- list()
 
@@ -395,18 +396,28 @@ validate_COPD <- function(incident_COPD_k = 1) # The incidence rate is multiplie
 
   res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_copd_reg_coeffs_male <- coefficients(res)
+  if (return_CI) {out$conf_prev_copd_reg_coeffs_male <- confint(res, "year", level = 0.95)}
+
   res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_copd_reg_coeffs_female <- coefficients(res)
+  if (return_CI) {out$conf_prev_copd_reg_coeffs_female <- confint(res, "year", level = 0.95)}
 
   res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_gold2p_reg_coeffs_male <- coefficients(res)
+  if (return_CI) {out$conf_prev_gold2p_reg_coeffs_male <- confint(res, "year", level = 0.95)}
+
   res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_gold2p_reg_coeffs_female <- coefficients(res)
+  if (return_CI) {out$conf_prev_gold2p_reg_coeffs_female <- confint(res, "year", level = 0.95)}
 
   res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_gold3p_reg_coeffs_male <- coefficients(res)
+  if (return_CI) {out$conf_prev_gold3p_reg_coeffs_male <- confint(res, "year", level = 0.95)}
+
   res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
   out$calib_prev_gold3p_reg_coeffs_female <- coefficients(res)
+  if (return_CI) {out$conf_prev_gold3p_reg_coeffs_female <- confint(res, "year", level = 0.95)}
+
 
   terminate_session()
 
