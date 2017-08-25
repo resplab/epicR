@@ -13,6 +13,10 @@ export_figures <- function(nPatients = 10^4) {
   input <- model_input$values
 
   run(input=input)
+  data <- as.data.frame(Cget_all_events_matrix())
+  op <- Cget_output()
+  op_ex <- Cget_output_ex()
+  terminate_session()
 
   ## Create Workbook object and add worksheets
   wb <- openxlsx::createWorkbook()
@@ -40,10 +44,18 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
 
+  ## populate workbooks
+
+  ## COPD Prevalence per year and sex
+  COPD_prev_by_sex <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 3)
+  colnames(COPD_inc_by_sex) <- c("Year", "Female", "Male")
+  COPD_inc_by_sex[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+  COPD_inc_by_sex[1:input$global_parameters$time_horizon,2:3] <- op_ex$n_COPD_by_ctime_sex / op_ex$n_alive_by_ctime_sex
+  openxlsx::writeData(wb, "COPD_prevalence_by_year_sex", COPD_inc_by_sex, startCol = 2, startRow = 3, colNames = TRUE)
+
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
   wbfilename <- paste(Sys.Date(), " Figures EpicR ver", packageVersion("epicR"), ".xlsx")
   openxlsx::saveWorkbook(wb, wbfilename, overwrite = TRUE)
 
-  terminate_session()
   }
