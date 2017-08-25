@@ -1,5 +1,5 @@
 #' Runs the model and exports an excel file with all output data
-#' @param nPaients number of agents
+#' @param nPatients number of agents
 #' @return an excel file with all output
 #' @export
 export_figures <- function(nPatients = 10^4) {
