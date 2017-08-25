@@ -41,8 +41,8 @@ export_run <- function(nPatients = 10^4) {
 
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
-  wbfilename <- c(Sys.Date(), " Output EpicR ver", packageVersion("epicR"))
-  openxlsx::saveWorkbook(wb, "writeDataExample.xlsx", overwrite = TRUE)
+  wbfilename <- paste(Sys.Date(), " Output EpicR ver", packageVersion("epicR"), ".xlsx")
+  openxlsx::saveWorkbook(wb, wbfilename, overwrite = TRUE)
 
   terminate_session()
   }
