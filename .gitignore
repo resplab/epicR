@@ -1,9 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
-iteration_coeff.csv
-iteration_resid.csv
-female_mortality.csv
-male_mortality.csv
-2017-08-25  Output EpicR ver 0.8.1 .xlsx
-2017-08-25  Figures EpicR ver 0.8.1 .xlsx
+.csv
+.xlsx
