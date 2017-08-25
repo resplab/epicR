@@ -18,6 +18,7 @@ export_figures <- function(nPatients = 10^4) {
   wb <- openxlsx::createWorkbook()
 
   ## Add worksheets
+  openxlsx::addWorksheet(wb, "List of Figures")
   openxlsx::addWorksheet(wb, "COPD_incidence_by_year_sex")
   openxlsx::addWorksheet(wb, "COPD_incidence_by_age_sex")
   openxlsx::addWorksheet(wb, "COPD_prevalence_by_year_sex")
@@ -41,7 +42,7 @@ export_figures <- function(nPatients = 10^4) {
 
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
-  wbfilename <- paste(Sys.Date(), " Output EpicR ver", packageVersion("epicR"), ".xlsx")
+  wbfilename <- paste(Sys.Date(), " Figures EpicR ver", packageVersion("epicR"), ".xlsx")
   openxlsx::saveWorkbook(wb, wbfilename, overwrite = TRUE)
 
   terminate_session()
