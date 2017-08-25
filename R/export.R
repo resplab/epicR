@@ -32,7 +32,7 @@ export_run <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "GOLD_stage_by_year")
   openxlsx::addWorksheet(wb, "GOLD_by_sex_CanCOLD")
   openxlsx::addWorksheet(wb, "FEV1_by_sex_year")
-  openxlsx::addWorksheet(wb, "Exac_severity_by_year_sex_Comp_MARCO")
+  openxlsx::addWorksheet(wb, "Exacerbation")
   openxlsx::addWorksheet(wb, "Exac_rate_GOLD_stage")
   openxlsx::addWorksheet(wb, "Exac_by_type_sex_year")
   openxlsx::addWorksheet(wb, "Population_by_year")
@@ -42,7 +42,7 @@ export_run <- function(nPatients = 10^4) {
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
   wbfilename <- c(Sys.Date(), " Output EpicR ver", packageVersion("epicR"))
-  saveWorkbook(wb, "writeDataExample.xlsx", overwrite = TRUE)
+  openxlsx::saveWorkbook(wb, "writeDataExample.xlsx", overwrite = TRUE)
 
   terminate_session()
   }
