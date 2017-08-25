@@ -1,5 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
-.csv
-.xlsx
+*.csv
+*.xlsx
