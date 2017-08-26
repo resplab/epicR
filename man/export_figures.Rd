@@ -7,7 +7,7 @@
 export_figures(nPatients = 10^4)
 }
 \arguments{
-\item{nPaients}{number of agents}
+\item{nPatients}{number of agents}
 }
 \value{
 an excel file with all output
