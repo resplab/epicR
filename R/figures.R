@@ -44,22 +44,47 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
 
-  ## populate workbooks
+  ## Populate workbooks
+
+  ## COPD Incidence per year and sex
+  COPD_inc_by_sex <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 3)
+  colnames(COPD_inc_by_sex) <- c("Year", "Male", "Female")
+  COPD_inc_by_sex[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  data_COPD_inc <- subset(data, event == 4)
+
+  for (i in 1:input$global_parameters$time_horizon){
+    COPD_inc_by_sex[i, 2] <- dim(subset(data_COPD_inc, (sex == 0)))[1]
+    COPD_inc_by_sex[i, 3] <- dim(subset(data_COPD_inc, (sex == 1)))[1]
+  }
+  COPD_inc_by_sex[1:input$global_parameters$time_horizon, 2:3] <- COPD_inc_by_sex[1:input$global_parameters$time_horizon, 2:3] / op_ex$n_alive_by_ctime_sex
+
+  openxlsx::writeData(wb, "COPD_incidence_by_year_sex", COPD_inc_by_sex, startCol = 2, startRow = 3, colNames = TRUE)
+
+  df <- as.data.frame(COPD_inc_by_sex)
+  dfm <- reshape2::melt(df[,c('Year','Male','Female')], id.vars = 1)
+  plot_COPD_inc_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=0.5)
+
+  print(plot_COPD_inc_by_sex) #plot needs to be showing
+  openxlsx::insertPlot(wb, "COPD_incidence_by_year_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
 
   ## COPD Prevalence per year and sex
   COPD_prev_by_sex <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 3)
-  colnames(COPD_prev_by_sex) <- c("Year", "Female", "Male")
+  colnames(COPD_prev_by_sex) <- c("Year", "Male", "Female")
   COPD_prev_by_sex[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
   COPD_prev_by_sex[1:input$global_parameters$time_horizon,2:3] <- op_ex$n_COPD_by_ctime_sex / op_ex$n_alive_by_ctime_sex
   openxlsx::writeData(wb, "COPD_prevalence_by_year_sex", COPD_prev_by_sex, startCol = 2, startRow = 3, colNames = TRUE)
 
   df <- as.data.frame(COPD_prev_by_sex)
   dfm <- reshape2::melt(df[,c('Year','Male','Female')],id.vars = 1)
-  plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm,aes(x = Year, y = value)) +
+  plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=0.5)
 
   print(plot_COPD_prev_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
   wbfilename <- paste(Sys.Date(), " Figures EpicR ver", packageVersion("epicR"), ".xlsx")
