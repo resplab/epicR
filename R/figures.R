@@ -55,11 +55,11 @@ export_figures <- function(nPatients = 10^4) {
 
   df <- as.data.frame(COPD_prev_by_sex)
   dfm <- reshape2::melt(df[,c('Year','Male','Female')],id.vars = 1)
-  p1 <- ggplot2::ggplot(dfm,aes(x = Year,y = value)) +
-    geom_bar(aes(fill = variable),stat = "identity",position = "dodge") + ylim(low=0, high=1)
+  plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm,aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=0.5)
 
-  print(p1) #plot needs to be showing
-  openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("J", 10), width = 5, height = 3.5, fileType = "png", units = "cm")
+  print(plot_COPD_prev_by_sex) #plot needs to be showing
+  openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
   ## Save workbook
   ## Open in excel without saving file: openXL(wb)
   wbfilename <- paste(Sys.Date(), " Figures EpicR ver", packageVersion("epicR"), ".xlsx")
