@@ -45,34 +45,49 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "Smokers_by_year")
 
   ## Populate workbooks
-  #######################################################  COPD_incidence_by_age_sex  #####################################################
-  COPD_inc_by_age_sex <- matrix (NA, nrow = 110-40+1, ncol = 1)
+  #######################################################  COPD_incidence_by_age  #####################################################
+  COPD_inc_by_age <- as.data.frame (op_ex$n_inc_COPD_by_ctime_age)
+  alive_by_age <- as.data.frame (op_ex$n_alive_by_ctime_age)
+  COPD_inc_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+  num_COPD_inc_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+  denom_COPD_inc_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+
 #  colnames(COPD_inc_by_age_sex) <- c("Age", "Incidence")
 #  COPD_inc_by_age_sex[1:(110-40+1), 1] <- c(40:110)
-  COPD_inc_by_age_sex <-  colSums(as.data.frame (op_ex$n_inc_COPD_by_ctime_age)[40:110]) / colSums(as.data.frame (op_ex$n_alive_by_ctime_age)[40:110])
-  n_COPD_inc_by_age <- as.data.frame(colSums(as.data.frame (op_ex$n_inc_COPD_by_ctime_age)[40:110]))
-  COPD_inc_by_age_sex <- as.data.frame(COPD_inc_by_age_sex)
-  alive_by_age <- as.data.frame(colSums(as.data.frame (op_ex$n_alive_by_ctime_age))[40:110])
-  SE_COPD_inc_by_age_sex <- sqrt (COPD_inc_by_age_sex * (1 - COPD_inc_by_age_sex) / alive_by_age)
 
 
-#    data_COPD_inc <- subset(data, (event == 4)) # COPD incidence events
+  for (i in 1:5) {
+    for (j in 0:9){
+      num_COPD_inc_by_agegroup [i] <- num_COPD_inc_by_agegroup [i] + colSums(COPD_inc_by_age[10*(3+i)+j])
+      denom_COPD_inc_by_agegroup [i] <- denom_COPD_inc_by_agegroup[i] + colSums(alive_by_age[10*(3+i)+j])
+    }
+  }
 
-#  for (i in 1:dim(data_COPD_inc)[1]){
-#    current_age <- data_COPD_inc_or_prone[i,"local_time"] + data_COPD_inc[i,"age_at_creation"]
-#    current_age <- floor(current_age)
-#    if data_annual[i, ]
-#  }
-  df <- data.frame(Age = c(40:110), Incidence = 100 * COPD_inc_by_age_sex) #converting values to percentage.
-  colnames(df) <- c("Age", "Incidence")
+  #handling the special case of 90-110 years, ie: i=4
+  for (j in 0:20){
+    num_COPD_inc_by_agegroup [6] <- num_COPD_inc_by_agegroup [6] + colSums(COPD_inc_by_age[10*(3+6)+j])
+    denom_COPD_inc_by_agegroup [6] <-denom_COPD_inc_by_agegroup [6] + colSums(alive_by_age[10*(3+6)+j])
+  }
+
+  COPD_inc_by_agegroup  <- num_COPD_inc_by_agegroup / denom_COPD_inc_by_agegroup
+
+
+
+#  COPD_inc_by_age_sex <-  colSums(as.data.frame (op_ex$n_inc_COPD_by_ctime_age)[40:110]) / colSums(as.data.frame (op_ex$n_alive_by_ctime_age)[40:110])
+ # n_COPD_inc_by_age <- as.data.frame(colSums(as.data.frame (op_ex$n_inc_COPD_by_ctime_age)[40:110]))
+  COPD_inc_by_agegroup <- as.data.frame(COPD_inc_by_agegroup )
+  SE_COPD_inc_by_agegroup <- sqrt (COPD_inc_by_agegroup  * (1 - COPD_inc_by_agegroup ) / denom_COPD_inc_by_agegroup)
+
+  df <- data.frame(Age_Group = c("40-50", "50-60", "60-70", "70-80", "80-90", "90+"), Incidence = 100 * COPD_inc_by_agegroup) #converting values to percentage.
+  colnames(df) <- c("Age_Group", "Incidence")
   openxlsx::writeData(wb, "COPD_incidence_by_age_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
-  plot_COPD_inc_by_age_sex  <- ggplot(df, aes(x = Age, y = Incidence)) +
-    geom_bar(stat = "identity", position = "dodge",  fill = "#FF6666") +
-      geom_errorbar(aes(ymin = Incidence - 1.96*SE_COPD_inc_by_age_sex, ymax = Incidence + 1.96*SE_COPD_inc_by_age_sex), width=.2, position = position_dodge(.9)) +
-      ylim(low = 0, high = 5) + xlim(low = 40, high = 100) + labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
+  plot_COPD_inc_by_agegroup  <- ggplot(df, aes(x = Age_Group, y = Incidence)) +
+    geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = "#FF6666") +
+      geom_errorbar(aes(ymin = Incidence - 1.96*100*SE_COPD_inc_by_agegroup, ymax = Incidence + 1.96*100*SE_COPD_inc_by_agegroup), width=.2, position = position_dodge(.9)) +
+      ylim(low = 0, high = 5) + labs(title = "Incidence of COPD by Age Group") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_inc_by_age_sex ) #plot needs to be showing
+  print(plot_COPD_inc_by_agegroup ) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_age_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -115,7 +130,7 @@ export_figures <- function(nPatients = 10^4) {
   df <- as.data.frame(COPD_prev_by_sex)
   dfm <- reshape2::melt(df[,c('Year','Male','Female')],id.vars = 1)
   plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
-    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=0.5) + labs(title = "Prevalence of COPD") + ylab ("Prevalence") + labs(caption = "(based on population at age 40 and above)")
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=0.5) + labs(title = "Prevalence of COPD by Year") + ylab ("Prevalence") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_prev_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
