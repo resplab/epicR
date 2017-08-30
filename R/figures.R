@@ -65,7 +65,7 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::writeData(wb, "COPD_incidence_by_age_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
   plot_COPD_inc_by_age_sex  <- ggplot2::ggplot(df, aes(x = Age, y = Incidence)) +
-    geom_bar( stat = "identity", position = "dodge") + ylim(low=0, high=0.5) + labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence") + labs(caption = "(based on population at age 40 and above)")
+    geom_bar(stat = "identity", position = "dodge") + ylim(low=0, high=0.5) + labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_inc_by_age_sex ) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_age_sex",  xy = c("J", 10), width = 20, height = 13.2 , fileType = "png", units = "cm")
