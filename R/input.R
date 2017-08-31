@@ -136,13 +136,13 @@ init_input <- function() {
 
 
   input_help$agent$l_inc_betas = "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas = t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration, AKA longevity
+  input$agent$l_inc_betas = t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
   input_ref$agent$l_inc_betas = ""
 
 
   input_help$agent$ln_h_bgd_betas = "Effect of variables on background mortality"
-  input$agent$ln_h_bgd_betas = t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0.1, n_mi = 0, b_stroke = 0.1,
-                                             n_stroke = 0, hf = 0.1)))
+  input$agent$ln_h_bgd_betas = t(as.matrix(c(intercept = 0, y = -0.02, y2 = 0, age = 0, b_mi = 0.1, n_mi = 0, b_stroke = 0.1,
+                                             n_stroke = 0, hf = 0.1)))  #AKA longevity
   input_ref$agent$ln_h_bgd_betas = ""
 
 
