@@ -1527,7 +1527,7 @@ void update_output_ex(agent *ag)
   //if(time>=(*ag).time_at_creation)
   {
     int age=floor((*ag).age_at_creation+(*ag).local_time);
-    output_ex.n_alive_by_ctime_age[time][age]+=1;
+    output_ex.n_alive_by_ctime_age[time][age-1]+=1;   //age-1 -> adjusting for zero based system in C.
     output_ex.n_alive_by_ctime_sex[time][(*ag).sex]+=1;
     output_ex.n_alive_by_age_sex[age][(*ag).sex]+=1;
     if((*ag).smoking_status==1)
