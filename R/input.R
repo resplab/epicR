@@ -110,7 +110,7 @@ init_input <- function() {
 
 
   input_help$agent$p_incidence_age <- "Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration"
-  input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.02 * exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
+  input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.02* exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
   input$agent$p_incidence_age <- input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
   input_ref$agent$p_incidence_age <- ""
 
@@ -136,7 +136,7 @@ init_input <- function() {
 
 
   input_help$agent$l_inc_betas = "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas = t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration
+  input$agent$l_inc_betas = t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration, AKA longevity
   input_ref$agent$l_inc_betas = ""
 
 
