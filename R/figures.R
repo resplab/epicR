@@ -191,7 +191,22 @@ export_figures <- function(nPatients = 10^4) {
   print(plot_COPD_prev_by_agegroup) #plot needs to be showing
   openxlsx::insertPlot(wb, "Prev_Age_Group_CanCOLD-BOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
+  ##################################################### COPD Prevalence by Age Group and GOLD #####################################################
 
+  #COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+  #num_COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+  #denom_COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+
+
+  #df <- data.frame(Age_Group = c("40-50", "50-60", "60-70", "70-80", "80-90", "90+"), Prevalence = COPD_prev_by_agegroup)
+  #openxlsx::writeData(wb, "COPD_prev_by_age_group_GOLD", df, startCol = 2, startRow = 3, colNames = TRUE)
+
+  #plot_COPD_prev_by_agegroup  <- ggplot2::ggplot(df, aes(x = Age_Group, y = Prevalence)) +
+   # geom_bar(stat = "identity", position = "dodge", width = 0.2, fill = "#FF6666") + geom_errorbar(aes(ymin = Prevalence - 1.96*SE_COPD_prev_by_agegroup, ymax = Prevalence + 1.96*SE_COPD_prev_by_agegroup ),
+                                                                                                   width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
+
+  #print(plot_COPD_prev_by_agegroup) #plot needs to be showing
+  #openxlsx::insertPlot(wb, "COPD_prev_by_age_group_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
 
