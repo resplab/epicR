@@ -18,7 +18,7 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
   init_session(settings = settings)
 
   input <- model_input$values
-#  input$agent$l_inc_betas[1,] <- (-100)  #No incidence (Life table is only valid for baseline)
+  input$agent$l_inc_betas[1,] <- (-100)  #No incidence (Life table is only valid for baseline)
   input$global_parameters$time_horizon <- 20
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
 
@@ -27,7 +27,7 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
 
   cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
 
-  difference <- (Cget_output_ex()$n_death_by_age_sex[1:111,]/Cget_output_ex()$sum_time_by_age_sex[1:111,])-input$agent$p_bgd_by_sex[1:111,]
+  difference <- (Cget_output_ex()$n_death_by_age_sex[1:111,]/Cget_output_ex()$sum_time_by_age_sex[1:111,]) - input$agent$p_bgd_by_sex[1:111,]
 
   difference <- as.data.frame(t(difference))
   print(difference)
