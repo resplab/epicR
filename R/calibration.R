@@ -18,7 +18,7 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
   init_session(settings = settings)
 
   input <- model_input$values
-  input$agent$l_inc_betas[1,] <- (-100)  #No incidence (Life table is only valid for baseline)
+  input$agent$l_inc_betas[1,] <- (-1000)  #No incidence (Life table is only valid for baseline)
   input$global_parameters$time_horizon <- 20
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
 
