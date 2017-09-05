@@ -520,7 +520,7 @@ struct input
     double rate_severity_intercept_rho;
     //double p_moderate_severe[2]; //probability of moderate or severe, compared with mild, exacerbation
     double exac_end_rate[4]; //rate of exiting exacerbation per type;
-    double logit_p_death_by_sex[4][2]; //rate of mortality per type;
+    double logit_p_death_by_sex[7][2]; //rate of mortality per type;
   } exacerbation;
 
 
@@ -2261,8 +2261,11 @@ double event_exacerbation_death_tte(agent *ag)
   if ((*ag).exac_status > 2) {
     p = exp(input.exacerbation.logit_p_death_by_sex[0][(*ag).sex]
             + input.exacerbation.logit_p_death_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation)
-            + input.exacerbation.logit_p_death_by_sex[2][(*ag).sex]*((*ag).exac_status==4)
-            + input.exacerbation.logit_p_death_by_sex[3][(*ag).sex]*0 //TODO
+            + input.exacerbation.logit_p_death_by_sex[2][(*ag).sex]*((*ag).exac_status==1)
+            + input.exacerbation.logit_p_death_by_sex[3][(*ag).sex]*((*ag).exac_status==2)
+            + input.exacerbation.logit_p_death_by_sex[4][(*ag).sex]*((*ag).exac_status==3)
+            + input.exacerbation.logit_p_death_by_sex[5][(*ag).sex]*((*ag).exac_status==4)
+            + input.exacerbation.logit_p_death_by_sex[6][(*ag).sex]*0 //Placeholder for incorporating history of smoking
               );
   }
 
