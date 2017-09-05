@@ -97,7 +97,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
 
   if (remove_COPD) {
     input$exacerbation$logit_p_death_by_sex <- -1000 + input$exacerbation$logit_p_death_by_sex
-    ls$manual$explicit_mortality_by_age_sex <- 0
+    input$manual$explicit_mortality_by_age_sex <- 0
   }
 
   input$agent$l_inc_betas[1] <- input$agent$l_inc_betas[1] + log(incidence_k)
