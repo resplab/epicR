@@ -6,11 +6,11 @@ Rcpp::sourceCpp("./src/model.WIP.cpp")
 }
 
 
-default_settings <- list(record_mode = record_mode["record_mode_none"],
+default_settings <- list(record_mode = record_mode["record_mode_event"],
                          events_to_record = c(0),
                          agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
-                         n_base_agents = 1e+06,
+                         n_base_agents = 1e+04,
                          runif_buffer_size = 1e+06,
                          rnorm_buffer_size = 1e+06,
                          rexp_buffer_size = 1e+06,
