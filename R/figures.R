@@ -203,7 +203,8 @@ export_figures <- function(nPatients = 10^4) {
 
   #plot_COPD_prev_by_agegroup  <- ggplot2::ggplot(df, aes(x = Age_Group, y = Prevalence)) +
    # geom_bar(stat = "identity", position = "dodge", width = 0.2, fill = "#FF6666") + geom_errorbar(aes(ymin = Prevalence - 1.96*SE_COPD_prev_by_agegroup, ymax = Prevalence + 1.96*SE_COPD_prev_by_agegroup ),
-  #                                                                                                 width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
+#
+    #                                                                                               width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
 
   #print(plot_COPD_prev_by_agegroup) #plot needs to be showing
   #openxlsx::insertPlot(wb, "COPD_prev_by_age_group_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
