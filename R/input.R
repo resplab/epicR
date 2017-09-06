@@ -141,7 +141,7 @@ init_input <- function() {
 
 
   input_help$agent$ln_h_bgd_betas = "Increased Longevity Over time and effect of other variables"
-  input$agent$ln_h_bgd_betas = t(as.matrix(c(intercept = 0, y = 0, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
+  input$agent$ln_h_bgd_betas = t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
                                              n_stroke = 0, hf = 0)))  #AKA longevity
   input_ref$agent$ln_h_bgd_betas = ""
 
