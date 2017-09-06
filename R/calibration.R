@@ -1,6 +1,45 @@
 calib_params <- list(COPD = list(prevalence = 0.193))
 
 
+#' Calibrates explicit mortality by Amin
+#' @param n_sim number of agents
+#' @return difference in mortality rates and life table
+#' @export
+calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
+  cat("Difference between life table and observed mortality\n")
+  cat("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex\n")
+  cat(paste("n_sim=", n_sim, "\n"))
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+  input$agent$l_inc_betas[1,] <- (-1000)  #No incidence (Life table is only valid for baseline)
+  input$global_parameters$time_horizon <- 20
+  input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
+
+  cat("working...\n")
+  res <- run(input = input)
+
+  cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
+
+  difference <- (Cget_output_ex()$n_death_by_age_sex[1:111,]/Cget_output_ex()$sum_time_by_age_sex[1:111,]) - input$agent$p_bgd_by_sex[1:111,]
+
+  difference <- as.data.frame(t(difference))
+  print(difference)
+  write.csv(difference[1,], "male_mortality.csv")
+  write.csv(difference[2,], "female_mortality.csv")
+
+
+  terminate_session()
+  return(difference)
+}
+
+
 #' Calibrates explicit mortality
 #' @param n_sim number of agents
 #' @return difference in mortality rates and life table
@@ -18,7 +57,7 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
   init_session(settings = settings)
 
   input <- model_input
-  input$agent$l_inc_betas[1, ] <- -100  #No incidence (Life table is only valid for baseline)
+  input$agent$l_inc_betas[1,] <--100  #No incidence (Life table is only valid for baseline)
   input$global_parameters$time_horizon <- 1
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
 
@@ -105,7 +144,7 @@ calibrate_smoking <- function() {
   settings$n_base_agents <- 1e+05
   settings$event_stack_size <- settings$n_base_agents * 2 + 10
   init_session()
-  model_input$agent$l_inc_betas[1] <- -1000
+  model_input$agent$l_inc_betas[1] <--1000
 
   model_input$smoking$logit_p_smoker_0_betas <- model_input$smoking$logit_p_smoker_0_betas * 0
   run(1)

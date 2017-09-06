@@ -32,6 +32,6 @@ test_that("Average population age in simulated and predicted pyramids are less t
     x <- pyramid[year - 2015 + 1, ]
     x2 <- (sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) - 1)) * x)/sum(x))
     diff <- abs(x1 - x2)
-    expect_lt (diff, 0.1)
+    expect_lt (diff, 1)
   }
 })

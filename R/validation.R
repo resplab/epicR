@@ -96,8 +96,8 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   petoc()
 
   if (remove_COPD) {
-    input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
-    input$manual$PROP_COPD_DEATH_BY_SEX_AGE <- input$manual$PROP_COPD_DEATH_BY_SEX_AGE * 0
+    input$exacerbation$logit_p_death_by_sex <- -1000 + input$exacerbation$logit_p_death_by_sex
+    input$manual$explicit_mortality_by_age_sex <- 0
   }
 
   input$agent$l_inc_betas[1] <- input$agent$l_inc_betas[1] + log(incidence_k)

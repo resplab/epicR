@@ -10,12 +10,12 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
                          events_to_record = c(0),
                          agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
-                         n_base_agents = 1e+04,
+                         n_base_agents = 1e+06,
                          runif_buffer_size = 1e+06,
                          rnorm_buffer_size = 1e+06,
                          rexp_buffer_size = 1e+06,
                          agent_stack_size = 0,
-                         event_stack_size = 1e+05 * 1.7 * 30)
+                         event_stack_size = 1e+06 * 1.7 * 30)
 
 #' Initializes a model. Allocates memory to the C engine.
 #' @param settings customized settings.
@@ -208,7 +208,7 @@ resume <- function(max_n_agents = NULL) {
 
 # processes input and returns the processed one
 process_input <- function(ls, decision = 1) {
-  ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex + ls$manual$explicit_mortality_by_age_sex
+  ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex - ls$manual$explicit_mortality_by_age_sex
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex
 
   ls$smoking$ln_h_inc_betas[1] <- ls$smoking$ln_h_inc_betas[1] + log(ls$manual$smoking$intercept_k)
