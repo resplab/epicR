@@ -10,8 +10,8 @@ iterate_COPD_inc<-function(nIterations=500,
 {
 
     latest_COPD_inc_logit <- cbind(
-    male =c(Intercept =0,age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0,year = 0,asthma = 0)
-    ,female =c(Intercept =0 ,age = 0, age2 =0, pack_years = 0,umoking_status = 0 ,year = 0,asthma = 0))
+    male =c(Intercept =0, age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0)
+    ,female =c(Intercept =0, age = 0, age2 =0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0))
 
 
 #  cat("iteration", "intercept_men", "age_coeff_men", "packyears_coeff_men", "intercept_women", "age_coeff_women", "packyears_coeff_women", file="iteration_coeff.csv",sep=",",append=FALSE, fill=FALSE)
@@ -26,7 +26,7 @@ iterate_COPD_inc<-function(nIterations=500,
     settings$record_mode<-record_mode["record_mode_event"]
     settings$agent_stack_size<-0
     settings$n_base_agents<- nPatients
-    settings$event_stack_size <- nPatients * 3 * 30
+    settings$event_stack_size <- 1e+06 * 1.7 * 30
     init_session(settings=settings)
     input<-model_input$values
 
