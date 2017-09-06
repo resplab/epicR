@@ -23,7 +23,8 @@ iterate_COPD_inc<-function(nIterations=500,
   for (i in 1:nIterations){
 
     settings<-default_settings
-    settings$record_mode<-record_mode["record_mode_event"]
+    settings$record_mode<-record_mode["record_mode_some_event"]
+    settings$events_to_record = c(1)
     settings$agent_stack_size<-0
     settings$n_base_agents<- nPatients
     settings$event_stack_size <- 1e+06 * 1.7 * 30
