@@ -120,8 +120,8 @@ export_figures <- function(nPatients = 10^4) {
   data_COPD_inc <- subset(data, event == 4)
 
   for (i in 1:input$global_parameters$time_horizon){
-    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, (sex==00 & local_time == i) ))[1]
-    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, (sex == 1 & local_time == i)))[1]
+    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time) == i)) ))[1]
   }
   COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] <- COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] / op_ex$n_alive_by_ctime_sex * 100 #converting to percentage
   SE_COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 1:2] <- sqrt (COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] * (100 - COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3]) / op_ex$n_alive_by_ctime_sex) #TODO Make sure it's correct and add it to ggplot.
@@ -132,7 +132,7 @@ export_figures <- function(nPatients = 10^4) {
   dfm <- reshape2::melt(df[,c('Year','Male','Female')], id.vars = 1)
   plot_COPD_inc_by_year_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
-    ylim(low=0, high=50) + labs(title = "Incidence of COPD by Year") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
+    ylim(low=0, high=5) + labs(title = "Incidence of COPD by Year") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_inc_by_year_sex ) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_year_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")

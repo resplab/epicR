@@ -7,7 +7,7 @@ Rcpp::sourceCpp("./src/model.WIP.cpp")
 
 
 default_settings <- list(record_mode = record_mode["record_mode_event"],
-                         events_to_record = c(7, 13),
+                         events_to_record = c(0),
                          agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
                          n_base_agents = 2.5e4,
