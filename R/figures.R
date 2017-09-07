@@ -45,6 +45,38 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "Smokers_by_year")
 
   ## Populate workbooks
+
+  ##################################################### List of Figures #####################################################
+  list_of_figures <- matrix (NA, nrow = 20, ncol = 3)
+  colnames(list_of_figures) <- c("Name", "Description", "epicR version")
+  list_of_figures[1:20, 1] <- c(  "COPD_incidence_by_age_sex",
+                                  "COPD_incidence_by_year_sex",
+                                  "COPD_incidence_by_age_group_sex",
+                                  "COPD_prevalence_by_year_sex",
+                                  "Prev_Age_Group_CanCOLD-BOLD",
+                                  "COPD_prev_by_age_group_GOLD",
+                                  "COPD_mortality_cause_death",
+                                  "Age-specific-Mortality-per1000",
+                                  "Cost_by_GOLD",
+                                  "QALY_by_GOLD",
+                                  "Clinical_trials",
+                                  "GOLD_stage_by_year",
+                                  "GOLD_by_sex_CanCOLD",
+                                  "FEV1_by_sex_year",
+                                  "Exacerbation",
+                                  "Exac_rate_GOLD_stage",
+                                  "Exac_by_type_sex_year",
+                                  "Population_by_year",
+                                  "Exac_by_age_year",
+                                  "Smokers_by_year")
+
+  list_of_figures[1:20, 3] <- paste (packageVersion("epicR"))
+  openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
+  openxlsx::writeData(wb, "List of Figures", list_of_figures, startCol = 1, startRow = 1, colNames = TRUE)
+  openxlsx::writeFormula(wb, "List of Figures", startRow = 2
+               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:20,1], row = 1, col = 2,  text = list_of_figures[1:20,1]))
+
+
   #######################################################  COPD_incidence_by_age  #####################################################
   COPD_inc_by_age_sex <- matrix (NA, nrow = 90-40+1, ncol = 1) #limiting it to people under 90 years old to avoid noise error
   #  colnames(COPD_inc_by_age_sex) <- c("Age", "Incidence")
