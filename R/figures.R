@@ -243,7 +243,7 @@ export_figures <- function(nPatients = 10^4) {
   ##################################################### Smokers_by_Year #####################################################
   smokers_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon+1, ncol = 5)
   colnames(smokers_by_year) <- c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")
-  data_annual <- subset (data, event == 1)
+  data_annual <- subset (data, ((event == 1) | (event == 14)))
 
   for (i in (1:input$global_parameters$time_horizon)) {
     smokers_by_year[i, 2] <- dim(subset(data_annual, ( smoking_status == 0) & (pack_years == 0) & (local_time == i)))[1]
