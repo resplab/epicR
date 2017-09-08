@@ -159,13 +159,13 @@ init_input <- function() {
 
 
   input_help$smoking$logit_p_ever_smoker_con_not_current_0_betas <- "Probability of being an ever smoker conditional on not being current smoker, at the time of creation"
-  input$smoking$logit_p_ever_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = 0, sex = 0, age = 0, age2 = 0, sex_age = 0,
-                                                                             sex_age2 = 0, year = -0.02)))
+  input$smoking$logit_p_ever_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = -0.3681, sex = 0, age = 0, age2 = 0, sex_age = 0,
+                                                                             sex_age2 = 0, year = 0)))
   input_ref$smoking$logit_p_ever_smoker_con_not_current_0_betas <- ""
 
 
   input_help$smoking$pack_years_0_betas <- "Regression equations for determining the pack-years of smoking at the time of creation (for elogit_p_ever_smoker_con_current_0_betas smokers)"
-  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = -5, sex = -2, age = 0.8, year = -0.1, current_smoker = 1)))
+  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = -19, sex = -15, age = 0.8, year = -0.5, current_smoker = 1)))
   input_ref$smoking$pack_years_0_betas <- ""
 
 
