@@ -158,6 +158,11 @@ init_input <- function() {
   input_ref$smoking$minimum_smoking_prevalence <- ""
 
 
+  input_help$smoking$mortality_factor <- "Mortality ratio for smokers vs. non-smokers"
+  input$smoking$mortality_factor <- 2
+  input_ref$smoking$mortality_factor <- ""
+
+
   input_help$smoking$logit_p_ever_smoker_con_not_current_0_betas <- "Probability of being an ever smoker conditional on not being current smoker, at the time of creation"
   input$smoking$logit_p_ever_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = -0.3681, sex = 0, age = 0, age2 = 0, sex_age = 0,
                                                                              sex_age2 = 0, year = 0)))
@@ -165,7 +170,7 @@ init_input <- function() {
 
 
   input_help$smoking$pack_years_0_betas <- "Regression equations for determining the pack-years of smoking at the time of creation (for elogit_p_ever_smoker_con_current_0_betas smokers)"
-  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = -19, sex = -15, age = 0.8, year = -0.5, current_smoker = 1)))
+  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = -30, sex = -7.7, age = 0.8, year = -0.5, current_smoker = 11)))
   input_ref$smoking$pack_years_0_betas <- ""
 
 
