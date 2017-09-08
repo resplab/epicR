@@ -228,15 +228,25 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("According to Table 2.1 of this report (see the extraected data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
   petoc()
 
-  x <- Cget_output_ex()
-  y <- x$n_current_smoker_by_ctime_sex/x$n_alive_by_ctime_sex
-  plot(2015:(2015+input$global_parameters$time_horizon-1), y[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
-  lines(2015:(2015+input$global_parameters$time_horizon-1), y[, 2], type = "l", col = "grey")
+  op_ex <- Cget_output_ex()
+  smoker_prev <- op_ex$n_current_smoker_by_ctime_sex/op_ex$n_alive_by_ctime_sex
+  smoker_packyears <- op_ex$sum_pack_years_by_ctime_sex/op_ex$n_alive_by_ctime_sex
+
+  plot(2015:(2015+input$global_parameters$time_horizon-1), smoker_prev[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
+  lines(2015:(2015+input$global_parameters$time_horizon-1), smoker_prev[, 2], type = "l", col = "grey")
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
-  title(cex.main = 0.5, "Annual prevalence of currrent smoking (simulated")
-  z <- log(rowSums(y))
+  title(cex.main = 0.5, "Annual prevalence of currrent smoking (simulated)")
+
+  plot(2015:(2015+input$global_parameters$time_horizon-1), smoker_packyears[, 1], type = "l", ylim = c(0, 30), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
+  lines(2015:(2015+input$global_parameters$time_horizon-1), smoker_packyears[, 2], type = "l", col = "grey")
+  legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
+  title(cex.main = 0.5, "Average Pack-Years Per Year for 40+ Population (simulated)")
+
+
+  z <- log(rowSums(smoker_prev))
   cat("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
   petoc()
+
 
   message("This test is over; terminating the session")
   petoc()
