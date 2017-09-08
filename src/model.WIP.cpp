@@ -482,6 +482,7 @@ struct input
     double pack_years_0_betas[5]; //intercept, smoker, sex, age, year
     double pack_years_0_sd;
     double ln_h_inc_betas[5]; //intercept, sex, age, age*2 calendar time,
+    double minimum_smoking_prevalence;
     double ln_h_ces_betas[5]; //intercept, sex, age, age*2 calendar time,
   } smoking;
 
@@ -625,6 +626,7 @@ List Cget_inputs()
       Rcpp::Named("pack_years_0_betas")=AS_VECTOR_DOUBLE(input.smoking.pack_years_0_betas),
       Rcpp::Named("pack_years_0_sd")=input.smoking.pack_years_0_sd,
       Rcpp::Named("ln_h_inc_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_inc_betas),
+      Rcpp::Named("minimum_smoking_prevalence")=input.smoking.minimum_smoking_prevalence,
       Rcpp::Named("ln_h_ces_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_ces_betas)
       ),
     Rcpp::Named("COPD")=Rcpp::List::create(
@@ -727,6 +729,7 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="smoking$pack_years_0_betas") READ_R_VECTOR(value,input.smoking.pack_years_0_betas);
   if(name=="smoking$pack_years_0_sd") {input.smoking.pack_years_0_sd=value[0]; return(0);}
   if(name=="smoking$ln_h_inc_betas") READ_R_VECTOR(value,input.smoking.ln_h_inc_betas);
+  if(name=="smoking$minimum_smoking_prevalence") {input.smoking.minimum_smoking_prevalence=value[0]; return(0);}
   if(name=="smoking$ln_h_ces_betas") READ_R_VECTOR(value,input.smoking.ln_h_ces_betas);
 
   if(name=="COPD$ln_h_COPD_betas_by_sex") READ_R_MATRIX(value,input.COPD.ln_h_COPD_betas_by_sex);
@@ -1081,7 +1084,7 @@ agent *create_agent(agent *ag,int id)
     +input.smoking.logit_p_current_smoker_0_betas[6]*calendar_time
     );
 
-  if(rand_unif()<odds1/(1+odds1)) //ever smoker
+  if(rand_unif()< (input.smoking.minimum_smoking_prevalence + (odds1/(1+odds1)))) //adding a minimum baseline smoking prevalence. ever smoker
   {
     (*ag).smoking_status=1;
     ever_smoker=true;
