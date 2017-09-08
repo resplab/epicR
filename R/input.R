@@ -148,15 +148,20 @@ init_input <- function() {
   ### smoking;
 
   input_help$smoking$logit_p_current_smoker_0_betas <- "Probability of being a current smoker at the time of creation"
-  input$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(c(Intercept = -0.53, sex = -0.22, age = -0.02, age2 = 0, sex_age = 0,
+  input$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(c(Intercept = -1.7, sex = -0.22, age = -0.02, age2 = 0, sex_age = 0,
                                                                 sex_age2 = 0, year = -0.02)))
   input_ref$smoking$logit_p_current_smoker_0_betas <- ""
 
 
-    input_help$smoking$logit_p_ever_smoker_con_not_current_0_betas <- "Probability of being an ever smoker conditional on not being current smoker, at the time of creation"
-    input$smoking$logit_p_ever_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = 0, sex = 0, age = 0, age2 = 0, sex_age = 0,
+  input_help$smoking$minimum_smoking_prevalence <- "Minimum Smoking Prevalence"
+  input$smoking$minimum_smoking_prevalence <- 0.15
+  input_ref$smoking$minimum_smoking_prevalence <- ""
+
+
+  input_help$smoking$logit_p_ever_smoker_con_not_current_0_betas <- "Probability of being an ever smoker conditional on not being current smoker, at the time of creation"
+  input$smoking$logit_p_ever_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = 0, sex = 0, age = 0, age2 = 0, sex_age = 0,
                                                                              sex_age2 = 0, year = -0.02)))
-    input_ref$smoking$logit_p_ever_smoker_con_not_current_0_betas <- ""
+  input_ref$smoking$logit_p_ever_smoker_con_not_current_0_betas <- ""
 
 
   input_help$smoking$pack_years_0_betas <- "Regression equations for determining the pack-years of smoking at the time of creation (for elogit_p_ever_smoker_con_current_0_betas smokers)"
@@ -170,12 +175,12 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_inc_betas <- "Log-hazard of starting smoking (incidence or relapse)"
-  input$smoking$ln_h_inc_betas <- c(intercept = -4, sex = -0.15, age = -0.02, age2 = 0, calendar_time = -0.02)
+  input$smoking$ln_h_inc_betas <- c(intercept = -2, sex = -0.15, age = -0.02, age2 = 0, calendar_time = -0.02)
   input_ref$smoking$ln_h_inc_betas <- ""
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3, sex = 0, age = 0, age2 = 0, calendar_time = 0)
+  input$smoking$ln_h_ces_betas <- c(intercept = -1.2, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
