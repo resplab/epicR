@@ -230,8 +230,8 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   x <- Cget_output_ex()
   y <- x$n_current_smoker_by_ctime_sex/x$n_alive_by_ctime_sex
-  plot(2015:2034, y[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
-  lines(2015:2034, y[, 2], type = "l", col = "grey")
+  plot(2015:(2015+input$global_parameters$time_horizon-1), y[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
+  lines(2015:(2015+input$global_parameters$time_horizon-1), y[, 2], type = "l", col = "grey")
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
   title(cex.main = 0.5, "Annual prevalence of currrent smoking (simulated")
   z <- log(rowSums(y))
