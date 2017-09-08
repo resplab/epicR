@@ -159,8 +159,8 @@ init_input <- function() {
 
 
   input_help$smoking$mortality_factor <- "Mortality ratio for smokers vs. non-smokers"
-  input$smoking$mortality_factor <- 2
-  input_ref$smoking$mortality_factor <- ""
+  input$smoking$mortality_factor <- 3
+  input_ref$smoking$mortality_factor <- "https://doi.org/10.1186/s12916-015-0281-z"
 
 
   input_help$smoking$logit_p_ever_smoker_con_not_current_0_betas <- "Probability of being an ever smoker conditional on not being current smoker, at the time of creation"
@@ -185,7 +185,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -1.5, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
+  input$smoking$ln_h_ces_betas <- c(intercept = -1.7, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
