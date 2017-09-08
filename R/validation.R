@@ -237,7 +237,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
   title(cex.main = 0.5, "Annual prevalence of currrent smoking (simulated)")
 
-  plot(2015:(2015+input$global_parameters$time_horizon-1), smoker_packyears[, 1], type = "l", ylim = c(0, 30), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
+  plot(2015:(2015+input$global_parameters$time_horizon-1), smoker_packyears[, 1], type = "l", ylim = c(0, 30), col = "black", xlab = "Year", ylab = "Average Pack years")
   lines(2015:(2015+input$global_parameters$time_horizon-1), smoker_packyears[, 2], type = "l", col = "grey")
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
   title(cex.main = 0.5, "Average Pack-Years Per Year for 40+ Population (simulated)")
