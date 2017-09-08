@@ -148,7 +148,7 @@ init_input <- function() {
   ### smoking;
 
   input_help$smoking$logit_p_current_smoker_0_betas <- "Probability of being a current smoker at the time of creation"
-  input$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(c(Intercept = -1.7, sex = -0.22, age = -0.02, age2 = 0, sex_age = 0,
+  input$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(c(Intercept = -1.8, sex = -0.22, age = -0.02, age2 = 0, sex_age = 0,
                                                                 sex_age2 = 0, year = -0.02)))
   input_ref$smoking$logit_p_current_smoker_0_betas <- ""
 
@@ -180,7 +180,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -1.2, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
+  input$smoking$ln_h_ces_betas <- c(intercept = -1.5, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
