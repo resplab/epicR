@@ -483,7 +483,8 @@ struct input
     double pack_years_0_sd;
     double ln_h_inc_betas[5]; //intercept, sex, age, age*2 calendar time,
     double minimum_smoking_prevalence;
-    double mortality_factor; // ratio of overall minus COPD mortality rate in smokers vs non-smokers
+    double mortality_factor_current; // ratio of overall minus COPD mortality rate in current smokers vs non-smokers
+    double mortality_factor_former; // ratio of overall minus COPD mortality rate in former smokers vs non-smokers
     double ln_h_ces_betas[5]; //intercept, sex, age, age*2 calendar time,
   } smoking;
 
@@ -628,7 +629,8 @@ List Cget_inputs()
       Rcpp::Named("pack_years_0_sd")=input.smoking.pack_years_0_sd,
       Rcpp::Named("ln_h_inc_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_inc_betas),
       Rcpp::Named("minimum_smoking_prevalence")=input.smoking.minimum_smoking_prevalence,
-      Rcpp::Named("mortality_factor")=input.smoking.mortality_factor,
+      Rcpp::Named("mortality_factor_current")=input.smoking.mortality_factor_current,
+      Rcpp::Named("mortality_factor_former")=input.smoking.mortality_factor_former,
       Rcpp::Named("ln_h_ces_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_ces_betas)
       ),
     Rcpp::Named("COPD")=Rcpp::List::create(
@@ -732,7 +734,8 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="smoking$pack_years_0_sd") {input.smoking.pack_years_0_sd=value[0]; return(0);}
   if(name=="smoking$ln_h_inc_betas") READ_R_VECTOR(value,input.smoking.ln_h_inc_betas);
   if(name=="smoking$minimum_smoking_prevalence") {input.smoking.minimum_smoking_prevalence=value[0]; return(0);}
-  if(name=="smoking$mortality_factor") {input.smoking.mortality_factor=value[0]; return(0);}
+  if(name=="smoking$mortality_factor_current") {input.smoking.mortality_factor_current=value[0]; return(0);}
+  if(name=="smoking$mortality_factor_former") {input.smoking.mortality_factor_former=value[0]; return(0);}
   if(name=="smoking$ln_h_ces_betas") READ_R_VECTOR(value,input.smoking.ln_h_ces_betas);
 
   if(name=="COPD$ln_h_COPD_betas_by_sex") READ_R_MATRIX(value,input.COPD.ln_h_COPD_betas_by_sex);
@@ -2458,9 +2461,12 @@ double event_bgd_tte(agent *ag)
   p=odds/(1+odds);
 
   if ((*ag).smoking_status > 1e-5) {
-    p *= input.smoking.mortality_factor;   //adjusting background mortality for smokers
-    if (p > 1) p = 1;
-  }
+    p *= input.smoking.mortality_factor_current;   //adjusting background mortality for current smokers
+    if (p > 1) {p = 1;}
+  } else if ((*ag).pack_years > 1e-5) {
+      p *= input.smoking.mortality_factor_former;   //adjusting background mortality for former smokers
+      if (p > 1) {p = 1;}
+      }
   if(p==1)
   {
     ttd=0;
