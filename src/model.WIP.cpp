@@ -1538,7 +1538,7 @@ void update_output_ex(agent *ag)
     int age=floor((*ag).age_at_creation+(*ag).local_time);
     output_ex.n_alive_by_ctime_age[time][age-1]+=1;   //age-1 -> adjusting for zero based system in C.
     output_ex.n_alive_by_ctime_sex[time][(*ag).sex]+=1;
-    output_ex.n_alive_by_age_sex[age][(*ag).sex]+=1;
+    output_ex.n_alive_by_age_sex[age-1][(*ag).sex]+=1;
     if((*ag).smoking_status==1)
     {
       output_ex.n_smoking_status_by_ctime[time][1]+=1;
@@ -1572,7 +1572,7 @@ void update_output_ex(agent *ag)
 
 #if (OUTPUT_EX & OUTPUT_EX_COPD)>0
   output_ex.n_COPD_by_ctime_sex[time][(*ag).sex]+=((*ag).gold>0)*1;
-  output_ex.n_COPD_by_ctime_age[time][age]+=((*ag).gold>0)*1;
+  output_ex.n_COPD_by_ctime_age[time][age-1]+=((*ag).gold>0)*1;
   output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
 #endif
 
@@ -1581,7 +1581,7 @@ void update_output_ex(agent *ag)
     output_ex.sum_p_mi_by_ctime_sex[time][(*ag).sex]+=mi_odds/(1+mi_odds);
     if((*ag).hf_status>0)
     {
-      output_ex.n_hf_by_age_sex[age][(*ag).sex]++;
+      output_ex.n_hf_by_age_sex[age-1][(*ag).sex]++;
       output_ex.n_hf_by_ctime_sex[time][(*ag).sex]++;
     }
 #endif
@@ -1790,7 +1790,7 @@ agent *event_end_process(agent *ag)
   int age=floor((*ag).local_time+(*ag).age_at_creation);
   //Rprintf("age at death=%f\n",age);
   if((*ag).gold==0) output_ex.cumul_non_COPD_time+=(*ag).local_time;
-  if((*ag).alive==false)  output_ex.n_death_by_age_sex[age][(*ag).sex]+=1;
+  if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
 
   double time=(*ag).time_at_creation+(*ag).local_time;
   while(time>(*ag).time_at_creation)
@@ -1820,7 +1820,7 @@ agent *event_end_process(agent *ag)
   {
     double delta=min(i+1,_age)-max(i,(*ag).age_at_creation);
     if(delta>1e-10) {
-      output_ex.sum_time_by_age_sex[i][(*ag).sex]+=delta;
+      output_ex.sum_time_by_age_sex[i-1][(*ag).sex]+=delta;
     }
   }
 
