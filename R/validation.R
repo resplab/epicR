@@ -259,7 +259,8 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   dfm <- reshape2::melt(df[,c("Year", "Non-Smoker", "Smoker", "Former smoker")], id.vars = 1)
   plot_smoking_status_ctime  <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") + ylim(low=0, high=60) +
-    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9"))
+    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
 
 
   print(plot_smoking_status_ctime ) #plot needs to be showing
