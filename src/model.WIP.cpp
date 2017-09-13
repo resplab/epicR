@@ -1107,7 +1107,7 @@ agent *create_agent(agent *ag,int id)
     +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[6]*calendar_time
     );
 
-    if(rand_unif()<odds2/(1+odds2))
+    if(rand_unif()< (odds2/(1+odds2)))
       (*ag).pack_years=0;
     else ever_smoker=true;
   }
