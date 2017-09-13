@@ -166,10 +166,10 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   petoc()
 
   settings <- default_settings
-  settings$record_mode <- record_mode["record_mode_agent"]
+  settings$record_mode <- record_mode["record_mode_event"]
   settings$agent_stack_size <- 0
   settings$n_base_agents <- 1e+05
-  settings$event_stack_size <- settings$n_base_agents * 2 + 10
+  settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
 
   init_session(settings = settings)
   input <- model_input$values
@@ -177,7 +177,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
-    input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
+    input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * -10000 # TODO why was this zero? Amin
   }
 
   if (!is.null(intercept_k))
@@ -202,8 +202,11 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   petoc()
   cat("running the model\n")
 
+  # TODO What the hell are the two next lines? Amin
   # remove COPD stuff;
-  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
+  #input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
+
+
   run(input = input)
   dataS <- Cget_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
@@ -214,7 +217,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   cat("This is the model generated bar plot")
   petoc()
-  barplot(tab2, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalenc of smoking",
+  barplot(tab2, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
           col = c("black", "grey"))
   title(cex.main = 0.5, "Prevalence of current smoking at creation (simulated)")
   legend("topright", c("Male", "Female"), fill = c("black", "grey"))
@@ -225,7 +228,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("Now we will validate the model on smoking trends")
   petoc()
 
-  cat("According to Table 2.1 of this report (see the extraected data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
+  cat("According to Table 2.1 of this report (see the extracted data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
   petoc()
 
   op_ex <- Cget_output_ex()
@@ -246,6 +249,29 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   z <- log(rowSums(smoker_prev))
   cat("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
   petoc()
+
+  # Plotting pack-years over time
+  dataS <- as.data.frame (Cget_all_events_matrix())
+  dataS <- subset (dataS, (event ==0 | event == 1 | event == 14))
+  dataS <- subset (dataS, pack_years > 0)
+  avg_pack_years <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 3)
+  colnames(avg_pack_years) <- c("Year", "Smokers PYs", "Former Smokers PYs")
+
+  avg_pack_years[1:(input$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$global_parameters$time_horizon))
+
+  for (i in 0:input$global_parameters$time_horizon) {
+    smokers <- subset (dataS, (local_time == (i)) & smoking_status != 0)
+    prev_smokers <- subset (dataS, (local_time == (i)) & smoking_status == 0)
+    avg_pack_years[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
+    avg_pack_years[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
+  }
+
+  df <- as.data.frame(avg_pack_years)
+  dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
+  plot_avg_pack_years <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=0, high=50)
+
+  print(plot_avg_pack_years) #plot needs to be showing
 
 
   message("This test is over; terminating the session")
