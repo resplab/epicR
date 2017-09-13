@@ -269,7 +269,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(avg_pack_years)
   dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
   plot_avg_pack_years <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=0, high=50)
+    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=0, high=40)
 
   print(plot_avg_pack_years) #plot needs to be showing
 
