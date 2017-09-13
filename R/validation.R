@@ -250,6 +250,20 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
   petoc()
 
+  #plotting overall distribution of smoking stats over time
+  smoking_status_ctime <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 4)
+  colnames(smoking_status_ctime) <- c("Year", "Non-Smoker", "Smoker", "Former smoker")
+  smoking_status_ctime[1:(input$global_parameters$time_horizon), 1] <- c(2015:(2015 + input$global_parameters$time_horizon-1))
+  smoking_status_ctime [, 2:4] <- op_ex$n_smoking_status_by_ctime / rowSums(as.data.frame (op_ex$n_alive_by_ctime_sex)) * 100
+  df <- as.data.frame(smoking_status_ctime)
+  dfm <- reshape2::melt(df[,c("Year", "Non-Smoker", "Smoker", "Former smoker")], id.vars = 1)
+  plot_smoking_status_ctime  <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") + ylim(low=0, high=60) +
+    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9"))
+
+
+  print(plot_smoking_status_ctime ) #plot needs to be showing
+
   # Plotting pack-years over time
   dataS <- as.data.frame (Cget_all_events_matrix())
   dataS <- subset (dataS, (event ==0 | event == 1 | event == 14))
