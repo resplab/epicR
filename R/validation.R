@@ -284,7 +284,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(avg_pack_years_ctime)
   dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
   plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=0, high=40)
+    geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years") + ylim(low=0, high=40)
 
   print(plot_avg_pack_years_ctime) #plot needs to be showing
 
@@ -305,7 +305,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(avg_pack_years_age)
   dfm <- reshape2::melt(df[,c( "Age", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
   plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=-50, high=50)
+    geom_point () + geom_line() + labs(title = "Average pack-years per age ") + ylab ("Pack-years") + ylim(low=0, high=40)
 
   print(plot_avg_pack_years_age) #plot needs to be showing
 
