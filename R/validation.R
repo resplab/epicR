@@ -258,7 +258,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(smoking_status_ctime)
   dfm <- reshape2::melt(df[,c("Year", "Non-Smoker", "Smoker", "Former smoker")], id.vars = 1)
   plot_smoking_status_ctime  <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") + ylim(low=0, high=60) +
+    geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") +
     scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
 
@@ -269,24 +269,45 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   dataS <- as.data.frame (Cget_all_events_matrix())
   dataS <- subset (dataS, (event == 0 | event == 1 ))
   dataS <- subset (dataS, pack_years > 0)
-  avg_pack_years <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 3)
-  colnames(avg_pack_years) <- c("Year", "Smokers PYs", "Former Smokers PYs")
+  avg_pack_years_ctime <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 3)
+  colnames(avg_pack_years_ctime) <- c("Year", "Smokers PYs", "Former Smokers PYs")
 
-  avg_pack_years[1:(input$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$global_parameters$time_horizon))
+  avg_pack_years_ctime[1:(input$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$global_parameters$time_horizon))
 
   for (i in 0:input$global_parameters$time_horizon) {
     smokers <- subset (dataS, (local_time == (i)) & smoking_status != 0)
     prev_smokers <- subset (dataS, (local_time == (i)) & smoking_status == 0)
-    avg_pack_years[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
-    avg_pack_years[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
+    avg_pack_years_ctime[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
+    avg_pack_years_ctime[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
   }
 
-  df <- as.data.frame(avg_pack_years)
+  df <- as.data.frame(avg_pack_years_ctime)
   dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
-  plot_avg_pack_years <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=0, high=40)
 
-  print(plot_avg_pack_years) #plot needs to be showing
+  print(plot_avg_pack_years_ctime) #plot needs to be showing
+
+  # Plotting pack-years over age
+
+  avg_pack_years_age <- matrix (NA, nrow = 110 - 40 + 1, ncol = 3)
+  colnames(avg_pack_years_age) <- c("Age", "Smokers PYs", "Former Smokers PYs")
+
+  avg_pack_years_age[1:(110 - 40 + 1), 1] <- c(40:110)
+
+  for (i in 0:(110 - 40)) {
+    smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i)) & smoking_status != 0)
+    prev_smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i)) & smoking_status == 0)
+    avg_pack_years_age[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
+    avg_pack_years_age[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
+  }
+
+  df <- as.data.frame(avg_pack_years_age)
+  dfm <- reshape2::melt(df[,c( "Age", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
+  plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years")
+
+  print(plot_avg_pack_years_age) #plot needs to be showing
 
 
   message("This test is over; terminating the session")
