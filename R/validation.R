@@ -267,7 +267,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   # Plotting pack-years over time
   dataS <- as.data.frame (Cget_all_events_matrix())
-  dataS <- subset (dataS, (event ==0 | event == 1 | event == 14))
+  dataS <- subset (dataS, (event == 0 | event == 1 ))
   dataS <- subset (dataS, pack_years > 0)
   avg_pack_years <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 3)
   colnames(avg_pack_years) <- c("Year", "Smokers PYs", "Former Smokers PYs")

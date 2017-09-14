@@ -1783,7 +1783,7 @@ agent *event_end_process(agent *ag)
 
 
 #ifdef OUTPUT_EX
-//NO!!! We do not update many of output_ex stuff here. It might fall within the same calendar year of the last fixed event ad results in double counting.
+//NO!!! We do not update many of output_ex stuff here. It might fall within the same calendar year of the last fixed event and results in double counting.
 //If it falls after that still we ignore as it is a partially observed year.
 #endif
 #if OUTPUT_EX>1
