@@ -296,8 +296,8 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   avg_pack_years_age[1:(110 - 40 + 1), 1] <- c(40:110)
 
   for (i in 0:(110 - 40)) {
-    smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i)) & smoking_status != 0)
-    prev_smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i)) & smoking_status == 0)
+    smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i+40)) & smoking_status != 0)
+    prev_smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i+40)) & smoking_status == 0)
     avg_pack_years_age[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
     avg_pack_years_age[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
   }
@@ -305,7 +305,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(avg_pack_years_age)
   dfm <- reshape2::melt(df[,c( "Age", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
   plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years")
+    geom_point () + geom_line() + labs(title = "Average pack-years per Year ") + ylab ("Pack-years") + ylim(low=-50, high=50)
 
   print(plot_avg_pack_years_age) #plot needs to be showing
 
