@@ -191,7 +191,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3, sex = 0, age = 0, age2 = 0, calendar_time = -0.02)
+  input$smoking$ln_h_ces_betas <- c(intercept = -4, sex = 0, age = 0.02, age2 = 0, calendar_time = -0.02)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
