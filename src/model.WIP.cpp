@@ -478,7 +478,7 @@ struct input
   struct
   {
     double logit_p_current_smoker_0_betas[7]; //intercept, sex, age, age2, age*sex sex*age^2 year;
-    double logit_p_ever_smoker_con_not_current_0_betas[7]; //intercept, sex, age, age2,age*sex sex*age^2 year;
+    double logit_p_never_smoker_con_not_current_0_betas[7]; //intercept, sex, age, age2,age*sex sex*age^2 year;
     double pack_years_0_betas[5]; //intercept, smoker, sex, age, year
     double pack_years_0_sd;
     double ln_h_inc_betas[5]; //intercept, sex, age, age*2 calendar time,
@@ -624,7 +624,7 @@ List Cget_inputs()
       //Rcpp::Named("rel_by_age_sex")=AS_MATRIX_DOUBLE(input.smoking.rel_by_age_sex),
 
       Rcpp::Named("logit_p_current_smoker_0_betas")=AS_VECTOR_DOUBLE(input.smoking.logit_p_current_smoker_0_betas),
-      Rcpp::Named("logit_p_ever_smoker_con_not_current_0_betas")=AS_VECTOR_DOUBLE(input.smoking.logit_p_ever_smoker_con_not_current_0_betas),
+      Rcpp::Named("logit_p_never_smoker_con_not_current_0_betas")=AS_VECTOR_DOUBLE(input.smoking.logit_p_never_smoker_con_not_current_0_betas),
       Rcpp::Named("pack_years_0_betas")=AS_VECTOR_DOUBLE(input.smoking.pack_years_0_betas),
       Rcpp::Named("pack_years_0_sd")=input.smoking.pack_years_0_sd,
       Rcpp::Named("ln_h_inc_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_inc_betas),
@@ -729,7 +729,7 @@ int Cset_input_var(std::string name,NumericVector value)
   //if(name=="smoking$rel_by_age_sex") READ_R_MATRIX(value,input.smoking.rel_by_age_sex);
 
   if(name=="smoking$logit_p_current_smoker_0_betas") READ_R_VECTOR(value,input.smoking.logit_p_current_smoker_0_betas);
-  if(name=="smoking$logit_p_ever_smoker_con_not_current_0_betas") READ_R_VECTOR(value,input.smoking.logit_p_ever_smoker_con_not_current_0_betas);
+  if(name=="smoking$logit_p_never_smoker_con_not_current_0_betas") READ_R_VECTOR(value,input.smoking.logit_p_never_smoker_con_not_current_0_betas);
   if(name=="smoking$pack_years_0_betas") READ_R_VECTOR(value,input.smoking.pack_years_0_betas);
   if(name=="smoking$pack_years_0_sd") {input.smoking.pack_years_0_sd=value[0]; return(0);}
   if(name=="smoking$ln_h_inc_betas") READ_R_VECTOR(value,input.smoking.ln_h_inc_betas);
@@ -1100,13 +1100,13 @@ agent *create_agent(agent *ag,int id)
   else
   {
     (*ag).smoking_status=0;
-    double odds2=exp(input.smoking.logit_p_ever_smoker_con_not_current_0_betas[0]
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[1]*(*ag).sex
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[2]*(*ag).age_at_creation
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[3]*pow((*ag).age_at_creation,2)
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[4]*(*ag).age_at_creation*(*ag).sex
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[5]*pow((*ag).age_at_creation,2)*(*ag).sex
-    +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[6]*calendar_time
+    double odds2=exp(input.smoking.logit_p_never_smoker_con_not_current_0_betas[0]
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[1]*(*ag).sex
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[2]*(*ag).age_at_creation
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[3]*pow((*ag).age_at_creation,2)
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[4]*(*ag).age_at_creation*(*ag).sex
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[5]*pow((*ag).age_at_creation,2)*(*ag).sex
+    +input.smoking.logit_p_never_smoker_con_not_current_0_betas[6]*calendar_time
     );
 
     if(rand_unif()< (odds2/(1+odds2))) {
