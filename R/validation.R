@@ -119,7 +119,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
                       input$global_parameters$age0)
 
   for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +
-                                                                                                                                1, -(1:input$global_parameters$age0)]
+                                                                                                                                       1, -(1:input$global_parameters$age0)]
 
 
   cat("Also, the ratio of the expected to observed population in years 10 and 20 are ", sum(Cget_output_ex()$n_alive_by_ctime_sex[10,
@@ -173,7 +173,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   init_session(settings = settings)
   input <- model_input$values
-  input$agent$l_inc_betas[1] <- -1000  #No incident cases for now
 
   cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
@@ -201,11 +200,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   cat("Now I will run the model using the default smoking parameters")
   petoc()
   cat("running the model\n")
-
-  # TODO What the hell are the two next lines? Amin
-  # remove COPD stuff;
-  #input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0
-
 
   run(input = input)
   dataS <- Cget_all_events_matrix()
@@ -268,23 +262,27 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   # Plotting pack-years over time
   dataS <- as.data.frame (Cget_all_events_matrix())
   dataS <- subset (dataS, (event == 0 | event == 1 ))
-  dataS <- subset (dataS, pack_years > 0)
-  avg_pack_years_ctime <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 3)
-  colnames(avg_pack_years_ctime) <- c("Year", "Smokers PYs", "Former Smokers PYs")
+  data_all <- dataS
+  dataS <- subset (dataS, pack_years != 0)
+  avg_pack_years_ctime <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 4)
+  colnames(avg_pack_years_ctime) <- c("Year", "Smokers PYs", "Former Smokers PYs", "all")
 
   avg_pack_years_ctime[1:(input$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$global_parameters$time_horizon))
 
   for (i in 0:input$global_parameters$time_horizon) {
-    smokers <- subset (dataS, (local_time == (i)) & smoking_status != 0)
-    prev_smokers <- subset (dataS, (local_time == (i)) & smoking_status == 0)
+    smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status != 0)
+    prev_smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status == 0)
+    all <- subset (data_all, floor(local_time + time_at_creation) == i)
     avg_pack_years_ctime[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
     avg_pack_years_ctime[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
+    avg_pack_years_ctime[i+1, "all"] <- colSums(all)[["pack_years"]] / dim (all) [1]
+
   }
 
   df <- as.data.frame(avg_pack_years_ctime)
-  dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
+  dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs", "all")], id.vars = 1)
   plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years") + ylim(low=0, high=40)
+    geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
 
   print(plot_avg_pack_years_ctime) #plot needs to be showing
 
@@ -305,7 +303,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   df <- as.data.frame(avg_pack_years_age)
   dfm <- reshape2::melt(df[,c( "Age", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
   plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per age ") + ylab ("Pack-years") + ylim(low=0, high=40)
+    geom_point () + geom_line() + labs(title = "Average pack-years per age ") + ylab ("Pack-years")
 
   print(plot_avg_pack_years_age) #plot needs to be showing
 
@@ -556,7 +554,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
 
     difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$values$agent$p_bgd_by_sex[41:91,
-                                                                                                                                                  ]
+                                                                                                                                                       ]
     plot(40:90, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference", ylim = c(-.1, .1))
     legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
     lines(40:90, difference[, 2], type = "l", col = "red")
