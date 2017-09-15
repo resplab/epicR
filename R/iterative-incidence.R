@@ -27,9 +27,16 @@ iterate_COPD_inc<-function(nIterations=500,
     settings$events_to_record = c(1)
     settings$agent_stack_size<-0
     settings$n_base_agents<- nPatients
-    settings$event_stack_size <- 1e+06 * 1.7 * 30
+    settings$event_stack_size <- 1e+06 * 1.7 * 20
     init_session(settings=settings)
     input<-model_input$values
+
+  #  input$smoking$mortality_factor_current <- 1 #checking to see if these two values are throwing off the regression
+  #  input$smoking$mortality_factor_former <- 1
+
+   # if (i == 1) {
+  #    latest_COPD_inc_logit <- input$COPD$ln_h_COPD_betas_by_sex #starting with the current regression
+  #  }
 
     input$COPD$ln_h_COPD_betas_by_sex <- latest_COPD_inc_logit
 

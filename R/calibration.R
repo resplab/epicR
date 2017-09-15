@@ -5,7 +5,7 @@ calib_params <- list(COPD = list(prevalence = 0.193))
 #' @param n_sim number of agents
 #' @return difference in mortality rates and life table
 #' @export
-calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
+calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
   cat("Difference between life table and observed mortality\n")
   cat("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex\n")
   cat(paste("n_sim=", n_sim, "\n"))
@@ -27,7 +27,7 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^6) {
 
   cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
 
-  difference <- (Cget_output_ex()$n_death_by_age_sex[1:111,]/Cget_output_ex()$sum_time_by_age_sex[1:111,]) - input$agent$p_bgd_by_sex[1:111,]
+  difference <- (Cget_output_ex()$n_death_by_age_sex/Cget_output_ex()$sum_time_by_age_sex) - input$agent$p_bgd_by_sex
 
   difference <- as.data.frame(t(difference))
   print(difference)

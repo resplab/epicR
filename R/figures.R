@@ -152,8 +152,8 @@ export_figures <- function(nPatients = 10^4) {
   data_COPD_inc <- subset(data, event == 4)
 
   for (i in 1:input$global_parameters$time_horizon){
-    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time) == i)) ))[1]
-    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time + time_at_creation) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time + time_at_creation) == i)) ))[1]
   }
   COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] <- COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] / op_ex$n_alive_by_ctime_sex * 100 #converting to percentage
   SE_COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 1:2] <- sqrt (COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] * (100 - COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3]) / op_ex$n_alive_by_ctime_sex) #TODO Make sure it's correct and add it to ggplot.
@@ -273,25 +273,26 @@ export_figures <- function(nPatients = 10^4) {
 
 
   ##################################################### Smokers_by_Year #####################################################
-  smokers_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon+1, ncol = 5)
+  smokers_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
   colnames(smokers_by_year) <- c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")
-  data_annual <- subset (data, ((event == 1) | (event == 14)))
+  data_annual <- subset (data, ((event == 0) | (event == 1)))
 
   for (i in (1:input$global_parameters$time_horizon)) {
-    smokers_by_year[i, 2] <- dim(subset(data_annual, ( smoking_status == 0) & (pack_years == 0) & (local_time == i)))[1]
-    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years > 0)& (local_time == i))))[1]
-    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0)& (local_time == i))))[1]
-    smokers_by_year[i, 5] <- dim(subset(data_annual, (local_time == i)))[1]
+    smokers_by_year[i, 2] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years == 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years != 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 5] <- dim(subset(data_annual, (floor(local_time + time_at_creation) == (i-1) )))[1]
   }
 
   smokers_by_year <- 100 * smokers_by_year / smokers_by_year [, 5]
   smokers_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
   smokers_by_year <- as.data.frame(smokers_by_year)
   openxlsx::writeData(wb, "Smokers_by_year", smokers_by_year, startCol = 2, startRow = 3, colNames = TRUE)
-  dfm <- reshape2::melt(smokers_by_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")],id.vars = 1)
+  dfm <- reshape2::melt(smokers_by_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker")],id.vars = 1)
 
-  plot_smokers_by_year <- ggplot2::ggplot(smokers_by_year, aes( x = Year , y = Smoker, colour = "#FF6666")) +
-    geom_point() + labs(title = "Current Smoker Ratio") + ylab ("Current Smoker (%)") + ylim(low=0, high=25)
+  plot_smokers_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%")  +
+    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 #  plot_smokers_by_year <- qplot(Year, Smoker, data = smokers_by_year)
 
   print(plot_smokers_by_year) #plot needs to be showing
