@@ -279,9 +279,9 @@ init_input <- function() {
   ## Exacerbation;
 
   input_help$exacerbation$ln_rate_betas = "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.1, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
-                                                   gold2 = 0.8, gold3p = 2)))
-  input_ref$exacerbation$ln_rate_betas = "Najafzadeh M, Marra CA, Lynd LD, Sadatsafavi M, FitzGerald JM, McManus B, Sin D. Future impact of various interventions on the burden of COPD in Canada: a dynamic population model. PloS one. 2012 Oct 11;7(10):e46746. Only function of GOLD for minimalism"
+  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -0.6849, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
+                                                   gold2 = 0.41, gold3p = 0.97)))
+  input_ref$exacerbation$ln_rate_betas = "DOI: 10.2147/COPD.S13826"
 
 
   input_help$exacerbation$logit_severity_betas = "Regression coefficients for the proportional odds model of exacerbation severity"
