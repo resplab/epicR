@@ -1090,7 +1090,7 @@ agent *create_agent(agent *ag,int id)
     +input.smoking.logit_p_current_smoker_0_betas[6]*calendar_time
     );
 
-  double temp = min (input.smoking.minimum_smoking_prevalence,(odds1/(1+odds1)));
+  double temp = max(input.smoking.minimum_smoking_prevalence,(odds1/(1+odds1)));
 
   if(rand_unif()< temp) //adding a minimum baseline smoking prevalence. ever smoker
   {
