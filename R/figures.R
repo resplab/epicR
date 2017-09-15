@@ -152,8 +152,8 @@ export_figures <- function(nPatients = 10^4) {
   data_COPD_inc <- subset(data, event == 4)
 
   for (i in 1:input$global_parameters$time_horizon){
-    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time + time_of_creation) == i)) ))[1]
-    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time + time_of_creation) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time + time_at_creation) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time + time_at_creation) == i)) ))[1]
   }
   COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] <- COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] / op_ex$n_alive_by_ctime_sex * 100 #converting to percentage
   SE_COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 1:2] <- sqrt (COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] * (100 - COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3]) / op_ex$n_alive_by_ctime_sex) #TODO Make sure it's correct and add it to ggplot.
@@ -278,10 +278,10 @@ export_figures <- function(nPatients = 10^4) {
   data_annual <- subset (data, ((event == 0) | (event == 1)))
 
   for (i in (1:input$global_parameters$time_horizon)) {
-    smokers_by_year[i, 2] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years == 0) & ((local_time + time_of_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years > 0) & ((local_time + time_of_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0) & ((local_time + time_of_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 5] <- dim(subset(data_annual, ((local_time + time_of_creation) == i)))[1]
+    smokers_by_year[i, 2] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years == 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years > 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 5] <- dim(subset(data_annual, ((local_time + time_at_creation) == i)))[1]
   }
 
   smokers_by_year <- 100 * smokers_by_year / smokers_by_year [, 5]
