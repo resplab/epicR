@@ -4,7 +4,7 @@
 \alias{calibrate_explicit_mortality2}
 \title{Calibrates explicit mortality by Amin}
 \usage{
-calibrate_explicit_mortality2(n_sim = 10^6)
+calibrate_explicit_mortality2(n_sim = 10^7)
 }
 \arguments{
 \item{n_sim}{number of agents}
