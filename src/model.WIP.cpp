@@ -1090,10 +1090,12 @@ agent *create_agent(agent *ag,int id)
     +input.smoking.logit_p_current_smoker_0_betas[6]*calendar_time
     );
 
-  if(rand_unif()< (input.smoking.minimum_smoking_prevalence + (odds1/(1+odds1)))) //adding a minimum baseline smoking prevalence. ever smoker
+  double temp = max(input.smoking.minimum_smoking_prevalence,(odds1/(1+odds1)));
+
+  if(rand_unif()< temp) //adding a minimum baseline smoking prevalence. ever smoker
   {
-    (*ag).smoking_status=1;
-    ever_smoker=true;
+    (*ag).smoking_status = 1;
+    ever_smoker = true;
   }
   else
   {
@@ -1107,9 +1109,13 @@ agent *create_agent(agent *ag,int id)
     +input.smoking.logit_p_ever_smoker_con_not_current_0_betas[6]*calendar_time
     );
 
-    if(rand_unif()< (odds2/(1+odds2)))
+    if(rand_unif()< (odds2/(1+odds2))) {
       (*ag).pack_years=0;
-    else ever_smoker=true;
+      ever_smoker = false;
+    }
+    else{
+      ever_smoker = true;
+    }
   }
   if(ever_smoker)
   {
