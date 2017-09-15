@@ -278,21 +278,21 @@ export_figures <- function(nPatients = 10^4) {
   data_annual <- subset (data, ((event == 0) | (event == 1)))
 
   for (i in (1:input$global_parameters$time_horizon)) {
-    smokers_by_year[i, 2] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years == 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years > 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0) & ((local_time + time_at_creation) == (i - 1)))))[1]
-    smokers_by_year[i, 5] <- dim(subset(data_annual, ((local_time + time_at_creation) == i)))[1]
+    smokers_by_year[i, 2] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years == 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 3] <- dim(subset(data_annual, ((smoking_status == 0) & (pack_years != 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 4] <- dim(subset(data_annual, ((smoking_status > 0) & (floor(local_time + time_at_creation) == (i - 1)))))[1]
+    smokers_by_year[i, 5] <- dim(subset(data_annual, (floor(local_time + time_at_creation) == (i-1) )))[1]
   }
 
   smokers_by_year <- 100 * smokers_by_year / smokers_by_year [, 5]
   smokers_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
   smokers_by_year <- as.data.frame(smokers_by_year)
   openxlsx::writeData(wb, "Smokers_by_year", smokers_by_year, startCol = 2, startRow = 3, colNames = TRUE)
-  dfm <- reshape2::melt(smokers_by_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")],id.vars = 1)
+  dfm <- reshape2::melt(smokers_by_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker")],id.vars = 1)
 
   plot_smokers_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%")  +
-    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9", "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+    scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 #  plot_smokers_by_year <- qplot(Year, Smoker, data = smokers_by_year)
 
   print(plot_smokers_by_year) #plot needs to be showing
