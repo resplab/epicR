@@ -197,10 +197,10 @@ init_input <- function() {
 
   ## COPD
   input_help$COPD$logit_p_COPD_betas_by_sex <- "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)"
-  input$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.37729, age = 0.031689, age2 = 0, pack_years = 0.025183,
-                                                         current_smoking = 0.636127, year = 0, asthma = 0),
-                                                female = c(intercept = -5.337997, age = 0.044918, age2 = 0, pack_years = 0.018734,
-                                                         current_smoking = 1.093586, year = 0, asthma = 0))
+  input$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.522189  , age = 0.033070   , age2 = 0, pack_years = 0.025049   ,
+                                                         current_smoking = 0, year = 0, asthma = 0),
+                                                female = c(intercept = -4.074861   , age = 0.027359   , age2 = 0, pack_years = 0.030399   ,
+                                                         current_smoking = 0, year = 0, asthma = 0))
   input_ref$COPD$logit_p_COPD_betas_by_sex <- "CanCold - Shahzad's Derivation. Last Updated on 2017-09-18, as per Mohsen's email"
 
 
