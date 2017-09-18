@@ -24,7 +24,8 @@ Imports:
     chron,
     readr,
     openxlsx,
-    reshape2
+    reshape2,
+    scales
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
 Suggests: testthat
