@@ -2126,7 +2126,7 @@ void event_COPD_process(agent *ag)
   output_ex.cumul_non_COPD_time+=(*ag).local_time;
 #endif
 #if (OUTPUT_EX & OUTPUT_EX_COPD) > 0
-  output_ex.n_inc_COPD_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+  output_ex.n_inc_COPD_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
 #endif
 }
 
@@ -2213,9 +2213,9 @@ void event_exacerbation_process(agent *ag)
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
-  output_ex.n_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+  output_ex.n_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
   output_ex.n_exac_by_ctime_severity[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
-  if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+  if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
 
 #endif
 }
@@ -2308,7 +2308,7 @@ void event_exacerbation_death_process(agent *ag)
 {
   (*ag).alive=false;
   #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
-    output_ex.n_exac_death_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)floor((*ag).age_at_creation+(*ag).local_time)]+=1;
+    output_ex.n_exac_death_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
   #endif
   //Rprintf("Death by chocolate!\n");
 }
