@@ -449,7 +449,7 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
   out$p_copd_at_creation_by_age <- temp
 
 
-  py_cats <- c(0, 25, 50, 75, Inf)
+  py_cats <- c(0, 15, 30, 45, Inf)
   dataS[, "py_cat"] <- as.numeric(cut(dataS[, "pack_years"], py_cats, include.lowest = TRUE))
   x <- sqldf::sqldf("SELECT py_cat, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY py_cat")
   temp <- x[, "n_copd"]/x[, "n"]

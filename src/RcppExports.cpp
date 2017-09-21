@@ -259,31 +259,6 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP epicR_Callocate_resources();
-RcppExport SEXP epicR_Ccreate_agents();
-RcppExport SEXP epicR_Cdeallocate_resources();
-RcppExport SEXP epicR_Cdeallocate_resources2();
-RcppExport SEXP epicR_Cget_agent(SEXP);
-RcppExport SEXP epicR_Cget_agent_events(SEXP);
-RcppExport SEXP epicR_Cget_all_events();
-RcppExport SEXP epicR_Cget_all_events_matrix();
-RcppExport SEXP epicR_Cget_event(SEXP);
-RcppExport SEXP epicR_Cget_events_by_type(SEXP);
-RcppExport SEXP epicR_Cget_inputs();
-RcppExport SEXP epicR_Cget_n_events();
-RcppExport SEXP epicR_Cget_output();
-RcppExport SEXP epicR_Cget_output_ex();
-RcppExport SEXP epicR_Cget_pointers();
-RcppExport SEXP epicR_Cget_runtime_stats();
-RcppExport SEXP epicR_Cget_settings();
-RcppExport SEXP epicR_Cget_smith();
-RcppExport SEXP epicR_Cinit_session();
-RcppExport SEXP epicR_Cmodel(SEXP);
-RcppExport SEXP epicR_Cset_input_var(SEXP, SEXP);
-RcppExport SEXP epicR_Cset_settings_var(SEXP, SEXP);
-RcppExport SEXP epicR_get_sample_output(SEXP, SEXP);
-RcppExport SEXP epicR_Xrexp(SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_epicR_Cset_settings_var", (DL_FUNC) &_epicR_Cset_settings_var, 2},
     {"_epicR_Cget_settings", (DL_FUNC) &_epicR_Cget_settings, 0},
@@ -309,30 +284,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_epicR_Cdeallocate_resources2", (DL_FUNC) &_epicR_Cdeallocate_resources2, 0},
     {"_epicR_Cinit_session", (DL_FUNC) &_epicR_Cinit_session, 0},
     {"_epicR_Cmodel", (DL_FUNC) &_epicR_Cmodel, 1},
-    {"epicR_Callocate_resources",    (DL_FUNC) &epicR_Callocate_resources,    0},
-    {"epicR_Ccreate_agents",         (DL_FUNC) &epicR_Ccreate_agents,         0},
-    {"epicR_Cdeallocate_resources",  (DL_FUNC) &epicR_Cdeallocate_resources,  0},
-    {"epicR_Cdeallocate_resources2", (DL_FUNC) &epicR_Cdeallocate_resources2, 0},
-    {"epicR_Cget_agent",             (DL_FUNC) &epicR_Cget_agent,             1},
-    {"epicR_Cget_agent_events",      (DL_FUNC) &epicR_Cget_agent_events,      1},
-    {"epicR_Cget_all_events",        (DL_FUNC) &epicR_Cget_all_events,        0},
-    {"epicR_Cget_all_events_matrix", (DL_FUNC) &epicR_Cget_all_events_matrix, 0},
-    {"epicR_Cget_event",             (DL_FUNC) &epicR_Cget_event,             1},
-    {"epicR_Cget_events_by_type",    (DL_FUNC) &epicR_Cget_events_by_type,    1},
-    {"epicR_Cget_inputs",            (DL_FUNC) &epicR_Cget_inputs,            0},
-    {"epicR_Cget_n_events",          (DL_FUNC) &epicR_Cget_n_events,          0},
-    {"epicR_Cget_output",            (DL_FUNC) &epicR_Cget_output,            0},
-    {"epicR_Cget_output_ex",         (DL_FUNC) &epicR_Cget_output_ex,         0},
-    {"epicR_Cget_pointers",          (DL_FUNC) &epicR_Cget_pointers,          0},
-    {"epicR_Cget_runtime_stats",     (DL_FUNC) &epicR_Cget_runtime_stats,     0},
-    {"epicR_Cget_settings",          (DL_FUNC) &epicR_Cget_settings,          0},
-    {"epicR_Cget_smith",             (DL_FUNC) &epicR_Cget_smith,             0},
-    {"epicR_Cinit_session",          (DL_FUNC) &epicR_Cinit_session,          0},
-    {"epicR_Cmodel",                 (DL_FUNC) &epicR_Cmodel,                 1},
-    {"epicR_Cset_input_var",         (DL_FUNC) &epicR_Cset_input_var,         2},
-    {"epicR_Cset_settings_var",      (DL_FUNC) &epicR_Cset_settings_var,      2},
-    {"epicR_get_sample_output",      (DL_FUNC) &epicR_get_sample_output,      2},
-    {"epicR_Xrexp",                  (DL_FUNC) &epicR_Xrexp,                  2},
     {NULL, NULL, 0}
 };
 
