@@ -205,9 +205,9 @@ init_input <- function() {
 
 
   input_help$COPD$ln_h_COPD_betas_by_sex <- "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)"
-  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept =  -8.13685197, age = 0.04116634, age2 = 0, pack_years = 0.02958710,
+  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept =  -7.70593781, age = 0.02851874, age2 = 0, pack_years = 0.03153532,
                                                       smoking_status = 0, year = 0, asthma = 0),
-                                             female = c(Intercept = -7.95603856, age = 0.03774156, age2 = 0, pack_years = 0.03525539,
+                                             female = c(Intercept = -7.49709763, age = 0.02391918, age2 = 0, pack_years = 0.03809110,
                                                       smoking_status =  0, year = 0, asthma = 0))
   input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-09-19 (0.11.0)"
 
