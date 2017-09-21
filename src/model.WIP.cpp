@@ -1126,6 +1126,9 @@ agent *create_agent(agent *ag,int id)
       +input.smoking.pack_years_0_betas[4]*(*ag).smoking_status;
 
     (*ag).pack_years=temp+rand_norm()*input.smoking.pack_years_0_sd;
+    if ((*ag).pack_years < 0 ) {
+      (*ag).pack_years = 0; //making sure we don't get negative pack_years
+    }
   }
 
 
