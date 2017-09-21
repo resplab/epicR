@@ -201,7 +201,7 @@ init_input <- function() {
                                                          current_smoking = 0, year = 0, asthma = 0),
                                                 female = c(intercept = -4.074861   , age = 0.027359   , age2 = 0, pack_years = 0.030399   ,
                                                          current_smoking = 0, year = 0, asthma = 0))
-  input_ref$COPD$logit_p_COPD_betas_by_sex <- "CanCold - Shahzad's Derivation. Last Updated on 2017-09-18, as per Mohsen's email"
+  input_ref$COPD$logit_p_COPD_betas_by_sex <- "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term"
 
 
   input_help$COPD$ln_h_COPD_betas_by_sex <- "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)"
@@ -209,7 +209,7 @@ init_input <- function() {
                                                       smoking_status = 0, year = 0, asthma = 0),
                                              female = c(Intercept = -7.49709763, age = 0.02391918, age2 = 0, pack_years = 0.03809110,
                                                       smoking_status =  0, year = 0, asthma = 0))
-  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-09-19 (0.11.0)"
+  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-09-20 (0.12.0)"
 
 
   ## Lung function
