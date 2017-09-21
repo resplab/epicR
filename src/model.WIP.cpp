@@ -1213,6 +1213,7 @@ agent *create_agent(agent *ag,int id)
   {
     (*ag).gold=0;
     (*ag).fev1=0;
+    (*ag)._pred_fev1=0; //restarting _pred_fev1 for new people who don't have COPD
 
   }
 
