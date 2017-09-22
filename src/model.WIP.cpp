@@ -483,8 +483,8 @@ struct input
     double pack_years_0_sd;
     double ln_h_inc_betas[5]; //intercept, sex, age, age*2 calendar time,
     double minimum_smoking_prevalence;
-    double mortality_factor_current; // ratio of overall minus COPD mortality rate in current smokers vs non-smokers
-    double mortality_factor_former; // ratio of overall minus COPD mortality rate in former smokers vs non-smokers
+    double mortality_factor_current[5]; // ratio of overall minus COPD mortality rate in current smokers vs non-smokers
+    double mortality_factor_former[5]; // ratio of overall minus COPD mortality rate in former smokers vs non-smokers
     double ln_h_ces_betas[5]; //intercept, sex, age, age*2 calendar time,
   } smoking;
 
@@ -629,8 +629,8 @@ List Cget_inputs()
       Rcpp::Named("pack_years_0_sd")=input.smoking.pack_years_0_sd,
       Rcpp::Named("ln_h_inc_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_inc_betas),
       Rcpp::Named("minimum_smoking_prevalence")=input.smoking.minimum_smoking_prevalence,
-      Rcpp::Named("mortality_factor_current")=input.smoking.mortality_factor_current,
-      Rcpp::Named("mortality_factor_former")=input.smoking.mortality_factor_former,
+      Rcpp::Named("mortality_factor_current")=AS_VECTOR_DOUBLE(input.smoking.mortality_factor_current),
+      Rcpp::Named("mortality_factor_former")=AS_VECTOR_DOUBLE(input.smoking.mortality_factor_former),
       Rcpp::Named("ln_h_ces_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_ces_betas)
       ),
     Rcpp::Named("COPD")=Rcpp::List::create(
@@ -734,8 +734,8 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="smoking$pack_years_0_sd") {input.smoking.pack_years_0_sd=value[0]; return(0);}
   if(name=="smoking$ln_h_inc_betas") READ_R_VECTOR(value,input.smoking.ln_h_inc_betas);
   if(name=="smoking$minimum_smoking_prevalence") {input.smoking.minimum_smoking_prevalence=value[0]; return(0);}
-  if(name=="smoking$mortality_factor_current") {input.smoking.mortality_factor_current=value[0]; return(0);}
-  if(name=="smoking$mortality_factor_former") {input.smoking.mortality_factor_former=value[0]; return(0);}
+  if(name=="smoking$mortality_factor_current") READ_R_VECTOR(value,input.smoking.mortality_factor_current);
+  if(name=="smoking$mortality_factor_former") READ_R_VECTOR(value,input.smoking.mortality_factor_former);
   if(name=="smoking$ln_h_ces_betas") READ_R_VECTOR(value,input.smoking.ln_h_ces_betas);
 
   if(name=="COPD$ln_h_COPD_betas_by_sex") READ_R_MATRIX(value,input.COPD.ln_h_COPD_betas_by_sex);
@@ -2470,11 +2470,23 @@ double event_bgd_tte(agent *ag)
   double odds=p/(1-p)*_or;
   p=odds/(1+odds);
 
+  //adjusting background mortality for current smokers
   if ((*ag).smoking_status > 1e-5) {
-    p *= input.smoking.mortality_factor_current;   //adjusting background mortality for current smokers
+    p *= input.smoking.mortality_factor_current[0] * ((age >= 40) && (age < 50)) +
+      input.smoking.mortality_factor_current[1] * ((age >= 50) && (age < 60)) +
+      input.smoking.mortality_factor_current[2] * ((age >= 60) && (age < 70)) +
+      input.smoking.mortality_factor_current[3] * ((age >= 70) && (age < 80)) +
+      input.smoking.mortality_factor_current[4] * (age >= 80);
+
     if (p > 1) {p = 1;}
+
+    //adjusting background mortality for former smokers
   } else if ((*ag).pack_years > 1e-5) {
-      p *= input.smoking.mortality_factor_former;   //adjusting background mortality for former smokers
+      p *= input.smoking.mortality_factor_former[0] * ((age >= 40) && (age < 50)) +
+        input.smoking.mortality_factor_former[1] * ((age >= 50) && (age < 60)) +
+        input.smoking.mortality_factor_former[2] * ((age >= 60) && (age < 70)) +
+        input.smoking.mortality_factor_former[3] * ((age >= 70) && (age < 80)) +
+        input.smoking.mortality_factor_former[4] * (age >= 80);
       if (p > 1) {p = 1;}
       }
   if(p==1)

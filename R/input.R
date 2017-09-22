@@ -163,16 +163,21 @@ init_input <- function() {
   input_ref$smoking$minimum_smoking_prevalence <- ""
 
 
-  input_help$smoking$mortality_factor_current <- "Mortality ratio for current smokers vs. non-smokers"
-  input$smoking$mortality_factor_current <- 1.83  #1.83
+  #input_help$smoking$mortality_factor_current <- "Mortality ratio for current smokers vs. non-smokers"
+  #input$smoking$mortality_factor_current <- 1.83  #1.83
+  #input_ref$smoking$mortality_factor_current <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+
+  #input_help$smoking$mortality_factor_former <- "Mortality ratio for former smokers vs. non-smokers"
+  #input$smoking$mortality_factor_former <- 1.34  #1.34
+  #input_ref$smoking$mortality_factor_former <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+
+  input_help$smoking$mortality_factor_current  <- "Mortality ratio for current  smokers vs. non-smokers by sex and age group"
+  input$smoking$mortality_factor_current <- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1.94  , age70to79 = 1.86, age80p = 1.66 )))
   input_ref$smoking$mortality_factor_current <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
 
-  input_help$smoking$mortality_factor_former <- "Mortality ratio for former smokers vs. non-smokers"
-  input$smoking$mortality_factor_former <- 1.34  #1.34
+  input_help$smoking$mortality_factor_former  <- "Mortality ratio for current  smokers vs. non-smokers by sex and age group"
+  input$smoking$mortality_factor_former<- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1.54  , age70to79 = 1.36, age80p = 1.27 )))
   input_ref$smoking$mortality_factor_former <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
-
-
-
 
 
   input_help$smoking$pack_years_0_betas <- "Regression equations for determining the pack-years of smoking at the time of creation (for elogit_p_never_smoker_con_current_0_betas smokers)"
