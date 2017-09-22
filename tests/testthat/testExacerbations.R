@@ -2,8 +2,10 @@ library(epicR)
 context("Exacerbation Tests")
 
 test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature", {
+  input <- model_input$values
   init_session()
   run()
+  op <- Cget_output()
   all_events <- as.data.frame(Cget_all_events_matrix())
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
@@ -27,8 +29,12 @@ test_that("Exacerbation rates per GOLD stage are not more than 10% off when comp
   GOLD_I_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1]) - 0.82)
   GOLD_II_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2]) - 1.17)
   GOLD_IIIp_diff <- abs (((as.data.frame(table(exac_events[, "gold"]))[3, 2] + as.data.frame(table(exac_events[, "gold"]))[4,2])/(Follow_up_Gold[3] + Follow_up_Gold[4])) - 1.8)
+  total_exac_severep <- (op$total_exac[3] + op$total_exac[4]) / input$time_horizon / default_settings$n_base_agents * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
 
   expect_lt (GOLD_I_diff/0.82*0.15, 0.2)
   expect_lt (GOLD_II_diff/1.17*0.15, 0.2)
   expect_lt (GOLD_IIIp_diff/1.8*0.15, 0.2)
+  expect_lt (total_exac_severep, 9e4)
+  expect_gt (total_exac_severep, 8e4)
+
   })
