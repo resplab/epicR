@@ -181,7 +181,7 @@ init_input <- function() {
 
 
   input_help$smoking$pack_years_0_betas <- "Regression equations for determining the pack-years of smoking at the time of creation (for elogit_p_never_smoker_con_current_0_betas smokers)"
-  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = 22, sex = -4, age = 0, year = -0.8, current_smoker = 10)))
+  input$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = 22, sex = -4, age = 0, year = -0.6, current_smoker = 10)))
   input_ref$smoking$pack_years_0_betas <- ""
 
 
@@ -196,7 +196,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.4,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01)
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
