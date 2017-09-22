@@ -1347,8 +1347,8 @@ void reset_output()
   output.n_deaths=0;
   output.n_COPD=0;
   output.total_pack_years=0;
-  output.total_exac[0]=0;output.total_exac[1]=0;output.total_exac[2]=0;
-  output.total_exac_time[0]=0;output.total_exac_time[1]=0;output.total_exac_time[2]=0;
+  output.total_exac[0]=0;output.total_exac[1]=0;output.total_exac[2]=0;output.total_exac[3]=0;
+  output.total_exac_time[0]=0;output.total_exac_time[1]=0;output.total_exac_time[2]=0;output.total_exac_time[3]=0;
   output.total_doctor_visit[0]=0;output.total_doctor_visit[1]=0;
   output.total_cost=0;
   output.total_qaly=0;
@@ -2198,8 +2198,8 @@ void event_exacerbation_process(agent *ag)
   double r=rand_unif();
 
   if(r<p1) (*ag).exac_status=1;
-  else if(r<p1+p2) (*ag).exac_status=2;
-  else if(r<p1+p2+p3) (*ag).exac_status=3;
+  else if(r<(p1+p2)) (*ag).exac_status=2;
+  else if(r<(p1+p2+p3)) (*ag).exac_status=3;
   else (*ag).exac_status=4;
 
   (*ag).cumul_exac[(*ag).exac_status-1]+=1;
