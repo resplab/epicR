@@ -1,7 +1,7 @@
 library(epicR)
 context("Exacerbation Tests")
 
-test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature", {
+test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature and there are approximately 80000 annual severe and very severe exacerbations in Canada", {
   input <- model_input$values
   init_session()
   run()
@@ -34,9 +34,7 @@ test_that("Exacerbation rates per GOLD stage are not more than 10% off when comp
   expect_lt (GOLD_I_diff/0.82*0.15, 0.2)
   expect_lt (GOLD_II_diff/1.17*0.15, 0.2)
   expect_lt (GOLD_IIIp_diff/1.8*0.15, 0.2)
-})
-
-test_that("There are approximately 80000 annual severe and very severe exacerbations in Canada", {
   expect_lt (total_exac_severep, 10e4)
   expect_gt (total_exac_severep, 7e4)
 })
+
