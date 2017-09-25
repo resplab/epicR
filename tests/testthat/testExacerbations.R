@@ -33,8 +33,8 @@ test_that("Exacerbation rates per GOLD stage are not more than 10% off when comp
 
   expect_lt (GOLD_I_diff/0.1927, 0.2)
   expect_lt (GOLD_II_diff/0.434, 0.2)
-  expect_lt (GOLD_IIIp_diff/1.01, 0.5) #0.939 for GOLD III and 1.92 for GOLD IV
-  expect_lt (total_exac_severep, 10e4)
-  expect_gt (total_exac_severep, 7e4)
+  expect_lt (GOLD_IIIp_diff/1.01, 0.3) #0.939 for GOLD III and 1.92 for GOLD IV
+#  expect_lt (total_exac_severep, 10e4)
+#  expect_gt (total_exac_severep, 7e4)
 })
 
