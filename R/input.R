@@ -289,7 +289,7 @@ init_input <- function() {
 
 
   input_help$exacerbation$logit_severity_betas = "Regression coefficients for the proportional odds model of exacerbation severity"
-  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.4726, intercept2 = 0.3371, intercept3 = 3.6365 , female = -0.0431,
+  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.4726, intercept2 = 0.3371, intercept3 = 3.6365 , female = 0.0431,
                                                           age = -0.013865, fev1 = -0.0020477, smoking_status = 0, pack_years = -0.0009601 , BMI = 0)))
   input_ref$exacerbation$logit_severity_betas = "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on 2017-09-25"
 
