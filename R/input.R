@@ -287,16 +287,15 @@ init_input <- function() {
                                                    gold2 = 0.85, gold3p = 1.9)))
   input_ref$exacerbation$ln_rate_betas = "Rates 0.15 that of DOI: 10.2147/COPD.S13826 to account for diganosis bias."
 
-
-  input_help$exacerbation$logit_severity_betas = "Regression coefficients for the proportional odds model of exacerbation severity"
-  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.4726, intercept2 = 0.3371, intercept3 = 3.6365 , female = 0.0431,
-                                                          age = -0.013865, fev1 = -0.0020477, smoking_status = 0, pack_years = -0.0009601 , BMI = 0)))
-  input_ref$exacerbation$logit_severity_betas = "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on 2017-09-25"
-
-
   input_help$exacerbation$ln_rate_intercept_sd = "SD of the random intercept for log-hazard of exacerbation"
   input$exacerbation$ln_rate_intercept_sd = sqrt(0.55)
   input_ref$exacerbation$ln_rate_intercept_sd = ""
+
+
+  input_help$exacerbation$logit_severity_betas = "Regression coefficients for the proportional odds model of exacerbation severity"
+  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = 2.93 - 0.4726, intercept2 = 2.93 + 0.3371, intercept3 = 2.93 + 3.6365, female = 0.0431,
+                                                          age = -0.013865, fev1 = -0.0020477, smoking_status = 0, pack_years = -0.0009601 , BMI = 0)))
+  input_ref$exacerbation$logit_severity_betas = "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on 2017-09-25"
 
 
   input_help$exacerbation$logit_severity_intercept_sd = "SD of the random intercept for proportional odds model of exacerbation severity"
