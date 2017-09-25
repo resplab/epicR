@@ -2,4 +2,61 @@
 
 
 # epicR
-R package for Evaluation Platform in COPD (EPIC). Under development.
+R package for Evaluation Platform in COPD (EPIC). Currently under development.
+
+## Overview
+epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
+
+## Installation
+### Windows 7 or Later
+1. Download and Install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
+2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+3. Download and Install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/) 
+4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+
+  `install.packages ('devtools')`
+
+5. Install epicR from GitHub:
+
+`devtools::install_github('aminadibi/epicR')`
+
+
+### Mac OS Sierra and Later
+1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
+2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+3. Install Xcode from Mac App Store. 
+4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+
+  `install.packages ('devtools')`
+
+5. Install epicR from GitHub:
+
+`devtools::install_github('aminadibi/epicR')`
+
+### Ubuntu 16.04 and Later
+1. Install R by executing the following commands in Terminal:
+
+  `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9`
+
+  `sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'`
+
+  `sudo apt-get update`
+
+  `sudo apt-get install r-base`
+
+If the installation is successful, you should be able to start R:
+
+  `sudo -i R`
+
+2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+3. Install `libcurl` from Terminal: 
+
+  `sudo apt-get install libcurl4-openssl-dev libssl-dev`
+
+4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+
+  `install.packages ('devtools')`
+5. Install epicR from GitHub:
+
+  `devtools::install_github('aminadibi/epicR')`
+
