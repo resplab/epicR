@@ -283,8 +283,8 @@ init_input <- function() {
   ## Exacerbation;
 
   input_help$exacerbation$ln_rate_betas = "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.60, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
-                                                   gold2 = 0.30, gold3p = 0.82)))
+  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.10, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
+                                                   gold2 = 0.85, gold3p = 1.9)))
   input_ref$exacerbation$ln_rate_betas = "Rates 0.15 that of DOI: 10.2147/COPD.S13826 to account for diganosis bias."
 
 

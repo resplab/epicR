@@ -31,9 +31,9 @@ test_that("Exacerbation rates per GOLD stage are not more than 10% off when comp
   GOLD_IIIp_diff <- abs (((as.data.frame(table(exac_events[, "gold"]))[3, 2] + as.data.frame(table(exac_events[, "gold"]))[4,2])/(Follow_up_Gold[3] + Follow_up_Gold[4])) - 1.8)
   total_exac_severep <- (op$total_exac[3] + op$total_exac[4]) / (input$global_parameters$time_horizon * default_settings$n_base_agents) * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
 
-  expect_lt (GOLD_I_diff/0.82*0.15, 0.2)
-  expect_lt (GOLD_II_diff/1.17*0.15, 0.2)
-  expect_lt (GOLD_IIIp_diff/1.8*0.15, 0.2)
+  expect_lt (GOLD_I_diff/0.1927, 0.2)
+  expect_lt (GOLD_II_diff/0.434, 0.2)
+  expect_lt (GOLD_IIIp_diff/1.01, 0.5) #0.939 for GOLD III and 1.92 for GOLD IV
   expect_lt (total_exac_severep, 10e4)
   expect_gt (total_exac_severep, 7e4)
 })
