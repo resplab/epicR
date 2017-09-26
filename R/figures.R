@@ -30,7 +30,7 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "Prev_Age_Group_CanCOLD-BOLD")
   openxlsx::addWorksheet(wb, "COPD_prev_by_age_group_GOLD")
   openxlsx::addWorksheet(wb, "COPD_mortality_cause_death")
-  openxlsx::addWorksheet(wb, "Age-specific-Mortality-per1000")
+  openxlsx::addWorksheet(wb, "Age_Specific_Mortality_per1000")
   openxlsx::addWorksheet(wb, "Cost_by_GOLD")
   openxlsx::addWorksheet(wb, "QALY_by_GOLD")
   openxlsx::addWorksheet(wb, "Clinical_trials")
@@ -56,7 +56,7 @@ export_figures <- function(nPatients = 10^4) {
                                   "Prev_Age_Group_CanCOLD-BOLD",
                                   "COPD_prev_by_age_group_GOLD",
                                   "COPD_mortality_cause_death",
-                                  "Age-specific-Mortality-per1000",
+                                  "Age_Specific_Mortality_per1000",
                                   "Cost_by_GOLD",
                                   "QALY_by_GOLD",
                                   "Clinical_trials",
@@ -297,6 +297,28 @@ export_figures <- function(nPatients = 10^4) {
 
   print(plot_gold_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "GOLD_stage_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  ##################################################### Age_Specific_Mortality_per1000 #####################################################
+  mortality_by_age <- matrix (NA, nrow = 110-40+1, ncol = 3)
+  mortality_by_age[1:(110-40+1), 1] <- c(40:110)
+
+  mortality_by_age[, 2:3] <- op_ex$n_death_by_age_sex[40:110, ] / op_ex$sum_time_by_age_sex[40:110,]
+
+  mortality_by_age <- as.data.frame(mortality_by_age)
+  colnames(mortality_by_age) <- c("Age", "Male", "Female")
+
+  openxlsx::writeData(wb, "Age_Specific_Mortality_per1000", mortality_by_age, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(mortality_by_age[,c("Age", "Male", "Female")],id.vars = 1)
+
+  plot_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Age_Specific_Mortality_per1000") + ylab ("Mortality Rate")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + ylim(low = 0, high = 0.4)
+
+  print(plot_mortality_by_age) #plot needs to be showing
+  openxlsx::insertPlot(wb, "Age_Specific_Mortality_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
 
 
   ##################################################### Smokers_by_Year #####################################################
