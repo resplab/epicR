@@ -272,6 +272,33 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::insertPlot(wb, "FEV1_by_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
+
+  ##################################################### GOLD Stages by Year #####################################################
+
+  GOLD_perc_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(GOLD_perc_by_year) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
+  GOLD_perc_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+  GOLD_perc_by_year[1:input$global_parameters$time_horizon, 2] <- op_ex$n_COPD_by_ctime_severity[, 2]
+  GOLD_perc_by_year[1:input$global_parameters$time_horizon, 3] <- op_ex$n_COPD_by_ctime_severity[, 3]
+  GOLD_perc_by_year[1:input$global_parameters$time_horizon, 4] <- op_ex$n_COPD_by_ctime_severity[, 4]
+  GOLD_perc_by_year[1:input$global_parameters$time_horizon, 5] <- op_ex$n_COPD_by_ctime_severity[, 5]
+
+  for (i in (1:input$global_parameters$time_horizon)){
+      GOLD_perc_by_year [i, 2:5] <- GOLD_perc_by_year [i, 2:5] / sum(GOLD_perc_by_year [i, 2:5]) * 100
+    }
+
+  GOLD_perc_by_year <- as.data.frame(GOLD_perc_by_year)
+  openxlsx::writeData(wb, "GOLD_stage_by_year", GOLD_perc_by_year, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(GOLD_perc_by_year[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
+
+  plot_gold_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "GOLD Stages per year") + ylab ("%")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
+  print(plot_gold_by_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "GOLD_stage_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
   ##################################################### Smokers_by_Year #####################################################
   smokers_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
   colnames(smokers_by_year) <- c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")
