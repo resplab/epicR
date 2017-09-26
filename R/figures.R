@@ -313,7 +313,7 @@ export_figures <- function(nPatients = 10^4) {
 
   plot_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Age_Specific_Mortality_per1000") + ylab ("Mortality Rate")  +
-    scale_colour_manual(values = c("#56B4E9", "#66CC99", "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + ylim(low = 0, high = 0.4)
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + ylim(low = 0, high = 0.4)
 
   print(plot_mortality_by_age) #plot needs to be showing
   openxlsx::insertPlot(wb, "Age_Specific_Mortality_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
