@@ -38,6 +38,7 @@ export_figures <- function(nPatients = 10^4) {
   openxlsx::addWorksheet(wb, "GOLD_by_sex_CanCOLD")
   openxlsx::addWorksheet(wb, "FEV1_by_sex_year")
   openxlsx::addWorksheet(wb, "Exacerbation_severity_per1000")
+  openxlsx::addWorksheet(wb, "Exacerbation_GOLD_per1000")
   openxlsx::addWorksheet(wb, "Exac_rate_GOLD_stage")
   openxlsx::addWorksheet(wb, "Exac_by_type_sex_year")
   openxlsx::addWorksheet(wb, "Population_by_year")
@@ -47,9 +48,9 @@ export_figures <- function(nPatients = 10^4) {
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 20, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 21, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:20, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:21, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -64,6 +65,7 @@ export_figures <- function(nPatients = 10^4) {
                                   "GOLD_by_sex_CanCOLD",
                                   "FEV1_by_sex_year",
                                   "Exacerbation_severity_per1000",
+                                  "Exacerbation_GOLD_per1000",
                                   "Exac_rate_GOLD_stage",
                                   "Exac_by_type_sex_year",
                                   "Population_by_year",
@@ -304,7 +306,7 @@ export_figures <- function(nPatients = 10^4) {
   colnames(exac_severity_by_year) <- c("Year", "Mild", "Moderate", "Severe", "Very Severe")
   exac_severity_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
-  exac_severity_by_year[, 2:5] <- op_ex$n_exac_by_ctime_severity [, 1:4] / nPatients * 1000
+  exac_severity_by_year[, 2:5] <- op_ex$n_exac_by_ctime_severity [, 1:4] / rowSums(op_ex$n_COPD_by_ctime_sex)[] * 1000
 
   exac_severity_by_year <- as.data.frame(exac_severity_by_year)
   openxlsx::writeData(wb, "Exacerbation_severity_per1000", exac_severity_by_year, startCol = 2, startRow = 3, colNames = TRUE)
@@ -317,25 +319,25 @@ export_figures <- function(nPatients = 10^4) {
   print(plot_exac_severity_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_severity_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
-  ##################################################### Exacerbation rate by GOLD by year  #####################################################
+  ##################################################### Exacerbation by GOLD by year per 1000 #####################################################
 
 
   exac_GOLD_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
   colnames(exac_GOLD_by_year) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
   exac_GOLD_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
-  exac_GOLD_by_year[, 2:5] <- op_ex$n_exac_by_ctime_GOLD [, 1:4] / op_ex$n_COPD_by_ctime_severity [, 1:4]
+  exac_GOLD_by_year[, 2:5] <- op_ex$n_exac_by_ctime_GOLD [, 1:4] / rowSums(op_ex$n_COPD_by_ctime_sex)[] * 1000
 
   exac_GOLD_by_year <- as.data.frame(exac_GOLD_by_year)
-  openxlsx::writeData(wb, "Exac_rate_GOLD_stage", exac_GOLD_by_year, startCol = 2, startRow = 3, colNames = TRUE)
+  openxlsx::writeData(wb, "Exacerbation_GOLD_per1000", exac_GOLD_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_GOLD_by_year[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
   plot_exac_GOLD_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Exacerbation rate per GOLD per year") + ylab ("Rate of Exacerbation")  +
+    geom_point () + geom_line() + labs(title = "Number of Exacerbations per GOLD per year") + ylab ("Exacerbations per 1000 patients")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
   print(plot_exac_GOLD_by_year) #plot needs to be showing
-  openxlsx::insertPlot(wb, "Exac_rate_GOLD_stage",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+  openxlsx::insertPlot(wb, "Exacerbation_GOLD_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ##################################################### Age_Specific_Mortality_per1000 #####################################################
