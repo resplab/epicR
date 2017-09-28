@@ -199,7 +199,8 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
   cat("Rates of exacerbation per GOLD stage:\n")
   cat("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1], "\n")
   cat("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2], "\n")
-  cat("GOLD III and IV :", (as.data.frame(table(exac_events[, "gold"]))[3, 2] + as.data.frame(table(exac_events[, "gold"]))[4,
-                                                                                                                            2])/(Follow_up_Gold[3] + Follow_up_Gold[4]), "\n")
+  cat("GOLD III: ", as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3], "\n")
+  cat("GOLD IV: ", as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4], "\n")
+
   terminate_session()
 }

@@ -516,7 +516,7 @@ struct input
 
   struct
   {
-    double ln_rate_betas[7];     //intercept sex age fev1 smoking status
+    double ln_rate_betas[8];     //intercept sex age fev1 smoking status
     double logit_severity_betas[9];     //intercept1, intercept2, sex age fev1 smoking_status
     double ln_rate_intercept_sd;
     double logit_severity_intercept_sd;       //sd of the intercept (random-effects)
@@ -2159,7 +2159,8 @@ double event_exacerbation_tte(agent *ag)
                 +input.exacerbation.ln_rate_betas[3]*(*ag).fev1
                 +input.exacerbation.ln_rate_betas[4]*(*ag).smoking_status
                 +input.exacerbation.ln_rate_betas[5]*((*ag).gold==2)
-                +input.exacerbation.ln_rate_betas[6]*((*ag).gold>=3)
+                +input.exacerbation.ln_rate_betas[6]*((*ag).gold==3)
+                +input.exacerbation.ln_rate_betas[6]*((*ag).gold==4)
                 );
 
 
