@@ -1394,7 +1394,6 @@ struct output_ex
   double cumul_qaly_ctime[1000];
   double sum_fev1_ltime[1000];
   double cumul_time_by_smoking_status[3];
-  double cumul_time_by_GOLD_status[6];
   double sum_time_by_ctime_sex[100][2];
   double sum_time_by_age_sex[111][2];
 
@@ -1412,6 +1411,8 @@ struct output_ex
   int n_COPD_by_ctime_age[100][111];
   int n_inc_COPD_by_ctime_age[100][111];
   int n_COPD_by_ctime_severity[100][5]; //no COPD to GOLD 4;
+  int cumul_time_by_ctime_GOLD[100][5];
+
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1480,7 +1481,6 @@ List Cget_output_ex()
       Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
       Rcpp::Named("sum_fev1_ltime")=AS_VECTOR_DOUBLE_SIZE(output_ex.sum_fev1_ltime,input.global_parameters.time_horizon),
       Rcpp::Named("cumul_time_by_smoking_status")=AS_VECTOR_DOUBLE(output_ex.cumul_time_by_smoking_status),
-      Rcpp::Named("cumul_time_by_GOLD_status")=AS_VECTOR_DOUBLE(output_ex.cumul_time_by_GOLD_status),
       Rcpp::Named("cumul_non_COPD_time")=output_ex.cumul_non_COPD_time,
       Rcpp::Named("sum_p_COPD_by_ctime_sex")=AS_MATRIX_DOUBLE_SIZE(output_ex.sum_p_COPD_by_ctime_sex,input.global_parameters.time_horizon),
       Rcpp::Named("sum_pack_years_by_ctime_sex")=AS_MATRIX_DOUBLE_SIZE(output_ex.sum_pack_years_by_ctime_sex,input.global_parameters.time_horizon),
@@ -1501,6 +1501,8 @@ List Cget_output_ex()
   out["n_COPD_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_COPD_by_ctime_age,input.global_parameters.time_horizon),
   out["n_inc_COPD_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_inc_COPD_by_ctime_age,input.global_parameters.time_horizon),
   out["n_COPD_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_COPD_by_ctime_severity,input.global_parameters.time_horizon),
+  out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
+
 #endif
 
 
@@ -1588,7 +1590,7 @@ void update_output_ex(agent *ag)
   output_ex.n_COPD_by_ctime_sex[time][(*ag).sex]+=((*ag).gold>0)*1;
   output_ex.n_COPD_by_ctime_age[time][age-1]+=((*ag).gold>0)*1;
   output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
-  output_ex.cumul_time_by_GOLD_status [(*ag).gold]+=1;
+  output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
