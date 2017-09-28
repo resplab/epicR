@@ -2,7 +2,7 @@
 #' @param nPatients number of agents
 #' @return an excel file with all output
 #' @export
-export_figures <- function(nPatients = 10^4) {
+export_figures <- function(nPatients = 5e4) {
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
