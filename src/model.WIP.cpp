@@ -2160,7 +2160,7 @@ double event_exacerbation_tte(agent *ag)
                 +input.exacerbation.ln_rate_betas[4]*(*ag).smoking_status
                 +input.exacerbation.ln_rate_betas[5]*((*ag).gold==2)
                 +input.exacerbation.ln_rate_betas[6]*((*ag).gold==3)
-                +input.exacerbation.ln_rate_betas[6]*((*ag).gold==4)
+                +input.exacerbation.ln_rate_betas[7]*((*ag).gold==4)
                 );
 
 
