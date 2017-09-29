@@ -1,0 +1,27 @@
+
+h1 {
+  color: white;
+  background-color: #21b2ab;
+  font-family: Verdana, Geneva, sans-serif;
+  border-radius: 10px;
+  padding: 20px;
+}
+.tabbable {
+  font-family: Verdana, Geneva, sans-serif;
+}
+.tabbable > .nav > li[class=active]    > a  {
+  font-family: Verdana, Geneva, sans-serif;
+  padding: 20px;
+  background-color: #284f4d;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.6rem;
+}
+
+.well {
+  color: white;
+  background-color: #21b2ab;
+  border-radius: 10px;
+  padding: 20px;
+  font-family: Verdana, Geneva, sans-serif;
+}
