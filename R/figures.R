@@ -362,7 +362,6 @@ export_figures <- function(nPatients = 5e4) {
   ######################################################## COPD_related_mortality #########################################################
 
   COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
-  colnames(COPD_related_mortality) <- c("Age", "Male", "Female")
   num_COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
   denom_COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
 
@@ -371,7 +370,7 @@ export_figures <- function(nPatients = 5e4) {
   for (i in 1:11) {
     for (j in 0:4) {
       num_COPD_related_mortality[i, 2:3] <- num_COPD_related_mortality[i, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+i)+j, ]
-      denom_COPD_related_mortality[i, 2:3] < denom_COPD_related_mortality[i, 2:3] + (op_ex$n_alive_by_age_sex)[5*(7+i)+j, ]
+      denom_COPD_related_mortality[i, 2:3] <- denom_COPD_related_mortality[i, 2:3] + (op_ex$n_alive_by_age_sex)[5*(7+i)+j, ]
 
     }
   }
@@ -382,19 +381,19 @@ export_figures <- function(nPatients = 5e4) {
     denom_COPD_related_mortality[12, 2:3] <-denom_COPD_related_mortality[12, 2:3] + (op_ex$n_alive_by_age_sex)[5*(7+12)+j, ]
   }
 
-  COPD_related_mortality <- num_COPD_related_mortality[, 2:3] / denom_COPD_related_mortality[, 2:3] * 100 #converting to percentage
+  COPD_related_mortality [, 2:3]<- num_COPD_related_mortality[, 2:3] / denom_COPD_related_mortality[, 2:3] * 100 #converting to percentage
   COPD_related_mortality [, 1] <- c("40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95p")
 
 
   COPD_related_mortality <- as.data.frame(COPD_related_mortality)
+  colnames(COPD_related_mortality) <- c("Age", "Male", "Female")
+
   openxlsx::writeData(wb, "COPD_related_mortality", COPD_related_mortality, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(COPD_related_mortality[,c("Age", "Male", "Female")],id.vars = 1)
 
   plot_COPD_related_mortality <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = "#FF6666") +
-    labs(title = "COPD-Related Mortality") + ylab ("Mortality (%)")  +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
-
+    geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = c("#FF6666",  "#CC6666")) +
+    labs(title = "COPD-Related Mortality") + ylab ("Mortality (%)")
   print(plot_COPD_related_mortality) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_related_mortality",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 

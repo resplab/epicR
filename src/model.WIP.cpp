@@ -1511,7 +1511,7 @@ List Cget_output_ex()
   out["n_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_age,input.global_parameters.time_horizon);
   out["n_severep_exac_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex. n_severep_exac_by_ctime_age,input.global_parameters.time_horizon);
   out["n_exac_death_by_ctime_age"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_ctime_age,input.global_parameters.time_horizon);
-  out["n_exac_death_by_age_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_age_sex,input.global_parameters.time_horizon);
+  out["n_exac_death_by_age_sex"]=AS_MATRIX_INT(output_ex.n_exac_death_by_age_sex);
   out["n_exac_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity,input.global_parameters.time_horizon);
   out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
