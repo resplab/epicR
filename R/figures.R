@@ -276,7 +276,7 @@ export_figures <- function(nPatients = 5e4) {
   dfm <- reshape2::melt(df[,c('Year_with_COPD','Male','Female', "All")],id.vars = 1)
 
   plot_fev1_by_sex <- ggplot2::ggplot(dfm, aes(Year_with_COPD, value, colour = variable)) +
-    geom_point() + labs(title = "Mean FEV1 by Number of Years with COPD") + ylab ("FEV1 (L)")
+    geom_point() + geom_line() + labs(title = "Mean FEV1 by Number of Years with COPD") + ylab ("FEV1 (L)")
   print(plot_fev1_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "FEV1_by_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
