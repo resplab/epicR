@@ -29,7 +29,7 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "COPD_prevalence_by_year_sex")
   openxlsx::addWorksheet(wb, "Prev_Age_Group_CanCOLD-BOLD")
   openxlsx::addWorksheet(wb, "COPD_prev_by_age_group_GOLD")
-  openxlsx::addWorksheet(wb, "COPD_mortality_cause_death")
+  openxlsx::addWorksheet(wb, "COPD_related_mortality")
   openxlsx::addWorksheet(wb, "Age_Specific_Mortality_per1000")
   openxlsx::addWorksheet(wb, "Cost_by_GOLD")
   openxlsx::addWorksheet(wb, "QALY_by_GOLD")
@@ -56,7 +56,7 @@ export_figures <- function(nPatients = 5e4) {
                                   "COPD_prevalence_by_year_sex",
                                   "Prev_Age_Group_CanCOLD-BOLD",
                                   "COPD_prev_by_age_group_GOLD",
-                                  "COPD_mortality_cause_death",
+                                  "COPD_related_mortality",
                                   "Age_Specific_Mortality_per1000",
                                   "Cost_by_GOLD",
                                   "QALY_by_GOLD",
@@ -117,7 +117,7 @@ export_figures <- function(nPatients = 5e4) {
     }
   }
 
-  #handling the special case of 90-110 years, ie: i=4
+  #handling the special case of 90-110 years, ie: i=6
   for (j in 0:20){
     num_COPD_inc_by_agegroup [6] <- num_COPD_inc_by_agegroup [6] + colSums(COPD_inc_by_age[10*(3+6)+j])
     denom_COPD_inc_by_agegroup [6] <-denom_COPD_inc_by_agegroup [6] + colSums(alive_by_age[10*(3+6)+j])
@@ -359,6 +359,38 @@ export_figures <- function(nPatients = 5e4) {
   print(plot_exac_rate_by_GOLD_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_rate_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
+  ######################################################## COPD_related_mortality #########################################################
+
+  COPD_related_mortality <- matrix (NA, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+  colnames(COPD_related_mortality) <- c("Age", "Male", "Female")
+  num_COPD_related_mortality <- matrix (NA, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+  denum_COPD_related_mortality <- matrix (NA, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+
+  #COPD_related_mortality[, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  for (i in 1:11) {
+    for (j in 0:4) {
+      num_COPD_related_mortality[i] <- num_COPD_related_mortality[i] + colSums(op_ex$n_exac_death_by_age_sex)[5*(7+i)+j]
+      denum_COPD_related_mortality[i] < denum_COPD_related_mortality[i] + colSums (op_ex$alive_by_age)[5*(7+i)+j]
+
+    }
+  }
+
+  #handling the special case of 95+ years, ie: i=12
+  for (j in 0:16){
+    num_COPD_inc_by_agegroup[12] <- num_COPD_inc_by_agegroup[12] + colSums(COPD_inc_by_age[5*(7+12)+j])
+    denom_COPD_inc_by_agegroup[12] <-denom_COPD_inc_by_agegroup[12] + colSums(alive_by_age[5*(7+12)+j])
+  }
+  COPD_related_mortality <- as.data.frame(COPD_related_mortality)
+  openxlsx::writeData(wb, "COPD_related_mortality", COPD_related_mortality, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(COPD_related_mortality[,c("Age", "Male", "Female")],id.vars = 1)
+
+  plot_COPD_related_mortality <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "COPD-Related Mortality") + ylab ("Mortality (%)")  +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
+  print(plot_COPD_related_mortality) #plot needs to be showing
+  openxlsx::insertPlot(wb, "COPD_related_mortality",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ##################################################### Age_Specific_Mortality_per1000 #####################################################
