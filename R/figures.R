@@ -370,7 +370,7 @@ export_figures <- function(nPatients = 5e4) {
   for (i in 1:11) {
     for (j in 0:4) {
       num_COPD_related_mortality[i, 2:3] <- num_COPD_related_mortality[i, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+i)+j, ]
-      denom_COPD_related_mortality[i, 2:3] <- denom_COPD_related_mortality[i, 2:3] + (op_ex$n_alive_by_age_sex)[5*(7+i)+j, ]
+      denom_COPD_related_mortality[i, 2:3] <- denom_COPD_related_mortality[i, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+i)+j, ]
 
     }
   }
@@ -378,7 +378,7 @@ export_figures <- function(nPatients = 5e4) {
   #handling the special case of 95+ years, ie: i=12
   for (j in 0:16){
     num_COPD_related_mortality[12, 2:3] <- num_COPD_related_mortality[12, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+12)+j, ]
-    denom_COPD_related_mortality[12, 2:3] <-denom_COPD_related_mortality[12, 2:3] + (op_ex$n_alive_by_age_sex)[5*(7+12)+j, ]
+    denom_COPD_related_mortality[12, 2:3] <- denom_COPD_related_mortality[12, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+12)+j, ]
   }
 
   COPD_related_mortality [, 2:3]<- num_COPD_related_mortality[, 2:3] / denom_COPD_related_mortality[, 2:3] * 100 #converting to percentage
@@ -390,10 +390,11 @@ export_figures <- function(nPatients = 5e4) {
 
   openxlsx::writeData(wb, "COPD_related_mortality", COPD_related_mortality, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(COPD_related_mortality[,c("Age", "Male", "Female")],id.vars = 1)
-
-  plot_COPD_related_mortality <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = c("#FF6666",  "#CC6666")) +
-    labs(title = "COPD-Related Mortality") + ylab ("Mortality (%)")
+  dfm[['value']] <- as.numeric(dfm[['value']])
+  plot_COPD_related_mortality <- ggplot2::ggplot(dfm, aes(x = Age, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    ylim (low=0, high = 20) +
+    labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Mortality (%)")
   print(plot_COPD_related_mortality) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_related_mortality",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
