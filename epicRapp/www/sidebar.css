@@ -25,3 +25,13 @@ h1 {
   padding: 20px;
   font-family: Verdana, Geneva, sans-serif;
 }
+#sidebarpop {
+  color: white;
+  background-color: #21b2ab;
+  border-radius: 10px;
+  padding: 20px;
+  font-family: Verdana, Geneva, sans-serif;
+}
+#mainpanelgraph {
+  padding: 20px;
+}
