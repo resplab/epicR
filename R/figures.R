@@ -227,10 +227,17 @@ export_figures <- function(nPatients = 5e4) {
 
   ##################################################### COPD Prevalence by Age Group and GOLD #####################################################
 
-  #COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
-  #num_COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
-  #denom_COPD_prev_by_agegroup <- matrix (0, nrow = 6, ncol = 1) #40-50, 50-60, 60-70, 70-80,  80-90, 90+
+  # COPD_prev_by_agegroup_GOLD <- matrix (0, nrow = 4, ncol = 4) #40-55, 55-70, 70-85, 85+
+  # num_COPD_prev_by_agegroup_GOLD <- matrix (0, nrow = 4, ncol = 4) #40-55, 55-70, 70-85, 85+
+  # denom_COPD_prev_by_agegroup_GOLD <- matrix (0, nrow = 4, ncol = 4) #40-55, 55-70, 70-85, 85+
+  #
+  # for (i in (1:3)) {
+  #   for (j in (0:15)) {
+  #    num_COPD_prev_by_agegroup_GOLD [i, ] <- num_COPD_prev_by_agegroup_GOLD [i, ] + op_ex$COPD
 
+
+   # }
+  #}
 
   #df <- data.frame(Age_Group = c("40-50", "50-60", "60-70", "70-80", "80-90", "90+"), Prevalence = COPD_prev_by_agegroup)
   #openxlsx::writeData(wb, "COPD_prev_by_age_group_GOLD", df, startCol = 2, startRow = 3, colNames = TRUE)
