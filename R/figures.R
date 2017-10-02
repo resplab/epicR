@@ -49,17 +49,19 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Population_by_year")
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
+  openxlsx::addWorksheet(wb, "avg_pack_years_ctime")
   openxlsx::addWorksheet(wb, "mortality_by_smoking_per_year")
   openxlsx::addWorksheet(wb, "all_cause_mortality_COPD")
   openxlsx::addWorksheet(wb, "exac_mortality_by_sev_year")
 
 
+
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 25, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 26, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:25, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:26, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -81,15 +83,16 @@ export_figures <- function(nPatients = 5e4) {
                                   "Population_by_year",
                                   "Exac_by_age_year",
                                   "Smokers_by_year",
+                                  "avg_pack_years_ctime",
                                   "mortality_by_smoking_per_year",
                                   "all_cause_mortality_COPD",
                                   "exac_mortality_by_sev_year")
 
-  list_of_figures[1:25, 3] <- paste (packageVersion("epicR"))
+  list_of_figures[1:26, 3] <- paste (packageVersion("epicR"))
   openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
   openxlsx::writeData(wb, "List of Figures", list_of_figures, startCol = 1, startRow = 1, colNames = TRUE)
   openxlsx::writeFormula(wb, "List of Figures", startRow = 2
-               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:25,1], row = 1, col = 2,  text = list_of_figures[1:25,1]))
+               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:26,1], row = 1, col = 2,  text = list_of_figures[1:26,1]))
 
 
   #######################################################  COPD_incidence_by_age  #####################################################
@@ -564,6 +567,35 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_exac_mortality_by_sev_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "exac_mortality_by_sev_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  #####################################################  Average pack-years per year  #####################################################
+
+  dataS <- subset (data, (event == 0 | event == 1 ))
+  data_all <- dataS
+  dataS <- subset (dataS, pack_years != 0)
+  avg_pack_years_ctime <- matrix (NA, nrow = input$global_parameters$time_horizon + 1, ncol = 4)
+  colnames(avg_pack_years_ctime) <- c("Year", "Smokers PYs", "Former Smokers PYs", "all")
+
+  avg_pack_years_ctime[1:(input$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$global_parameters$time_horizon))
+
+  for (i in 0:input$global_parameters$time_horizon) {
+    smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status != 0)
+    prev_smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status == 0)
+    all <- subset (data_all, floor(local_time + time_at_creation) == i)
+    avg_pack_years_ctime[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
+    avg_pack_years_ctime[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
+    avg_pack_years_ctime[i+1, "all"] <- colSums(all)[["pack_years"]] / dim (all) [1]
+
+  }
+  openxlsx::writeData(wb, "avg_pack_years_ctime", avg_pack_years_ctime , startCol = 2, startRow = 3, colNames = TRUE)
+  avg_pack_years_ctime <- as.data.frame(avg_pack_years_ctime)
+  dfm <- reshape2::melt(avg_pack_years_ctime[,c( "Year", "Smokers PYs", "Former Smokers PYs", "all")], id.vars = 1)
+  plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
+
+  print(plot_avg_pack_years_ctime) #plot needs to be showing
+  openxlsx::insertPlot(wb, "avg_pack_years_ctime",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ####################################################### Save workbook #####################################################
   ## Open in excel without saving file: openXL(wb)
