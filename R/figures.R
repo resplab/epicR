@@ -524,13 +524,13 @@ export_figures <- function(nPatients = 5e4) {
 
   data_annual_COPD <- subset(data, ((event == 1) & (gold > 0)))
   data_deaths_COPD <- subset(data, ((event == 7) | (event == 13)))
-  data_deaths_COPD <- subset(data_death_COPD, gold > 0)
+  data_deaths_COPD <- subset(data_deaths_COPD, gold > 0)
 
 
   for (i in 1:input$global_parameters$time_horizon) {
-    mortality_by_smoking_per_year[i, 2] <- dim (subset(data_deaths_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
-    mortality_by_smoking_per_year[i, 3] <- dim (subset(data_deaths_COPD, ((sex == 1)  & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 1) & (floor(time_at_creation + local_time) == i ))))[1] * 100
-    mortality_by_smoking_per_year[i, 4] <- dim (subset(data_deaths_COPD, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((floor(time_at_creation + local_time) == i ))))[1] * 100
+    all_cause_mortality_COPD [i, 2] <- dim (subset(data_deaths_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    all_cause_mortality_COPD [i, 3] <- dim (subset(data_deaths_COPD, ((sex == 1)  & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 1) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    all_cause_mortality_COPD [i, 4] <- dim (subset(data_deaths_COPD, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((floor(time_at_creation + local_time) == i ))))[1] * 100
   }
 
   openxlsx::writeData(wb, "all_cause_mortality_COPD", all_cause_mortality_COPD , startCol = 2, startRow = 3, colNames = TRUE)
