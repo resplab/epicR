@@ -11,6 +11,10 @@ export_figures <- function(nPatients = 5e4) {
   settings$event_stack_size <- nPatients * 1.7 * 30
   init_session(settings = settings)
   input <- model_input$values
+ # input$manual$explicit_mortality_by_age_sex <-  input$manual$explicit_mortality_by_age_sex * 0 #DEBUG shutting down background mortality adjustment
+ # input$smoking$mortality_factor_current <- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1  , age70to79 = 1, age80p = 1 ))) #DEBUG shutting down background mortality adjustment
+#  input$smoking$mortality_factor_former<- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1  , age70to79 = 1, age80p = 1 ))) #DEBUG shutting down background mortality adjustment
+
 
   run(input=input)
   data <- as.data.frame(Cget_all_events_matrix())
@@ -46,15 +50,15 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
   openxlsx::addWorksheet(wb, "mortality_by_smoking_per_year")
-
+  openxlsx::addWorksheet(wb, "all_cause_mortality_COPD")
 
 
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 23, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 24, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:23, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:24, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -76,7 +80,8 @@ export_figures <- function(nPatients = 5e4) {
                                   "Population_by_year",
                                   "Exac_by_age_year",
                                   "Smokers_by_year",
-                                  "mortality_by_smoking_per_year")
+                                  "mortality_by_smoking_per_year",
+                                  "all_cause_mortality_COPD")
 
   list_of_figures[1:20, 3] <- paste (packageVersion("epicR"))
   openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
@@ -496,7 +501,7 @@ export_figures <- function(nPatients = 5e4) {
 
   for (i in 1:input$global_parameters$time_horizon) {
     mortality_by_smoking_per_year[i, 2] <- dim (subset(data_deaths, ((pack_years == 0)  & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((pack_years == 0)  & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
-    mortality_by_smoking_per_year[i, 3] <- dim (subset(data_deaths, ((pack_years > 0) & (smoking_status == 1) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((pack_years > 0) & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 3] <- dim (subset(data_deaths, ((pack_years > 0) & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((pack_years > 0) & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
     mortality_by_smoking_per_year[i, 4] <- dim (subset(data_deaths, ((smoking_status == 1) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((smoking_status == 1)  & (floor(time_at_creation + local_time) == i ))))[1] * 100
     mortality_by_smoking_per_year[i, 5] <- dim (subset(data_deaths, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((floor(time_at_creation + local_time) == i ))))[1] * 100
   }
@@ -512,6 +517,32 @@ export_figures <- function(nPatients = 5e4) {
   print(plot_mortality_by_smoking_per_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "mortality_by_smoking_per_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
+  #####################################################   All_cause mortality for COPD patients #####################################################
+  all_cause_mortality_COPD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 4)
+  colnames(all_cause_mortality_COPD) <- c("Year", "Male", "Female", "All")
+  all_cause_mortality_COPD [1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  data_annual_COPD <- subset(data, ((event == 1) & (gold > 0)))
+  data_deaths_COPD <- subset(data, ((event == 7) | (event == 13)))
+  data_deaths_COPD <- subset(data_death_COPD, gold > 0)
+
+
+  for (i in 1:input$global_parameters$time_horizon) {
+    mortality_by_smoking_per_year[i, 2] <- dim (subset(data_deaths_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 3] <- dim (subset(data_deaths_COPD, ((sex == 1)  & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 1) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 4] <- dim (subset(data_deaths_COPD, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((floor(time_at_creation + local_time) == i ))))[1] * 100
+  }
+
+  openxlsx::writeData(wb, "all_cause_mortality_COPD", all_cause_mortality_COPD , startCol = 2, startRow = 3, colNames = TRUE)
+  all_cause_mortality_COPD  <- as.data.frame(all_cause_mortality_COPD )
+  dfm <- reshape2::melt(all_cause_mortality_COPD [,c("Year", "Male", "Female", "All")], id.vars = 1)
+
+  plot_all_cause_mortality_COPD  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    labs(title = "All-cause mortality for COPD patients") + ylab ("%")
+
+  print(plot_all_cause_mortality_COPD ) #plot needs to be showing
+  openxlsx::insertPlot(wb, "all_cause_mortality_COPD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ####################################################### Save workbook #####################################################
   ## Open in excel without saving file: openXL(wb)
