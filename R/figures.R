@@ -45,15 +45,16 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Population_by_year")
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
+  openxlsx::addWorksheet(wb, "mortality_by_smoking_per_year")
 
 
 
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 22, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 23, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:22, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:23, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -74,7 +75,8 @@ export_figures <- function(nPatients = 5e4) {
                                   "Exac_by_type_sex_year",
                                   "Population_by_year",
                                   "Exac_by_age_year",
-                                  "Smokers_by_year")
+                                  "Smokers_by_year",
+                                  "mortality_by_smoking_per_year")
 
   list_of_figures[1:20, 3] <- paste (packageVersion("epicR"))
   openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
@@ -427,7 +429,7 @@ export_figures <- function(nPatients = 5e4) {
 
   plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
-    labs(title = "COPD-related mortality by year") + ylab ("Mortality among COPD patients")
+    labs(title = "COPD-related mortality by year") + ylab ("Mortality among COPD patients (%)")
 
   # plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
   #  geom_point () + geom_line() + labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")  +
@@ -483,6 +485,32 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_smokers_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Smokers_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+  #####################################################   mortality_by_smoking_per_year  #####################################################
+  mortality_by_smoking_per_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(mortality_by_smoking_per_year) <- c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")
+  mortality_by_smoking_per_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  data_annual <- subset(data, event == 1)
+  data_deaths <- subset(data, ((event == 7) | (event == 13)))
+
+  for (i in 1:input$global_parameters$time_horizon) {
+    mortality_by_smoking_per_year[i, 2] <- dim (subset(data_deaths, ((pack_years == 0)  & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((pack_years == 0)  & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 3] <- dim (subset(data_deaths, ((pack_years > 0) & (smoking_status == 1) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((pack_years > 0) & (smoking_status == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 4] <- dim (subset(data_deaths, ((smoking_status == 1) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((smoking_status == 1)  & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    mortality_by_smoking_per_year[i, 5] <- dim (subset(data_deaths, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual, ((floor(time_at_creation + local_time) == i ))))[1] * 100
+  }
+
+  openxlsx::writeData(wb, "mortality_by_smoking_per_year", mortality_by_smoking_per_year, startCol = 2, startRow = 3, colNames = TRUE)
+  mortality_by_smoking_per_year <- as.data.frame(mortality_by_smoking_per_year)
+  dfm <- reshape2::melt(mortality_by_smoking_per_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")], id.vars = 1)
+
+  plot_mortality_by_smoking_per_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    labs(title = "All-cause Mortality by smoking status") + ylab ("%")
+
+  print(plot_mortality_by_smoking_per_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "mortality_by_smoking_per_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ####################################################### Save workbook #####################################################
