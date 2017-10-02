@@ -29,7 +29,8 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "COPD_prevalence_by_year_sex")
   openxlsx::addWorksheet(wb, "Prev_Age_Group_CanCOLD-BOLD")
   openxlsx::addWorksheet(wb, "COPD_prev_by_age_group_GOLD")
-  openxlsx::addWorksheet(wb, "COPD_related_mortality")
+  openxlsx::addWorksheet(wb, "COPD_related_mortality_by_age")
+  openxlsx::addWorksheet(wb, "COPD_related_mortality_by_year")
   openxlsx::addWorksheet(wb, "Age_Specific_Mortality_per1000")
   openxlsx::addWorksheet(wb, "Cost_by_GOLD")
   openxlsx::addWorksheet(wb, "QALY_by_GOLD")
@@ -45,18 +46,21 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
 
+
+
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 21, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 22, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:21, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:22, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
                                   "Prev_Age_Group_CanCOLD-BOLD",
                                   "COPD_prev_by_age_group_GOLD",
-                                  "COPD_related_mortality",
+                                  "COPD_related_mortality_by_age",
+                                  "COPD_related_mortality_by_year",
                                   "Age_Specific_Mortality_per1000",
                                   "Cost_by_GOLD",
                                   "QALY_by_GOLD",
@@ -366,44 +370,72 @@ export_figures <- function(nPatients = 5e4) {
   print(plot_exac_rate_by_GOLD_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_rate_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
-  ######################################################## COPD_related_mortality #########################################################
+  ######################################################## COPD_related_mortality_per_age_group #########################################################
 
-  COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
-  num_COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
-  denom_COPD_related_mortality <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+  COPD_related_mortality_by_age <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+  num_COPD_related_mortality_by_age <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
+  denom_COPD_related_mortality_by_age <- matrix (0, nrow = 12, ncol = 3) #40-45, 45-50, 50-55, ..., 90-95, 95-max
 
-  #COPD_related_mortality[, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+  #COPD_related_mortality_by_age[, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
   for (i in 1:11) {
     for (j in 0:4) {
-      num_COPD_related_mortality[i, 2:3] <- num_COPD_related_mortality[i, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+i)+j, ]
-      denom_COPD_related_mortality[i, 2:3] <- denom_COPD_related_mortality[i, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+i)+j, ]
+      num_COPD_related_mortality_by_age[i, 2:3] <- num_COPD_related_mortality_by_age[i, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+i)+j, ]
+      denom_COPD_related_mortality_by_age[i, 2:3] <- denom_COPD_related_mortality_by_age[i, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+i)+j, ]
 
     }
   }
 
   #handling the special case of 95+ years, ie: i=12
   for (j in 0:16){
-    num_COPD_related_mortality[12, 2:3] <- num_COPD_related_mortality[12, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+12)+j, ]
-    denom_COPD_related_mortality[12, 2:3] <- denom_COPD_related_mortality[12, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+12)+j, ]
+    num_COPD_related_mortality_by_age[12, 2:3] <- num_COPD_related_mortality_by_age[12, 2:3] + (op_ex$n_exac_death_by_age_sex)[5*(7+12)+j, ]
+    denom_COPD_related_mortality_by_age[12, 2:3] <- denom_COPD_related_mortality_by_age[12, 2:3] + (op_ex$n_death_by_age_sex)[5*(7+12)+j, ]
   }
 
-  COPD_related_mortality [, 2:3]<- num_COPD_related_mortality[, 2:3] / denom_COPD_related_mortality[, 2:3] * 100 #converting to percentage
-  COPD_related_mortality [, 1] <- c("40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95p")
+  COPD_related_mortality_by_age [, 2:3]<- num_COPD_related_mortality_by_age[, 2:3] / denom_COPD_related_mortality_by_age[, 2:3] * 100 #converting to percentage
+  COPD_related_mortality_by_age [, 1] <- c("40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95p")
 
 
-  COPD_related_mortality <- as.data.frame(COPD_related_mortality)
-  colnames(COPD_related_mortality) <- c("Age", "Male", "Female")
+  COPD_related_mortality_by_age <- as.data.frame(COPD_related_mortality_by_age)
+  colnames(COPD_related_mortality_by_age) <- c("Age", "Male", "Female")
 
-  openxlsx::writeData(wb, "COPD_related_mortality", COPD_related_mortality, startCol = 2, startRow = 3, colNames = TRUE)
-  dfm <- reshape2::melt(COPD_related_mortality[,c("Age", "Male", "Female")],id.vars = 1)
+  openxlsx::writeData(wb, "COPD_related_mortality_by_age", COPD_related_mortality_by_age, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(COPD_related_mortality_by_age[,c("Age", "Male", "Female")],id.vars = 1)
   dfm[['value']] <- as.numeric(dfm[['value']])
-  plot_COPD_related_mortality <- ggplot2::ggplot(dfm, aes(x = Age, y = value)) +
+  plot_COPD_related_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylim (low=0, high = 20) +
     labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Mortality (%)")
-  print(plot_COPD_related_mortality) #plot needs to be showing
-  openxlsx::insertPlot(wb, "COPD_related_mortality",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+  print(plot_COPD_related_mortality_by_age) #plot needs to be showing
+  openxlsx::insertPlot(wb, "COPD_related_mortality_by_age",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+  ##################################################### COPD-related Mortality by Calendar Year #####################################################
+  COPD_death_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 4)
+  colnames(COPD_death_by_year) <- c("Year", "Male", "Female", "All")
+  data_COPD_death <- subset (data, event == 7)
+  COPD_death_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  for (i in 1:input$global_parameters$time_horizon) {
+    COPD_death_by_year[i, 2] <- dim(subset(data_COPD_death, ((sex == 0) & (floor(local_time + time_at_creation)==i))))[1]
+    COPD_death_by_year[i, 3] <- dim(subset(data_COPD_death, ((sex == 1) & (floor(local_time + time_at_creation)==i))))[1]
+    COPD_death_by_year[i, 4] <- COPD_death_by_year[i, 2] + COPD_death_by_year[i, 3]
+  }
+
+  openxlsx::writeData(wb, "COPD_related_mortality_by_year", COPD_death_by_year, startCol = 2, startRow = 3, colNames = TRUE)
+  COPD_death_by_year <- as.data.frame(COPD_death_by_year)
+  dfm <- reshape2::melt(COPD_death_by_year[,c("Year", "Male", "Female", "All")], id.vars = 1)
+
+  plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")
+
+  # plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  #  geom_point () + geom_line() + labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")  +
+  #  scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
+  print(plot_COPD_death_by_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "COPD_related_mortality_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
 
 
   ##################################################### Age_Specific_Mortality_per1000 #####################################################
@@ -451,9 +483,6 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_smokers_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Smokers_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
-
-
-
 
 
   ####################################################### Save workbook #####################################################
