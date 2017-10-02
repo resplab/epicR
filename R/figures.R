@@ -51,14 +51,15 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Smokers_by_year")
   openxlsx::addWorksheet(wb, "mortality_by_smoking_per_year")
   openxlsx::addWorksheet(wb, "all_cause_mortality_COPD")
+  openxlsx::addWorksheet(wb, "exac_mortality_by_sev_year")
 
 
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 24, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 25, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:24, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:25, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -81,13 +82,14 @@ export_figures <- function(nPatients = 5e4) {
                                   "Exac_by_age_year",
                                   "Smokers_by_year",
                                   "mortality_by_smoking_per_year",
-                                  "all_cause_mortality_COPD")
+                                  "all_cause_mortality_COPD",
+                                  "exac_mortality_by_sev_year")
 
-  list_of_figures[1:20, 3] <- paste (packageVersion("epicR"))
+  list_of_figures[1:25, 3] <- paste (packageVersion("epicR"))
   openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
   openxlsx::writeData(wb, "List of Figures", list_of_figures, startCol = 1, startRow = 1, colNames = TRUE)
   openxlsx::writeFormula(wb, "List of Figures", startRow = 2
-               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:20,1], row = 1, col = 2,  text = list_of_figures[1:20,1]))
+               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:25,1], row = 1, col = 2,  text = list_of_figures[1:25,1]))
 
 
   #######################################################  COPD_incidence_by_age  #####################################################
@@ -543,6 +545,24 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_all_cause_mortality_COPD ) #plot needs to be showing
   openxlsx::insertPlot(wb, "all_cause_mortality_COPD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+  #####################################################  Exacerbation mortality by severity and year #####################################################
+  exac_mortality_by_sev_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(exac_mortality_by_sev_year) <- c("Year", "Mild", "Moderate", "Severe", "Very Severe")
+  exac_mortality_by_sev_year  [1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  exac_mortality_by_sev_year [, 2:5] <- op_ex$n_exac_death_by_ctime_severity [, ] / op_ex$n_exac_by_ctime_severity[, ] * 100
+
+  openxlsx::writeData(wb, "exac_mortality_by_sev_year", exac_mortality_by_sev_year , startCol = 2, startRow = 3, colNames = TRUE)
+  exac_mortality_by_sev_year  <- as.data.frame(exac_mortality_by_sev_year)
+  dfm <- reshape2::melt(exac_mortality_by_sev_year  [,c("Year", "Mild", "Moderate", "Severe", "Very Severe")], id.vars = 1)
+
+  plot_exac_mortality_by_sev_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    labs(title = "Exacerbation Mortality by Severity and Year") + ylab ("%")
+
+  print(plot_exac_mortality_by_sev_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "exac_mortality_by_sev_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ####################################################### Save workbook #####################################################
   ## Open in excel without saving file: openXL(wb)
