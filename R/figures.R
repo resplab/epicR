@@ -416,9 +416,9 @@ export_figures <- function(nPatients = 5e4) {
   COPD_death_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
   for (i in 1:input$global_parameters$time_horizon) {
-    COPD_death_by_year[i, 2] <- dim(subset(data_COPD_death, ((sex == 0) & (floor(local_time + time_at_creation)==i))))[1]
-    COPD_death_by_year[i, 3] <- dim(subset(data_COPD_death, ((sex == 1) & (floor(local_time + time_at_creation)==i))))[1]
-    COPD_death_by_year[i, 4] <- COPD_death_by_year[i, 2] + COPD_death_by_year[i, 3]
+    COPD_death_by_year[i, 2] <- dim(subset(data_COPD_death, ((sex == 0) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 1] * 100
+    COPD_death_by_year[i, 3] <- dim(subset(data_COPD_death, ((sex == 1) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 2] * 100
+    COPD_death_by_year[i, 4] <- COPD_death_by_year[i, 2] + COPD_death_by_year[i, 3] / (op_ex$n_COPD_by_ctime_sex[i, 1] + op_ex$n_COPD_by_ctime_sex[i, 2]) * 100
   }
 
   openxlsx::writeData(wb, "COPD_related_mortality_by_year", COPD_death_by_year, startCol = 2, startRow = 3, colNames = TRUE)
@@ -427,7 +427,7 @@ export_figures <- function(nPatients = 5e4) {
 
   plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
-    labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")
+    labs(title = "COPD-related mortality by year") + ylab ("Mortality among COPD patients")
 
   # plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
   #  geom_point () + geom_line() + labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")  +
