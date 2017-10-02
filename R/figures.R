@@ -547,15 +547,16 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::insertPlot(wb, "all_cause_mortality_COPD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   #####################################################  Exacerbation mortality by severity and year #####################################################
-  exac_mortality_by_sev_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
-  colnames(exac_mortality_by_sev_year) <- c("Year", "Mild", "Moderate", "Severe", "Very Severe")
+  exac_mortality_by_sev_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 4)
+  colnames(exac_mortality_by_sev_year) <- c("Year", "Mild", "Moderate", "Severe and Very Severe")
   exac_mortality_by_sev_year  [1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
-  exac_mortality_by_sev_year [, 2:5] <- op_ex$n_exac_death_by_ctime_severity [, ] / op_ex$n_exac_by_ctime_severity[, ] * 100
+  exac_mortality_by_sev_year [, 2:3] <- op_ex$n_exac_death_by_ctime_severity [,1:2] / op_ex$n_exac_by_ctime_severity[, 1:2] * 100
+  exac_mortality_by_sev_year [, 4] <- (op_ex$n_exac_death_by_ctime_severity [, 3] + op_ex$n_exac_death_by_ctime_severity [, 4])  / (op_ex$n_exac_by_ctime_severity[, 3] + op_ex$n_exac_by_ctime_severity[, 4]) * 100
 
   openxlsx::writeData(wb, "exac_mortality_by_sev_year", exac_mortality_by_sev_year , startCol = 2, startRow = 3, colNames = TRUE)
   exac_mortality_by_sev_year  <- as.data.frame(exac_mortality_by_sev_year)
-  dfm <- reshape2::melt(exac_mortality_by_sev_year  [,c("Year", "Mild", "Moderate", "Severe", "Very Severe")], id.vars = 1)
+  dfm <- reshape2::melt(exac_mortality_by_sev_year  [,c("Year", "Mild", "Moderate", "Severe and Very Severe")], id.vars = 1)
 
   plot_exac_mortality_by_sev_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
