@@ -1,7 +1,7 @@
 library(epicR)
 context("Exacerbation Tests")
 
-test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature and there are approximately 80000 annual severe and very severe exacerbations in Canada", {
+test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature", {
   input <- model_input$values
   init_session()
   run()
@@ -28,8 +28,8 @@ test_that("Exacerbation rates per GOLD stage are not more than 10% off when comp
   terminate_session()
   GOLD_I_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1]) - 0.1927)
   GOLD_II_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2]) - 0.434)
-  GOLD_III_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[2]) - 0.939)
-  GOLD_IV_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[2]) - 1.92)
+  GOLD_III_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3]) - 0.939)
+  GOLD_IV_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4]) - 1.92)
   total_exac_severep <- (op$total_exac[3] + op$total_exac[4]) / (input$global_parameters$time_horizon * default_settings$n_base_agents) * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
 
   expect_lt (GOLD_I_diff/0.1927, 0.2)
