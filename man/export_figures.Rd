@@ -4,7 +4,7 @@
 \alias{export_figures}
 \title{Runs the model and exports an excel file with all output data}
 \usage{
-export_figures(nPatients = 10^4)
+export_figures(nPatients = 50000)
 }
 \arguments{
 \item{nPatients}{number of agents}
