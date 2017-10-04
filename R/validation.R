@@ -275,7 +275,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
     all <- subset (data_all, floor(local_time + time_at_creation) == i)
     avg_pack_years_ctime[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
     avg_pack_years_ctime[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
-    avg_pack_years_ctime[i+1, "all"] <- colSums(all)[["pack_years"]] / dim (all) [1]
+    avg_pack_years_ctime[i+1, "all"] <- colSums(all)[["pack_years"]] / dim (all) [1] #includes non-smokers
 
   }
 
