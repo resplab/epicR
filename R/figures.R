@@ -440,7 +440,7 @@ export_figures <- function(nPatients = 5e4) {
   exac_by_age_year[, 5] <- rowSums(op_ex$n_exac_by_ctime_age [, 85:111]) # special case of 80+
   exac_by_age_year[, 6] <- rowSums (exac_by_age_year[, 2:5]) # all
 
-  exac_by_age_year <- exac_by_age_year /default_settings$n_base_agents * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
+  exac_by_age_year[, 2:6]<- exac_by_age_year[, 2:6] / nPatients * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
   exac_by_age_year <- as.data.frame(exac_by_age_year)
   openxlsx::writeData(wb, "Exac_by_age_year", exac_by_age_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_by_age_year[,c("Year", "40-55", "55-70", "70-85", "85+", "All")],id.vars = 1)
@@ -451,6 +451,31 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_exac_by_age_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exac_by_age_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  ##################################################### Population per year #####################################################
+
+  population_by_sex_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 4)
+  colnames(population_by_sex_year) <- c("Year", "male", "female", "all")
+  population_by_sex_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  population_by_sex_year[, 2] <- (op_ex$n_alive_by_ctime_sex [, 1]) #male
+  population_by_sex_year[, 3] <- (op_ex$n_alive_by_ctime_sex [, 2]) #female
+  population_by_sex_year[, 4] <- rowSums(op_ex$n_alive_by_ctime_sex [, 1:2])
+
+
+  population_by_sex_year[, 2:4] <- population_by_sex_year[, 2:4] / nPatients * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
+
+  population_by_sex_year <- as.data.frame(population_by_sex_year)
+  openxlsx::writeData(wb, "Population_by_year", population_by_sex_year, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(population_by_sex_year[,c("Year", "male", "female", "all")],id.vars = 1)
+
+  plot_population_by_sex_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Population of Canada per year") + ylab ("Number")  +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(assuming 40+ population of Canada as 18 million as of the start of the simulation)")
+
+  print(plot_population_by_sex_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "Population_by_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ######################################################## COPD_related_mortality_per_age_group #########################################################
