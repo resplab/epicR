@@ -47,8 +47,8 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Exacerbation_rate_GOLD")
   openxlsx::addWorksheet(wb, "Exacerbation_sex_year")
   openxlsx::addWorksheet(wb, "Severe_exacerbation_sex_year")
-  openxlsx::addWorksheet(wb, "Population_by_year")
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
+  openxlsx::addWorksheet(wb, "Population_by_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
   openxlsx::addWorksheet(wb, "avg_pack_years_ctime")
   openxlsx::addWorksheet(wb, "mortality_by_smoking_per_year")
@@ -90,11 +90,11 @@ export_figures <- function(nPatients = 5e4) {
                                   "all_cause_mortality_COPD",
                                   "exac_mortality_by_sev_year")
 
-  list_of_figures[1:26, 3] <- paste (packageVersion("epicR"))
+  list_of_figures[1:27, 3] <- paste (packageVersion("epicR"))
   openxlsx::setColWidths(wb, 1, cols = c(1, 2, 3), widths = c(35, 50, 15))
   openxlsx::writeData(wb, "List of Figures", list_of_figures, startCol = 1, startRow = 1, colNames = TRUE)
   openxlsx::writeFormula(wb, "List of Figures", startRow = 2
-               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:26,1], row = 1, col = 2,  text = list_of_figures[1:26,1]))
+               , x = openxlsx::makeHyperlinkString(sheet = list_of_figures[1:27,1], row = 1, col = 2,  text = list_of_figures[1:27,1]))
 
 
   #######################################################  COPD_incidence_by_age  #####################################################
@@ -425,6 +425,32 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_sev_exac_by_sex_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Severe_exacerbation_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  ##################################################### exac_by_age_year #####################################################
+
+  exac_by_age_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 6)
+  colnames(exac_by_age_year) <- c("Year", "40-55", "55-70", "70-85", "85+", "All")
+  exac_by_age_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  for (i in (1:3)){
+  exac_by_age_year[, i+1] <- rowSums(op_ex$n_exac_by_ctime_age [, (25+(15*i)):(35+15*(i+1-1))])
+  }
+
+  exac_by_age_year[, 5] <- rowSums(op_ex$n_exac_by_ctime_age [, 85:111]) # special case of 80+
+  exac_by_age_year[, 6] <- rowSums (exac_by_age_year[, 2:5]) # all
+
+  exac_by_age_year <- exac_by_age_year /default_settings$n_base_agents * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
+  exac_by_age_year <- as.data.frame(exac_by_age_year)
+  openxlsx::writeData(wb, "Exac_by_age_year", exac_by_age_year, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(exac_by_age_year[,c("Year", "40-55", "55-70", "70-85", "85+", "All")],id.vars = 1)
+
+  plot_exac_by_age_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Number of Exacerbations per age group") + ylab ("Number of Exacerbations")  +
+     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(All severity levels, assuming 40+ population of Canada as 18 million as of the start of the simulation)")
+
+  print(plot_exac_by_age_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "Exac_by_age_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ######################################################## COPD_related_mortality_per_age_group #########################################################
