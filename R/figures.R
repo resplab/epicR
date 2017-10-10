@@ -46,6 +46,7 @@ export_figures <- function(nPatients = 5e4) {
   openxlsx::addWorksheet(wb, "Exacerbation_GOLD_per1000")
   openxlsx::addWorksheet(wb, "Exacerbation_rate_GOLD")
   openxlsx::addWorksheet(wb, "Exacerbation_sex_year")
+  openxlsx::addWorksheet(wb, "Severe_exacerbation_sex_year")
   openxlsx::addWorksheet(wb, "Population_by_year")
   openxlsx::addWorksheet(wb, "Exac_by_age_year")
   openxlsx::addWorksheet(wb, "Smokers_by_year")
@@ -59,9 +60,9 @@ export_figures <- function(nPatients = 5e4) {
   ## Populate workbooks
 
   ##################################################### List of Figures #####################################################
-  list_of_figures <- matrix (NA, nrow = 26, ncol = 3)
+  list_of_figures <- matrix (NA, nrow = 27, ncol = 3)
   colnames(list_of_figures) <- c("Name", "Description", "epicR version")
-  list_of_figures[1:26, 1] <- c(  "COPD_incidence_by_age_sex",
+  list_of_figures[1:27, 1] <- c(  "COPD_incidence_by_age_sex",
                                   "COPD_incidence_by_year_sex",
                                   "COPD_incidence_by_age_group_sex",
                                   "COPD_prevalence_by_year_sex",
@@ -80,6 +81,7 @@ export_figures <- function(nPatients = 5e4) {
                                   "Exacerbation_GOLD_per1000",
                                   "Exacerbation_rate_GOLD",
                                   "Exacerbation_sex_year",
+                                  "Severe_exacerbation_sex_year",
                                   "Population_by_year",
                                   "Exac_by_age_year",
                                   "Smokers_by_year",
@@ -385,21 +387,15 @@ export_figures <- function(nPatients = 5e4) {
 
   ##################################################### Exacerbation_sex_year #####################################################
 
-#  exac_rate_by_sex_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 9)
   exac_rate_by_sex_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 3)
-
-#  colnames(exac_rate_by_sex_by_year) <- c("Year", "Mild-male", "Moderate-male", "Severe-male", "Very Severe-male", "Mild-female", "Moderate-female", "Severe-female", "Very Severe-female")
   colnames(exac_rate_by_sex_by_year) <- c("Year", "male", "female")
-
   exac_rate_by_sex_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
   exac_rate_by_sex_by_year[, 3] <- rowSums(op_ex$n_exac_by_ctime_severity_female [, 1:4]) / (op_ex$n_COPD_by_ctime_sex)[, 2]
-
   exac_rate_by_sex_by_year[, 2] <- rowSums(op_ex$n_exac_by_ctime_severity [, 1:4] - op_ex$n_exac_by_ctime_severity_female [, 1:4]) / (op_ex$n_COPD_by_ctime_sex)[, 1]
 
   exac_rate_by_sex_by_year <- as.data.frame(exac_rate_by_sex_by_year)
   openxlsx::writeData(wb, "Exacerbation_sex_year", exac_rate_by_sex_by_year, startCol = 2, startRow = 3, colNames = TRUE)
-#  dfm <- reshape2::melt(exac_rate_by_sex_by_year[,c("Year", "Mild-male", "Moderate-male", "Severe-male", "Very Severe-male", "Mild-female", "Moderate-female", "Severe-female", "Very Severe-female")],id.vars = 1)
   dfm <- reshape2::melt(exac_rate_by_sex_by_year[,c("Year", "male", "female")],id.vars = 1)
 
   plot_exac_rate_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
@@ -408,6 +404,27 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_exac_rate_by_sex_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  ##################################################### Severe_Exacerbations_sex_year #####################################################
+
+  sev_exac_by_sex_by_year <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 3)
+  colnames(sev_exac_by_sex_by_year) <- c("Year", "male", "female")
+  sev_exac_by_sex_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  sev_exac_by_sex_by_year[, 3] <- rowSums(op_ex$n_exac_by_ctime_severity_female [, 3:4]) / (op_ex$n_COPD_by_ctime_sex)[, 2]
+  sev_exac_by_sex_by_year[, 2] <- rowSums(op_ex$n_exac_by_ctime_severity [, 3:4] - op_ex$n_exac_by_ctime_severity_female [, 3:4]) / (op_ex$n_COPD_by_ctime_sex)[, 1]
+
+  sev_exac_by_sex_by_year <- as.data.frame(sev_exac_by_sex_by_year)
+  openxlsx::writeData(wb, "Severe_exacerbation_sex_year", sev_exac_by_sex_by_year, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(sev_exac_by_sex_by_year[,c("Year", "male", "female")],id.vars = 1)
+
+  plot_sev_exac_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "Severe and very severe exacerbations by gender") + ylab ("Exacerbation Rate")  +
+    scale_colour_manual(values = c("#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
+  print(plot_sev_exac_by_sex_by_year) #plot needs to be showing
+  openxlsx::insertPlot(wb, "Severe_exacerbation_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ######################################################## COPD_related_mortality_per_age_group #########################################################
