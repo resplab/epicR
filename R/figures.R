@@ -470,6 +470,7 @@ export_figures <- function(nPatients = 5e4) {
 
   plot_cost_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Cost per GOLD stage") + ylab ("Canadian dollars")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
 
   print(plot_cost_by_GOLD) #plot needs to be showing
@@ -493,6 +494,7 @@ export_figures <- function(nPatients = 5e4) {
 
   plot_QALY_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "QALY per GOLD stage") + ylab ("QALYs")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
 
   print(plot_QALY_by_GOLD) #plot needs to be showing
