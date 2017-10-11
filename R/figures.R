@@ -458,8 +458,11 @@ export_figures <- function(nPatients = 5e4) {
   cost_by_GOLD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
   colnames(cost_by_GOLD) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
   cost_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+  cost_by_GOLD[, 2:5] <- (op_ex$cumul_cost_gold_ctime [, 2:5])
 
-  cost_by_GOLD[, 1:5] <- (op_ex$cost_gold_ctime [, 1:5])
+  for (i in (2:input$global_parameters$time_horizon)){
+    cost_by_GOLD[i, 2:5] <- cost_by_GOLD[i, 2:5] - (op_ex$cumul_cost_gold_ctime [i-1, 2:5])
+  }
 
   cost_by_GOLD <- as.data.frame(cost_by_GOLD)
   openxlsx::writeData(wb, "Cost_by_GOLD", cost_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
@@ -471,6 +474,30 @@ export_figures <- function(nPatients = 5e4) {
 
   print(plot_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
+
+  ##################################################### QALY by GOLD #####################################################
+
+  QALY_by_GOLD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(QALY_by_GOLD) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
+  QALY_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  QALY_by_GOLD[, 2:5] <- (op_ex$cumul_qaly_gold_ctime [, 2:5])
+  for (i in (2:input$global_parameters$time_horizon)){
+    QALY_by_GOLD[i, 2:5] <- QALY_by_GOLD[i, 2:5] - (op_ex$cumul_qaly_gold_ctime [i-1, 2:5])
+  }
+
+  QALY_by_GOLD <- as.data.frame(QALY_by_GOLD)
+  openxlsx::writeData(wb, "QALY_by_GOLD", QALY_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
+  dfm <- reshape2::melt(QALY_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
+
+  plot_QALY_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+    geom_point () + geom_line() + labs(title = "QALY per GOLD stage") + ylab ("QALYs")  +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
+
+  print(plot_QALY_by_GOLD) #plot needs to be showing
+  openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
+
 
 
   ######################################################## COPD_related_mortality_per_age_group #########################################################
