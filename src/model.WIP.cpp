@@ -1579,7 +1579,9 @@ void update_output_ex(agent *ag)
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
 
     output_ex.cumul_cost_ctime[time]+=(*ag).cumul_cost;
+    output_ex.cost_gold_ctime[time][(*ag).gold]+=(*ag).cumul_cost;
     output_ex.cumul_qaly_ctime[time]+=(*ag).cumul_qaly;
+    output_ex.qaly_gold_ctime[time][(*ag).gold]+=(*ag).cumul_qaly;
 
     output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
 
