@@ -1391,7 +1391,9 @@ struct output_ex
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
   double cumul_cost_ctime[1000];
+  double cost_gold_ctime[1000][4];
   double cumul_qaly_ctime[1000];
+  double qaly_gold_ctime[1000][4];
   double sum_fev1_ltime[1000];
   double cumul_time_by_smoking_status[3];
   double sum_time_by_ctime_sex[100][2];
@@ -1482,7 +1484,9 @@ List Cget_output_ex()
       Rcpp::Named("n_smoking_status_by_ctime")=AS_MATRIX_INT_SIZE(output_ex.n_smoking_status_by_ctime,input.global_parameters.time_horizon),
       Rcpp::Named("n_current_smoker_by_ctime_sex")=AS_MATRIX_INT_SIZE(output_ex.n_current_smoker_by_ctime_sex,input.global_parameters.time_horizon),
       Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
+      Rcpp::Named("cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cost_gold_ctime,input.global_parameters.time_horizon),
       Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
+      Rcpp::Named("qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.qaly_gold_ctime,input.global_parameters.time_horizon),
       Rcpp::Named("sum_fev1_ltime")=AS_VECTOR_DOUBLE_SIZE(output_ex.sum_fev1_ltime,input.global_parameters.time_horizon),
       Rcpp::Named("cumul_time_by_smoking_status")=AS_VECTOR_DOUBLE(output_ex.cumul_time_by_smoking_status),
       Rcpp::Named("cumul_non_COPD_time")=output_ex.cumul_non_COPD_time,
