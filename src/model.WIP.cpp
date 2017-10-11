@@ -1391,9 +1391,9 @@ struct output_ex
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
   double cumul_cost_ctime[1000];
-  double cost_gold_ctime[1000][4];
+  double cost_gold_ctime[1000][5];
   double cumul_qaly_ctime[1000];
-  double qaly_gold_ctime[1000][4];
+  double qaly_gold_ctime[1000][5];
   double sum_fev1_ltime[1000];
   double cumul_time_by_smoking_status[3];
   double sum_time_by_ctime_sex[100][2];
