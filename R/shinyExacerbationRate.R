@@ -25,6 +25,7 @@ report_exacerbation_by_time_base <- function(n_sim=10^5){
 }
 
 # Annual exacerbation rate over 20 years all population
+#'@export
 report_exacerbation_by_time_entire_all <- function(exacerbation){
 
   opx <- exacerbation$opx
@@ -142,26 +143,46 @@ report_exacerbation_by_time_copd_severity <- function(exacerbation){
   y2 <- (a[, 2])/rowSums(b)
   y3 <- (a[, 3] + a[, 4])/rowSums(b)
   max_y <- max(c(y1, y2, y3))
-  plot(2015:2034, y1, type = "l", ylim = c(0, max_y * 1.5), xlab = "Year", ylab = "Annual rate", col = "green")
-  lines(2015:2034, y2, type = "l", col = "blue")
-  lines(2015:2034, y3, type = "l", col = "black")
+  x <- c(2015:2034)
+  data <- data.frame(x, y1,y2,y3)
+  names(data) <- c("year", "y1", "y2", "y3")
 
-  legend("topright", c("mild", "moderate", "severe and very severe"), lty = c(1, 1, 1, 1), col = c("green", "blue", "black"))
-  title(cex.main = 1, "Exacerbation rate by exacerbation severity (within COPD)")
+  p <- plot_ly(data, x= ~year, y= ~y1, type='scatter', name='Mild', mode='lines', line=list(color = toRGB("#009E73"))) %>%
+    add_trace(y = ~y2, name='Moderate', line = list(color = toRGB("#E69F00"))) %>%
+    add_trace(y = ~y3, name='Severe and Very Severe', line = list(color = toRGB("#D55E00"))) %>%
+    layout(yaxis=list(title='Annual Incidence (%)'),
+           xaxis=list(title='Year', type='category', categoryorder='trace'),
+           title='Exacerbation rate by exacerbation severity (within COPD)',
+           hovermode='x') #%>% config(displaylogo=F, modeBarButtonsToRemove=buttonremove)
 
-  pie(colSums(opx$n_exac_by_ctime_severity), labels = c("Mild", "Moderate", "severe", "very severe"))
+  #pie(colSums(opx$n_exac_by_ctime_severity), labels = c("Mild", "Moderate", "severe", "very severe"))
+
 
   cat("Proportion by exacerbation severity:", format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),
                                                      digits = 2), "\n")
   #terminate_session()
+
+  return(p)
 }
 
-# Annual exacerbation rate over 20 years just COPD by GOLD stage
-report_exacerbation_by_time_copd_gold <- function(n_sim=10^5){
 
+# testing <- function(exacerbation){
+#   n_sim=10^2
+#   init_session()
+#   run(n_sim)
+#   all_events <- as.data.frame(Cget_all_events_matrix())
+#   print(dim(all_events))
+#   return(all_events)
+# }
+
+# Annual exacerbation rate over 20 years just COPD by GOLD stage
+report_exacerbation_by_time_copd_gold <- function(exacerbation){
+
+  n_sim=10^2
   init_session()
   run(n_sim)
   all_events <- as.data.frame(Cget_all_events_matrix())
+  print(dim(all_events))
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
 
@@ -182,10 +203,27 @@ report_exacerbation_by_time_copd_gold <- function(n_sim=10^5){
 
   terminate_session()
 
+  categories <- c("GOLD I", "GOLD II", "GOLD III and IV")
+  y1 <- as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1]
+  y2 <- as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2]
+  y3 <- (as.data.frame(table(exac_events[, "gold"]))[3, 2] + as.data.frame(table(exac_events[, "gold"]))[4,2])/(Follow_up_Gold[3] + Follow_up_Gold[4])
+  y <- c(y1,y2,y3)
+
+  data <- data.frame(categories,y)
+
+  p <- plot_ly(data, labels = ~categories, values = ~y, type = 'pie',
+               textposition='inside',
+               textinfo='label+percent',
+               hoverinfo='text',
+               text= '') %>%
+    layout(title = 'Rates of exacerbation by GOLD stage (within COPD)',
+           xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+           yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
   cat("Rates of exacerbation per GOLD stage:\n")
-  cat("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1], "\n")
-  cat("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2], "\n")
-  cat("GOLD III and IV :", (as.data.frame(table(exac_events[, "gold"]))[3, 2] + as.data.frame(table(exac_events[, "gold"]))[4,
-                                                                                                                            2])/(Follow_up_Gold[3] + Follow_up_Gold[4]), "\n")
+  cat("GOLD I: ", y1, "\n")
+  cat("GOLD II: ", y2, "\n")
+  cat("GOLD III and IV :", y3,"\n")
   terminate_session()
+  return(p)
 }

@@ -90,6 +90,10 @@ server <- function(input, output, session) {
 
       } else if (input$group==groupOptions[2]){
         report_exacerbation_by_time_copd_age(exacerbation)
+      } else if (input$group==groupOptions[3]) {
+        report_exacerbation_by_time_copd_severity(exacerbation)
+      } else if (input$group==groupOptions[4]){
+        report_exacerbation_by_time_copd_gold(exacerbation)
       }
     }
   })

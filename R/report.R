@@ -178,6 +178,7 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
   all_events <- as.data.frame(Cget_all_events_matrix())
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
+  print(dim(all_events))
 
   Follow_up_Gold <- c(0, 0, 0, 0)
   last_GOLD_transition_time <- 0
