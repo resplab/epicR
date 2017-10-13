@@ -2,13 +2,13 @@
 #' @param nPatients number of agents
 #' @return an excel file with all output
 #' @export
-export_figures <- function(nPatients = 5e4) {
+export_figures <- function(nPatients = 1e4) {
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   settings$agent_stack_size <- 0
   settings$n_base_agents <- nPatients
-  settings$event_stack_size <- nPatients * 1.7 * 30
+  settings$event_stack_size <- nPatients * 1.7 * 30 * 2
   init_session(settings = settings)
   input <- model_input$values
  # input$manual$explicit_mortality_by_age_sex <-  input$manual$explicit_mortality_by_age_sex * 0 #DEBUG shutting down background mortality adjustment
@@ -440,14 +440,14 @@ export_figures <- function(nPatients = 5e4) {
   exac_by_age_year[, 5] <- rowSums(op_ex$n_exac_by_ctime_age [, 85:111]) # special case of 80+
   exac_by_age_year[, 6] <- rowSums (exac_by_age_year[, 2:5]) # all
 
-  exac_by_age_year[, 2:6]<- exac_by_age_year[, 2:6] / nPatients * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
+  exac_by_age_year[, 2:6]<- exac_by_age_year[, 2:6] / nPatients * 18e6 #18e6 is roughly the 40+ population of Canada as of 2015
   exac_by_age_year <- as.data.frame(exac_by_age_year)
   openxlsx::writeData(wb, "Exac_by_age_year", exac_by_age_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_by_age_year[,c("Year", "40-55", "55-70", "70-85", "85+", "All")],id.vars = 1)
 
   plot_exac_by_age_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Number of Exacerbations per age group") + ylab ("Number of Exacerbations")  +
-     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(All severity levels, assuming 40+ population of Canada as 18 million as of the start of the simulation)")
+     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(All severity levels, assuming 40+ population of Canada as 18.6 million as of the start of the simulation)")
 
   print(plot_exac_by_age_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exac_by_age_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
@@ -460,10 +460,10 @@ export_figures <- function(nPatients = 5e4) {
   cost_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
   cost_by_GOLD[, 2:5] <- (op_ex$cumul_cost_gold_ctime [, 2:5])
 
-  for (i in (2:input$global_parameters$time_horizon)){
+  for (i in (input$global_parameters$time_horizon:2)){
     cost_by_GOLD[i, 2:5] <- cost_by_GOLD[i, 2:5] - (op_ex$cumul_cost_gold_ctime [i-1, 2:5])
   }
-
+  cost_by_GOLD[, 2:5] <- cost_by_GOLD[, 2:5] / op_ex$n_COPD_by_ctime_severity[, 2:5] #per capita
   cost_by_GOLD <- as.data.frame(cost_by_GOLD)
   openxlsx::writeData(wb, "Cost_by_GOLD", cost_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(cost_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
@@ -471,7 +471,7 @@ export_figures <- function(nPatients = 5e4) {
   plot_cost_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Cost per GOLD stage") + ylab ("Canadian dollars")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
 
   print(plot_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
@@ -484,10 +484,12 @@ export_figures <- function(nPatients = 5e4) {
   QALY_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
   QALY_by_GOLD[, 2:5] <- (op_ex$cumul_qaly_gold_ctime [, 2:5])
-  for (i in (2:input$global_parameters$time_horizon)){
+
+  for (i in (input$global_parameters$time_horizon:2)){
     QALY_by_GOLD[i, 2:5] <- QALY_by_GOLD[i, 2:5] - (op_ex$cumul_qaly_gold_ctime [i-1, 2:5])
   }
 
+  QALY_by_GOLD[, 2:5] <- QALY_by_GOLD[, 2:5] / op_ex$n_COPD_by_ctime_severity[, 2:5] #per capita
   QALY_by_GOLD <- as.data.frame(QALY_by_GOLD)
   openxlsx::writeData(wb, "QALY_by_GOLD", QALY_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(QALY_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
@@ -495,7 +497,7 @@ export_figures <- function(nPatients = 5e4) {
   plot_QALY_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "QALY per GOLD stage") + ylab ("QALYs")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
 
   print(plot_QALY_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
@@ -601,15 +603,14 @@ export_figures <- function(nPatients = 5e4) {
   population_by_sex_year[, 4] <- rowSums(op_ex$n_alive_by_ctime_sex [, 1:2])
 
 
-  population_by_sex_year[, 2:4] <- population_by_sex_year[, 2:4] / nPatients * 18e6 #18e6 is roughly the 40+ population of Canada as of 2017
-
+  population_by_sex_year[, 2:4] <- population_by_sex_year[, 2:4] / (nPatients) * 18.6e6 #18.6e.6 is roughly the 40+ population of Canada as of 2017 http://www.statcan.gc.ca/tables-tableaux/sum-som/l01/cst01/demo10a-eng.htm
   population_by_sex_year <- as.data.frame(population_by_sex_year)
   openxlsx::writeData(wb, "Population_by_year", population_by_sex_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(population_by_sex_year[,c("Year", "male", "female", "all")],id.vars = 1)
 
   plot_population_by_sex_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Population of Canada per year") + ylab ("Number")  +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(assuming 40+ population of Canada as 18 million as of the start of the simulation)")
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(assuming 40+ population of Canada as 18.6 million as of 2017)")
 
   print(plot_population_by_sex_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Population_by_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
