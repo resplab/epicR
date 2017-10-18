@@ -135,15 +135,15 @@ init_input <- function() {
   input_ref$agent$p_bgd_by_sex <- "Life table"
 
 
-  input_help$agent$l_inc_betas = "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas = t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
-  input_ref$agent$l_inc_betas = ""
+  input_help$agent$l_inc_betas <- "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
+  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
+  input_ref$agent$l_inc_betas <- ""
 
 
-  input_help$agent$ln_h_bgd_betas = "Increased Longevity Over time and effect of other variables"
-  input$agent$ln_h_bgd_betas = t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
+  input_help$agent$ln_h_bgd_betas <- "Increased Longevity Over time and effect of other variables"
+  input$agent$ln_h_bgd_betas <- t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
                                              n_stroke = 0, hf = 0)))  #AKA longevity
-  input_ref$agent$ln_h_bgd_betas = ""
+  input_ref$agent$ln_h_bgd_betas <- ""
 
   ### smoking;
 
@@ -210,9 +210,9 @@ init_input <- function() {
 
 
   input_help$COPD$ln_h_COPD_betas_by_sex <- "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)"
-  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept = -7.85133735, age = 0.03178713, age2 = 0, pack_years =  0.03287209,
+  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept = -7.80244561, age = 0.03127088, age2 = 0, pack_years =  0.03186252,
                                                       smoking_status = 0, year = 0, asthma = 0),
-                                             female = c(Intercept = -7.62728861, age = 0.02717719, age2 = 0, pack_years = 0.03922353,
+                                             female = c(Intercept = -7.66809544, age = 0.02743437, age2 = 0, pack_years = 0.04010173,
                                                       smoking_status =  0, year = 0, asthma = 0))
   input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-09-25 (0.14.0)"
 
