@@ -10,8 +10,8 @@ iterate_COPD_inc<-function(nIterations=500,
 {
 
     latest_COPD_inc_logit <- cbind(
-    male =c(Intercept =0, age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0)
-    ,female =c(Intercept =0, age = 0, age2 =0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0))
+    male =c(Intercept = 0, age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0)
+    ,female =c(Intercept= 0, age = 0, age2 =0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0))
 
 
   cat("iteration", "intercept_men", "age_coeff_men", "packyears_coeff_men", "intercept_women", "age_coeff_women", "packyears_coeff_women", file="iteration_coeff.csv",sep=",",append=FALSE, fill=FALSE)
@@ -39,7 +39,8 @@ iterate_COPD_inc<-function(nIterations=500,
   #  }
 
     input$COPD$ln_h_COPD_betas_by_sex <- latest_COPD_inc_logit
-
+    input$agent$ln_h_bgd_betas <- t(as.matrix(c(intercept = 0, y = 0, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
+                                                n_stroke = 0, hf = 0)))  #Disabling longevity
     run(input=input)
     data<-as.data.frame(Cget_all_events_matrix())
     terminate_session()
