@@ -133,7 +133,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
     #x <- c(x, rep(0, 111 - length(x) - 40))
     #barplot(x,  names.arg=40:110, xlab = "Age")
     #title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
-    dfPredicted <- data.frame (population = x, age = 40:100)
+    dfPredicted <- data.frame (population = x * 1000, age = 40:100)
 
 
     cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
@@ -146,14 +146,19 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
     #title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
 
     dfSimulated <- data.frame (population = pyramid[year - 2015 + 1, ], age = 40:110)
-    dfSimulated$population <- dfSimulated$population * (-1)
+    dfSimulated$population <- dfSimulated$population * (-1) / settings$n_base_agents * 18.6e6 #rescaling population. There are about 18.6 million Canadians above 40
 
     p <- ggplot (NULL, aes(x = age, y = population)) +  theme_tufte(base_size=14, ticks=F) +
          geom_bar (aes(fill = "Simulated"), data = dfSimulated, stat="identity", alpha = 0.5) +
          geom_bar (aes(fill = "Predicted"), data = dfPredicted, stat="identity", alpha = 0.5) +
          theme(axis.title=element_blank()) +
-         ggtitle("Simulated vs. Predicted Population Pyramid")
-    p
+         ggtitle(paste0("Simulated vs. Predicted Population Pyramid in ", year)) +
+         theme(legend.title=element_blank()) +
+         scale_y_continuous(name="Population", labels = scales::comma) +
+         scale_x_continuous(name="Age", labels = scales::comma)
+
+
+    print(p)
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
     petoc()
