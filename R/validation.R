@@ -156,7 +156,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
          theme(legend.title=element_blank()) +
          scale_y_continuous(name="Population", labels = scales::comma) +
          scale_x_continuous(name="Age", labels = scales::comma)
-
+    ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
     print(p)
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
