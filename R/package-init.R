@@ -6,5 +6,6 @@
 #' @importFrom utils packageVersion
 #' @importFrom utils write.csv
 #' @import ggplot2
+#' @import ggthemes
 #' @importFrom scales pretty_breaks
 NULL

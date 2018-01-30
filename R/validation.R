@@ -130,18 +130,30 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
   for (year in c(2015, 2025, 2034)) {
     cat("The observed population pyramid in", year, "is just drawn\n")
     x <- CanSim.052.0005[which(CanSim.052.0005[, "year"] == year & CanSim.052.0005[, "sex"] == "both"), "value"]
-    x <- c(x, rep(0, 111 - length(x) - 40))
-    barplot(x,  names.arg=40:110, xlab = "Age")
-    title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
+    #x <- c(x, rep(0, 111 - length(x) - 40))
+    #barplot(x,  names.arg=40:110, xlab = "Age")
+    #title(cex.main = 0.5, paste("Predicted Pyramid - ", year))
+    dfPredicted <- data.frame (population = x, age = 40:100)
+
 
     cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
     petoc()
 
     # cat('The predicted population pyramid in 2015 is just drawn\n')
-    x <- pyramid[year - 2015 + 1, ]
-    barplot(x, names.arg=40:110, col = "blue", xlab = "Age")
-    title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
+    #x <- pyramid[year - 2015 + 1, ]
+    #barplot(x, names.arg=40:110, col = "blue", xlab = "Age")
+    #title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
+
+    dfSimulated <- data.frame (population = pyramid[year - 2015 + 1, ], age = 40:110)
+    dfSimulated$population <- dfSimulated$population * (-1)
+
+    p <- ggplot (NULL, aes(x = age, y = population)) +  theme_tufte(base_size=14, ticks=F) +
+         geom_bar (aes(fill = "Simulated"), data = dfSimulated, stat="identity", alpha = 0.5) +
+         geom_bar (aes(fill = "Predicted"), data = dfPredicted, stat="identity", alpha = 0.5) +
+         theme(axis.title=element_blank()) +
+         ggtitle("Simulated vs. Predicted Population Pyramid")
+    p
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
                                                                                           1)) * x)/sum(x), "\n")
     petoc()
