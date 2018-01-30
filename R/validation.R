@@ -67,9 +67,10 @@ sanity_check <- function() {
 #' Returns results of validation tests for population module
 #' @param incidence_k a number (default=1) by which the incidence rate of population will be multiplied.
 #' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
+#' @param savePyramid 0 or 1, exports 300 DPI pyramid plots comparing simulated vs. predicted population
 #' @return validation test results
 #' @export
-validate_population <- function(remove_COPD = 0, incidence_k = 1) {
+validate_population <- function(remove_COPD = 0, incidence_k = 1, savePyramid = 0) {
   cat("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
   petoc()
 
@@ -156,7 +157,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1) {
          theme(legend.title=element_blank()) +
          scale_y_continuous(name="Population", labels = scales::comma) +
          scale_x_continuous(name="Age", labels = scales::comma)
-    ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+    if (savePyramid) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
     print(p)
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
