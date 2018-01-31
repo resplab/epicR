@@ -149,7 +149,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePyramid = 
     dfSimulated <- data.frame (population = pyramid[year - 2015 + 1, ], age = 40:110)
     dfSimulated$population <- dfSimulated$population * (-1) / settings$n_base_agents * 18.6e6 #rescaling population. There are about 18.6 million Canadians above 40
 
-    p <- ggplot (NULL, aes(x = age, y = population)) +  theme_tufte(base_size=14, ticks=F) +
+    p <- ggplot (NULL, aes(x = age, y = population)) + theme_tufte(base_size=14, ticks=F) +
          geom_bar (aes(fill = "Simulated"), data = dfSimulated, stat="identity", alpha = 0.5) +
          geom_bar (aes(fill = "Predicted"), data = dfPredicted, stat="identity", alpha = 0.5) +
          theme(axis.title=element_blank()) +

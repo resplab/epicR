@@ -111,7 +111,7 @@ export_figures <- function(nPatients = 1e4) {
   colnames(df) <- c("Age", "Incidence")
   openxlsx::writeData(wb, "COPD_incidence_by_age_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
-  plot_COPD_inc_by_age_sex  <- ggplot(df, aes(x = Age, y = Incidence)) +
+  plot_COPD_inc_by_age_sex  <- ggplot(df, aes(x = Age, y = Incidence)) + theme_tufte(base_size=14, ticks=F) +
     geom_bar(stat = "identity", position = "dodge",  fill = "#FF6666") +
     geom_errorbar(aes(ymin = (Incidence - 1.96*SE_COPD_inc_by_age_sex), ymax = (Incidence + 1.96*SE_COPD_inc_by_age_sex)), width=.2, position = position_dodge(.9)) +
      labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
@@ -150,7 +150,7 @@ export_figures <- function(nPatients = 1e4) {
   colnames(df) <- c("Age_Group", "Incidence")
   openxlsx::writeData(wb, "COPD_incidence_by_age_group_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
-  plot_COPD_inc_by_agegroup  <- ggplot(df, aes(x = Age_Group, y = Incidence)) +
+  plot_COPD_inc_by_agegroup  <- ggplot(df, aes(x = Age_Group, y = Incidence)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = "#FF6666") +
       geom_errorbar(aes(ymin = Incidence - 1.96*SE_COPD_inc_by_agegroup, ymax = Incidence + 1.96*SE_COPD_inc_by_agegroup), width=.2, position = position_dodge(.9)) +
       ylim(low = 0, high = 5) + labs(title = "Incidence of COPD by Age Group") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
@@ -182,7 +182,7 @@ export_figures <- function(nPatients = 1e4) {
 
   df <- as.data.frame(COPD_inc_by_year_sex)
   dfm <- reshape2::melt(df[,c('Year','Male','Female')], id.vars = 1)
-  plot_COPD_inc_by_year_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_COPD_inc_by_year_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylim(low=0, high=5) + labs(title = "Incidence of COPD by Year") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
@@ -200,7 +200,7 @@ export_figures <- function(nPatients = 1e4) {
 
   df <- as.data.frame(COPD_prev_by_sex)
   dfm <- reshape2::melt(df[,c('Year','Male','Female')],id.vars = 1)
-  plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=50) + labs(title = "Prevalence of COPD by Year") + ylab ("Prevalence (%)") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_prev_by_sex) #plot needs to be showing
@@ -236,7 +236,7 @@ export_figures <- function(nPatients = 1e4) {
   df <- data.frame(Age_Group = c("40-50", "50-60", "60-70", "70-80", "80-90", "90+"), Prevalence = COPD_prev_by_agegroup)
   openxlsx::writeData(wb, "Prev_Age_Group_CanCOLD-BOLD", df, startCol = 2, startRow = 3, colNames = TRUE)
 
-  plot_COPD_prev_by_agegroup  <- ggplot2::ggplot(df, aes(x = Age_Group, y = Prevalence)) +
+  plot_COPD_prev_by_agegroup  <- ggplot2::ggplot(df, aes(x = Age_Group, y = Prevalence)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(stat = "identity", position = "dodge", width = 0.2, fill = "#FF6666") + geom_errorbar(aes(ymin = Prevalence - 1.96*SE_COPD_prev_by_agegroup, ymax = Prevalence + 1.96*SE_COPD_prev_by_agegroup ),
                                                                                                        width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
 
@@ -293,7 +293,7 @@ export_figures <- function(nPatients = 1e4) {
   df <- as.data.frame(fev1_by_sex)
   dfm <- reshape2::melt(df[,c('Year_with_COPD','Male','Female', "All")],id.vars = 1)
 
-  plot_fev1_by_sex <- ggplot2::ggplot(dfm, aes(Year_with_COPD, value, colour = variable)) +
+  plot_fev1_by_sex <- ggplot2::ggplot(dfm, aes(Year_with_COPD, value, colour = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point() + geom_line() + labs(title = "Mean FEV1 by Number of Years with COPD") + ylab ("FEV1 (L)")
   print(plot_fev1_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "FEV1_by_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
@@ -318,7 +318,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "GOLD_stage_by_year", GOLD_perc_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(GOLD_perc_by_year[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
-  plot_gold_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_gold_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "GOLD Stages per year") + ylab ("%")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -337,7 +337,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Exacerbation_severity_per1000", exac_severity_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_severity_by_year[,c("Year", "Mild", "Moderate", "Severe", "Very Severe")],id.vars = 1)
 
-  plot_exac_severity_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_exac_severity_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Exacerbation severity per year") + ylab ("Number of cases per 1000")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -357,7 +357,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Exacerbation_GOLD_per1000", exac_GOLD_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_GOLD_by_year[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
-  plot_exac_GOLD_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_exac_GOLD_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Number of Exacerbations per GOLD per year") + ylab ("Exacerbations per 1000 patients")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -377,7 +377,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Exacerbation_rate_GOLD", exac_rate_by_GOLD_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_rate_by_GOLD_by_year[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
-  plot_exac_rate_by_GOLD_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_exac_rate_by_GOLD_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Exacerbations Rate per GOLD per year") + ylab ("Exacerbations Rate")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -398,7 +398,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Exacerbation_sex_year", exac_rate_by_sex_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_rate_by_sex_by_year[,c("Year", "male", "female")],id.vars = 1)
 
-  plot_exac_rate_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_exac_rate_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Exacerbation rate by gender") + ylab ("Exacerbation Rate")  +
     scale_colour_manual(values = c("#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -419,7 +419,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Severe_exacerbation_sex_year", sev_exac_by_sex_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(sev_exac_by_sex_by_year[,c("Year", "male", "female")],id.vars = 1)
 
-  plot_sev_exac_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_sev_exac_by_sex_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Severe and very severe exacerbations by gender") + ylab ("Exacerbation Rate")  +
     scale_colour_manual(values = c("#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
@@ -445,7 +445,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Exac_by_age_year", exac_by_age_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(exac_by_age_year[,c("Year", "40-55", "55-70", "70-85", "85+", "All")],id.vars = 1)
 
-  plot_exac_by_age_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_exac_by_age_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Number of Exacerbations per age group") + ylab ("Number of Exacerbations")  +
      scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(All severity levels, assuming 40+ population of Canada as 18.6 million as of the start of the simulation)")
 
@@ -468,7 +468,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Cost_by_GOLD", cost_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(cost_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
-  plot_cost_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_cost_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Cost per GOLD stage") + ylab ("Canadian dollars")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
@@ -494,7 +494,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "QALY_by_GOLD", QALY_by_GOLD, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(QALY_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
 
-  plot_QALY_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_QALY_by_GOLD <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "QALY per GOLD stage") + ylab ("QALYs")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
@@ -536,7 +536,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "COPD_related_mortality_by_age", COPD_related_mortality_by_age, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(COPD_related_mortality_by_age[,c("Age", "Male", "Female")],id.vars = 1)
   dfm[['value']] <- as.numeric(dfm[['value']])
-  plot_COPD_related_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value)) +
+  plot_COPD_related_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylim (low=0, high = 20) +
     labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Mortality (%)")
@@ -559,7 +559,7 @@ export_figures <- function(nPatients = 1e4) {
   COPD_death_by_year <- as.data.frame(COPD_death_by_year)
   dfm <- reshape2::melt(COPD_death_by_year[,c("Year", "Male", "Female", "All")], id.vars = 1)
 
-  plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_COPD_death_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "COPD-related mortality by year") + ylab ("Mortality among COPD patients (%)")
 
@@ -584,7 +584,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Age_Specific_Mortality_per1000", mortality_by_age, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(mortality_by_age[,c("Age", "Male", "Female")],id.vars = 1)
 
-  plot_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +
+  plot_mortality_by_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Age_Specific_Mortality_per1000") + ylab ("Mortality Rate")  +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + ylim(low = 0, high = 400)
 
@@ -608,7 +608,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Population_by_year", population_by_sex_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(population_by_sex_year[,c("Year", "male", "female", "all")],id.vars = 1)
 
-  plot_population_by_sex_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_population_by_sex_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Population of Canada per year") + ylab ("Number")  +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(assuming 40+ population of Canada as 18.6 million as of 2017)")
 
@@ -635,7 +635,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "Smokers_by_year", smokers_by_year, startCol = 2, startRow = 3, colNames = TRUE)
   dfm <- reshape2::melt(smokers_by_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker")],id.vars = 1)
 
-  plot_smokers_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_smokers_by_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%")  +
     scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 #  plot_smokers_by_year <- qplot(Year, Smoker, data = smokers_by_year)
@@ -662,7 +662,7 @@ export_figures <- function(nPatients = 1e4) {
   mortality_by_smoking_per_year <- as.data.frame(mortality_by_smoking_per_year)
   dfm <- reshape2::melt(mortality_by_smoking_per_year[,c("Year", "Never_Smoked", "Former_Smoker", "Smoker", "All")], id.vars = 1)
 
-  plot_mortality_by_smoking_per_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_mortality_by_smoking_per_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "All-cause Mortality by smoking status") + ylab ("%")
 
@@ -689,7 +689,7 @@ export_figures <- function(nPatients = 1e4) {
   all_cause_mortality_COPD  <- as.data.frame(all_cause_mortality_COPD )
   dfm <- reshape2::melt(all_cause_mortality_COPD [,c("Year", "Male", "Female", "All")], id.vars = 1)
 
-  plot_all_cause_mortality_COPD  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_all_cause_mortality_COPD  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "All-cause mortality for COPD patients") + ylab ("%")
 
@@ -708,7 +708,7 @@ export_figures <- function(nPatients = 1e4) {
   exac_mortality_by_sev_year  <- as.data.frame(exac_mortality_by_sev_year)
   dfm <- reshape2::melt(exac_mortality_by_sev_year  [,c("Year", "Mild", "Moderate", "Severe and Very Severe")], id.vars = 1)
 
-  plot_exac_mortality_by_sev_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +
+  plot_exac_mortality_by_sev_year <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "Exacerbation Mortality by Severity and Year") + ylab ("%")
 
@@ -738,7 +738,7 @@ export_figures <- function(nPatients = 1e4) {
   openxlsx::writeData(wb, "avg_pack_years_ctime", avg_pack_years_ctime , startCol = 2, startRow = 3, colNames = TRUE)
   avg_pack_years_ctime <- as.data.frame(avg_pack_years_ctime)
   dfm <- reshape2::melt(avg_pack_years_ctime[,c( "Year", "Smokers PYs", "Former Smokers PYs", "all")], id.vars = 1)
-  plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+  plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
 
   print(plot_avg_pack_years_ctime) #plot needs to be showing
