@@ -7,6 +7,5 @@
 #' @importFrom utils write.csv
 #' @import ggplot2
 #' @import ggthemes
-#' @import tidyverse
 #' @importFrom scales pretty_breaks
 NULL
