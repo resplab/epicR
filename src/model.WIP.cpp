@@ -3058,11 +3058,13 @@ int Cmodel(int max_n_agents)
       if(_res<0) return(_res);
     }
 
-    if(output.n_agents>settings.n_base_agents)  //now we are done with prevalent cases and are creating incident cases;
-    {
-      double incidence=exp(input.agent.l_inc_betas[0]+input.agent.l_inc_betas[1]*calendar_time+input.agent.l_inc_betas[2]*calendar_time*calendar_time);
-      if(incidence<0.000000000000001) calendar_time=input.global_parameters.time_horizon; else calendar_time=calendar_time+1/(incidence*settings.n_base_agents);
-    }
+    if (output.n_agents>settings.n_base_agents)  //now we are done with prevalent cases and are creating incident cases;
+      {
+       double incidence = exp(input.agent.l_inc_betas[0]+input.agent.l_inc_betas[1]*calendar_time+input.agent.l_inc_betas[2]*calendar_time*calendar_time);
+      if(incidence<0.000000000000001) calendar_time=input.global_parameters.time_horizon; else {
+        if (calendar_time!=0) calendar_time=calendar_time+1/(incidence*settings.n_base_agents); else calendar_time=calendar_time+1; //suprresing incidence cases in the first year
+      }
+      }
     last_id++;
   }//Outer while (between-agent)
   return(0);

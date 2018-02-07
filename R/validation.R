@@ -157,14 +157,13 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
     dfPredicted <- data.frame (population = x * 1000, age = 40:100)
 
 
-    cat("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
-                                                                                          1)) * x)/sum(x), "\n")
-    petoc()
-
-    # cat('The predicted population pyramid in 2015 is just drawn\n')
-    #x <- pyramid[year - 2015 + 1, ]
-    #barplot(x, names.arg=40:110, col = "blue", xlab = "Age")
-    #title(cex.main = 0.5, paste("Simulated Pyramid - ", year))
+    # message("Predicted average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
+    #                                                                                       1)) * x)/sum(x), "\n")
+    # petoc()
+    #
+    # message("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
+    #                                                                                       1)) * x)/sum(x), "\n")
+    # petoc()
 
     dfSimulated <- data.frame (population = pyramid[year - 2015 + 1, ], age = 40:110)
     dfSimulated$population <- dfSimulated$population * (-1) / settings$n_base_agents * 18179400 #rescaling population. There are 18179400 Canadians above 40
@@ -180,9 +179,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
     if (savePlots) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
     print(p)
-    cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
-                                                                                          1)) * x)/sum(x), "\n")
-    petoc()
+
   }
 
 
