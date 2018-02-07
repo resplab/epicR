@@ -4,14 +4,14 @@
 \alias{validate_population}
 \title{Returns results of validation tests for population module}
 \usage{
-validate_population(remove_COPD = 0, incidence_k = 1, savePyramid = 0)
+validate_population(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 }
 \arguments{
 \item{remove_COPD}{0 or 1, indicating whether COPD-caused mortality should be removed}
 
 \item{incidence_k}{a number (default=1) by which the incidence rate of population will be multiplied.}
 
-\item{savePyramid}{0 or 1, exports 300 DPI pyramid plots comparing simulated vs. predicted population}
+\item{savePlots}{0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}
 }
 \value{
 validation test results

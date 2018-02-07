@@ -7,5 +7,8 @@
 #' @importFrom utils write.csv
 #' @import ggplot2
 #' @import ggthemes
+#' @import tidyverse
+#' @import tibble
+#' @import tidyr
 #' @importFrom scales pretty_breaks
 NULL

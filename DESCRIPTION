@@ -1,6 +1,6 @@
 Package: epicR
 Title: R Package for Evaluation Platform in COPD
-Version: 0.15.1
+Version: 0.15.2
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
@@ -26,7 +26,8 @@ Imports:
     readr,
     openxlsx,
     reshape2,
-    scales
+    scales,
+    tidyverse
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
 Suggests: testthat

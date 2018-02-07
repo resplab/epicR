@@ -67,10 +67,10 @@ sanity_check <- function() {
 #' Returns results of validation tests for population module
 #' @param incidence_k a number (default=1) by which the incidence rate of population will be multiplied.
 #' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
-#' @param savePyramid 0 or 1, exports 300 DPI pyramid plots comparing simulated vs. predicted population
+#' @param savePlots 0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
 #' @return validation test results
 #' @export
-validate_population <- function(remove_COPD = 0, incidence_k = 1, savePyramid = 0) {
+validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0) {
   cat("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
   petoc()
 
@@ -111,10 +111,30 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePyramid = 
   }
 
   n_y1_agents <- sum(Cget_output_ex()$n_alive_by_ctime_sex[1, ])
-  lines(x[1:model_input$values$global_parameters$time_horizon, 1], rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/n_y1_agents, col = "red")
   legend("topright", c("Predicted", "Simulated"), lty = c(1, 1), col = c("black", "red"))
 
-  cat("And the green one is the observed (simulated) growth\n")
+  cat("And the black one is the observed (simulated) growth\n")
+   ######## pretty population growth curve
+
+  CanSim <- tibble::as.tibble(CanSim.052.0005)
+  CanSim <- tidyr::spread(CanSim, key = year, value = value)
+  CanSim <- CanSim[, 3:51]
+  CanSim <- colSums (CanSim)
+
+  df <- data.frame(Year = c(2015:(2015 + model_input$values$global_parameters$time_horizon-1)), Predicted = CanSim[1:model_input$values$global_parameters$time_horizon] * 1000, Simulated = rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/ settings$n_base_agents * 18.6e6) #rescaling population. There are about 18.6 million Canadians above 40
+  message ("Here's simulated vs. predicted population table:")
+  print(df)
+  dfm <- reshape2::melt(df[,c('Year','Predicted','Simulated')], id.vars = 1)
+  plot_population_growth  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    labs(title = "Population Growth Curve") + ylab ("Population") +
+    labs(caption = "(based on population at age 40 and above)") +
+    theme(legend.title=element_blank()) +
+    scale_y_continuous(name="Population", labels = scales::comma)
+
+  print (plot_population_growth)
+  if (savePlots) ggsave(paste0("PopulationGrowth",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+
 
   pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(Cget_output_ex()$n_alive_by_ctime_age[1, ]) -
                       input$global_parameters$age0)
@@ -157,7 +177,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePyramid = 
          theme(legend.title=element_blank()) +
          scale_y_continuous(name="Population", labels = scales::comma) +
          scale_x_continuous(name="Age", labels = scales::comma)
-    if (savePyramid) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+    if (savePlots) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
     print(p)
     cat("Simulated average age of those >40 y/o is", sum((input$global_parameters$age0:(input$global_parameters$age0 + length(x) -
