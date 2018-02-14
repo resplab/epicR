@@ -1992,8 +1992,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,18);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "followup_after_COPD", "FEV1_baseline","ROC16_exac_rate","ROC16_biomarker");
+  NumericMatrix outm(event_stack_pointer,19);
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline","ROC16_exac_rate","ROC16_biomarker");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2011,8 +2011,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,11)=(*ag).local_time_at_COPD;
     outm(i,12)=(*ag).age_baseline;
     outm(i,13)=(*ag).weight_baseline;
-    outm(i,14)=(*ag).followup_time;
-    outm(i,15)=(*ag).fev1_baseline;
+    outm(i,14)=(*ag).height;
+    outm(i,15)=(*ag).followup_time;
+    outm(i,16)=(*ag).fev1_baseline;
 
   }
   return(outm);
