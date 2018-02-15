@@ -2063,7 +2063,7 @@ void event_smoking_change_process(agent *ag)
       (*ag).smoking_status=1;
     else
       (*ag).smoking_status=0;
-  {
+ }
 }
 
 
