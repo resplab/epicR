@@ -2058,11 +2058,12 @@ double event_smoking_change_tte(agent *ag)
 void event_smoking_change_process(agent *ag)
 {
   smoking_LPT(ag);
-
-  if((*ag).smoking_status==0)
-    (*ag).smoking_status=1;
-  else
-    (*ag).smoking_status=0;
+ if ((*ag).gold==0) {
+    if((*ag).smoking_status==0)
+      (*ag).smoking_status=1;
+    else
+      (*ag).smoking_status=0;
+  {
 }
 
 
