@@ -2106,9 +2106,9 @@ void event_COPD_process(agent *ag)
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
 
   //Adjusting FEV1 tail
-  if ((*ag).fev1 < (*ag).fev1_tail) {
-    (*ag).fev1 = (*ag).fev1_tail;
-    }
+//  if ((*ag).fev1 < (*ag).fev1_tail) {
+//    (*ag).fev1 = (*ag).fev1_tail;
+ //   }
 
   double pred_fev1=CALC_PRED_FEV1(ag);
   (*ag)._pred_fev1=pred_fev1;
