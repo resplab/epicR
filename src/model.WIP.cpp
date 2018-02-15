@@ -2892,7 +2892,7 @@ int Cmodel(int max_n_agents)
       }
 
       temp=event_smoking_change_tte(ag);
-      if(temp<tte)
+      if(temp<tte && (*ag).gold==0)
       {
         tte=temp;
         winner=event_smoking_change;
