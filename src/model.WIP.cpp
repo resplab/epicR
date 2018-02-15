@@ -1650,9 +1650,9 @@ void lung_function_LPT(agent *ag)
                + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
     //Adjusting FEV1 tail
-    if ((*ag).fev1 < (*ag).fev1_tail) {
-      (*ag).fev1 = (*ag).fev1_tail;
-    }
+//   if ((*ag).fev1 < (*ag).fev1_tail) {
+//      (*ag).fev1 = (*ag).fev1_tail;
+//    }
 
 
     double pred_fev1=CALC_PRED_FEV1(ag);
