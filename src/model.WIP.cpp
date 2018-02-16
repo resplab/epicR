@@ -841,6 +841,7 @@ struct agent
   double pack_years;
   double smoking_status_LPT;
 
+  int LHS_eligible; //eligibility for LHS, 0 = no, 1 = yes
   double fev1;
   double fev1_baseline;  //Derived from CanCOLD
   double fev1_baseline_ZafarCMAJ;
@@ -961,6 +962,8 @@ List get_agent(agent *ag)
     out["fev1_tail"] = (*ag).fev1_tail;
     out["gold"] = (*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
+
+    out["LHS_eligible"] = (*ag).LHS_eligible;
 
     out["cumul_cost"] = (*ag).cumul_cost;
     out["cumul_qaly"] = (*ag).cumul_qaly;
@@ -1095,11 +1098,13 @@ agent *create_agent(agent *ag,int id)
   if(rand_unif() < temp) //adding a minimum baseline smoking prevalence. ever smoker
   {
     (*ag).smoking_status = 1;
+    (*ag).LHS_eligible = 1;
     ever_smoker = true;
   }
   else
   {
     (*ag).smoking_status=0;
+    (*ag).LHS_eligible = 0;
     double odds2=exp(input.smoking.logit_p_never_smoker_con_not_current_0_betas[0]
     +input.smoking.logit_p_never_smoker_con_not_current_0_betas[1]*(*ag).sex
     +input.smoking.logit_p_never_smoker_con_not_current_0_betas[2]*(*ag).age_at_creation
@@ -2059,10 +2064,16 @@ void event_smoking_change_process(agent *ag)
 {
   smoking_LPT(ag);
  if ((*ag).gold==0) {
-    if((*ag).smoking_status==0)
+    if((*ag).smoking_status==0) {
       (*ag).smoking_status=1;
-    else
+      (*ag).LHS_eligible=1;
+    }
+
+    else {
       (*ag).smoking_status=0;
+      (*ag).LHS_eligible=0;
+    }
+
  }
 }
 
