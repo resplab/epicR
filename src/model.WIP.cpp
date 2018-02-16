@@ -1099,7 +1099,7 @@ agent *create_agent(agent *ag,int id)
   {
     (*ag).smoking_status = 1;
     (*ag).LHS_eligible = 1;
-    if (rand_unif() < 0.5) (*ag).smoking_status = 1; //LHS intervention
+    if (rand_unif() < 0.5) (*ag).smoking_status = 0; //LHS intervention
     ever_smoker = true;
   }
   else
