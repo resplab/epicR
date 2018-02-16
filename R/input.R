@@ -64,7 +64,7 @@ init_input <- function() {
   input_ref <- list()
 
 
-  input$global_parameters <- list(age0 = 40, time_horizon = 20, discount_cost = 0.03, discount_qaly = 0.03)
+  input$global_parameters <- list(age0 = 40, time_horizon = 11, discount_cost = 0.03, discount_qaly = 0.03)
   input_help$global_parameters <- list(age0 = "Starting age in the model", time_horizon = "Model time horizon", discount_cost = "Discount value for cost outcomes",
                                        discount_qaly = "Discount value for QALY outcomes")
 
