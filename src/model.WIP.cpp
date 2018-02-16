@@ -2046,7 +2046,7 @@ double event_smoking_change_tte(agent *ag)
   }
 
 
-  double tte=rand_exp()/rate*10000000;
+  double tte=rand_exp()/rate;
 
   return(tte);
 }
@@ -2057,13 +2057,13 @@ double event_smoking_change_tte(agent *ag)
 
 void event_smoking_change_process(agent *ag)
 {
- //  smoking_LPT(ag);
- // if ((*ag).gold==0) {
- //    if((*ag).smoking_status==0)
- //      (*ag).smoking_status=1;
- //    else
- //      (*ag).smoking_status=0;
- // }
+  smoking_LPT(ag);
+ if ((*ag).gold==0) {
+    if((*ag).smoking_status==0)
+      (*ag).smoking_status=1;
+    else
+      (*ag).smoking_status=0;
+ }
 }
 
 
@@ -2892,12 +2892,12 @@ int Cmodel(int max_n_agents)
         winner=event_birthday;
       }
 
-      // temp=event_smoking_change_tte(ag);
-      // if(temp<tte && (*ag).gold==0)
-      // {
-      //   tte=temp;
-      //   winner=event_smoking_change;
-      // }
+      temp=event_smoking_change_tte(ag);
+      if(temp<tte && (*ag).gold==0)
+      {
+        tte=temp;
+        winner=event_smoking_change;
+      }
 
       temp=event_COPD_tte(ag);
       if(temp<tte)
@@ -2994,10 +2994,10 @@ int Cmodel(int max_n_agents)
             event_birthday_process(ag);
             (*ag).event=event_birthday;
             break;
-          // case event_smoking_change:
-          //   event_smoking_change_process(ag);
-          //   (*ag).event=event_smoking_change;
-          //   break;
+          case event_smoking_change:
+            event_smoking_change_process(ag);
+            (*ag).event=event_smoking_change;
+            break;
           case event_COPD:
             event_COPD_process(ag);
             (*ag).event=event_COPD;
