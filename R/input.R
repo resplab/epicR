@@ -262,26 +262,26 @@ init_input <- function() {
 
 
 
-   input_help$lung_function$dfev1_betas <- "Regression equations (mixed-effects model) for rate of FEV1 decline"
-    input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126,
-                                                            height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146),
-                                                   female = c(intercept = -0.1543 , baseline_age = 0.002344, baseline_weight_kg = 0.000126,
-                                                              height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146))
-    input_ref$lung_function$dfev1_betas <- ""
+   # input_help$lung_function$dfev1_betas <- "Regression equations (mixed-effects model) for rate of FEV1 decline"
+   #   input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126,
+   #                                                           height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = 0*-0.00146),
+   #                                                 female = c(intercept = -0.1543 , baseline_age = 0.002344, baseline_weight_kg = 0.000126,
+   #                                                             height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = 0*-0.00146))
+   #   input_ref$lung_function$dfev1_betas <- ""
 
-   # input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = 0, baseline_age = 0, baseline_weight_kg = 0,
-   #                                                          height = 0, height_sq = 0, current_smoker = 0, age_height_sq = 0, followup_time = 0),
-   #                                                 female = c(intercept = 0 , baseline_age =0, baseline_weight_kg = 0,
-   #                                                          height = 0, height_sq =0, current_smoker = 0, age_height_sq = 0, followup_time = 0))
-   #  input_ref$lung_function$dfev1_betas <- ""
+     input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543, baseline_age = 0, baseline_weight_kg = 0,
+                                                              height = 0, height_sq = 0, current_smoker = 0, age_height_sq = 0, followup_time = 0),
+                                                     female = c(intercept = -0.1543 , baseline_age =0, baseline_weight_kg = 0,
+                                                              height = 0, height_sq =0, current_smoker = 0, age_height_sq = 0, followup_time = 0))
+      input_ref$lung_function$dfev1_betas <- ""
 
   input_help$lung_function$dfev1_sigmas <- "Sigmas in G Matrix for FEV1 decline"
-  input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
+  input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = 0.0001*sqrt(0.000759))))
   input_ref$lung_function$dfev1_sigmas <- ""
 
 
   input_help$lung_function$dfev1_re_rho <- "Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline"
-  input$lung_function$dfev1_re_rho <- 0.09956332 # From G Matrix: 0.00087/(sqrt(0.1006)*sqrt(0.000759))
+  input$lung_function$dfev1_re_rho <- 0*0.09956332 # From G Matrix: 0.00087/(sqrt(0.1006)*sqrt(0.000759))
   input_ref$lung_function$dfev1_re_rho <- "G Matrix Zafari CMAJ 2016 - Modified"
 
 

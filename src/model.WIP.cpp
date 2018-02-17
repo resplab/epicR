@@ -844,11 +844,11 @@ struct agent
   int LHS_eligible; //eligibility for LHS, 0 = no, 1 = yes
   double fev1;
   double fev1_baseline;  //Derived from CanCOLD
-  double fev1_baseline_ZafarCMAJ;
+//  double fev1_baseline_ZafarCMAJ;
   double fev1_slope;  //fixed component of rate of decline;
   double fev1_slope_t;  //time-dependent component of FEV1 decline;
   double fev1_tail;
-  double fev1_decline_intercept;
+//  double fev1_decline_intercept;
 
   double lung_function_LPT;
   int gold;
@@ -953,12 +953,12 @@ List get_agent(agent *ag)
 
 
       );
-    out["fev1_decline_intercept"] = (*ag).fev1_decline_intercept;
+   // out["fev1_decline_intercept"] = (*ag).fev1_decline_intercept;
     out["weight_baseline"] = (*ag).weight_baseline; //added here because the function "create" above can take a limited number of arguments
     out["followup_time"] = (*ag).followup_time; //added here because the function "create" above can take a limited number of arguments
     out["age_baseline"] = (*ag).age_baseline; //added here because the function "create" above can take a limited number of arguments
     out["fev1_baseline"] = (*ag).fev1_baseline; //added for new implementation of FEV1 decline -- Shahzad!
-    out["fev1_baseline_ZafarCMAJ"] = (*ag).fev1_baseline_ZafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
+   // out["fev1_baseline_ZafarCMAJ"] = (*ag).fev1_baseline_ZafarCMAJ; //added for new implementation of FEV1 decline -- Shahzad!
     out["fev1_tail"] = (*ag).fev1_tail;
     out["gold"] = (*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
@@ -1036,10 +1036,12 @@ agent *create_agent(agent *ag,int id)
   (*ag).id=id;
   (*ag).alive=1;
   (*ag).local_time=0;
-  (*ag).age_baseline = 0; //resetting the value for new agent
-  (*ag).fev1_baseline = 0; //resetting the value for new agent
-  (*ag).fev1_decline_intercept = 0;
-  (*ag).fev1_baseline_ZafarCMAJ = 0; // Only used for calculating intercept of FEV1 rate of decline
+  (*ag).age_baseline = 0;
+  (*ag).fev1_slope = 0;
+  (*ag).fev1_slope_t = 0;//resetting the value for new agent
+  //(*ag).fev1_baseline = 0; //resetting the value for new agent
+  //(*ag).fev1_decline_intercept = 0;
+  //(*ag).fev1_baseline_ZafarCMAJ = 0; // Only used for calculating intercept of FEV1 rate of decline
   (*ag).weight_baseline = 0; //resetting the value for new agent
   (*ag).followup_time = 0; //resetting the value for new agent
   (*ag).local_time_at_COPD = 0; //resetting the value for new agent
@@ -1172,13 +1174,32 @@ agent *create_agent(agent *ag,int id)
 
   if(rand_unif()<COPD_odds/(1+COPD_odds))
   {
-
-
     (*ag).fev1=input.lung_function.fev1_0_prev_betas_by_sex[0][(*ag).sex]
     +input.lung_function.fev1_0_prev_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
     +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
     +input.lung_function.fev1_0_prev_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
     +rand_norm()*input.lung_function.fev1_0_prev_sd_by_sex[(*ag).sex];
+
+
+    double _beta_0=(*ag).fev1-
+      (input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height);
+
+    double _beta_0_prime=rand_norm()*sqrt(1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)+(-154.3/1000+sqrt(0.000759)/sqrt(0.1006)*input.lung_function.dfev1_re_rho*(_beta_0-1427.5/1000));
+
+    (*ag).fev1_slope=_beta_0_prime
+      +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+      +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
+      +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+
+    (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
 
     //Adjusting FEV1 tail
   //  if ((*ag).fev1 < (*ag).fev1_tail) {
@@ -1194,7 +1215,7 @@ agent *create_agent(agent *ag,int id)
 
     // Intercept for FEV1 decline in prevalent cases
 
-    double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+   /* double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
                                + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
     double fev1_variance_bivariate =  ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
 
@@ -1207,6 +1228,8 @@ agent *create_agent(agent *ag,int id)
       +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
       +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
       +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+
+    */
 
     double pred_fev1=CALC_PRED_FEV1(ag);
     (*ag)._pred_fev1=pred_fev1;
@@ -1651,11 +1674,13 @@ void lung_function_LPT(agent *ag)
   //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
 //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-       (*ag).fev1 = (*ag).fev1_baseline
-                + (*ag).fev1_slope*(*ag).followup_time
-                + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
+    //(*ag).fev1 = (*ag).fev1_baseline
+    //            + (*ag).fev1_slope*(*ag).followup_time
+    //            + input.lung_function.fev1_betas_by_sex[7][(*ag).sex]*(*ag).followup_time*(*ag).followup_time;  //Zafar's CMAJ equation - TODO conditional distribution not implemented yet.
 
 
+    (*ag).fev1=(*ag).fev1+((*ag).local_time-(*ag).lung_function_LPT)*(*ag).fev1_slope;
+    (*ag).fev1_slope=(*ag).fev1_slope+((*ag).local_time-(*ag).lung_function_LPT)*(*ag).fev1_slope_t;
 
 
     //Adjusting FEV1 tail
@@ -2002,7 +2027,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 NumericMatrix Cget_all_events_matrix()
 {
   NumericMatrix outm(event_stack_pointer,20);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","pred_FEV1","smoking_status", "LHS_eligible", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline","ROC16_exac_rate","ROC16_biomarker");
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "LHS_eligible", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2015,15 +2040,17 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,6)=(*ag).gold;
     outm(i,7)=(*ag).event;
     outm(i,8)=(*ag).fev1;
-    outm(i,9)=(*ag)._pred_fev1;
-    outm(i,10)=(*ag).smoking_status;
-    outm(i,11)=(*ag).LHS_eligible;
-    outm(i,12)=(*ag).local_time_at_COPD;
-    outm(i,13)=(*ag).age_baseline;
-    outm(i,14)=(*ag).weight_baseline;
-    outm(i,15)=(*ag).height;
-    outm(i,16)=(*ag).followup_time;
-    outm(i,17)=(*ag).fev1_baseline;
+    outm(i,9)=(*ag).fev1_slope;
+    outm(i,10)=(*ag).fev1_slope_t;
+    outm(i,11)=(*ag)._pred_fev1;
+    outm(i,12)=(*ag).smoking_status;
+    outm(i,13)=(*ag).LHS_eligible;
+    outm(i,14)=(*ag).local_time_at_COPD;
+    outm(i,15)=(*ag).age_baseline;
+    outm(i,16)=(*ag).weight_baseline;
+    outm(i,17)=(*ag).height;
+    outm(i,18)=(*ag).followup_time;
+    outm(i,19)=(*ag).fev1_baseline;
 
   }
   return(outm);
@@ -2122,6 +2149,27 @@ void event_COPD_process(agent *ag)
             +input.lung_function.fev1_0_inc_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
             +rand_norm()*input.lung_function.fev1_0_inc_sd_by_sex[(*ag).sex];
 
+  double _beta_0=(*ag).fev1-
+  (input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
+     +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+     +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
+     +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+     +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
+     +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height);
+
+  double _beta_0_prime=0*rand_norm()*sqrt((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1])+
+    (input.lung_function.fev1_betas_by_sex[0][(*ag).sex]+input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho*(_beta_0+input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]));
+
+   (*ag).fev1_slope=_beta_0_prime
+     +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
+     +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+     +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
+     +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+     +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
+     +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+
+   (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
+
   //Adjusting FEV1 tail
 //  if ((*ag).fev1 < (*ag).fev1_tail) {
 //    (*ag).fev1 = (*ag).fev1_tail;
@@ -2144,28 +2192,28 @@ void event_COPD_process(agent *ag)
       (*ag).fev1_baseline = (*ag).fev1;
 
       // Intercept for FEv1 decline in COPD incidence cases
-      double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-      + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+      // double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
+      // + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
+      //
+      // double fev1_variance_bivariate = ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
 
-      double fev1_variance_bivariate = ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
-
-      (*ag).fev1_decline_intercept = rand_norm()*sqrt(fev1_variance_bivariate) + fev1_mean_bivariate;
-
-      // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
-      (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
-        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
-        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
-        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
-        +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
-
-      (*ag).fev1_slope=  (*ag).fev1_decline_intercept
-      +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
-      +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
-      +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
-      +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-      +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
-      +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+      // (*ag).fev1_decline_intercept = 0*rand_norm()*sqrt(fev1_variance_bivariate) + 0*fev1_mean_bivariate;
+      //
+      // // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
+      // (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      //   +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+      //   +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
+      //   +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      //   +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      //   +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+      //
+      // (*ag).fev1_slope=  (*ag).fev1_decline_intercept
+      // +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
+      // +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+      // +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
+      // +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+      // +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
+      // +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
       //Follow_up term is not used here because this part of code is executed once and should be time independent
 
 
