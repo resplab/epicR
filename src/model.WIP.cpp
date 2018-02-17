@@ -2148,7 +2148,7 @@ void event_COPD_process(agent *ag)
       + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
       double fev1_variance_bivariate = ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
 
-      (*ag).fev1_decline_intercept = 0*rand_norm()*sqrt(fev1_variance_bivariate) + 0*fev1_mean_bivariate;
+      (*ag).fev1_decline_intercept = 0*rand_norm()*sqrt(fev1_variance_bivariate) + fev1_mean_bivariate;
 
       // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
       (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
