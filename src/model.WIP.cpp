@@ -1674,10 +1674,11 @@ agent *create_agent(agent *ag,int id)
       //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
       //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
-      double dt = ((*ag).local_time-(*ag).lung_function_LPT);
-      double _t = (*ag).local_time - (*ag).local_time_at_COPD;
+      (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD;
 
-      (*ag).fev1=(*ag).fev1 + dt*(*ag).fev1_slope + 2 * (*ag).fev1_slope_t * _t * dt + (*ag).fev1_slope_t * dt * dt;
+      double dt = ((*ag).local_time-(*ag).lung_function_LPT);
+
+      (*ag).fev1=(*ag).fev1 + dt*(*ag).fev1_slope + 2 * (*ag).fev1_slope_t * (*ag).followup_time * dt + (*ag).fev1_slope_t * dt * dt;
 
       //Adjusting FEV1 tail
       //   if ((*ag).fev1 < (*ag).fev1_tail) {
