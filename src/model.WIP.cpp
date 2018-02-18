@@ -1203,9 +1203,9 @@ agent *create_agent(agent *ag,int id)
            (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
 
            //Adjusting FEV1 tail
-           //  if ((*ag).fev1 < (*ag).fev1_tail) {
-           //  (*ag).fev1 = (*ag).fev1_tail;
-           //}
+            if ((*ag).fev1 < (*ag).fev1_tail) {
+            (*ag).fev1 = (*ag).fev1_tail;
+           }
 
            //Setting values for COPD prevalence cases
            (*ag).weight_baseline = (*ag).weight;
@@ -1680,9 +1680,9 @@ agent *create_agent(agent *ag,int id)
       (*ag).fev1=(*ag).fev1 + dt*(*ag).fev1_slope + 2 * (*ag).fev1_slope_t * (*ag).followup_time * dt + (*ag).fev1_slope_t * dt * dt;
 
       //Adjusting FEV1 tail
-      //   if ((*ag).fev1 < (*ag).fev1_tail) {
-      //      (*ag).fev1 = (*ag).fev1_tail;
-      //    }
+         if ((*ag).fev1 < (*ag).fev1_tail) {
+            (*ag).fev1 = (*ag).fev1_tail;
+         }
 
 
       double pred_fev1=CALC_PRED_FEV1(ag);
@@ -2091,7 +2091,7 @@ agent *create_agent(agent *ag,int id)
   void event_smoking_change_process(agent *ag)
   {
     smoking_LPT(ag);
-    if ((*ag).gold==0) {
+   // if ((*ag).gold==0) { //for debug porpuses. No smoking change when COPD present
       if((*ag).smoking_status==0) {
         (*ag).smoking_status=1;
         (*ag).LHS_eligible=1;
@@ -2102,7 +2102,7 @@ agent *create_agent(agent *ag,int id)
         (*ag).LHS_eligible=0;
       }
 
-    }
+ //   }
   }
 
 
@@ -2166,9 +2166,9 @@ agent *create_agent(agent *ag,int id)
          (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
 
          //Adjusting FEV1 tail
-         //  if ((*ag).fev1 < (*ag).fev1_tail) {
-         //    (*ag).fev1 = (*ag).fev1_tail;
-         //   }
+           if ((*ag).fev1 < (*ag).fev1_tail) {
+            (*ag).fev1 = (*ag).fev1_tail;
+            }
 
          double pred_fev1=CALC_PRED_FEV1(ag);
          (*ag)._pred_fev1=pred_fev1;
@@ -2953,7 +2953,8 @@ agent *create_agent(agent *ag,int id)
         }
 
         temp=event_smoking_change_tte(ag);
-        if(temp<tte && (*ag).gold==0)
+     //   if(temp<tte && (*ag).gold==0)  //for debug porpuses, no smoking change when COPD is present
+        if(temp<tte)
         {
           tte=temp;
           winner=event_smoking_change;
