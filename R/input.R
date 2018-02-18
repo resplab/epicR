@@ -142,7 +142,7 @@ init_input <- function() {
 
   input_help$agent$ln_h_bgd_betas <- "Increased Longevity Over time and effect of other variables"
   input$agent$ln_h_bgd_betas <- t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
-                                             n_stroke = 0, hf = 0)))  #AKA longevity
+                                              n_stroke = 0, hf = 0)))  #AKA longevity
   input_ref$agent$ln_h_bgd_betas <- ""
 
   ### smoking;
@@ -154,7 +154,7 @@ init_input <- function() {
 
   input_help$smoking$logit_p_never_smoker_con_not_current_0_betas <- "Probability of being a never-smoker conditional on not being current smoker, at the time of creation"
   input$smoking$logit_p_never_smoker_con_not_current_0_betas <- t(as.matrix(c(intercept = 3.7, sex = 0, age = -0.06, age2 = 0, sex_age = 0,
-                                                                             sex_age2 = 0, year = -0.02)))
+                                                                              sex_age2 = 0, year = -0.02)))
   input_ref$smoking$logit_p_never_smoker_con_not_current_0_betas <- ""
 
 
@@ -205,7 +205,7 @@ init_input <- function() {
   input$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.522189  , age = 0.033070   , age2 = 0, pack_years = 0.025049   ,
                                                          current_smoking = 0, year = 0, asthma = 0),
                                                 female = c(intercept = -4.074861   , age = 0.027359   , age2 = 0, pack_years = 0.030399   ,
-                                                         current_smoking = 0, year = 0, asthma = 0))
+                                                           current_smoking = 0, year = 0, asthma = 0))
   input_ref$COPD$logit_p_COPD_betas_by_sex <- "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term"
 
 
@@ -213,7 +213,7 @@ init_input <- function() {
   input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept = -7.80244561, age = 0.03127088, age2 = 0, pack_years =  0.03186252,
                                                       smoking_status = 0, year = 0, asthma = 0),
                                              female = c(Intercept = -7.66809544, age = 0.02743437, age2 = 0, pack_years = 0.04010173,
-                                                      smoking_status =  0, year = 0, asthma = 0))
+                                                        smoking_status =  0, year = 0, asthma = 0))
   input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2017-09-25 (0.14.0)"
 
 
@@ -222,7 +222,7 @@ init_input <- function() {
   input$lung_function$fev1_0_prev_betas_by_sex <- cbind(male = c(intercept = 1.546161, age = -0.031296, height_sq = 1.012579,
                                                                  pack_years = -0.006925, current_smoker = 0, sgrq = 0),
                                                         female = c(intercept = 1.329805, age = -0.031296, height_sq = 1.012579,
-                                                                pack_years = -0.006925, current_smoker = 0, sgrq = 0))
+                                                                   pack_years = -0.006925, current_smoker = 0, sgrq = 0))
   input_ref$lung_function$fev1_0_prev_betas_by_sex <- "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
 
 
@@ -235,7 +235,7 @@ init_input <- function() {
   input$lung_function$fev1_0_inc_betas_by_sex <- cbind(male = c(intercept = 1.4895 - 0.6831, age = -0.0322, height_sq = 1.27,
                                                                 pack_years = -0.00428, current_smoker = 0, sgrq = 0),
                                                        female = c(intercept = 1.5737 - 0.425, age = -0.0275, height_sq = 0.97,
-                                                                pack_years = -0.00465, current_smoker = 0, sgrq = 0))
+                                                                  pack_years = -0.00465, current_smoker = 0, sgrq = 0))
   input_ref$lung_function$fev1_0_inc_betas_by_sex <- "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
 
 
@@ -263,17 +263,17 @@ init_input <- function() {
 
 
    input_help$lung_function$dfev1_betas <- "Regression equations (mixed-effects model) for rate of FEV1 decline"
-    input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126,
-                                                            height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146),
+     input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126,
+                                                             height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146),
                                                    female = c(intercept = -0.1543 , baseline_age = 0.002344, baseline_weight_kg = 0.000126,
-                                                              height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146))
-    input_ref$lung_function$dfev1_betas <- ""
+                                                               height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146))
+     input_ref$lung_function$dfev1_betas <- ""
 
-   # input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = 0, baseline_age = 0, baseline_weight_kg = 0,
-   #                                                          height = 0, height_sq = 0, current_smoker = 0, age_height_sq = 0, followup_time = 0),
-   #                                                 female = c(intercept = 0 , baseline_age =0, baseline_weight_kg = 0,
-   #                                                          height = 0, height_sq =0, current_smoker = 0, age_height_sq = 0, followup_time = 0))
-   #  input_ref$lung_function$dfev1_betas <- ""
+  # input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 , baseline_age = 0, baseline_weight_kg = 0,
+  #                                                         height = 0, height_sq = 0, current_smoker = 0, age_height_sq = 0, followup_time = 0),
+  #                                                female = c(intercept = -0.1543  , baseline_age =0, baseline_weight_kg = 0,
+  #                                                           height = 0, height_sq =0, current_smoker = 0, age_height_sq = 0, followup_time = 0))
+  input_ref$lung_function$dfev1_betas <- ""
 
   input_help$lung_function$dfev1_sigmas <- "Sigmas in G Matrix for FEV1 decline"
   input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
@@ -318,7 +318,7 @@ init_input <- function() {
   input_ref$exacerbation$exac_end_rate <- ""
 
   input_help$exacerbation$logit_p_death_by_sex <- "Probability of death due to exacerbation according to its severity level"
-#  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
+  #  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
   input$exacerbation$logit_p_death_by_sex <- cbind(male = c(intercept = -13, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0),
                                                    female = c(intercept = -13, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0))
   input_ref$exacerbation$logit_p_death_by_sex <- ""
@@ -375,8 +375,8 @@ init_input <- function() {
   ##cost and utility
   input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=144, II=430, III=628, IV=628)))
   input_help$cost$bg_cost_by_stage="Annual direct costs for non-COPD, and COPD by GOLD grades"
-#  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
-#  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
+  #  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
+  #  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
   input$cost$exac_dcost=t(as.matrix(c(mild=161,moderate=161,severe=6501, verysevere=6501)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
@@ -384,7 +384,7 @@ init_input <- function() {
 
   input$utility$bg_util_by_stage=t(as.matrix(c(N=0.85, I=0.81,II=0.72,III=0.67,IV=0.67)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
-#  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
+  #  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
   input$utility$exac_dutil=cbind(
     gold1=c(mild=-0.00246, moderate=-0.00246, severe=-0.00797, verysevere=-0.00797),
     gold2=c(mild=-0.001698, moderate=-0.001698, severe=-0.00747, verysevere=-0.00747),
@@ -405,9 +405,9 @@ init_input <- function() {
     )
     ,female =c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0.00077,0.000204044403520189,0.00012527721873265,9.38179764267892e-05,8.52310693595392e-05,2.0948736613633e-05,0.000112963841564107,0.00010433676504019,5.4970941674673e-05,8.40452455971427e-05,7.13507996050295e-05,-5.32163960539644e-05,0.000108600166102096,-2.58547086080699e-05,-3.39656984665966e-05,-0.000104561408155271,-7.61106203700976e-05,-0.000145376981544917,-8.95689640121699e-05,-0.000166434371840576,0.000243219925937975,0.0008650546976534,0.000930888336636944,0.00101216109953299,0.00123284222432014,0.00133853130591277,0.00144269885860267,0.00168219643935857,0.00180689077125785,0.00189747191320053,0.00189498835689917,0.00144977074941933,0.00152408964706417,0.00171179411065646,0.00188158359328075,0.00200917449209433,0.00255429028811746,0.00251462637075366,0.00297904911157468,0.00305247152311787,0.00305909639703686,0.00247270876123033,0.00263944132927282,0.00297318580456147,0.00399439553966772,0.00430369126521429,0.00519320421612733,0.00694185653392955,0.00759956858672857,0.00934224983773695,0.0112825987417631,0.0127892562246108,0.0174914683720296,0.0188209248942959,0.0219164492207358,0.0264718581662204,0.0301728155832754,0.0330406840844788,0.0374281244493398,0.0432518126953188,0.0531098375652765,0.0623997534486314,0.0591768901970186,0.0737223620452372,0.0753080451656278,0.104676330930181,0.108606384925549,0.156783719504522,0.114000430396816,0.191472188310203,0,0
 
-     ))
+    ))
 
-#  input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 1000000000000
+  #  input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 1000000000000
 
   #input$project_specific$ROC16_biomarker_threshold<-1
   #input_help$project_specific$ROC16_biomarker_threshold<-"Threshold on the biomarker value that prompts treatment"
