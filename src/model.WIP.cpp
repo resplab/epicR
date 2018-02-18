@@ -1670,8 +1670,6 @@ agent *create_agent(agent *ag,int id)
     {
 
       //Applying FEV1 decline
-      //  double dt=(*ag).local_time-(*ag).lung_function_LPT;
-      //    (*ag).fev1=(*ag).fev1 + (*ag).fev1_slope*dt + 2*(*ag).fev1_slope_t*(*ag).local_time*dt + (*ag).fev1_slope_t*dt*dt;
 
       (*ag).followup_time=(*ag).local_time-(*ag).local_time_at_COPD;
 
