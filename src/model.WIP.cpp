@@ -1255,7 +1255,6 @@ agent *create_agent(agent *ag,int id)
     (*ag).lung_function_LPT=0;
 
 
-
     //medication
     (*ag).medication_status=0;
     (*ag).medication_LPT=0;
@@ -2127,13 +2126,12 @@ agent *create_agent(agent *ag,int id)
                       +input.COPD.ln_h_COPD_betas_by_sex[5][(*ag).sex]*(calendar_time+(*ag).local_time)
     );
 
+
     double tte;
     if(rate==0) tte=HUGE_VAL; else tte=rand_exp()/rate;
     //return(HUGE_VAL);
     return(tte);
   }
-
-
 
 
 
