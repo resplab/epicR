@@ -1,0 +1,165 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+message("The following plots will show properly only if the FEV1 validation copy of epicR - where smoking status change is disabled - is executed. For a permanent copy of the older version of these results, please refer to the report dated 2018-02-15")
+library (epicR)
+library(ggplot2)
+
+
+fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height){
+  
+  
+  x<-c(0:time)
+  
+  if (sex==0){
+    gender<-1
+  } else if (sex==1){
+    gender<-2
+  }
+  
+  v_t<-0.000753  #random effect variance for rate of decline
+  v_b<- 0.09711 #random effect variance for baseline
+  v_cov<- 0.00062 #covariance, based on COLD and Zafar
+  
+  fev1_avg <- c()
+  fev1_up <- c()
+  fev1_low <- c()
+  fev1_annual_rate <- c()
+  
+#DEBUG all covariates zero - except for intercept
+
+    fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0*0.002344, baseline_weight_kg = 0, height =0, height_sq = 0, current_smoker =  0*-0.03074, age_height_sq = 0, followup_time = 0),
+                            female = c(intercept = -0.1543 , baseline_age = 0*0.002344, baseline_weight_kg =0, height =0, height_sq =0, current_smoker =  0*-0.03074, age_height_sq = 0, followup_time = 0))
+
+
+
+   fev1_0_ZafarCMAJ_by_sex <- cbind(male = c(intercept = 1.4275 + 0.4825, baseline_age = -0.00508, baseline_weight_kg = -0.00049, height = -1.8725, height_sq = 1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0),
+                                    female = c(intercept = 1.4275,  baseline_age = -0.00508, baseline_weight_kg = 0*-0.00049, height = -1.8725, height_sq =  1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0))
+
+
+   dfev1_re_rho <- 0.09956332 # From G Matrix: 0.00087/(sqrt(0.1006)*sqrt(0.000759))
+   dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
+   fev1_0_inc_sd_by_sex <- c(male = 0*0.54, female = 0*0.36) #debug
+     
+  for (t in 1:(round(time)+1)) {
+    
+    dt <- 1
+      
+  
+       beta_0 <- fev1_0-
+    ( fev1_0_ZafarCMAJ_by_sex[2, gender]*age
+       + fev1_0_ZafarCMAJ_by_sex[3, gender]* weight
+       + fev1_0_ZafarCMAJ_by_sex[4, gender]* height
+       + fev1_0_ZafarCMAJ_by_sex[5, gender]* height* height
+       + fev1_0_ZafarCMAJ_by_sex[6, gender]* smoking
+       + fev1_0_ZafarCMAJ_by_sex[7, gender]*age* height* height)
+
+
+       beta_0_prime <-   (fev1_betas_by_sex[1, gender]+ dfev1_sigmas[2]/ dfev1_sigmas[1]* dfev1_re_rho*(beta_0 - fev1_0_ZafarCMAJ_by_sex[1, gender]))
+
+       fev1_slope <-beta_0_prime
+         + fev1_betas_by_sex[2, gender]*age
+         + fev1_betas_by_sex[3, gender]* weight
+         + fev1_betas_by_sex[4, gender]* height
+         + fev1_betas_by_sex[5, gender]* height* height
+         + fev1_betas_by_sex[6, gender]* smoking
+         + fev1_betas_by_sex[7, gender]*age* height* height;
+
+         fev1_slope_t= fev1_betas_by_sex[8, gender];
+    
+         fev1_annual_rate[t] <-  dt*fev1_slope + 2 * fev1_slope_t * t * dt + fev1_slope_t * dt * dt    
+         
+         SE_fev1_slope <- sqrt((1- dfev1_re_rho* dfev1_re_rho)* dfev1_sigmas[1]* dfev1_sigmas[1])
+         SE_fev1 <- dt * SE_fev1_slope
+         
+         if (t==1) {
+           fev1_avg[t] <- fev1_0
+           fev1_up[t] <- fev1_0
+           fev1_low[t] <- fev1_0
+
+         } else {
+           fev1_avg[t] <- fev1_avg[t-1] + fev1_annual_rate[t]
+           fev1_up[t] <- fev1_avg[t]+1.96*(SE_fev1)
+           fev1_low[t] <- fev1_avg[t]-1.96*(SE_fev1)
+           }
+    
+  }
+   
+   #print(fev1_avg)
+   fev1_rate_avg <- (fev1_avg[(round(time)+1)] - fev1_0)/(round(time))
+
+
+  df <-data.frame(fev1_rate_avg, fev1_low[round(time)+1], fev1_up[round(time)+1],  fev1_avg[round(time)+1])
+  names(df) <- c("FEV1_rate", "FEV1_lower", "FEV1_upper", "final_FEV1" )
+  
+  return(df)
+  
+}
+
+init_session()
+run(100000)
+events <- as.data.frame (Cget_all_events_matrix())
+terminate_session()
+
+
+### annual by LHS for male smokers ;
+
+IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status==1 & sex ==0 & gold>0)
+annualEvents <- subset (events, id %in% IDs$id & event==1 & local_time<=1)
+annualEvents <- subset (annualEvents, gold!=0) #& followup_after_COPD > 2) #excluding non-COPD cases
+
+PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
+PI2 <- as.data.frame(PI2)
+
+for (i in 1:nrow(annualEvents)) {
+  tmp <- fev1_projection_amin(annualEvents[i, "FEV1_baseline"], annualEvents[i, "local_time"], annualEvents[i,"sex"], annualEvents[i,"smoking_status"], annualEvents[i,"age_at_COPD"], annualEvents[i,"weight_at_COPD"], annualEvents[i,"height"])
+  
+  PI2 [i,"LHS_expected_FEV1_low"] <- tmp[["FEV1_lower"]]
+  
+  PI2 [i,"LHS_FEV1_rate"] <- tmp[["FEV1_rate"]]
+  
+  PI2 [i,"LHS_expected_FEV1_up"] <- tmp[["FEV1_upper"]]
+  
+  PI2 [i,"LHS_expected_FEV1"]<- tmp[["final_FEV1"]]
+  
+}
+
+rate <- data.frame(annualEvents$id, annualEvents$followup_after_COPD , annualEvents$FEV1_baseline,(annualEvents$FEV1 - annualEvents$FEV1_baseline)/ annualEvents$followup_after_COPD, annualEvents$FEV1,  PI2$LHS_FEV1_rate, PI2$LHS_expected_FEV1_low, PI2$LHS_expected_FEV1_up, PI2$LHS_expected_FEV1)
+colnames(rate) = c("id", "year", "fev1_baseline", "epicR_FEV1_rate", "epicR_predicted_FEV1", "LHS_FEV1_rate", "LHS_expected_FEV1_low", "LHS_expected_FEV1_up", "LHS_expected_FEV1")
+
+for (i in 1:length(rate$epicR_predicted_FEV1)){
+  if (rate$epicR_predicted_FEV1[i] < rate$LHS_expected_FEV1_low[i]) {rate$WithinPI[i] <- "EPIC Underestimates"}
+  else if (rate$epicR_predicted_FEV1[i] > rate$LHS_expected_FEV1_up[i]) {rate$WithinPI[i] <- "EPIC Overestimates"}
+  else {rate$WithinPI[i] <- "WithinPI"}
+}
+print (rate$WithinPI[i])
+
+# if (((rate$epicR_predicted_FEV1 > (rate$LHS_expected_FEV1+rate$LHS_expected_FEV1_low)) & (rate$epicR_predicted_FEV1 < (rate$LHS_expected_FEV1_up + rate$LHS_expected_FEV1)))) {rate$WithinPI <- "Within PI"}
+# if ((rate$epicR_predicted_FEV1 > rate$LHS_expected_FEV1+rate$LHS_expected_FEV1_low) & (rate$epicR_predicted_FEV1 < rate$LHS_expected_FEV1_up + rate$LHS_expected_FEV1)) {rate$WithinPI <- "Within PI"}
+# if (rate$epicR_predicted_FEV1 < rate$LHS_expected_FEV1+rate$LHS_expected_FEV1_low) {rate$WithinPI <- "Lower"}
+# if (rate$epicR_predicted_FEV1 > rate$LHS_expected_FEV1_up + rate$LHS_expected_FEV1) {rate$WithinPI <- "Larger"}
+
+# rate <- subset(rate, (epicR_predicted_FEV1 > 0.5 & LHS_expected_FEV1 > 0.5)) #removing negative values
+
+ggplot(rate, aes(x = LHS_expected_FEV1   , y = epicR_predicted_FEV1)) +
+  geom_point (size = 1, aes(colour = factor(WithinPI))) + labs(title = "Lung Function", caption = "Continuous smoker males over 40 years with COPD.", y = "EPIC-Simulated FEV1", x = "LHS Model FEV1") + geom_ribbon(aes(ymin=(LHS_expected_FEV1_low), ymax= (LHS_expected_FEV1_up)), linetype=2, alpha=0.3) 
+
+#ggsave(paste0("dense_FEV1_validation_male_smoker",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+
+message ("Zafari model with all covariates. Continuous smoker males with COPD over 40 years of age")
+rate$WithinPI <- as.factor(rate$WithinPI)
+summary(rate)
+LHS <- rate$LHS_expected_FEV1
+epic <- rate$epicR_predicted_FEV1
+dif2 <- var(epic-LHS)
+r2 <- 1 - (dif2/var(LHS))
+r2
+
+summary(rate)
+
