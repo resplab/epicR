@@ -239,6 +239,7 @@ calibrate_COPD_inc_rx<-function(nIterations=500,
     res_male<-rxGlm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years,family=binomial(link=logit))
     coefficients(res_male)
 
+
     res_female<-rxGlm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years,family=binomial(link=logit))
     coefficients(res_female)
 
@@ -259,6 +260,9 @@ calibrate_COPD_inc_rx<-function(nIterations=500,
 
     message ("latest inc logit is:")
     print (latest_COPD_inc_logit)
+
+    print (summary(res_male))
+    print (summary(res_female))
 
     cat(i, latest_COPD_inc_logit[1,1], latest_COPD_inc_logit[2,1], latest_COPD_inc_logit[4,1], latest_COPD_inc_logit[1,2], latest_COPD_inc_logit[2,2], latest_COPD_inc_logit[4,2], file="iteration_coeff.csv",sep=",",append=TRUE, fill=FALSE)
     cat("\n",file="iteration_coeff.csv",sep=",",append=TRUE)
