@@ -172,7 +172,7 @@ init_input <- function() {
   #input_ref$smoking$mortality_factor_former <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
 
   input_help$smoking$mortality_factor_current  <- "Mortality ratio for current  smokers vs. non-smokers by sex and age group"
-  input$smoking$mortality_factor_current <- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1.94  , age70to79 = 1.86, age80p = 1.66 )))
+  input$smoking$mortality_factor_current <- t(as.matrix(c(age40to49 = 1, age50to59 = 1, age60to69 = 1  , age70to79 = 1, age80p = 1 ))) #DEBUG all reverted to 1
   input_ref$smoking$mortality_factor_current <- "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
 
   input_help$smoking$mortality_factor_former  <- "Mortality ratio for current  smokers vs. non-smokers by sex and age group"
@@ -196,7 +196,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01)
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7*1000,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01) #debug noone ceases smoking
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
@@ -320,8 +320,8 @@ init_input <- function() {
 
   input_help$exacerbation$logit_p_death_by_sex <- "Probability of death due to exacerbation according to its severity level"
   #  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
-  input$exacerbation$logit_p_death_by_sex <- cbind(male = c(intercept = -13, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0),
-                                                   female = c(intercept = -13, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0))
+  input$exacerbation$logit_p_death_by_sex <- cbind(male = c(intercept = -13*1000, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0),
+                                                   female = c(intercept = -13*1000 , age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0))
   input_ref$exacerbation$logit_p_death_by_sex <- ""
 
   # Outpatient;
