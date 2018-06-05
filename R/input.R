@@ -71,7 +71,7 @@ init_input <- function() {
 
 
   input_help$agent$p_female <- "Proportion of females in the population"
-  input$agent$p_female <- 0.5
+  input$agent$p_female <- 0.1 #for now just male smokers, cause those are most underestimated in FEV1 validation
   input_ref$agent$p_female <- "Model assumption"
 
 
