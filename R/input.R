@@ -115,8 +115,8 @@ init_input <- function() {
   input_ref$agent$p_incidence_age <- ""
 
 
-  input_help$agent$p_bgd_by_sex <- "Life table"
-  input$agent$p_bgd_by_sex <- cbind(male = c(0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05,
+  input_help$agent$p_bgd_by_sex <- "Life table" #DEBUG multiplied by zero. No death.
+  input$agent$p_bgd_by_sex <- cbind(male = 0*c(0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05,
                                              1e-04, 0.00012, 0.00015, 2e-04, 0.00028, 0.00039, 0.00051, 0.00059, 0.00066, 0.00071, 0.00075, 0.00076, 0.00076, 0.00074,
                                              0.00071, 7e-04, 0.00069, 7e-04, 0.00071, 0.00074, 0.00078, 0.00082, 0.00086, 0.00091, 0.00096, 0.00102, 0.00108, 0.00115,
                                              0.00123, 0.00132, 0.00142, 0.00153, 0.00165, 0.00179, 0.00194, 0.00211, 0.00229, 0.00251, 0.00275, 0.00301, 0.00331, 0.00364,
@@ -124,7 +124,7 @@ init_input <- function() {
                                              0.01528, 0.01682, 0.01852, 0.0204, 0.02247, 0.02475, 0.02726, 0.03004, 0.0331, 0.03647, 0.04019, 0.0443, 0.04883, 0.05383,
                                              0.05935, 0.06543, 0.07215, 0.07957, 0.08776, 0.0968, 0.10678, 0.1178, 0.12997, 0.14341, 0.15794, 0.17326, 0.18931, 0.20604,
                                              0.21839, 0.23536, 0.2529, 0.27092, 0.28933, 0.30802, 0.32687, 0.34576, 0.36457, 0.38319, 0.40149, 0.41937, 0.43673, 0.4535,
-                                             0.4696, 1), female = c(0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05,
+                                             0.4696, 1), female = 0*c(0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05,
                                                                     0.00011, 0.00014, 0.00018, 0.00022, 0.00026, 0.00028, 0.00029, 3e-04, 3e-04, 0.00031, 0.00031, 3e-04, 3e-04, 3e-04, 0.00031,
                                                                     0.00032, 0.00034, 0.00037, 4e-04, 0.00043, 0.00047, 0.00051, 0.00056, 6e-04, 0.00066, 0.00071, 0.00077, 0.00084, 0.00092,
                                                                     0.001, 0.00109, 0.00118, 0.00129, 0.0014, 0.00153, 0.00166, 0.00181, 0.00197, 0.00215, 0.00235, 0.00257, 0.0028, 0.00307,
@@ -219,28 +219,31 @@ init_input <- function() {
 
   ## Lung function
   input_help$lung_function$fev1_0_prev_betas_by_sex <- "Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)"
-  input$lung_function$fev1_0_prev_betas_by_sex <- cbind(male = c(intercept = 1.546161, age = -0.031296, height_sq = 1.012579,
-                                                                 pack_years = -0.006925, current_smoker = 0, sgrq = 0),
-                                                        female = c(intercept = 1.329805, age = -0.031296, height_sq = 1.012579,
-                                                                   pack_years = -0.006925, current_smoker = 0, sgrq = 0))
+  #DEBUG all covariates zero - except for intercept
+
+  input$lung_function$fev1_0_prev_betas_by_sex <- cbind(male = c(intercept = 1.546161, age = 0*-0.031296, height_sq = 0*1.012579,
+                                                                 pack_years = 0*-0.006925, current_smoker = 0, sgrq = 0),
+                                                        female = c(intercept = 0*1.329805, age = 0*-0.031296, height_sq = 0*1.012579,
+                                                                   pack_years = 0*-0.006925, current_smoker = 0, sgrq = 0))
   input_ref$lung_function$fev1_0_prev_betas_by_sex <- "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
 
 
   input_help$lung_function$fev1_0_prev_sd_by_sex <- "SD of FEV1 at time of creation for those with COPD (separately by sex)"
-  input$lung_function$fev1_0_prev_sd_by_sex <- c(male = 0.6148, female = 0.4242)
+  input$lung_function$fev1_0_prev_sd_by_sex <- c(male = 0*0.6148, female = 0*0.4242) #DEBUG no SD for FEV1
   input_ref$lung_function$fev1_0_prev_sd_by_sex <- ""
 
 
   input_help$lung_function$fev1_0_inc_betas_by_sex <- "Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)"
-  input$lung_function$fev1_0_inc_betas_by_sex <- cbind(male = c(intercept = 1.4895 - 0.6831, age = -0.0322, height_sq = 1.27,
-                                                                pack_years = -0.00428, current_smoker = 0, sgrq = 0),
-                                                       female = c(intercept = 1.5737 - 0.425, age = -0.0275, height_sq = 0.97,
-                                                                  pack_years = -0.00465, current_smoker = 0, sgrq = 0))
+  #DEBUG all covariates zero - except for intercept
+  input$lung_function$fev1_0_inc_betas_by_sex <- cbind(male = c(intercept = 1.4895 - 0.6831, age = 0*-0.0322, height_sq = 0*1.27,
+                                                                pack_years = 0*-0.00428, current_smoker = 0, sgrq = 0),
+                                                       female = c(intercept = 1.5737 - 0.425, age = 0*-0.0275, height_sq = 0*0.97,
+                                                                  pack_years = 0*-0.00465, current_smoker = 0, sgrq = 0))
   input_ref$lung_function$fev1_0_inc_betas_by_sex <- "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
 
 
   input_help$lung_function$fev1_0_inc_sd_by_sex <- "SD of FEV1 at time of development of COPD (separately by sex)"
-  input$lung_function$fev1_0_inc_sd_by_sex <- c(male = 0.54, female = 0.36)
+  input$lung_function$fev1_0_inc_sd_by_sex <- c(male = 0*0.54, female = 0*0.36)  #DEBUG NO SD for FEV1
   input_ref$lung_function$fev1_0_inc_sd_by_sex <- ""
 
 
