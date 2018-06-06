@@ -48,10 +48,7 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
    dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
    fev1_0_inc_sd_by_sex <- c(male = 0.54, female = 0.36)
      
-  for (t in 1:(round(time)+1)) {
-    
-    dt <- 1
-      
+
   
        beta_0 <- fev1_0-
     ( fev1_0_ZafarCMAJ_by_sex[2, gender]*age
@@ -74,29 +71,18 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
 
          fev1_slope_t= fev1_betas_by_sex[8, gender];
     
-         fev1_annual_rate[t] <-  dt*fev1_slope + 2 * fev1_slope_t * t * dt + fev1_slope_t * dt * dt    
-         
+         fev1_avg <- fev1_0 + time*fev1_slope + time*time*fev1_slope_t
          SE_fev1_slope <- sqrt((1- dfev1_re_rho* dfev1_re_rho)* dfev1_sigmas[1]* dfev1_sigmas[1])
-         SE_fev1 <- dt * SE_fev1_slope
+         SE_fev1 <- time * SE_fev1_slope
          
-         if (t==1) {
-           fev1_avg[t] <- fev1_0
-           fev1_up[t] <- fev1_0
-           fev1_low[t] <- fev1_0
-
-         } else {
-           fev1_avg[t] <- fev1_avg[t-1] + fev1_annual_rate[t]
-           fev1_up[t] <- fev1_avg[t]+1.96*(SE_fev1)
-           fev1_low[t] <- fev1_avg[t]-1.96*(SE_fev1)
-           }
-    
-  }
+        fev1_up <- fev1_avg+1.96*(SE_fev1)
+        fev1_low <- fev1_avg-1.96*(SE_fev1)
    
    #print(fev1_avg)
-   fev1_rate_avg <- (fev1_avg[(round(time)+1)] - fev1_0)/(round(time))
+   fev1_rate_avg <- NA
 
 
-  df <-data.frame(fev1_rate_avg, fev1_low[round(time)+1], fev1_up[round(time)+1],  fev1_avg[round(time)+1])
+  df <-data.frame(fev1_rate_avg, fev1_low, fev1_up,  fev1_avg)
   names(df) <- c("FEV1_rate", "FEV1_lower", "FEV1_upper", "final_FEV1" )
   
   return(df)
@@ -112,7 +98,7 @@ terminate_session()
 ### annual by LHS for male smokers ;
 
 IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status==1 & sex ==0 & gold>0)
-annualEvents <- subset (events, id %in% IDs$id & event==1)
+annualEvents <- subset (events, id %in% IDs$id & event==1 & local_time <= 1)
 annualEvents <- subset (annualEvents, gold!=0) #& followup_after_COPD > 2) #excluding non-COPD cases
 
 PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
