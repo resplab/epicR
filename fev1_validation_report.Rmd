@@ -35,7 +35,7 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
 #DEBUG all covariates zero - except for intercept
 
      fev1_0_ZafarCMAJ_by_sex <- cbind(male = c(intercept = 1.4275 + 0.4825, baseline_age = -0.00508, baseline_weight_kg = -0.00049, height = -1.8725, height_sq = 1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0),
-                                    female = c(intercept = 1.4275,  baseline_age = -0.00508, baseline_weight_kg = 0*-0.00049, height = -1.8725, height_sq =  1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0))
+                                    female = c(intercept = 1.4275,  baseline_age = -0.00508, baseline_weight_kg = -0.00049, height = -1.8725, height_sq =  1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0))
      
      
     fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126, height =0, height_sq = 0, current_smoker =  -0.03074, age_height_sq = 0, followup_time = -0.00146),
@@ -112,7 +112,7 @@ terminate_session()
 ### annual by LHS for male smokers ;
 
 IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status==1 & sex ==0 & gold>0)
-annualEvents <- subset (events, id %in% IDs$id & event==1 & local_time<=1)
+annualEvents <- subset (events, id %in% IDs$id & event==1)
 annualEvents <- subset (annualEvents, gold!=0) #& followup_after_COPD > 2) #excluding non-COPD cases
 
 PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
