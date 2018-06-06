@@ -116,7 +116,8 @@ init_input <- function() {
 
 
   input_help$agent$p_bgd_by_sex <- "Life table"
-  input$agent$p_bgd_by_sex <- cbind(male = c(0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05,
+  #debug *0
+  input$agent$p_bgd_by_sex <- cbind(male = 0*c(0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05,
                                              1e-04, 0.00012, 0.00015, 2e-04, 0.00028, 0.00039, 0.00051, 0.00059, 0.00066, 0.00071, 0.00075, 0.00076, 0.00076, 0.00074,
                                              0.00071, 7e-04, 0.00069, 7e-04, 0.00071, 0.00074, 0.00078, 0.00082, 0.00086, 0.00091, 0.00096, 0.00102, 0.00108, 0.00115,
                                              0.00123, 0.00132, 0.00142, 0.00153, 0.00165, 0.00179, 0.00194, 0.00211, 0.00229, 0.00251, 0.00275, 0.00301, 0.00331, 0.00364,
@@ -124,7 +125,7 @@ init_input <- function() {
                                              0.01528, 0.01682, 0.01852, 0.0204, 0.02247, 0.02475, 0.02726, 0.03004, 0.0331, 0.03647, 0.04019, 0.0443, 0.04883, 0.05383,
                                              0.05935, 0.06543, 0.07215, 0.07957, 0.08776, 0.0968, 0.10678, 0.1178, 0.12997, 0.14341, 0.15794, 0.17326, 0.18931, 0.20604,
                                              0.21839, 0.23536, 0.2529, 0.27092, 0.28933, 0.30802, 0.32687, 0.34576, 0.36457, 0.38319, 0.40149, 0.41937, 0.43673, 0.4535,
-                                             0.4696, 1), female = c(0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05,
+                                             0.4696, 1), female = 0*c(0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05,
                                                                     0.00011, 0.00014, 0.00018, 0.00022, 0.00026, 0.00028, 0.00029, 3e-04, 3e-04, 0.00031, 0.00031, 3e-04, 3e-04, 3e-04, 0.00031,
                                                                     0.00032, 0.00034, 0.00037, 4e-04, 0.00043, 0.00047, 0.00051, 0.00056, 6e-04, 0.00066, 0.00071, 0.00077, 0.00084, 0.00092,
                                                                     0.001, 0.00109, 0.00118, 0.00129, 0.0014, 0.00153, 0.00166, 0.00181, 0.00197, 0.00215, 0.00235, 0.00257, 0.0028, 0.00307,
@@ -269,15 +270,15 @@ init_input <- function() {
       #                                                          height = 0.05835, height_sq = 0.01807, current_smoker = -0.03074, age_height_sq = -0.00093, followup_time = -0.00146))
 
        input$lung_function$fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762 , baseline_age = 0.002344, baseline_weight_kg =0.000126,
-                                                              height = 0, height_sq = 0, current_smoker = -0.03074, age_height_sq = 0, followup_time = -0.00146),
+                                                              height = 0, height_sq = 0, current_smoker = -0.03074, age_height_sq = 0, followup_time =0*-0.00146),
                                                      female = c(intercept = -0.1543, baseline_age = 0.002344, baseline_weight_kg = 0.000126,
-                                                                height = 0, height_sq = 0, current_smoker = -0.03074, age_height_sq = 0, followup_time = -0.00146))
-
+                                                                height = 0, height_sq = 0, current_smoker =-0.03074, age_height_sq = 0, followup_time = 0*-0.00146))
+#debug
 
   input_ref$lung_function$dfev1_betas <- ""
 
   input_help$lung_function$dfev1_sigmas <- "Sigmas in G Matrix for FEV1 decline"
-  input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
+  input$lung_function$dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = 0*sqrt(0.000759)))) #debug
   input_ref$lung_function$dfev1_sigmas <- ""
 
 
@@ -319,7 +320,7 @@ init_input <- function() {
   input_ref$exacerbation$exac_end_rate <- ""
 
   input_help$exacerbation$logit_p_death_by_sex <- "Probability of death due to exacerbation according to its severity level"
-  #  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1)))
+  #  input$exacerbation$p_death <- t(as.matrix(c(mild = 0, moderate = 0, severe = 0.1, verysevere = 0.1))) #debug
   input$exacerbation$logit_p_death_by_sex <- cbind(male = c(intercept = -13*1000, age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0),
                                                    female = c(intercept = -13*1000 , age = log(1.05),  mild = 0, moderate = -2, severe = 7.4, very_severe = 8, n_hist_severe_exac = 0))
   input_ref$exacerbation$logit_p_death_by_sex <- ""

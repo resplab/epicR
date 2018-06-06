@@ -38,14 +38,14 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
                                     female = c(intercept = 1.4275,  baseline_age = -0.00508, baseline_weight_kg = -0.00049, height = -1.8725, height_sq =  1.9513, current_smoker = -0.09221, age_height_sq = -0.00832, followup_time = 0))
      
      
-    fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126, height =0, height_sq = 0, current_smoker =  -0.03074, age_height_sq = 0, followup_time = -0.00146),
-                            female = c(intercept = -0.1543 , baseline_age = 0.002344, baseline_weight_kg =0.000126, height =0, height_sq =0, current_smoker =  -0.03074, age_height_sq = 0, followup_time = -0.00146))
 
-
+     fev1_betas_by_sex <- cbind(male = c(intercept = -0.1543 - 0.00762, baseline_age = 0.002344, baseline_weight_kg = 0.000126, height =0, height_sq = 0, current_smoker = -0.03074, age_height_sq = 0, followup_time =0*-0.00146),
+                            female = c(intercept = -0.1543 , baseline_age = 0.002344, baseline_weight_kg =0.000126, height =0, height_sq =0, current_smoker =  -0.03074, age_height_sq = 0, followup_time =0*-0.00146)) #debug
+     
 
 
    dfev1_re_rho <- 0.09956332 # From G Matrix: 0.00087/(sqrt(0.1006)*sqrt(0.000759))
-   dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = sqrt(0.000759))))
+   dfev1_sigmas <- t(as.matrix(c(sigma1 = sqrt(0.1006), sigma2 = 0*sqrt(0.000759)))) #debug
    fev1_0_inc_sd_by_sex <- c(male = 0.54, female = 0.36)
      
 
@@ -70,9 +70,9 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
          + fev1_betas_by_sex[7, gender]*age* height* height;
 
          fev1_slope_t= fev1_betas_by_sex[8, gender];
-    
+
          fev1_avg <- fev1_0 + time*fev1_slope + time*time*fev1_slope_t
-         SE_fev1_slope <- sqrt((1- dfev1_re_rho* dfev1_re_rho)* dfev1_sigmas[1]* dfev1_sigmas[1])
+         SE_fev1_slope <- sqrt((1- dfev1_re_rho* dfev1_re_rho)* dfev1_sigmas[2]* dfev1_sigmas[2])
          SE_fev1 <- time * SE_fev1_slope
          
         fev1_up <- fev1_avg+1.96*(SE_fev1)
@@ -98,7 +98,7 @@ terminate_session()
 ### annual by LHS for male smokers ;
 
 IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status==1 & sex ==0 & gold>0)
-annualEvents <- subset (events, id %in% IDs$id & event==1 & local_time <= 1)
+annualEvents <- subset (events, id %in% IDs$id & event==1)
 annualEvents <- subset (annualEvents, gold!=0) #& followup_after_COPD > 2) #excluding non-COPD cases
 
 PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
@@ -135,7 +135,7 @@ print (rate$WithinPI[i])
 # rate <- subset(rate, (epicR_predicted_FEV1 > 0.5 & LHS_expected_FEV1 > 0.5)) #removing negative values
 
 ggplot(rate, aes(x = LHS_expected_FEV1   , y = epicR_predicted_FEV1)) +
-  geom_point (size = 1, aes(colour = factor(WithinPI))) + labs(title = "Lung Function", caption = "Continuous smoker males over 40 years with COPD.", y = "EPIC-Simulated FEV1", x = "LHS Model FEV1") + geom_ribbon(aes(ymin=(LHS_expected_FEV1_low), ymax= (LHS_expected_FEV1_up)), linetype=2, alpha=0.3) 
+  geom_point (shape = ".", size = 1, aes(colour = factor(WithinPI))) + labs(title = "Lung Function", caption = "Continuous smoker males over 40 years with COPD.", y = "EPIC-Simulated FEV1", x = "LHS Model FEV1") + geom_ribbon(aes(ymin=(LHS_expected_FEV1_low), ymax= (LHS_expected_FEV1_up)), linetype=2, alpha=0.3) + xlim(3,4) + ylim(3,4)
 
 #ggsave(paste0("dense_FEV1_validation_male_smoker",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
