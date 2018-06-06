@@ -6,7 +6,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=TRUE}
 message("The following plots will show properly only if the FEV1 validation copy of epicR - where smoking status change is disabled - is executed. For a permanent copy of the older version of these results, please refer to the report dated 2018-02-15")
 library (epicR)
 library(ggplot2)
@@ -84,58 +84,82 @@ fev1_projection_amin <- function(fev1_0, time, sex, smoking, age, weight, height
 }
 
 init_session()
-run(50000)
+run(100000)
 events <- as.data.frame (Cget_all_events_matrix())
 terminate_session()
 
+  
+validate_fev1 <- function(subgroupSex, subgroupSmoking){
+  
+  if (subgroupSex==0) subgroupSexText <- "males"
+    else subgroupSexText <- "females"
+    
+      if (subgroupSmoking==0) subgroupSmokingText <- "sustained quitter"
+    else subgroupSmokingText <- "continus smoker"
+    
+  subgroupText <- paste(subgroupSmokingText, subgroupSexText)
+    
+  IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status == subgroupSmoking & sex == subgroupSex & gold>0)
+  annualEvents <- subset (events, id %in% IDs$id & event==1)
+  annualEvents <- subset (annualEvents, gold!=0 & followup_after_COPD > 2) #excluding non-COPD cases
+  
+  PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
+  PI2 <- as.data.frame(PI2)
+  
+  for (i in 1:nrow(annualEvents)) {
+    tmp <- fev1_projection_amin(annualEvents[i, "FEV1_baseline"], annualEvents[i, "local_time"], annualEvents[i,"sex"], annualEvents[i,"smoking_status"], annualEvents[i,"age_baseline (COPD)"], annualEvents[i,"weight_at_COPD"], annualEvents[i,"height"])
+    
+    PI2 [i,"LHS_expected_FEV1_low"] <- tmp[["FEV1_lower"]]
+    
+    PI2 [i,"LHS_FEV1_rate"] <- tmp[["FEV1_rate"]]
+    
+    PI2 [i,"LHS_expected_FEV1_up"] <- tmp[["FEV1_upper"]]
+    
+    PI2 [i,"LHS_expected_FEV1"]<- tmp[["final_FEV1"]]
+    
+  }
+  
+  results <- data.frame(annualEvents$id, annualEvents$followup_after_COPD , annualEvents$FEV1_baseline,annualEvents$FEV1_slope, annualEvents$FEV1,  PI2$LHS_FEV1_rate, PI2$LHS_expected_FEV1_low, PI2$LHS_expected_FEV1_up, PI2$LHS_expected_FEV1)
+  colnames(results) = c("id", "year", "fev1_baseline", "epicR_FEV1_rate", "epicR_predicted_FEV1", "LHS_FEV1_rate", "LHS_expected_FEV1_low", "LHS_expected_FEV1_up", "LHS_expected_FEV1")
+  
+  for (i in 1:length(results$epicR_predicted_FEV1)){
+    if (results$epicR_predicted_FEV1[i] < results$LHS_expected_FEV1_low[i]) {results$WithinPI[i] <- "EPIC Underestimates"}
+    else if (results$epicR_predicted_FEV1[i] > results$LHS_expected_FEV1_up[i]) {results$WithinPI[i] <- "EPIC Overestimates"}
+    else {results$WithinPI[i] <- "All WithinPI"}
+  }
+  print (results$WithinPI[i])
+  
+  results <- subset(results, (epicR_predicted_FEV1 > 0.5 & LHS_expected_FEV1 > 0.5)) #removing negative values
+  
+ p <- ggplot(results, aes(x = LHS_expected_FEV1   , y = epicR_predicted_FEV1)) +
+    geom_point (size = 1, aes(colour = factor(WithinPI))) + labs(title = "Lung Function", caption = paste(subgroupText, "over 40 years with COPD."), y = "EPIC-Simulated FEV1", x = "LHS Model FEV1") + geom_ribbon(aes(ymin=(LHS_expected_FEV1_low), ymax= (LHS_expected_FEV1_up)), linetype=2, alpha=0.3) + xlim(1,3) + ylim(1,3) +  
+  scale_colour_grey()
+  
+ ggsave((paste0("FEV1_validation_", subgroupText, ".tiff")), plot = p, device = "tiff", dpi = 300)
+
+  message (paste(subgroupText,"with COPD over 40 years of age"))
+  results$WithinPI <- as.factor(results$WithinPI)
+  summary(results)
+  LHS <- results$LHS_expected_FEV1
+  epic <- results$epicR_predicted_FEV1
+  dif2 <- var(epic-LHS)
+  r2 <- 1 - (dif2/var(LHS))
+  r2
+  
+  message(summary(results))
+  return(p)
+}
+
 
 ### annual by LHS for male smokers ;
+validate_fev1(0, 1)
 
-IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status==1 & sex ==0 & gold>0)
-annualEvents <- subset (events, id %in% IDs$id & event==1)
-annualEvents <- subset (annualEvents, gold!=0 & followup_after_COPD > 2) #excluding non-COPD cases
+### annual by LHS for male quitters ;
+validate_fev1(0, 0)
 
-PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
-PI2 <- as.data.frame(PI2)
+### annual by LHS for female smokers ;
+validate_fev1(1, 1)
 
-for (i in 1:nrow(annualEvents)) {
-  tmp <- fev1_projection_amin(annualEvents[i, "FEV1_baseline"], annualEvents[i, "local_time"], annualEvents[i,"sex"], annualEvents[i,"smoking_status"], annualEvents[i,"age_baseline (COPD)"], annualEvents[i,"weight_at_COPD"], annualEvents[i,"height"])
+### annual by LHS for female quitter;
+validate_fev1(1, 0)
   
-  PI2 [i,"LHS_expected_FEV1_low"] <- tmp[["FEV1_lower"]]
-  
-  PI2 [i,"LHS_FEV1_rate"] <- tmp[["FEV1_rate"]]
-  
-  PI2 [i,"LHS_expected_FEV1_up"] <- tmp[["FEV1_upper"]]
-  
-  PI2 [i,"LHS_expected_FEV1"]<- tmp[["final_FEV1"]]
-  
-}
-
-results <- data.frame(annualEvents$id, annualEvents$followup_after_COPD , annualEvents$FEV1_baseline,annualEvents$FEV1_slope, annualEvents$FEV1,  PI2$LHS_FEV1_rate, PI2$LHS_expected_FEV1_low, PI2$LHS_expected_FEV1_up, PI2$LHS_expected_FEV1)
-colnames(results) = c("id", "year", "fev1_baseline", "epicR_FEV1_rate", "epicR_predicted_FEV1", "LHS_FEV1_rate", "LHS_expected_FEV1_low", "LHS_expected_FEV1_up", "LHS_expected_FEV1")
-
-for (i in 1:length(results$epicR_predicted_FEV1)){
-  if (results$epicR_predicted_FEV1[i] < results$LHS_expected_FEV1_low[i]) {results$WithinPI[i] <- "EPIC Underestimates"}
-  else if (results$epicR_predicted_FEV1[i] > results$LHS_expected_FEV1_up[i]) {results$WithinPI[i] <- "EPIC Overestimates"}
-  else {results$WithinPI[i] <- "WithinPI"}
-}
-print (results$WithinPI[i])
-
-results <- subset(results, (epicR_predicted_FEV1 > 0.5 & LHS_expected_FEV1 > 0.5)) #removing negative values
-
-ggplot(results, aes(x = LHS_expected_FEV1   , y = epicR_predicted_FEV1)) +
-  geom_point (size = 1, aes(colour = factor(WithinPI))) + labs(title = "Lung Function", caption = "Continuous smoker males over 40 years with COPD. ", y = "EPIC-Simulated FEV1", x = "LHS Model FEV1") + geom_ribbon(aes(ymin=(LHS_expected_FEV1_low), ymax= (LHS_expected_FEV1_up)), linetype=2, alpha=0.3) + xlim(1,4) + ylim(1,4)
-
-ggsave(paste0("FEV1_validation_male_smoker",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
-
-message ("Zafari model with all covariates. Continuous smoker males with COPD over 40 years of age")
-results$WithinPI <- as.factor(results$WithinPI)
-summary(results)
-LHS <- results$LHS_expected_FEV1
-epic <- results$epicR_predicted_FEV1
-dif2 <- var(epic-LHS)
-r2 <- 1 - (dif2/var(LHS))
-r2
-
-summary(results)
-
