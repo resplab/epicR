@@ -1174,6 +1174,13 @@ agent *create_agent(agent *ag,int id)
 
     if(rand_unif()<COPD_odds/(1+COPD_odds))
     {
+      //Setting values for COPD prevalence cases
+      (*ag).weight_baseline = (*ag).weight;
+      (*ag).age_baseline = (*ag).local_time + (*ag).age_at_creation;
+      (*ag).followup_time = 0 ;
+      (*ag).local_time_at_COPD = (*ag).local_time;
+
+
       (*ag).fev1=input.lung_function.fev1_0_prev_betas_by_sex[0][(*ag).sex]
       +input.lung_function.fev1_0_prev_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
       +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
@@ -1193,12 +1200,14 @@ agent *create_agent(agent *ag,int id)
          (input.lung_function.fev1_betas_by_sex[0][(*ag).sex]+input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho*(_beta_0-input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]));
 
          (*ag).fev1_slope=_beta_0_prime
-           +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
-           +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
-           +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
-           +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-           +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
-           +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+          +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
+          +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
+          +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
+          +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
+          +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
+          +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+
+         //Rprintf("%f \n", (*ag).weight_baseline ); //debug
 
            (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
 
@@ -1208,10 +1217,6 @@ agent *create_agent(agent *ag,int id)
            //}
 
            //Setting values for COPD prevalence cases
-           (*ag).weight_baseline = (*ag).weight;
-           (*ag).age_baseline = (*ag).local_time + (*ag).age_at_creation;
-           (*ag).followup_time = 0 ;
-           (*ag).local_time_at_COPD = (*ag).local_time;
            (*ag).fev1_baseline = (*ag).fev1;
 
            // Intercept for FEV1 decline in prevalent cases
@@ -2021,7 +2026,7 @@ agent *create_agent(agent *ag,int id)
   NumericMatrix Cget_all_events_matrix()
   {
     NumericMatrix outm(event_stack_pointer,20);
-    colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "LHS_eligible", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
+    colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "LHS_eligible", "localtime_at_COPD", "age_baseline (COPD)", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
     for(int i=0;i<event_stack_pointer;i++)
     {
       agent *ag=&event_stack[i];
@@ -2086,21 +2091,21 @@ agent *create_agent(agent *ag,int id)
 
 
 
-  void event_smoking_change_process(agent *ag)
+  void event_smoking_change_process(agent *ag) //debug disabling smoking change completely for FEV1 validation
   {
-    smoking_LPT(ag);
-    if ((*ag).gold==0) {
-      if((*ag).smoking_status==0) {
-        (*ag).smoking_status=1;
-        (*ag).LHS_eligible=1;
-      }
-
-      else {
-        (*ag).smoking_status=0;
-        (*ag).LHS_eligible=0;
-      }
-
-    }
+    // smoking_LPT(ag);
+    // if ((*ag).gold==0) {
+    //   if((*ag).smoking_status==0) {
+    //     (*ag).smoking_status=1;
+    //     (*ag).LHS_eligible=1;
+    //   }
+    //
+    //   else {
+    //    // (*ag).smoking_status=0;  //debug for FEV1 validation
+    //     (*ag).LHS_eligible=0;
+    //   }
+    //
+    // }
   }
 
 
@@ -2136,6 +2141,11 @@ agent *create_agent(agent *ag,int id)
   void event_COPD_process(agent *ag)
   {
 
+    (*ag).weight_baseline = (*ag).weight;
+    (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
+    (*ag).followup_time = 0 ;
+    (*ag).local_time_at_COPD = (*ag).local_time;
+
     (*ag).fev1=input.lung_function.fev1_0_inc_betas_by_sex[0][(*ag).sex]
     +input.lung_function.fev1_0_inc_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
     +input.lung_function.fev1_0_inc_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
@@ -2153,13 +2163,13 @@ agent *create_agent(agent *ag,int id)
        double _beta_0_prime=rand_norm()*sqrt((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1])+
        (input.lung_function.fev1_betas_by_sex[0][(*ag).sex]+input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho*(_beta_0-input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]));
 
-       (*ag).fev1_slope=_beta_0_prime
-         +input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline
-         +input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline
-         +input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height
-         +input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-         +input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status
-         +input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
+       (*ag).fev1_slope=_beta_0_prime +
+         input.lung_function.fev1_betas_by_sex[1][(*ag).sex]*(*ag).age_baseline +
+         input.lung_function.fev1_betas_by_sex[2][(*ag).sex]*(*ag).weight_baseline +
+         input.lung_function.fev1_betas_by_sex[3][(*ag).sex]*(*ag).height +
+         input.lung_function.fev1_betas_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height +
+         input.lung_function.fev1_betas_by_sex[5][(*ag).sex]*(*ag).smoking_status +
+         input.lung_function.fev1_betas_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
 
          (*ag).fev1_slope_t=input.lung_function.fev1_betas_by_sex[7][(*ag).sex];
 
@@ -2178,11 +2188,8 @@ agent *create_agent(agent *ag,int id)
              else (*ag).gold=1;
 
              // FEV Decline
-             (*ag).weight_baseline = (*ag).weight;
-             (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
-             (*ag).followup_time = 0 ;
-             (*ag).local_time_at_COPD = (*ag).local_time;
              (*ag).fev1_baseline = (*ag).fev1;
+
 
              // Intercept for FEv1 decline in COPD incidence cases
              // double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
@@ -3053,8 +3060,8 @@ agent *create_agent(agent *ag,int id)
             (*ag).event=event_birthday;
             break;
           case event_smoking_change:
-            event_smoking_change_process(ag);
-            (*ag).event=event_smoking_change;
+           // event_smoking_change_process(ag); //debug for FEv1 validation plot
+          //  (*ag).event=event_smoking_change; //debug for FEv1 validation plot
             break;
           case event_COPD:
             event_COPD_process(ag);
