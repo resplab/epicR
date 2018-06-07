@@ -1174,6 +1174,11 @@ agent *create_agent(agent *ag,int id)
 
     if(rand_unif()<COPD_odds/(1+COPD_odds))
     {
+      (*ag).weight_baseline = (*ag).weight;
+      (*ag).age_baseline = (*ag).local_time + (*ag).age_at_creation;
+      (*ag).followup_time = 0 ;
+      (*ag).local_time_at_COPD = (*ag).local_time;
+
       (*ag).fev1=input.lung_function.fev1_0_prev_betas_by_sex[0][(*ag).sex]
       +input.lung_function.fev1_0_prev_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
       +input.lung_function.fev1_0_prev_betas_by_sex[2][(*ag).sex]*(*ag).height*(*ag).height
@@ -1208,10 +1213,6 @@ agent *create_agent(agent *ag,int id)
            }
 
            //Setting values for COPD prevalence cases
-           (*ag).weight_baseline = (*ag).weight;
-           (*ag).age_baseline = (*ag).local_time + (*ag).age_at_creation;
-           (*ag).followup_time = 0 ;
-           (*ag).local_time_at_COPD = (*ag).local_time;
            (*ag).fev1_baseline = (*ag).fev1;
 
            // Intercept for FEV1 decline in prevalent cases
@@ -2137,6 +2138,10 @@ agent *create_agent(agent *ag,int id)
 
   void event_COPD_process(agent *ag)
   {
+    (*ag).weight_baseline = (*ag).weight;
+    (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
+    (*ag).followup_time = 0 ;
+    (*ag).local_time_at_COPD = (*ag).local_time;
 
     (*ag).fev1=input.lung_function.fev1_0_inc_betas_by_sex[0][(*ag).sex]
     +input.lung_function.fev1_0_inc_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
@@ -2180,10 +2185,7 @@ agent *create_agent(agent *ag,int id)
              else (*ag).gold=1;
 
              // FEV Decline
-             (*ag).weight_baseline = (*ag).weight;
-             (*ag).age_baseline = (*ag).local_time+(*ag).age_at_creation;
-             (*ag).followup_time = 0 ;
-             (*ag).local_time_at_COPD = (*ag).local_time;
+
              (*ag).fev1_baseline = (*ag).fev1;
 
              // Intercept for FEv1 decline in COPD incidence cases
