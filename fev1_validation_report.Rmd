@@ -89,7 +89,7 @@ events <- as.data.frame (Cget_all_events_matrix())
 terminate_session()
 
   
-validate_fev1 <- function(subgroupSex, subgroupSmoking){
+validate_fev1 <- function(subgroupSex, subgroupSmoking, censoringEventOnly = FALSE){
   
   if (subgroupSex==0) subgroupSexText <- "males"
     else subgroupSexText <- "females"
@@ -100,7 +100,9 @@ validate_fev1 <- function(subgroupSex, subgroupSmoking){
   subgroupText <- paste(subgroupSmokingText, subgroupSexText)
     
   IDs <- subset (events, (local_time==0) & LHS_eligible==1 & smoking_status == subgroupSmoking & sex == subgroupSex & gold>0)
-  annualEvents <- subset (events, id %in% IDs$id & event==1)
+
+  if (censoringEventOnly) {annualEvents <- subset (events, id %in% IDs$id & event==14)}
+  else   {annualEvents <- subset (events, id %in% IDs$id & event==1)}
   annualEvents <- subset (annualEvents, gold!=0 & followup_after_COPD > 2) #excluding non-COPD cases
   
   PI2 <- matrix (NA, nrow = nrow(annualEvents), ncol = 3)
