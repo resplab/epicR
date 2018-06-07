@@ -841,7 +841,6 @@ medication_classes<-c(
     double pack_years;
     double smoking_status_LPT;
 
-    int LHS_eligible; //eligibility for LHS, 0 = no, 1 = yes
     double fev1;
     double fev1_baseline;  //Derived from CanCOLD
     //  double fev1_baseline_ZafarCMAJ;
@@ -962,8 +961,6 @@ medication_classes<-c(
     out["fev1_tail"] = (*ag).fev1_tail;
     out["gold"] = (*ag).gold;
     out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
-
-    out["LHS_eligible"] = (*ag).LHS_eligible;
 
     out["cumul_cost"] = (*ag).cumul_cost;
     out["cumul_qaly"] = (*ag).cumul_qaly;
@@ -1100,14 +1097,11 @@ agent *create_agent(agent *ag,int id)
     if(rand_unif() < temp) //adding a minimum baseline smoking prevalence. ever smoker
     {
       (*ag).smoking_status = 1;
-      (*ag).LHS_eligible = 1;
-      if (rand_unif() < 0.5) (*ag).smoking_status = 0; //LHS intervention
       ever_smoker = true;
     }
     else
     {
       (*ag).smoking_status=0;
-      (*ag).LHS_eligible = 0;
       double odds2=exp(input.smoking.logit_p_never_smoker_con_not_current_0_betas[0]
                          +input.smoking.logit_p_never_smoker_con_not_current_0_betas[1]*(*ag).sex
                          +input.smoking.logit_p_never_smoker_con_not_current_0_betas[2]*(*ag).age_at_creation
@@ -2023,8 +2017,8 @@ agent *create_agent(agent *ag,int id)
   // [[Rcpp::export]]
   NumericMatrix Cget_all_events_matrix()
   {
-    NumericMatrix outm(event_stack_pointer,20);
-    colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "LHS_eligible", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
+    NumericMatrix outm(event_stack_pointer,19);
+    colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
     for(int i=0;i<event_stack_pointer;i++)
     {
       agent *ag=&event_stack[i];
@@ -2041,13 +2035,12 @@ agent *create_agent(agent *ag,int id)
       outm(i,10)=(*ag).fev1_slope_t;
       outm(i,11)=(*ag)._pred_fev1;
       outm(i,12)=(*ag).smoking_status;
-      outm(i,13)=(*ag).LHS_eligible;
-      outm(i,14)=(*ag).local_time_at_COPD;
-      outm(i,15)=(*ag).age_baseline;
-      outm(i,16)=(*ag).weight_baseline;
-      outm(i,17)=(*ag).height;
-      outm(i,18)=(*ag).followup_time;
-      outm(i,19)=(*ag).fev1_baseline;
+      outm(i,13)=(*ag).local_time_at_COPD;
+      outm(i,14)=(*ag).age_baseline;
+      outm(i,15)=(*ag).weight_baseline;
+      outm(i,16)=(*ag).height;
+      outm(i,17)=(*ag).followup_time;
+      outm(i,18)=(*ag).fev1_baseline;
 
     }
     return(outm);
@@ -2095,12 +2088,10 @@ agent *create_agent(agent *ag,int id)
    // if ((*ag).gold==0) { //for debug porpuses. No smoking change when COPD present
       if((*ag).smoking_status==0) {
         (*ag).smoking_status=1;
-        (*ag).LHS_eligible=1;
       }
 
       else {
         (*ag).smoking_status=0;
-        (*ag).LHS_eligible=0;
       }
 
  //   }
