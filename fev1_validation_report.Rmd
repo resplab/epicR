@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r, echo=FALSE, warning=FALSE, message=TRUE}
-message("The following plots will show properly only if the FEV1 validation copy of epicR - where smoking status change is disabled - is executed. For a permanent copy of the older version of these results, please refer to the report dated 2018-02-15")
+message("The following plots will show properly only if the FEV1 validation copy of epicR - where smoking status change is disabled - is executed. For a permanent copy of the older version of these results, please refer to the report dated 2018-06-06")
 library (epicR)
 library(ggplot2)
 
@@ -164,4 +164,5 @@ validate_fev1(1, 1)
 
 ### annual by LHS for female quitter;
 validate_fev1(1, 0)
+```
   
