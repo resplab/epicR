@@ -6,7 +6,7 @@ Authors@R: c(
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
 Description: R Package for Evaluation Platform in COPD (EPIC). EPIC is a Discrete Event Simulation (DES) model that simulates health outcomes of COPD patients based on demographics and individual-level risk factors. DISCLAIMER: The package is currently under development and should not be used for research and/or clinical applications.
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.4)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
