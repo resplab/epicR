@@ -9,3 +9,7 @@
 #' @import ggthemes
 #' @importFrom scales pretty_breaks
 NULL
+
+.onUnload <- function (libpath) {
+  library.dynam.unload("epicR", libpath)
+}
