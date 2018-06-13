@@ -188,6 +188,7 @@ calibrate_smoking <- function() {
 #' @param time_horizon in years
 #' @return regression co-efficients as files
 #' @export
+
 calibrate_COPD_inc_rx<-function(nIterations=500,
                            nPatients=100000,
                            time_horizon=20)
@@ -300,6 +301,12 @@ calibrate_COPD_inc_rx<-function(nIterations=500,
 }
 
 
+#' Solves stochastically for COPD incidence rate equation using a single core.
+#' @param nIterations number of iterations for the numberical solution
+#' @param nPatients number of simulated agents.
+#' @param time_horizon in years
+#' @return regression co-efficients as files
+#' @export
 calibrate_COPD_inc<-function(nIterations=500,
                              nPatients=100000,
                              time_horizon=20)
