@@ -11,7 +11,6 @@ Layout:
 */
 
 
-
 #define OUTPUT_EX_BIOMETRICS 1 //height, weight etc;
 #define OUTPUT_EX_SMOKING 2
 #define OUTPUT_EX_COMORBIDITY 4
@@ -25,16 +24,11 @@ Layout:
 #define OUTPUT_EX 65535
 
 
-
-
 #define MAX_AGE 111
-
 
 
 #include <Rcpp.h>
 using namespace Rcpp;
-
-
 
 
 
