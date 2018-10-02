@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibration.R
 \name{calibrate_COPD_inc}
 \alias{calibrate_COPD_inc}
-\title{Solves stochastically for COPD incidence rate equation using a single core.}
+\title{Solves stochastically for COPD incidence rate equation.}
 \usage{
 calibrate_COPD_inc(nIterations = 500, nPatients = 1e+05,
   time_horizon = 20)
@@ -18,5 +18,5 @@ calibrate_COPD_inc(nIterations = 500, nPatients = 1e+05,
 regression co-efficients as files
 }
 \description{
-Solves stochastically for COPD incidence rate equation using a single core.
+Solves stochastically for COPD incidence rate equation.
 }
