@@ -105,15 +105,21 @@ export_figures <- function(nPatients = 1e4) {
   n_COPD_inc_by_age <- as.data.frame(colSums(as.data.frame (op_ex$n_inc_COPD_by_ctime_age)[40:90]))
   COPD_inc_by_age_sex <- as.data.frame(COPD_inc_by_age_sex) * 100 #converting values to percentage.
   alive_by_age <- as.data.frame(colSums(as.data.frame (op_ex$n_alive_by_ctime_age))[40:90])
+
   SE_COPD_inc_by_age_sex <- sqrt (COPD_inc_by_age_sex * (100 - COPD_inc_by_age_sex) / alive_by_age)
 
   df <- data.frame(Age = c(40:90), Incidence = COPD_inc_by_age_sex)
   colnames(df) <- c("Age", "Incidence")
   openxlsx::writeData(wb, "COPD_incidence_by_age_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
+  errorbar_min <- df$Incidence - 1.96*SE_COPD_inc_by_age_sex
+  errorbar_min <- errorbar_min$COPD_inc_by_age_sex
+  errorbar_max <- df$Incidence + 1.96*SE_COPD_inc_by_age_sex
+  errorbar_max <- errorbar_max$COPD_inc_by_age_sex
+
   plot_COPD_inc_by_age_sex  <- ggplot(df, aes(x = Age, y = Incidence)) + theme_tufte(base_size=14, ticks=F) +
     geom_bar(stat = "identity", position = "dodge",  fill = "#FF6666") +
-    geom_errorbar(aes(ymin = (Incidence - 1.96*SE_COPD_inc_by_age_sex), ymax = (Incidence + 1.96*SE_COPD_inc_by_age_sex)), width=.2, position = position_dodge(.9)) +
+    geom_errorbar(aes(ymin = errorbar_min, ymax = errorbar_max), width=.2, position = position_dodge(.9)) +
      labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_inc_by_age_sex ) #plot needs to be showing
@@ -150,9 +156,14 @@ export_figures <- function(nPatients = 1e4) {
   colnames(df) <- c("Age_Group", "Incidence")
   openxlsx::writeData(wb, "COPD_incidence_by_age_group_sex", df  , startCol = 2, startRow = 3, colNames = TRUE)
 
+  errorbar_min <- df$Incidence - 1.96*SE_COPD_inc_by_agegroup
+  errorbar_min <- errorbar_min$V1
+  errorbar_max <- df$Incidence + 1.96*SE_COPD_inc_by_agegroup
+  errorbar_max <- errorbar_max$V1
+
   plot_COPD_inc_by_agegroup  <- ggplot(df, aes(x = Age_Group, y = Incidence)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(stat = "identity", position = "dodge", width = 0.2,  fill = "#FF6666") +
-      geom_errorbar(aes(ymin = Incidence - 1.96*SE_COPD_inc_by_agegroup, ymax = Incidence + 1.96*SE_COPD_inc_by_agegroup), width=.2, position = position_dodge(.9)) +
+      geom_errorbar(aes(ymin = errorbar_min, ymax = errorbar_max), width=.2, position = position_dodge(.9)) +
       ylim(low = 0, high = 5) + labs(title = "Incidence of COPD by Age Group") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
   print(plot_COPD_inc_by_agegroup ) #plot needs to be showing
@@ -236,8 +247,12 @@ export_figures <- function(nPatients = 1e4) {
   df <- data.frame(Age_Group = c("40-50", "50-60", "60-70", "70-80", "80-90", "90+"), Prevalence = COPD_prev_by_agegroup)
   openxlsx::writeData(wb, "Prev_Age_Group_CanCOLD-BOLD", df, startCol = 2, startRow = 3, colNames = TRUE)
 
+  errorbar_min <- df$Prevalence - 1.96*SE_COPD_prev_by_agegroup
+  errorbar_max <- df$Prevalence + 1.96*SE_COPD_prev_by_agegroup
+
   plot_COPD_prev_by_agegroup  <- ggplot2::ggplot(df, aes(x = Age_Group, y = Prevalence)) +  theme_tufte(base_size=14, ticks=F) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.2, fill = "#FF6666") + geom_errorbar(aes(ymin = Prevalence - 1.96*SE_COPD_prev_by_agegroup, ymax = Prevalence + 1.96*SE_COPD_prev_by_agegroup ),
+    geom_bar(stat = "identity", position = "dodge", width = 0.2, fill = "#FF6666") +
+    geom_errorbar(aes(ymin = errorbar_min, ymax =errorbar_max),
                                                                                                        width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
 
   print(plot_COPD_prev_by_agegroup) #plot needs to be showing
