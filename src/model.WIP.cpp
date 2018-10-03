@@ -880,6 +880,10 @@ struct agent
 
   double p_COPD;  //Not used in the model; here to facilitate calibration on incidence;
 
+  bool cough; //symptoms
+  bool phlegm;
+  bool dyspnea;
+  bool wheeze;
   //Define your project-specific variables here;
 };
 
@@ -969,6 +973,11 @@ List get_agent(agent *ag)
   out["n_stroke"] = (*ag).n_stroke;
 
   out["p_COPD"] = (*ag).p_COPD;
+
+  out["cough"] = (*ag).cough;
+  out["phlegm"] = (*ag).phlegm;
+  out["dyspnea"] = (*ag).dyspnea;
+  out["wheeze"] = (*ag).wheeze;
 
   return out;
 }
@@ -2011,8 +2020,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,19);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
+  NumericMatrix outm(event_stack_pointer,20);
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2035,8 +2044,10 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,16)=(*ag).height;
     outm(i,17)=(*ag).followup_time;
     outm(i,18)=(*ag).fev1_baseline;
+    outm(i,19)=(*ag).cough;
 
   }
+
   return(outm);
 }
 
