@@ -520,6 +520,18 @@ struct input
     double logit_p_death_by_sex[7][2]; //rate of mortality per type;
   } exacerbation;
 
+  struct
+  {
+    double logit_p_cough_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
+    double logit_p_cough_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
+    double logit_p_phlegm_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
+    double logit_p_phlegm_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
+    double logit_p_dyspnea_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
+    double logit_p_dyspnea_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
+    double logit_p_wheeze_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
+    double logit_p_wheeze_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
+
+  } symptoms;
 
 
   struct
@@ -652,6 +664,20 @@ List Cget_inputs()
       Rcpp::Named("exac_end_rate")=AS_VECTOR_DOUBLE(input.exacerbation.exac_end_rate),
       Rcpp::Named("logit_p_death_by_sex")=AS_MATRIX_DOUBLE(input.exacerbation.logit_p_death_by_sex)
     ),
+    Rcpp::Named("symptoms")=Rcpp::List::create(
+      Rcpp::Named("logit_p_cough_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_cough_COPD_by_sex),
+      Rcpp::Named("logit_p_cough_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_cough_nonCOPD_by_sex),
+
+      Rcpp::Named("logit_p_phlegm_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_phlegm_COPD_by_sex),
+      Rcpp::Named("logit_p_phlegm_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_phlegm_nonCOPD_by_sex),
+
+      Rcpp::Named("logit_p_dyspnea_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_dyspnea_COPD_by_sex),
+      Rcpp::Named("logit_p_dyspnea_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_dyspnea_nonCOPD_by_sex),
+
+      Rcpp::Named("logit_p_wheeze_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_COPD_by_sex),
+      Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex)
+    ),
+
     Rcpp::Named("outpatient")=Rcpp::List::create(
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
       Rcpp::Named("p_specialist")=input.outpatient.p_specialist
@@ -755,6 +781,13 @@ int Cset_input_var(std::string name,NumericVector value)
   //if(name=="exacerbation$p_moderate_severe") READ_R_VECTOR(value,input.exacerbation.p_moderate_severe);
   if(name=="exacerbation$exac_end_rate") READ_R_VECTOR(value,input.exacerbation.exac_end_rate);
   if(name=="exacerbation$logit_p_death_by_sex") READ_R_MATRIX(value,input.exacerbation.logit_p_death_by_sex);
+
+  if(name=="symptoms$logit_p_cough_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_cough_COPD_by_sex);
+  if(name=="symptoms$logit_p_cough_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_cough_nonCOPD_by_sex);
+  if(name=="symptoms$logit_p_phlegm_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_phlegm_COPD_by_sex);
+  if(name=="symptoms$logit_p_phlegm_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_phlegm_nonCOPD_by_sex);
+  if(name=="symptoms$logit_p_wheeze_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_COPD_by_sex);
+  if(name=="symptoms$logit_p_wheeze_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_nonCOPD_by_sex);
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
