@@ -366,7 +366,7 @@ init_input <- function() {
 
   input_help$symptoms$logit_p_wheeze_nonCOPD_by_sex <- "Probability of having wheeze for non-COPD patients"
   input$symptoms$logit_p_wheeze_nonCOPD_by_sex <- cbind(male = c(intercept = -6.4836, age = -0.02588,  smoking = -0.00178, packyears = 0.02519),
-                                                         female = c(intercept = -6.4836+0.582, age = -0.02588,  smoking = -0.00178, packyears = 0.02519))
+                                                         female = c(intercept = -6.4836+0.5829, age = -0.02588,  smoking = -0.00178, packyears = 0.02519))
   input_ref$symptoms$logit_p_wheeze_nonCOPD_by_sex <- "Kate's regression on CanCOLD, provided on 2018-10-03"
 
   # Outpatient;
