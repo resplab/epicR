@@ -144,10 +144,8 @@ __typeof__ (b) _b = (b);    \
 _a > _b ? _b : _a; })       \
 
 
-
 double calendar_time;
 int last_id;
-
 
 
 // [[Rcpp::export]]

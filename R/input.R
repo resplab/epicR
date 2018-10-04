@@ -361,15 +361,24 @@ init_input <- function() {
   # wheeze;
   input_help$symptoms$logit_p_wheeze_COPD_by_sex <- "Probability of having wheeze for COPD patients"
   input$symptoms$logit_p_wheeze_COPD_by_sex <- cbind(male = c(intercept = 13.0912, age = -0.1365,  smoking = 0.05281, packyears = 0.02405, fev1 = -2.5887),
-                                                      female = c(intercept = 13.0912-1.4692, age = -0.1365,  smoking = 0.05281, packyears = 0.02405, fev1 = -2.5887))
+                                                    female = c(intercept = 13.0912-1.4692, age = -0.1365,  smoking = 0.05281, packyears = 0.02405, fev1 = -2.5887))
   input_ref$symptoms$logit_p_wheeze_COPD_by_sex <- "Kate's regression on CanCOLD, provided on 2018-10-03"
 
   input_help$symptoms$logit_p_wheeze_nonCOPD_by_sex <- "Probability of having wheeze for non-COPD patients"
   input$symptoms$logit_p_wheeze_nonCOPD_by_sex <- cbind(male = c(intercept = -6.4836, age = -0.02588,  smoking = -0.00178, packyears = 0.02519),
-                                                         female = c(intercept = -6.4836+0.5829, age = -0.02588,  smoking = -0.00178, packyears = 0.02519))
+                                                        female = c(intercept = -6.4836+0.5829, age = -0.02588,  smoking = -0.00178, packyears = 0.02519))
   input_ref$symptoms$logit_p_wheeze_nonCOPD_by_sex <- "Kate's regression on CanCOLD, provided on 2018-10-03"
 
-  # Outpatient;
+  # covraiance matrices for symptoms
+  input_help$symptoms$covariance_COPD <- "Covariance matrix for symptoms random effects in COPD patients"
+  input$symptoms$covariance_COPD<- cbind(cough = c(cough = 1.844571609, phlegm =2.188049071 , wheeze =0.678932862, dyspnea = 0.264679796),
+                                         phlegm = c(cough = 2.188049071, phlegm = 13.09968661, wheeze = 1.57577757, dyspnea =0.598463161),
+                                         wheeze = c(cough = 0.678932862, phlegm = 1.57577757, wheeze = 3.520217304, dyspnea =0.569062445 ),
+                                         dyspnea = c(cough = 0.264679796, phlegm = 0.598463161, wheeze = 0.569062445, dyspnea = 1.695708921))
+  input_ref$symptoms$covariance_COPD <- "Kate's regression on CanCOLD, provided on 2018-10-03"
+
+
+  ## Outpatient;
   input$outpatient$rate_doctor_visit <- 0.1
   input$outpatient$p_specialist <- 0.1
 
