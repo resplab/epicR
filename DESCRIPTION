@@ -11,7 +11,8 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    Rcpp (>= 0.11.0),
+    Rcpp (>= 0.12.19),
+    RcppArmadillo,
     graphics,
     stats,
     ggplot2,
@@ -29,6 +30,6 @@ Imports:
     scales,
     tibble,
     tidyr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.0
 Suggests: testthat
