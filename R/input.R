@@ -378,6 +378,14 @@ init_input <- function() {
   input_ref$symptoms$covariance_COPD <- "Kate's regression on CanCOLD, provided on 2018-10-03"
 
 
+  input_help$symptoms$covariance_nonCOPD <- "Covariance matrix for symptoms random effects in non-COPD patients"
+  input$symptoms$covariance_nonCOPD<- cbind(cough = c(cough = 14.25622082, phlegm = 6.723759323, wheeze = 4.075924365, dyspnea = 0.609649316),
+                                         phlegm = c(cough = 6.723759323, phlegm = 16.20767928, wheeze = 4.685037033, dyspnea = 0.846302528),
+                                         wheeze = c(cough = 4.075924365, phlegm = 4.685037033, wheeze = 15.25184633, dyspnea = 1.211064701),
+                                         dyspnea = c(cough = 0.609649316, phlegm = 0.846302528, wheeze = 1.211064701, dyspnea = 1.810315571))
+  input_ref$symptoms$covariance_COPD <- "Kate's regression on CanCOLD, provided on 2018-10-03"
+
+
   ## Outpatient;
   input$outpatient$rate_doctor_visit <- 0.1
   input$outpatient$p_specialist <- 0.1
