@@ -1,3 +1,9 @@
+// -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
+
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+using namespace Rcpp;
+
 /*
 Layout:
 1. Basic
@@ -25,11 +31,6 @@ Layout:
 
 
 #define MAX_AGE 111
-
-
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
-using namespace Rcpp;
 
 
 
@@ -146,7 +147,6 @@ _a > _b ? _b : _a; })       \
 
 double calendar_time;
 int last_id;
-
 
 // [[Rcpp::export]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {

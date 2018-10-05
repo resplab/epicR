@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 mvrnormArma <- function(n, mu, sigma) {
-    .Call('_epicR_mvrnormArma', PACKAGE = 'epicR', n, mu, sigma)
+    .Call(`_epicR_mvrnormArma`, n, mu, sigma)
 }
 
 #' Sets model settings.
@@ -11,32 +11,32 @@ mvrnormArma <- function(n, mu, sigma) {
 #' @return 0 if successful.
 #' @export
 Cset_settings_var <- function(name, value) {
-    .Call('_epicR_Cset_settings_var', PACKAGE = 'epicR', name, value)
+    .Call(`_epicR_Cset_settings_var`, name, value)
 }
 
 #' Returns current settings.
 #' @return current settings.
 #' @export
 Cget_settings <- function() {
-    .Call('_epicR_Cget_settings', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_settings`)
 }
 
 #' Returns run time stats.
 #' @return agent size as well as memory and random variable fill stats.
 #' @export
 Cget_runtime_stats <- function() {
-    .Call('_epicR_Cget_runtime_stats', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_runtime_stats`)
 }
 
 Xrexp <- function(n, rate) {
-    .Call('_epicR_Xrexp', PACKAGE = 'epicR', n, rate)
+    .Call(`_epicR_Xrexp`, n, rate)
 }
 
 #' Returns inputs
 #' @return all inputs
 #' @export
 Cget_inputs <- function() {
-    .Call('_epicR_Cget_inputs', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_inputs`)
 }
 
 #' Sets input variables.
@@ -45,7 +45,7 @@ Cget_inputs <- function() {
 #' @return 0 if successful
 #' @export
 Cset_input_var <- function(name, value) {
-    .Call('_epicR_Cset_input_var', PACKAGE = 'epicR', name, value)
+    .Call(`_epicR_Cset_input_var`, name, value)
 }
 
 #' Returns a sample output for a given year and gender.
@@ -54,36 +54,36 @@ Cset_input_var <- function(name, value) {
 #' @return that specific output
 #' @export
 get_sample_output <- function(year, sex) {
-    .Call('_epicR_get_sample_output', PACKAGE = 'epicR', year, sex)
+    .Call(`_epicR_get_sample_output`, year, sex)
 }
 
 Cget_agent <- function(id) {
-    .Call('_epicR_Cget_agent', PACKAGE = 'epicR', id)
+    .Call(`_epicR_Cget_agent`, id)
 }
 
 #' Returns agent Smith.
 #' @return agent smith.
 #' @export
 Cget_smith <- function() {
-    .Call('_epicR_Cget_smith', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_smith`)
 }
 
 Ccreate_agents <- function() {
-    .Call('_epicR_Ccreate_agents', PACKAGE = 'epicR')
+    .Call(`_epicR_Ccreate_agents`)
 }
 
 #' Main outputs of the current run.
 #' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 #' @export
 Cget_output <- function() {
-    .Call('_epicR_Cget_output', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_output`)
 }
 
 #' Extra outputs from the model
 #' @return Extra outputs from the model.
 #' @export
 Cget_output_ex <- function() {
-    .Call('_epicR_Cget_output_ex', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_output_ex`)
 }
 
 #' Returns the events stack.
@@ -91,14 +91,14 @@ Cget_output_ex <- function() {
 #' @return events
 #' @export
 Cget_event <- function(i) {
-    .Call('_epicR_Cget_event', PACKAGE = 'epicR', i)
+    .Call(`_epicR_Cget_event`, i)
 }
 
 #' Returns total number of events.
 #' @return number of events
 #' @export
 Cget_n_events <- function() {
-    .Call('_epicR_Cget_n_events', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_n_events`)
 }
 
 #' Returns all events of an agent.
@@ -106,7 +106,7 @@ Cget_n_events <- function() {
 #' @return all events of agent \code{id}
 #' @export
 Cget_agent_events <- function(id) {
-    .Call('_epicR_Cget_agent_events', PACKAGE = 'epicR', id)
+    .Call(`_epicR_Cget_agent_events`, id)
 }
 
 #' Returns all events of a certain type.
@@ -114,44 +114,44 @@ Cget_agent_events <- function(id) {
 #' @return all events of the type \code{event_type}
 #' @export
 Cget_events_by_type <- function(event_type) {
-    .Call('_epicR_Cget_events_by_type', PACKAGE = 'epicR', event_type)
+    .Call(`_epicR_Cget_events_by_type`, event_type)
 }
 
 #' Returns all events.
 #' @return all events
 #' @export
 Cget_all_events <- function() {
-    .Call('_epicR_Cget_all_events', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_all_events`)
 }
 
 #' Returns a matrix containing all events
 #' @return a matrix containing all events
 #' @export
 Cget_all_events_matrix <- function() {
-    .Call('_epicR_Cget_all_events_matrix', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_all_events_matrix`)
 }
 
 Callocate_resources <- function() {
-    .Call('_epicR_Callocate_resources', PACKAGE = 'epicR')
+    .Call(`_epicR_Callocate_resources`)
 }
 
 Cget_pointers <- function() {
-    .Call('_epicR_Cget_pointers', PACKAGE = 'epicR')
+    .Call(`_epicR_Cget_pointers`)
 }
 
 Cdeallocate_resources <- function() {
-    .Call('_epicR_Cdeallocate_resources', PACKAGE = 'epicR')
+    .Call(`_epicR_Cdeallocate_resources`)
 }
 
 Cdeallocate_resources2 <- function() {
-    .Call('_epicR_Cdeallocate_resources2', PACKAGE = 'epicR')
+    .Call(`_epicR_Cdeallocate_resources2`)
 }
 
 Cinit_session <- function() {
-    .Call('_epicR_Cinit_session', PACKAGE = 'epicR')
+    .Call(`_epicR_Cinit_session`)
 }
 
 Cmodel <- function(max_n_agents) {
-    .Call('_epicR_Cmodel', PACKAGE = 'epicR', max_n_agents)
+    .Call(`_epicR_Cmodel`, max_n_agents)
 }
 
