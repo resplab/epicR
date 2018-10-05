@@ -148,6 +148,7 @@ _a > _b ? _b : _a; })       \
 double calendar_time;
 int last_id;
 
+//' @export
 // [[Rcpp::export]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
   int ncols = sigma.n_cols;

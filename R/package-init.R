@@ -1,5 +1,3 @@
-#' @exportPattern("^[^\\.]")
-#' @exportPattern("^[[:alpha:]]+")
 #' @useDynLib epicR, .registration=TRUE
 #' @importFrom Rcpp sourceCpp
 #' @importFrom Rcpp evalCpp
