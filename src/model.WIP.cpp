@@ -536,6 +536,8 @@ struct input
     double logit_p_wheeze_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
     double logit_p_wheeze_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
 
+    double covariance_COPD[4][4]; // for random effects
+    double covariance_nonCOPD[4][4]; // for random effects
   } symptoms;
 
 
@@ -680,7 +682,10 @@ List Cget_inputs()
       Rcpp::Named("logit_p_dyspnea_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_dyspnea_nonCOPD_by_sex),
 
       Rcpp::Named("logit_p_wheeze_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_COPD_by_sex),
-      Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex)
+      Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex),
+
+      Rcpp::Named("covariance_COPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_COPD),
+      Rcpp::Named("covariance_nonCOPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_nonCOPD)
     ),
 
     Rcpp::Named("outpatient")=Rcpp::List::create(
@@ -793,6 +798,9 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="symptoms$logit_p_phlegm_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_phlegm_nonCOPD_by_sex);
   if(name=="symptoms$logit_p_wheeze_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_COPD_by_sex);
   if(name=="symptoms$logit_p_wheeze_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_nonCOPD_by_sex);
+
+  if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value,input.symptoms.covariance_COPD);
+  if(name=="symptoms$covariance_nonCOPD") READ_R_MATRIX(value,input.symptoms.covariance_nonCOPD);
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
