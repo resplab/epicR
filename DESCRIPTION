@@ -28,7 +28,10 @@ Imports:
     reshape2,
     scales,
     tibble,
-    tidyr
+    tidyr,
+    dplyr,
+    survival,
+    survminer
 LinkingTo: Rcpp
 RoxygenNote: 6.1.0
 Suggests: testthat

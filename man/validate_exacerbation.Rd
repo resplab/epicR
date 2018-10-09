@@ -4,11 +4,9 @@
 \alias{validate_exacerbation}
 \title{Returns results of validation tests for exacerbation rates}
 \usage{
-validate_exacerbation(savePlots = 0, base_agents = 10000)
+validate_exacerbation(base_agents = 10000)
 }
 \arguments{
-\item{savePlots}{0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}
-
 \item{base_agents}{Number of agents in the simulation. Default is 1e4.}
 }
 \value{

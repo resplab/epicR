@@ -760,11 +760,10 @@ validate_lung_function <- function() {
 
 
 #' Returns results of validation tests for exacerbation rates
-#' @param savePlots 0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
 #' @return validation test results
 #' @export
-validate_exacerbation <- function(savePlots = 0, base_agents=1e4) {
+validate_exacerbation <- function(base_agents=1e4) {
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
@@ -805,6 +804,76 @@ validate_exacerbation <- function(savePlots = 0, base_agents=1e4) {
   GOLD_IV<- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4])
 
   return(list(exacRateGOLDI = GOLD_I, exacRateGOLDII = GOLD_II, exacRateGOLDIII = GOLD_III, exacRateGOLDIV = GOLD_IV))
+}
+
+
+#' Returns the Kaplan Meier curve comparing COPD and non-COPD
+#' @param savePlots TRUE or FALSE (default), exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
+#' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @return validation test results
+#' @export
+validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  #settings$agent_stack_size <- 0
+  settings$n_base_agents <- base_agents
+  #settings$event_stack_size <- 1
+  init_session(settings = settings)
+  input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
+
+  run(input = input)
+  events <- as.data.frame(Cget_all_events_matrix())
+  terminate_session()
+
+  cohort <- subset(events, ((event==7) | (event==13) | (event==14)))
+
+  cohort <- cohort %>% filter((id==lead(id) | ((event == 14) & id!=lag(id))))
+
+  cohort$copd <- (cohort$gold>0)
+  cohort$death <- (cohort$event!=14)
+  cohort$age <- (cohort$age_at_creation+cohort$local_time)
+
+  #fit <- survfit(Surv(age, death) ~ copd, data=cohort)
+  fit <- survfit(Surv(age, death) ~ copd, data=cohort)
+
+  # Customized survival curves
+  surv_plot <- ggsurvplot(fit, data = cohort, censor.shape="", censor.size = 1,
+                          surv.median.line = "hv", # Add medians survival
+
+                          # Change legends: title & labels
+                          legend.title = "Disease Status",
+                          legend.labs = c("Non-COPD", "COPD"),
+                          # Add p-value and tervals
+                          pval = TRUE,
+
+                          conf.int = TRUE,
+                          xlim = c(40,110),         # present narrower X axis, but not affect
+                          # survival estimates.
+                          xlab = "Age",   # customize X axis label.
+                          break.time.by = 20,     # break X axis in time intervals by 500.
+                          # Add risk table
+                          #risk.table = TRUE,
+                          tables.height = 0.2,
+                          tables.theme = theme_cleantable(),
+
+                          # Color palettes. Use custom color: c("#E7B800", "#2E9FDF"),
+                          # or brewer color (e.g.: "Dark2"), or ggsci color (e.g.: "jco")
+                          #palette = c("gray0", "gray1"),
+                          ggtheme = theme_tufte() +
+                            theme(axis.line = element_line(colour = "black"),
+                                  panel.grid.major = element_blank(),
+                                  panel.grid.minor = element_blank(),
+                                  panel.border = element_blank(),
+                                  panel.background = element_blank())  # Change ggplot2 theme
+  )
+
+  print (surv_plot)
+
+  if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = print(surv_plot), device = "tiff", dpi = 300)
+
+
+  return(surv_plot)
 }
 
 
