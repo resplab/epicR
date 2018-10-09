@@ -758,3 +758,54 @@ validate_lung_function <- function() {
 }
 
 
+
+#' Returns results of validation tests for exacerbation rates
+#' @param savePlots 0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
+#' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @return validation test results
+#' @export
+validate_exacerbation <- function(savePlots = 0, base_agents=1e4) {
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  #settings$agent_stack_size <- 0
+  settings$n_base_agents <- base_agents
+  #settings$event_stack_size <- 1
+  init_session(settings = settings)
+  input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
+
+  run(input = input)
+  op <- Cget_output()
+  all_events <- as.data.frame(Cget_all_events_matrix())
+  exac_events <- subset(all_events, event == 5)
+  exit_events <- subset(all_events, event == 14)
+
+  Follow_up_Gold <- c(0, 0, 0, 0)
+  last_GOLD_transition_time <- 0
+  for (i in 2:dim(all_events)[1]) {
+    if (all_events[i, "id"] != all_events[i - 1, "id"])
+      last_GOLD_transition_time <- 0
+    if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
+      Follow_up_Gold[all_events[i - 1, "gold"]] = Follow_up_Gold[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
+        last_GOLD_transition_time
+      last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
+    }
+    if (all_events[i, "event"] == 14)
+      Follow_up_Gold[all_events[i, "gold"]] = Follow_up_Gold[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
+        last_GOLD_transition_time
+  }
+  terminate_session()
+
+  GOLD_I <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1])
+
+  GOLD_II <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2])
+
+  GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3])
+
+  GOLD_IV<- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4])
+
+  return(list(exacRateGOLDI = GOLD_I, exacRateGOLDII = GOLD_II, exacRateGOLDIII = GOLD_III, exacRateGOLDIV = GOLD_IV))
+}
+
+
+
