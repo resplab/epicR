@@ -2463,15 +2463,17 @@ double event_update_symptoms(agent *ag)
 {
   //if((*ag).exac_status == 0) return(HUGE_VAL);
   double rand_effect [4] = {0, 0, 0, 0};
-  int mu [4] = {0, 0, 0, 0};
-
+  arma::rowvec mu (4);
+  mu = {0, 0, 0, 0}; //TODO. debug. need to check assignment.
+  arma::Mat_aux covariance_COPD(input.symptoms.covariance_COPD, 4, 4, 1);
   double p_cough = 0;
   double p_phlegm = 0;
   double p_wheeze = 0;
   double p_dyspnea = 0;
 
   if ((*ag).gold>0) {
-    rand_effect = mvrnormArma(1, mu, input.symptoms.covariance_COPD);
+    arma::mat A = arma::randu<arma::mat>(4,5);
+    rand_effect = mvrnormArma(1, mu, covariance_COPD);
     p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
               input.symptoms.logit_p_cough_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
