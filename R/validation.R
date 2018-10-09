@@ -872,6 +872,9 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 
   if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = print(surv_plot), device = "tiff", dpi = 300)
 
+  fitcox <- coxph(Surv(age, death) ~ copd, data = cohort)
+  ftest <- cox.zph(fitcox)
+  print(summary(fitcox))
 
   return(surv_plot)
 }
