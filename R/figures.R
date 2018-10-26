@@ -491,7 +491,23 @@ export_figures <- function(nPatients = 1e4) {
   print(plot_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
+  ## now cumul QALY
+  Cumul_cost_by_GOLD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(Cumul_cost_by_GOLD) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
+  Cumul_cost_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+  Cumul_cost_by_GOLD[, 2:5] <- (op_ex$cumul_cost_gold_ctime [, 2:5])/1e6   #per million
 
+  Cumul_cost_by_GOLD <- as.data.frame(Cumul_cost_by_GOLD)
+  openxlsx::writeData(wb, "Cost_by_GOLD", Cumul_cost_by_GOLD, startCol = 2, startRow = 35, colNames = TRUE)
+  Cumul_dfm <- reshape2::melt(Cumul_cost_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
+
+  plot_Cumul_cost_by_GOLD <- ggplot2::ggplot(Cumul_dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
+    geom_point () + geom_line() + labs(title = "Cost per GOLD stage") + ylab ("Canadian dollars")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12), label=scales::dollar_format(suffix = "M")) + labs(caption = "Cumulative")
+
+  print(plot_Cumul_cost_by_GOLD) #plot needs to be showing
+  openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
   ##################################################### QALY by GOLD #####################################################
 
   QALY_by_GOLD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
@@ -517,6 +533,24 @@ export_figures <- function(nPatients = 1e4) {
   print(plot_QALY_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
+  ## now cumul QALY
+  Cumul_QALY_by_GOLD <- matrix (NA, nrow = input$global_parameters$time_horizon, ncol = 5)
+  colnames(Cumul_QALY_by_GOLD) <- c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")
+  Cumul_QALY_by_GOLD[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
+
+  Cumul_QALY_by_GOLD[, 2:5] <- (op_ex$cumul_qaly_gold_ctime [, 2:5])
+  Cumul_QALY_by_GOLD <- as.data.frame(Cumul_QALY_by_GOLD)
+
+  openxlsx::writeData(wb, "QALY_by_GOLD", Cumul_QALY_by_GOLD, startCol = 2, startRow = 35, colNames = TRUE)
+  Cumul_dfm <- reshape2::melt(Cumul_QALY_by_GOLD[,c("Year", "GOLD I", "GOLD II", "GOLD III", "GOLD IV")],id.vars = 1)
+
+  plot_Cumul_QALY_by_GOLD <- ggplot2::ggplot(Cumul_dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
+    geom_point () + geom_line() + labs(title = "QALY per GOLD stage") + ylab ("QALYs")  +
+    scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "cumulative")
+
+  print(plot_Cumul_QALY_by_GOLD) #plot needs to be showing
+  openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
   ######################################################## COPD_related_mortality_per_age_group #########################################################
