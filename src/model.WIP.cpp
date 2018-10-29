@@ -866,6 +866,9 @@ struct agent
 
   double cumul_cost;
   double cumul_qaly;
+  double annual_cost;
+  double annual_qaly;
+
   double payoffs_LPT;
 
   int n_mi;
@@ -958,6 +961,9 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+  out["annual_cost"] = (*ag).annual_cost;
+  out["annual_qaly"] = (*ag).annual_qaly;
+
   out["tte"] = (*ag).tte;
   out["event"] = (*ag).event;
   out["symptom_score"] = (*ag).symptom_score;
@@ -1313,6 +1319,9 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   //payoffs;
   (*ag).cumul_cost=0;
   (*ag).cumul_qaly=0;
+  (*ag).annual_cost=0;
+  (*ag).annual_qaly=0;
+
   (*ag).payoffs_LPT=0;
 
   return(ag);
@@ -1598,10 +1607,10 @@ void update_output_ex(agent *ag)
       else
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
 
-      output_ex.cumul_cost_ctime[time]+=(*ag).cumul_cost;
-      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).cumul_cost;
-      output_ex.cumul_qaly_ctime[time]+=(*ag).cumul_qaly;
-      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).cumul_qaly;
+      output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
+      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
+      output_ex.cumul_qaly_ctime[time]+=(*ag).annual_qaly;
+      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).annual_qaly;
 
       output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
 
@@ -1715,6 +1724,10 @@ void payoffs_LPT(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
+  (*ag).annual_cost=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+  (*ag).annual_qaly=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
   (*ag).payoffs_LPT=(*ag).local_time;
 }
 
@@ -1806,6 +1819,10 @@ agent *event_end_process(agent *ag)
     //NOTE: exacerbation timing is an LPT process and is treated separately.
     (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
+    (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
   }
 
   ++output.n_agents;
@@ -1833,6 +1850,7 @@ agent *event_end_process(agent *ag)
 
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;
+
 
 
 #ifdef OUTPUT_EX
@@ -2334,6 +2352,10 @@ void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
   (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+
+  (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
+  (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+
   (*ag).exac_status=0;
 }
 
