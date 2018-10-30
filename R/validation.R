@@ -612,7 +612,7 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
   #I=615, II=1831, III=2619, IV=3021
 
   out$total_cost <- total_cost
-  out$cost_dueto_exac_by_gold
+  out$cost_dueto_exac_by_gold <- cost_dueto_exac_by_gold
   out$back_calculated_costs <- back_calculated_costs
   out$cost_target_values <- input$cost$bg_cost_by_stage
   out$cost_difference_percentage <- (out$back_calculated_costs - out$cost_target_values[2:5]) / out$cost_target_values[2:5] * 100
