@@ -599,6 +599,9 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
   back_calculated_utilities<-(total_qaly-qaly_loss_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
   #I=0.81,II=0.72,III=0.68,IV=0.58)))
 
+  out$cumul_time_per_GOLD <- colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  out$total_qaly <- total_qaly
+  out$qaly_loss_dueto_exac_by_gold <-  qaly_loss_dueto_exac_by_gold
   out$back_calculated_utilities <- back_calculated_utilities
   out$utility_target_values <- input$utility$bg_util_by_stage
   out$utility_difference_percentage <- (out$back_calculated_utilities - out$utility_target_values[2:5]) / out$utility_target_values[2:5] * 100
@@ -608,6 +611,8 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
   back_calculated_costs<-(total_cost-cost_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
   #I=615, II=1831, III=2619, IV=3021
 
+  out$total_cost <- total_cost
+  out$cost_dueto_exac_by_gold
   out$back_calculated_costs <- back_calculated_costs
   out$cost_target_values <- input$cost$bg_cost_by_stage
   out$cost_difference_percentage <- (out$back_calculated_costs - out$cost_target_values[2:5]) / out$cost_target_values[2:5] * 100
