@@ -609,10 +609,6 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
 
 
 
-
-
-
-
 #' Returns results of validation tests for mortality rate
 #' @param n_sim number of simulated agents
 #' @param bgd a number
