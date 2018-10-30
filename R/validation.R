@@ -561,10 +561,11 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
 
 #' Returns results of validation tests for payoffs, costs and QALYs
 #' @param nPatient number of simulated patients. Default is 1e6.
-#' @param return_CI if TRUE, discounting will be disabled for cost and QALY calculations. Default: TRUE
+#' @param disableDiscounting if TRUE, discounting will be disabled for cost and QALY calculations. Default: TRUE
+#' @param disableExacMortality if TRUE, mortality due to exacerbations will be disabled for cost and QALY calculations. Default: TRUE
 #' @return validation test results
 #' @export
-validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
+validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableExacMortality = TRUE)
 {
   out <- list()
 
@@ -579,6 +580,10 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
   if (disableDiscounting)  {
     input$global_parameters$discount_cost <- 0
     input$global_parameters$discount_qaly <- 0
+  }
+
+  if (disableExacMortality) {
+    input$exacerbation$logit_p_death_by_sex <- -1000 + 0*input$exacerbation$logit_p_death_by_sex
   }
 
   run(input = input)
