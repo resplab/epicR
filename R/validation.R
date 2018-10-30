@@ -559,6 +559,57 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
 
 
 
+#' Returns results of validation tests for payoffs, costs and QALYs
+#' @param nPatient number of simulated patients. Default is 1e6.
+#' @param return_CI if TRUE, discounting will be disabled for cost and QALY calculations. Default: TRUE
+#' @return validation test results
+#' @export
+validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
+{
+  out <- list()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- nPatient
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+  input <- model_input$values
+
+  if (disableDiscounting)  {
+    input$global_parameters$discount_cost <- 0
+    input$global_parameters$discount_qaly <- 0
+  }
+
+  run(input = input)
+  op <- Cget_output()
+  opx <- Cget_output_ex()
+
+  exac_dutil<-Cget_inputs()$utility$exac_dutil
+  exac_dcost<-Cget_inputs()$cost$exac_dcost
+
+
+  total_qaly<-colSums(op_ex$cumul_qaly_gold_ctime)[2:5]
+  qaly_loss_dueto_exac_by_gold<-rowSums(op_ex$n_exac_by_gold_severity*exac_dutil)
+  back_calculated_utilities<-(total_qaly-qaly_loss_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  #I=0.81,II=0.72,III=0.68,IV=0.58)))
+
+  out$back_calculated_utilities <- back_calculated_utilities
+
+  total_cost<-colSums(op_ex$cumul_cost_gold_ctime)[2:5]
+  cost_dueto_exac_by_gold<-rowSums(t((exac_dcost)*t(op_ex$n_exac_by_gold_severity)))
+  back_calculated_costs<-(total_cost-cost_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  #I=615, II=1831, III=2619, IV=3021
+
+  out$back_calculated_costs <- back_calculated_costs
+  terminate_session()
+
+  return(out)
+}
+
+
+
+
 
 
 
