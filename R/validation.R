@@ -583,7 +583,7 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
 
   run(input = input)
   op <- Cget_output()
-  opx <- Cget_output_ex()
+  op_ex <- Cget_output_ex()
 
   exac_dutil<-Cget_inputs()$utility$exac_dutil
   exac_dcost<-Cget_inputs()$cost$exac_dcost
@@ -595,6 +595,8 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
   #I=0.81,II=0.72,III=0.68,IV=0.58)))
 
   out$back_calculated_utilities <- back_calculated_utilities
+  out$utility_target_values <- input$utility$bg_util_by_stage
+  out$utility_difference_percentage <- (out$back_calculated_utilities - out$utility_target_values[2:5]) / out$utility_target_values[2:5] * 100
 
   total_cost<-colSums(op_ex$cumul_cost_gold_ctime)[2:5]
   cost_dueto_exac_by_gold<-rowSums(t((exac_dcost)*t(op_ex$n_exac_by_gold_severity)))
@@ -602,6 +604,9 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE)
   #I=615, II=1831, III=2619, IV=3021
 
   out$back_calculated_costs <- back_calculated_costs
+  out$cost_target_values <- input$cost$bg_cost_by_stage
+  out$cost_difference_percentage <- (out$back_calculated_costs - out$cost_target_values[2:5]) / out$cost_target_values[2:5] * 100
+
   terminate_session()
 
   return(out)
