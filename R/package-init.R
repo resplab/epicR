@@ -11,6 +11,7 @@
 #' @importFrom scales pretty_breaks
 #' @importFrom survival survfit
 #' @importFrom survminer ggsurvplot
+#' @import jsonlite
 NULL
 
 .onUnload <- function (libpath) {
