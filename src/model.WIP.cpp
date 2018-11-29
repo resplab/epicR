@@ -1105,6 +1105,16 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).weight_baseline = 0; //resetting the value for new agent
 (*ag).followup_time = 0; //resetting the value for new agent
 (*ag).local_time_at_COPD = 0; //resetting the value for new agent
+(*ag).cough = FALSE;
+(*ag).phlegm  = FALSE;
+(*ag).wheeze  = FALSE;
+(*ag).dyspnea = FALSE;
+
+(*ag).re_cough = 0;
+(*ag).re_phlegm  = 0;
+(*ag).re_wheeze  = 0;
+(*ag).re_dyspnea = 0;
+
 (*ag).time_at_creation=calendar_time;
 (*ag).sex=rand_unif()<input.agent.p_female;
 (*ag).fev1_tail = sqrt(0.1845) * rand_norm() + 0.827;
