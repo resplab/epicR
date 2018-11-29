@@ -19,6 +19,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// a3
+arma::mat a3(NumericMatrix x);
+RcppExport SEXP _epicR_a3(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(a3(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Cset_settings_var
 int Cset_settings_var(std::string name, NumericVector value);
 RcppExport SEXP _epicR_Cset_settings_var(SEXP nameSEXP, SEXP valueSEXP) {
@@ -275,6 +286,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_epicR_mvrnormArma", (DL_FUNC) &_epicR_mvrnormArma, 3},
+    {"_epicR_a3", (DL_FUNC) &_epicR_a3, 1},
     {"_epicR_Cset_settings_var", (DL_FUNC) &_epicR_Cset_settings_var, 2},
     {"_epicR_Cget_settings", (DL_FUNC) &_epicR_Cget_settings, 0},
     {"_epicR_Cget_runtime_stats", (DL_FUNC) &_epicR_Cget_runtime_stats, 0},

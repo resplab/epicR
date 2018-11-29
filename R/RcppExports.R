@@ -6,6 +6,11 @@ mvrnormArma <- function(n, mu, sigma) {
     .Call(`_epicR_mvrnormArma`, n, mu, sigma)
 }
 
+#' @export
+a3 <- function(x) {
+    .Call(`_epicR_a3`, x)
+}
+
 #' Sets model settings.
 #' @param name a name
 #' @param value a value
