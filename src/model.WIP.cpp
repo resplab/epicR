@@ -2492,12 +2492,23 @@ double event_update_symptoms(agent *ag)
   //if((*ag).exac_status == 0) return(HUGE_VAL);
   arma::mat rand_effect_arma;
   arma::rowvec mu (4);
-  mu = {0, 0, 0, 0}; //TODO. debug. need to check assignment.
-  Rcout << "mu = " << (mu) << std::endl; //debug
+  mu = {0, 0, 0, 0};
 
-  Rcout << " dyspne logit = " << (input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[1][2]) << std::endl;
-  Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD) << std::endl;
-  Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD) << std::endl;
+  NumericMatrix covariance_COPD(4,4);
+  NumericMatrix covariance_nonCOPD(4,4);
+
+  for (int i=0; i<3; i++){
+    for (int j=0; j<3; j++) {
+    covariance_COPD(i,j) = input.symptoms.covariance_COPD[i][j];
+    covariance_nonCOPD(i,j) = input.symptoms.covariance_nonCOPD[i][j];
+   }
+ }
+
+  Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
+  Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
+
+  Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
+  Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
 
  // arma::mat covariance_COPD_arma = as<arma::mat>(input.symptoms.covariance_COPD);
   //arma::mat covariance_nonCOPD_arma = as<arma::mat>(input.symptoms.covariance_nonCOPD);
