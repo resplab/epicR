@@ -32,6 +32,7 @@ Layout:
 
 #define MAX_AGE 111
 
+#define MAX_AGE 111
 
 
 
@@ -736,7 +737,7 @@ List Cget_inputs()
 //' @return 0 if successful
 //' @export
 // [[Rcpp::export]]
-int Cset_input_var(std::string name,NumericVector value)
+int Cset_input_var(std::string name, NumericVector value)
 {
   if(name=="global_parameters$age0") {input.global_parameters.age0=value[0]; return(0);}
   if(name=="global_parameters$time_horizon")  {input.global_parameters.time_horizon=value[0]; return(0);}
@@ -1105,10 +1106,10 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).weight_baseline = 0; //resetting the value for new agent
 (*ag).followup_time = 0; //resetting the value for new agent
 (*ag).local_time_at_COPD = 0; //resetting the value for new agent
-(*ag).cough = FALSE;
-(*ag).phlegm  = FALSE;
-(*ag).wheeze  = FALSE;
-(*ag).dyspnea = FALSE;
+(*ag).cough = 0;
+(*ag).phlegm  = 0;
+(*ag).wheeze  = 0;
+(*ag).dyspnea = 0;
 
 (*ag).re_cough = 0;
 (*ag).re_phlegm  = 0;
@@ -2091,7 +2092,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 NumericMatrix Cget_all_events_matrix()
 {
   NumericMatrix outm(event_stack_pointer,20);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough");
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough_random_effect");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2114,7 +2115,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,16)=(*ag).height;
     outm(i,17)=(*ag).followup_time;
     outm(i,18)=(*ag).fev1_baseline;
-    outm(i,19)=(*ag).cough;
+    outm(i,19)=(*ag).re_cough;
 
   }
 
@@ -2485,15 +2486,22 @@ void event_exacerbation_death_process(agent *ag)
 ////////////////////////////////////////////////////////////////////event symptoms/////////////////////////////////////;
 double event_update_symptoms(agent *ag)
 {
+  Rcout << "updating symptoms" << std::endl;
   //if((*ag).exac_status == 0) return(HUGE_VAL);
-  //double rand_effect [4] = {0, 0, 0, 0};
   arma::mat rand_effect_arma;
   arma::rowvec mu (4);
   mu = {0, 0, 0, 0}; //TODO. debug. need to check assignment.
+  Rcout << "mu = " << (mu) << std::endl; //debug
+
+  Rcout << " dyspne logit = " << (input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[1][2]) << std::endl;
+  Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD) << std::endl;
+  Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD) << std::endl;
 
   arma::mat covariance_COPD_arma = as<arma::mat>(input.symptoms.covariance_COPD);
   arma::mat covariance_nonCOPD_arma = as<arma::mat>(input.symptoms.covariance_nonCOPD);
 
+  Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
+  Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
 
   double p_cough = 0;
   double p_phlegm = 0;
@@ -2537,6 +2545,7 @@ double event_update_symptoms(agent *ag)
     rand_effect_arma = mvrnormArma(1, mu, covariance_nonCOPD_arma);
 
     (*ag).re_cough = rand_effect_arma[0];
+    (*ag).re_cough = 99; //debug
     (*ag).re_phlegm = rand_effect_arma[1];
     (*ag).re_wheeze = rand_effect_arma[2];
     (*ag).re_dyspnea = rand_effect_arma[3];
@@ -2869,6 +2878,9 @@ agent *event_fixed_process(agent *ag)
   smoking_LPT(ag);
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
+
+  event_update_symptoms(ag); //updating symptoms in the annual event
+
 #ifdef OUTPUT_EX
   update_output_ex(ag);
 #endif
