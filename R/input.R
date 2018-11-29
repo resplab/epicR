@@ -376,6 +376,7 @@ init_input <- function() {
                                          wheeze = c(cough = 0.678932862, phlegm = 1.57577757, wheeze = 3.520217304, dyspnea =0.569062445 ),
                                          dyspnea = c(cough = 0.264679796, phlegm = 0.598463161, wheeze = 0.569062445, dyspnea = 1.695708921))
   input_ref$symptoms$covariance_COPD <- "Kate's regression on CanCOLD, provided on 2018-10-03"
+  input$symptoms$covariance_COPD_test <- matrix(1:9, nrow = 3, ncol = 3)
 
 
   input_help$symptoms$covariance_nonCOPD <- "Covariance matrix for symptoms random effects in non-COPD patients"
