@@ -538,9 +538,8 @@ struct input
     double logit_p_wheeze_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
     double logit_p_wheeze_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
 
-    double covariance_COPD[4][4]; // for random effects
-    NumericMatrix covariance_COPD_test; // for random effects
-    double covariance_nonCOPD[4][4]; // for random effects
+    NumericMatrix covariance_COPD; // for random effects
+    NumericMatrix covariance_nonCOPD; // for random effects
   } symptoms;
 
 
@@ -687,9 +686,8 @@ List Cget_inputs()
       Rcpp::Named("logit_p_wheeze_COPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_COPD_by_sex),
       Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex),
 
-      Rcpp::Named("covariance_COPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_COPD),
-      Rcpp::Named("covariance_COPD_test")=input.symptoms.covariance_COPD_test,
-      Rcpp::Named("covariance_nonCOPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_nonCOPD)
+      Rcpp::Named("covariance_COPD")=input.symptoms.covariance_COPD,
+      Rcpp::Named("covariance_nonCOPD")=input.symptoms.covariance_nonCOPD
     ),
 
     Rcpp::Named("outpatient")=Rcpp::List::create(
@@ -803,8 +801,8 @@ int Cset_input_var(std::string name,NumericVector value)
   if(name=="symptoms$logit_p_wheeze_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_COPD_by_sex);
   if(name=="symptoms$logit_p_wheeze_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_wheeze_nonCOPD_by_sex);
 
-  if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value,input.symptoms.covariance_COPD);
-  if(name=="symptoms$covariance_nonCOPD") READ_R_MATRIX(value,input.symptoms.covariance_nonCOPD);
+  if(name=="symptoms$covariance_COPD") input.symptoms.covariance_COPD;
+  if(name=="symptoms$covariance_nonCOPD") input.symptoms.covariance_nonCOPD;
 
   if(name=="outpatient$rate_doctor_visit") {input.outpatient.rate_doctor_visit=value[0]; return(0);}
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
@@ -2472,7 +2470,8 @@ double event_update_symptoms(agent *ag)
   mu = {0, 0, 0, 0}; //TODO. debug. need to check assignment.
   //arma::Mat_aux covariance_COPD(input.symptoms.covariance_COPD, 4, 4, 1);
   //arma::mat covariance_COPD = as<arma::mat>(input.symptoms.covariance_COPD) ;
-  arma::mat covariance_COPD_arma = as<arma::mat>(input.symptoms.covariance_COPD_test);
+  arma::mat covariance_COPD_arma = as<arma::mat>(input.symptoms.covariance_COPD);
+  arma::mat covariance_nonCOPD_arma = as<arma::mat>(input.symptoms.covariance_nonCOPD);
 
 
   double p_cough = 0;
@@ -2507,7 +2506,7 @@ double event_update_symptoms(agent *ag)
       input.symptoms.logit_p_dyspnea_COPD_by_sex[4][(*ag).sex]*((*ag).fev1));
 
   } else if ((*ag).gold==0) {
-    //rand_effect = mvrnormArma(1, mu, input.symptoms.covariance_nonCOPD);
+    rand_effect_arma = mvrnormArma(1, mu, covariance_nonCOPD_arma);
     p_cough = exp(input.symptoms.logit_p_cough_nonCOPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
               input.symptoms.logit_p_cough_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
