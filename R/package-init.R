@@ -1,6 +1,6 @@
-#' @exportPattern("^[^\\.]")
-#' @useDynLib epicR
+#' @useDynLib epicR, .registration=TRUE
 #' @importFrom Rcpp sourceCpp
+#' @importFrom Rcpp evalCpp
 #' @importFrom graphics barplot legend lines pie plot title
 #' @importFrom stats aggregate binomial coefficients glm optim runif confint
 #' @importFrom utils packageVersion

@@ -1,6 +1,6 @@
 Package: epicR
 Title: R Package for Evaluation Platform in COPD
-Version: 0.19.1
+Version: 0.20.1
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
@@ -11,7 +11,8 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    Rcpp (>= 0.11.0),
+    Rcpp (>= 0.12.19),
+    RcppArmadillo,
     graphics,
     stats,
     ggplot2,
@@ -32,6 +33,5 @@ Imports:
     dplyr,
     survival,
     survminer
-LinkingTo: Rcpp
-RoxygenNote: 6.1.1
-Suggests: testthat
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.1.0
