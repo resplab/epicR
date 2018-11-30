@@ -2491,9 +2491,7 @@ double event_update_symptoms(agent *ag)
   Rcout << "updating symptoms" << std::endl;
   //if((*ag).exac_status == 0) return(HUGE_VAL);
   arma::mat rand_effect_arma;
-  arma::rowvec mu (4);
-  mu = {0, 0, 0, 0};
-
+  NumericVector mu (4); //default is zero
   NumericMatrix covariance_COPD(4,4);
   NumericMatrix covariance_nonCOPD(4,4);
 
@@ -2510,6 +2508,7 @@ double event_update_symptoms(agent *ag)
   Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
   Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
 
+  arma::vec mu_arma = as<arma::vec>(mu);
   arma::mat covariance_COPD_arma = as<arma::mat>(covariance_COPD);
   arma::mat covariance_nonCOPD_arma = as<arma::mat>(covariance_nonCOPD);
 
@@ -2523,9 +2522,9 @@ double event_update_symptoms(agent *ag)
 
   if ((*ag).gold>0) {
     Rcout << "running mvrnormArma " << std::endl;
-    mvrnormArma(1, mu, covariance_COPD_arma);
+    mvrnormArma(1, mu_arma, covariance_COPD_arma);
     Rcout << "assigning mvrnormArma " << std::endl;
-    rand_effect_arma = mvrnormArma(1, mu, covariance_COPD_arma);
+    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_COPD_arma);
 
      // (*ag).re_cough = rand_effect_arma[0];
      // (*ag).re_phlegm = rand_effect_arma[1];
@@ -2559,9 +2558,9 @@ double event_update_symptoms(agent *ag)
 
   } else if ((*ag).gold==0) {
     Rcout << "running mvrnormArma non_COPD " << std::endl;
-    mvrnormArma(1, mu, covariance_nonCOPD_arma);
+    mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
     Rcout << "assigning mvrnormArma non_COPD " << std::endl;
-    rand_effect_arma = mvrnormArma(1, mu, covariance_nonCOPD_arma);
+    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
 
     //  (*ag).re_cough = rand_effect_arma[0];
     // // (*ag).re_cough = 99; //debug
