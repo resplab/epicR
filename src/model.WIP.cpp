@@ -2094,7 +2094,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 NumericMatrix Cget_all_events_matrix()
 {
   NumericMatrix outm(event_stack_pointer,20);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough_random_effect");
+  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough");
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2117,7 +2117,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,16)=(*ag).height;
     outm(i,17)=(*ag).followup_time;
     outm(i,18)=(*ag).fev1_baseline;
-    outm(i,19)=(*ag).re_cough;
+    outm(i,19)=(*ag).cough;
 
   }
 
@@ -2488,8 +2488,6 @@ void event_exacerbation_death_process(agent *ag)
 ////////////////////////////////////////////////////////////////////event symptoms/////////////////////////////////////;
 double event_update_symptoms(agent *ag)
 {
-  Rcout << "updating symptoms" << std::endl;
-  //if((*ag).exac_status == 0) return(HUGE_VAL);
   arma::mat rand_effect_arma;
   NumericVector mu (4); //default is zero
   NumericMatrix covariance_COPD(4,4);
@@ -2502,18 +2500,18 @@ double event_update_symptoms(agent *ag)
    }
  }
 
-  Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
-  Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
-
-  Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
-  Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
+  // Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
+  // Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
+  //
+  // Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
+  // Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
 
   arma::vec mu_arma = as<arma::vec>(mu);
   arma::mat covariance_COPD_arma = as<arma::mat>(covariance_COPD);
   arma::mat covariance_nonCOPD_arma = as<arma::mat>(covariance_nonCOPD);
 
-  Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
-  Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
+  // Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
+  // Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
 
   double p_cough = 0;
   double p_phlegm = 0;
@@ -2521,17 +2519,17 @@ double event_update_symptoms(agent *ag)
   double p_dyspnea = 0;
 
   if ((*ag).gold>0) {
-    Rcout << "running mvrnormArma " << std::endl;
+   // Rcout << "running mvrnormArma " << std::endl;
     mvrnormArma(1, mu_arma, covariance_COPD_arma);
-    Rcout << "assigning mvrnormArma " << std::endl;
+   // Rcout << "assigning mvrnormArma " << std::endl;
     rand_effect_arma = mvrnormArma(1, mu_arma, covariance_COPD_arma);
 
-     // (*ag).re_cough = rand_effect_arma[0];
-     // (*ag).re_phlegm = rand_effect_arma[1];
-     // (*ag).re_wheeze = rand_effect_arma[2];
-     // (*ag).re_dyspnea = rand_effect_arma[3];
+    (*ag).re_cough = rand_effect_arma(0);
+    (*ag).re_phlegm = rand_effect_arma(1);
+    (*ag).re_wheeze = rand_effect_arma(2);
+    (*ag).re_dyspnea = rand_effect_arma(3);
 
-     Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
     p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
               input.symptoms.logit_p_cough_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
@@ -2557,18 +2555,17 @@ double event_update_symptoms(agent *ag)
               input.symptoms.logit_p_dyspnea_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_dyspnea);
 
   } else if ((*ag).gold==0) {
-    Rcout << "running mvrnormArma non_COPD " << std::endl;
+    // Rcout << "running mvrnormArma non_COPD " << std::endl;
     mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
-    Rcout << "assigning mvrnormArma non_COPD " << std::endl;
+    // Rcout << "assigning mvrnormArma non_COPD " << std::endl;
     rand_effect_arma = mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
 
-    //  (*ag).re_cough = rand_effect_arma[0];
-    // // (*ag).re_cough = 99; //debug
-    //  (*ag).re_phlegm = rand_effect_arma[1];
-    //  (*ag).re_wheeze = rand_effect_arma[2];
-    //  (*ag).re_dyspnea = rand_effect_arma[3];
+    (*ag).re_cough = rand_effect_arma(0);
+    (*ag).re_phlegm = rand_effect_arma(1);
+    (*ag).re_wheeze = rand_effect_arma(2);
+    (*ag).re_dyspnea = rand_effect_arma(3);
 
-     Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
 
     p_cough = exp(input.symptoms.logit_p_cough_nonCOPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
