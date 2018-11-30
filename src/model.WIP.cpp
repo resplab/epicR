@@ -2522,14 +2522,17 @@ double event_update_symptoms(agent *ag)
   double p_dyspnea = 0;
 
   if ((*ag).gold>0) {
-    //rand_effect_arma = mvrnormArma(1, mu, covariance_COPD_arma);
+    Rcout << "running mvrnormArma " << std::endl;
+    mvrnormArma(1, mu, covariance_COPD_arma);
+    Rcout << "assigning mvrnormArma " << std::endl;
+    rand_effect_arma = mvrnormArma(1, mu, covariance_COPD_arma);
 
-    // (*ag).re_cough = rand_effect_arma[0];
-    // (*ag).re_phlegm = rand_effect_arma[1];
-    // (*ag).re_wheeze = rand_effect_arma[2];
-    // (*ag).re_dyspnea = rand_effect_arma[3];
-    //
-    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+     // (*ag).re_cough = rand_effect_arma[0];
+     // (*ag).re_phlegm = rand_effect_arma[1];
+     // (*ag).re_wheeze = rand_effect_arma[2];
+     // (*ag).re_dyspnea = rand_effect_arma[3];
+
+     Rcout << "random effect = " << (rand_effect_arma) << std::endl;
     p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
               input.symptoms.logit_p_cough_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
@@ -2555,15 +2558,18 @@ double event_update_symptoms(agent *ag)
               input.symptoms.logit_p_dyspnea_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_dyspnea);
 
   } else if ((*ag).gold==0) {
-    // rand_effect_arma = mvrnormArma(1, mu, covariance_nonCOPD_arma);
-    //
-    // (*ag).re_cough = rand_effect_arma[0];
-    // (*ag).re_cough = 99; //debug
-    // (*ag).re_phlegm = rand_effect_arma[1];
-    // (*ag).re_wheeze = rand_effect_arma[2];
-    // (*ag).re_dyspnea = rand_effect_arma[3];
-    //
-    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+    Rcout << "running mvrnormArma non_COPD " << std::endl;
+    mvrnormArma(1, mu, covariance_nonCOPD_arma);
+    Rcout << "assigning mvrnormArma non_COPD " << std::endl;
+    rand_effect_arma = mvrnormArma(1, mu, covariance_nonCOPD_arma);
+
+    //  (*ag).re_cough = rand_effect_arma[0];
+    // // (*ag).re_cough = 99; //debug
+    //  (*ag).re_phlegm = rand_effect_arma[1];
+    //  (*ag).re_wheeze = rand_effect_arma[2];
+    //  (*ag).re_dyspnea = rand_effect_arma[3];
+
+     Rcout << "random effect = " << (rand_effect_arma) << std::endl;
 
     p_cough = exp(input.symptoms.logit_p_cough_nonCOPD_by_sex[0][(*ag).sex] +
               input.symptoms.logit_p_cough_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
