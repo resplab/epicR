@@ -2116,8 +2116,37 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,20);
-  colnames(outm) = CharacterVector::create("id","local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline", "cough");
+  NumericMatrix outm(event_stack_pointer,23);
+  CharacterVector eventMatrixColNames(23);
+
+// eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
+// 'create' helper function is limited to 20 enteries
+
+  eventMatrixColNames(0)  = "id";
+  eventMatrixColNames(1)  = "local_time";
+  eventMatrixColNames(2)  = "female";
+  eventMatrixColNames(3)  = "time_at_creation";
+  eventMatrixColNames(4)  = "age_at_creation";
+  eventMatrixColNames(5)  = "pack_years";
+  eventMatrixColNames(6)  = "gold";
+  eventMatrixColNames(7)  = "event";
+  eventMatrixColNames(8)  = "FEV1";
+  eventMatrixColNames(9)  = "FEV1_slope";
+  eventMatrixColNames(10) = "FEV1_acceleration";
+  eventMatrixColNames(11) = "pred_FEV1";
+  eventMatrixColNames(12) = "smoking_status";
+  eventMatrixColNames(13) = "localtime_at_COPD";
+  eventMatrixColNames(14) = "age_at_COPD";
+  eventMatrixColNames(15) = "weight_at_COPD";
+  eventMatrixColNames(16) = "height";
+  eventMatrixColNames(17) = "followup_after_COPD";
+  eventMatrixColNames(18) = "FEV1_baseline";
+  eventMatrixColNames(19) = "cough";
+  eventMatrixColNames(20) = "phlegm";
+  eventMatrixColNames(21) = "wheeze";
+  eventMatrixColNames(22) = "dyspnea";
+
+  colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
@@ -2141,7 +2170,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,17)=(*ag).followup_time;
     outm(i,18)=(*ag).fev1_baseline;
     outm(i,19)=(*ag).cough;
-
+    outm(i,20)=(*ag).phlegm;
+    outm(i,21)=(*ag).wheeze;
+    outm(i,22)=(*ag).dyspnea;
   }
 
   return(outm);
