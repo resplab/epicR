@@ -2497,8 +2497,8 @@ double event_update_symptoms(agent *ag)
   NumericMatrix covariance_COPD(4,4);
   NumericMatrix covariance_nonCOPD(4,4);
 
-  for (int i=0; i<3; i++){
-    for (int j=0; j<3; j++) {
+  for (int i=0; i<4; i++){
+    for (int j=0; j<4; j++) {
     covariance_COPD(i,j) = input.symptoms.covariance_COPD[i][j];
     covariance_nonCOPD(i,j) = input.symptoms.covariance_nonCOPD[i][j];
    }
