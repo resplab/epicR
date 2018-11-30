@@ -10,12 +10,12 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
                          events_to_record = c(0),
                          agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
-                         n_base_agents = 1e4,
-                         runif_buffer_size = 1e+04,
-                         rnorm_buffer_size = 1e+04,
-                         rexp_buffer_size = 1e+04,
+                         n_base_agents = 5e4,
+                         runif_buffer_size = 5e4,
+                         rnorm_buffer_size = 5e4,
+                         rexp_buffer_size = 5e4,
                          agent_stack_size = 0,
-                         event_stack_size = 1e+04 * 1.7 * 30)
+                         event_stack_size = 5e4 * 1.7 * 30)
 # Population of Canada over 40 years by StatsCan 18,415.60
 
 #' Initializes a model. Allocates memory to the C engine.

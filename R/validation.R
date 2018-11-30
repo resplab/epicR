@@ -559,6 +559,68 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
 
 
 
+#' Returns results of validation tests for payoffs, costs and QALYs
+#' @param nPatient number of simulated patients. Default is 1e6.
+#' @param disableDiscounting if TRUE, discounting will be disabled for cost and QALY calculations. Default: TRUE
+#' @param disableExacMortality if TRUE, mortality due to exacerbations will be disabled for cost and QALY calculations. Default: TRUE
+#' @return validation test results
+#' @export
+validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableExacMortality = TRUE)
+{
+  out <- list()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- nPatient
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+  input <- model_input$values
+
+  if (disableDiscounting)  {
+    input$global_parameters$discount_cost <- 0
+    input$global_parameters$discount_qaly <- 0
+  }
+
+  if (disableExacMortality) {
+    input$exacerbation$logit_p_death_by_sex <- -1000 + 0*input$exacerbation$logit_p_death_by_sex
+  }
+
+  run(input = input)
+  op <- Cget_output()
+  op_ex <- Cget_output_ex()
+
+  exac_dutil<-Cget_inputs()$utility$exac_dutil
+  exac_dcost<-Cget_inputs()$cost$exac_dcost
+
+
+  total_qaly<-colSums(op_ex$cumul_qaly_gold_ctime)[2:5]
+  qaly_loss_dueto_exac_by_gold<-rowSums(op_ex$n_exac_by_gold_severity*exac_dutil)
+  back_calculated_utilities<-(total_qaly-qaly_loss_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  #I=0.81,II=0.72,III=0.68,IV=0.58)))
+
+  out$cumul_time_per_GOLD <- colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  out$total_qaly <- total_qaly
+  out$qaly_loss_dueto_exac_by_gold <-  qaly_loss_dueto_exac_by_gold
+  out$back_calculated_utilities <- back_calculated_utilities
+  out$utility_target_values <- input$utility$bg_util_by_stage
+  out$utility_difference_percentage <- (out$back_calculated_utilities - out$utility_target_values[2:5]) / out$utility_target_values[2:5] * 100
+
+  total_cost<-colSums(op_ex$cumul_cost_gold_ctime)[2:5]
+  cost_dueto_exac_by_gold<-rowSums(t((exac_dcost)*t(op_ex$n_exac_by_gold_severity)))
+  back_calculated_costs<-(total_cost-cost_dueto_exac_by_gold)/colSums(op_ex$cumul_time_by_ctime_GOLD)[2:5]
+  #I=615, II=1831, III=2619, IV=3021
+
+  out$total_cost <- total_cost
+  out$cost_dueto_exac_by_gold <- cost_dueto_exac_by_gold
+  out$back_calculated_costs <- back_calculated_costs
+  out$cost_target_values <- input$cost$bg_cost_by_stage
+  out$cost_difference_percentage <- (out$back_calculated_costs - out$cost_target_values[2:5]) / out$cost_target_values[2:5] * 100
+
+  terminate_session()
+
+  return(out)
+}
 
 
 
@@ -756,5 +818,128 @@ validate_lung_function <- function() {
   return(list(FEV1_prev = out_FEV1_prev, FEV1_inc = out_FEV1_inc, gold_prev = out_gold_prev, gold_inc = out_gold_inc, gold_prev_patients = out_gold_prev_patients,
               gold_inc_patients = out_gold_inc_patients))
 }
+
+
+
+#' Returns results of validation tests for exacerbation rates
+#' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @return validation test results
+#' @export
+validate_exacerbation <- function(base_agents=1e4) {
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  #settings$agent_stack_size <- 0
+  settings$n_base_agents <- base_agents
+  #settings$event_stack_size <- 1
+  init_session(settings = settings)
+  input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
+
+  run(input = input)
+  op <- Cget_output()
+  all_events <- as.data.frame(Cget_all_events_matrix())
+  exac_events <- subset(all_events, event == 5)
+  exit_events <- subset(all_events, event == 14)
+
+  Follow_up_Gold <- c(0, 0, 0, 0)
+  last_GOLD_transition_time <- 0
+  for (i in 2:dim(all_events)[1]) {
+    if (all_events[i, "id"] != all_events[i - 1, "id"])
+      last_GOLD_transition_time <- 0
+    if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
+      Follow_up_Gold[all_events[i - 1, "gold"]] = Follow_up_Gold[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
+        last_GOLD_transition_time
+      last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
+    }
+    if (all_events[i, "event"] == 14)
+      Follow_up_Gold[all_events[i, "gold"]] = Follow_up_Gold[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
+        last_GOLD_transition_time
+  }
+  terminate_session()
+
+  GOLD_I <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1])
+
+  GOLD_II <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2])
+
+  GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3])
+
+  GOLD_IV<- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4])
+
+  return(list(exacRateGOLDI = GOLD_I, exacRateGOLDII = GOLD_II, exacRateGOLDIII = GOLD_III, exacRateGOLDIV = GOLD_IV))
+}
+
+
+#' Returns the Kaplan Meier curve comparing COPD and non-COPD
+#' @param savePlots TRUE or FALSE (default), exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
+#' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @return validation test results
+#' @export
+validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  #settings$agent_stack_size <- 0
+  settings$n_base_agents <- base_agents
+  #settings$event_stack_size <- 1
+  init_session(settings = settings)
+  input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
+
+  run(input = input)
+  events <- as.data.frame(Cget_all_events_matrix())
+  terminate_session()
+
+  cohort <- subset(events, ((event==7) | (event==13) | (event==14)))
+
+  cohort <- cohort %>% filter((id==lead(id) | ((event == 14) & id!=lag(id))))
+
+  cohort$copd <- (cohort$gold>0)
+  cohort$death <- (cohort$event!=14)
+  cohort$age <- (cohort$age_at_creation+cohort$local_time)
+
+  #fit <- survfit(Surv(age, death) ~ copd, data=cohort)
+  fit <- survfit(Surv(age, death) ~ copd, data=cohort)
+
+  # Customized survival curves
+  surv_plot <- ggsurvplot(fit, data = cohort, censor.shape="", censor.size = 1,
+                          surv.median.line = "hv", # Add medians survival
+
+                          # Change legends: title & labels
+                          legend.title = "Disease Status",
+                          legend.labs = c("Non-COPD", "COPD"),
+                          # Add p-value and tervals
+                          pval = TRUE,
+
+                          conf.int = TRUE,
+                          xlim = c(40,110),         # present narrower X axis, but not affect
+                          # survival estimates.
+                          xlab = "Age",   # customize X axis label.
+                          break.time.by = 20,     # break X axis in time intervals by 500.
+                          # Add risk table
+                          #risk.table = TRUE,
+                          tables.height = 0.2,
+                          tables.theme = theme_cleantable(),
+
+                          # Color palettes. Use custom color: c("#E7B800", "#2E9FDF"),
+                          # or brewer color (e.g.: "Dark2"), or ggsci color (e.g.: "jco")
+                          #palette = c("gray0", "gray1"),
+                          ggtheme = theme_tufte() +
+                            theme(axis.line = element_line(colour = "black"),
+                                  panel.grid.major = element_blank(),
+                                  panel.grid.minor = element_blank(),
+                                  panel.border = element_blank(),
+                                  panel.background = element_blank())  # Change ggplot2 theme
+  )
+
+  print (surv_plot)
+
+  if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = print(surv_plot), device = "tiff", dpi = 300)
+
+  fitcox <- coxph(Surv(age, death) ~ copd, data = cohort)
+  ftest <- cox.zph(fitcox)
+  print(summary(fitcox))
+
+  return(surv_plot)
+}
+
 
 

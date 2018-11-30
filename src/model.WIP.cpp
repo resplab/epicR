@@ -919,6 +919,9 @@ struct agent
 
   double cumul_cost;
   double cumul_qaly;
+  double annual_cost;
+  double annual_qaly;
+
   double payoffs_LPT;
 
   int n_mi;
@@ -1020,6 +1023,9 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+  out["annual_cost"] = (*ag).annual_cost;
+  out["annual_qaly"] = (*ag).annual_qaly;
+
   out["tte"] = (*ag).tte;
   out["event"] = (*ag).event;
   out["symptom_score"] = (*ag).symptom_score;
@@ -1395,6 +1401,9 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   //payoffs;
   (*ag).cumul_cost=0;
   (*ag).cumul_qaly=0;
+  (*ag).annual_cost=0;
+  (*ag).annual_qaly=0;
+
   (*ag).payoffs_LPT=0;
 
   return(ag);
@@ -1525,6 +1534,7 @@ struct output_ex
   int n_exac_death_by_ctime_severity [100][4];
   int n_exac_death_by_age_sex [111][2];
   int n_exac_by_ctime_severity[100][4];
+  int n_exac_by_gold_severity[4][4];
   int n_exac_by_ctime_severity_female[100][4];
   int n_exac_by_ctime_GOLD[100][4];
 #endif
@@ -1622,6 +1632,7 @@ List Cget_output_ex()
     out["n_exac_death_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_death_by_ctime_severity,input.global_parameters.time_horizon);
     out["n_exac_death_by_age_sex"]=AS_MATRIX_INT(output_ex.n_exac_death_by_age_sex);
     out["n_exac_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity,input.global_parameters.time_horizon);
+    out["n_exac_by_gold_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_gold_severity,4);
     out["n_exac_by_ctime_severity_female"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_female,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
@@ -1678,10 +1689,10 @@ void update_output_ex(agent *ag)
       else
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
 
-      output_ex.cumul_cost_ctime[time]+=(*ag).cumul_cost;
-      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).cumul_cost;
-      output_ex.cumul_qaly_ctime[time]+=(*ag).cumul_qaly;
-      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).cumul_qaly;
+      output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
+      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
+      output_ex.cumul_qaly_ctime[time]+=(*ag).annual_qaly;
+      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).annual_qaly;
 
       output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
 
@@ -1705,7 +1716,7 @@ void update_output_ex(agent *ag)
       output_ex.n_COPD_by_ctime_age[time][age-1]+=((*ag).gold>0)*1;
       output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
       output_ex.n_COPD_by_age_sex[age-1][(*ag).sex]+=1;
-      output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
+      if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
@@ -1795,6 +1806,13 @@ void payoffs_LPT(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
+
+  //annual cost and qaly
+  (*ag).annual_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+  (*ag).annual_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
+
   (*ag).payoffs_LPT=(*ag).local_time;
 }
 
@@ -1886,6 +1904,10 @@ agent *event_end_process(agent *ag)
     //NOTE: exacerbation timing is an LPT process and is treated separately.
     (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
+    (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+
   }
 
   ++output.n_agents;
@@ -1913,6 +1935,7 @@ agent *event_end_process(agent *ag)
 
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;
+
 
 
 #ifdef OUTPUT_EX
@@ -2380,6 +2403,7 @@ void event_exacerbation_process(agent *ag)
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION)>0
   output_ex.n_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
   output_ex.n_exac_by_ctime_severity[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  output_ex.n_exac_by_gold_severity[(*ag).gold-1][(*ag).exac_status-1]+=1;
   output_ex.n_exac_by_ctime_severity_female[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=(*ag).sex;
   output_ex.n_exac_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold-1]+=1;
   if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
@@ -2415,6 +2439,10 @@ void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
   (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+
+  (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
+  (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+
   (*ag).exac_status=0;
 }
 
@@ -2900,7 +2928,9 @@ agent *event_fixed_process(agent *ag)
   update_output_ex(ag);
 #endif
 
-
+  //resetting annual cost and qaly
+  (*ag).annual_cost=0;
+  (*ag).annual_qaly=0;
 
   //COPD;
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
