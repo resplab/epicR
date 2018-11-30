@@ -2510,11 +2510,11 @@ double event_update_symptoms(agent *ag)
   Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
   Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
 
- // arma::mat covariance_COPD_arma = as<arma::mat>(input.symptoms.covariance_COPD);
-  //arma::mat covariance_nonCOPD_arma = as<arma::mat>(input.symptoms.covariance_nonCOPD);
+  arma::mat covariance_COPD_arma = as<arma::mat>(covariance_COPD);
+  arma::mat covariance_nonCOPD_arma = as<arma::mat>(covariance_nonCOPD);
 
-  //Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
-  //Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
+  Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
+  Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
 
   double p_cough = 0;
   double p_phlegm = 0;
