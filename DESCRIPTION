@@ -6,16 +6,16 @@ Authors@R: c(
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")))
 Description: R Package for Evaluation Platform in COPD (EPIC). EPIC is a Discrete Event Simulation (DES) model that simulates health outcomes of COPD patients based on demographics and individual-level risk factors. DISCLAIMER: The package is currently under development and should not be used for research and/or clinical applications.
 Depends:
-    R (>= 3.3)
+    R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    Rcpp (>= 0.12.19),
-    RcppArmadillo,
+    Rcpp (>= 1.0.0),
+    RcppArmadillo(>= 0.9.2),
     graphics,
     stats,
-    ggplot2,
+    ggplot2(>= 3.1.0),
     ggthemes,
     sqldf,
     gsubfn,
@@ -32,6 +32,9 @@ Imports:
     tidyr,
     dplyr,
     survival,
-    survminer
+    survminer,
+    jsonlite
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1
+Suggests:
+    testthat
