@@ -122,7 +122,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_errorbar(aes(ymin = errorbar_min, ymax = errorbar_max), width=.2, position = position_dodge(.9)) +
      labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_inc_by_age_sex ) #plot needs to be showing
+  print(plot_COPD_inc_by_age_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_age_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
