@@ -33,7 +33,8 @@ Imports:
     dplyr,
     survival,
     survminer,
-    jsonlite
+    jsonlite,
+    rredis
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1
 Suggests:

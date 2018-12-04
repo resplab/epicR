@@ -112,8 +112,7 @@ gateway_json3_s<-function(session,func,parms1,parms2,parms3)
 
 save_session<-function(session)
 {
-  library("rredis")
-  redisConnect()
+  rredis::redisConnect()
   e<-new.env()
   for(nm in names(globalenv()))
   {
@@ -122,15 +121,14 @@ save_session<-function(session)
       e[[nm]]<-globalenv()[[nm]]
     }
   }
-  redisSet(session,e)
+  rredis::redisSet(session,e)
 }
 
 
 restore_session<-function(session)
 {
-  library("rredis")
-  redisConnect()
-  e<-redisGet(session)
+  rredis::redisConnect()
+  e<-rredis::redisGet(session)
   for(nm in names(e))
   {
     if(typeof(e[[nm]])!='closure')
@@ -204,18 +202,16 @@ get_output_structure<-function()
 
 set_redis<-function(variable,value)
 {
-  library("rredis")
-  redisConnect()
-  redisSet(variable,value)
+  rredis::redisConnect()
+  rredis::redisSet(variable,value)
   return(0)
 }
 
 
 get_redis<-function(variable)
 {
-  library("rredis")
-  redisConnect()
-  x<-redisGet(variable)
+  rredis::redisConnect()
+  x<-rredis::redisGet(variable)
   return(x)
 }
 
