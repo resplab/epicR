@@ -122,7 +122,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_errorbar(aes(ymin = errorbar_min, ymax = errorbar_max), width=.2, position = position_dodge(.9)) +
      labs(title = "Incidence of COPD by Age") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_inc_by_age_sex) #plot needs to be showing
+  plot(plot_COPD_inc_by_age_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_age_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -166,7 +166,7 @@ export_figures <- function(nPatients = 1e4) {
       geom_errorbar(aes(ymin = errorbar_min, ymax = errorbar_max), width=.2, position = position_dodge(.9)) +
       ylim(low = 0, high = 5) + labs(title = "Incidence of COPD by Age Group") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_inc_by_agegroup ) #plot needs to be showing
+  plot(plot_COPD_inc_by_agegroup ) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_age_group_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -197,7 +197,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylim(low=0, high=5) + labs(title = "Incidence of COPD by Year") + ylab ("COPD Incidence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_inc_by_year_sex ) #plot needs to be showing
+  plot(plot_COPD_inc_by_year_sex ) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_incidence_by_year_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
   rm(data_COPD_inc)
 
@@ -214,7 +214,7 @@ export_figures <- function(nPatients = 1e4) {
   plot_COPD_prev_by_sex <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") + ylim(low=0, high=50) + labs(title = "Prevalence of COPD by Year") + ylab ("Prevalence (%)") + labs(caption = "(based on population at age 40 and above)")
 
-  print(plot_COPD_prev_by_sex) #plot needs to be showing
+  plot(plot_COPD_prev_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ## now cumul prevalence
@@ -233,7 +233,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "")
 
 
-  print(plot_cumul_COPD_prev_by_sex) #plot needs to be showing
+  plot(plot_cumul_COPD_prev_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_prevalence_by_year_sex",  xy = c("G", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### COPD Prevalence by Age Group and Sex #####################################################
@@ -272,7 +272,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_errorbar(aes(ymin = errorbar_min, ymax =errorbar_max),
                                                                                                        width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
 
-  print(plot_COPD_prev_by_agegroup) #plot needs to be showing
+  plot(plot_COPD_prev_by_agegroup) #plot needs to be showing
   openxlsx::insertPlot(wb, "Prev_Age_Group_CanCOLD-BOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### COPD Prevalence by Age Group and GOLD #####################################################
@@ -297,7 +297,7 @@ export_figures <- function(nPatients = 1e4) {
 #
     #                                                                                               width=.2, position=position_dodge(.9)) + ylim(low = 0, high = 50) + labs (title = "Prevalence of COPD by Age Group") + ylab ("Prevalence (%)") + labs(caption = "(error bars represent 95% CI)")
 
-  #print(plot_COPD_prev_by_agegroup) #plot needs to be showing
+  #plot(plot_COPD_prev_by_agegroup) #plot needs to be showing
   #openxlsx::insertPlot(wb, "COPD_prev_by_age_group_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -327,7 +327,7 @@ export_figures <- function(nPatients = 1e4) {
 
   plot_fev1_by_sex <- ggplot2::ggplot(dfm, aes(Year_with_COPD, value, colour = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point() + geom_line() + labs(title = "Mean FEV1 by Number of Years with COPD") + ylab ("FEV1 (L)")
-  print(plot_fev1_by_sex) #plot needs to be showing
+  plot(plot_fev1_by_sex) #plot needs to be showing
   openxlsx::insertPlot(wb, "FEV1_by_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -354,7 +354,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "GOLD Stages per year") + ylab ("%")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_gold_by_year) #plot needs to be showing
+  plot(plot_gold_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "GOLD_stage_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### Exacerbation Severity by year per 1000 #####################################################
@@ -373,7 +373,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Exacerbation severity per year") + ylab ("Number of cases per 1000")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_exac_severity_by_year) #plot needs to be showing
+  plot(plot_exac_severity_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_severity_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### Exacerbation by GOLD by year per 1000 #####################################################
@@ -393,7 +393,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Number of Exacerbations per GOLD per year") + ylab ("Exacerbations per 1000 patients")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_exac_GOLD_by_year) #plot needs to be showing
+  plot(plot_exac_GOLD_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_GOLD_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### Exacerbation Rate by GOLD by year  #####################################################
@@ -413,7 +413,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Exacerbations Rate per GOLD per year") + ylab ("Exacerbations Rate")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_exac_rate_by_GOLD_by_year) #plot needs to be showing
+  plot(plot_exac_rate_by_GOLD_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_rate_GOLD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -434,7 +434,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Exacerbation rate by gender") + ylab ("Exacerbation Rate")  +
     scale_colour_manual(values = c("#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_exac_rate_by_sex_by_year) #plot needs to be showing
+  plot(plot_exac_rate_by_sex_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -456,7 +456,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Number of Exacerbations") + ylab ("Exacerbations")  +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_cumul_exac_rate_by_sex_by_year) #plot needs to be showing
+  plot(plot_cumul_exac_rate_by_sex_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exacerbation_sex_year",  xy = c("G", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -477,7 +477,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Severe and very severe exacerbations by gender") + ylab ("Exacerbation Rate")  +
     scale_colour_manual(values = c("#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_sev_exac_by_sex_by_year) #plot needs to be showing
+  plot(plot_sev_exac_by_sex_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Severe_exacerbation_sex_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -503,7 +503,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Number of Exacerbations per age group") + ylab ("Number of Exacerbations")  +
      scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(All severity levels, assuming 40+ population of Canada as 18.6 million as of the start of the simulation)")
 
-  print(plot_exac_by_age_year) #plot needs to be showing
+  plot(plot_exac_by_age_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Exac_by_age_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -527,7 +527,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
 
-  print(plot_cost_by_GOLD) #plot needs to be showing
+  plot(plot_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ## now cumul QALY
@@ -545,7 +545,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12), label=scales::dollar_format(suffix = "M")) + labs(caption = "Cumulative cost for Canada")
 
-  print(plot_Cumul_cost_by_GOLD) #plot needs to be showing
+  plot(plot_Cumul_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### QALY by GOLD #####################################################
@@ -570,7 +570,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "per capita")
 
-  print(plot_QALY_by_GOLD) #plot needs to be showing
+  plot(plot_QALY_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ## now cumul QALY
@@ -589,7 +589,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "Cumulative QALY for Canada")
 
-  print(plot_Cumul_QALY_by_GOLD) #plot needs to be showing
+  plot(plot_Cumul_QALY_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "QALY_by_GOLD",  xy = c("I", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -629,7 +629,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylim (low=0, high = 20) +
     labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Mortality (%)")
-  print(plot_COPD_related_mortality_by_age) #plot needs to be showing
+  plot(plot_COPD_related_mortality_by_age) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_related_mortality_by_age",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ##################################################### COPD-related Mortality by Calendar Year #####################################################
@@ -656,7 +656,7 @@ export_figures <- function(nPatients = 1e4) {
   #  geom_point () + geom_line() + labs(title = "Percentage of COPD-related mortality among causes of death") + ylab ("Number of Deaths")  +
   #  scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
-  print(plot_COPD_death_by_year) #plot needs to be showing
+  plot(plot_COPD_death_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "COPD_related_mortality_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -677,7 +677,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Age_Specific_Mortality_per1000") + ylab ("Mortality Rate")  +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + ylim(low = 0, high = 400)
 
-  print(plot_mortality_by_age) #plot needs to be showing
+  plot(plot_mortality_by_age) #plot needs to be showing
   openxlsx::insertPlot(wb, "Age_Specific_Mortality_per1000",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -701,7 +701,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_point () + geom_line() + labs(title = "Population of Canada per year") + ylab ("Number")  +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 12)) + labs(caption = "(assuming 40+ population of Canada as 18.6 million as of 2017)")
 
-  print(plot_population_by_sex_year) #plot needs to be showing
+  plot(plot_population_by_sex_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Population_by_year",  xy = c("I", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -729,7 +729,7 @@ export_figures <- function(nPatients = 1e4) {
     scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 #  plot_smokers_by_year <- qplot(Year, Smoker, data = smokers_by_year)
 
-  print(plot_smokers_by_year) #plot needs to be showing
+  plot(plot_smokers_by_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "Smokers_by_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   #####################################################   mortality_by_smoking_per_year  #####################################################
@@ -755,7 +755,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "All-cause Mortality by smoking status") + ylab ("%")
 
-  print(plot_mortality_by_smoking_per_year) #plot needs to be showing
+  plot(plot_mortality_by_smoking_per_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "mortality_by_smoking_per_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   #####################################################   All_cause mortality for COPD patients #####################################################
@@ -782,7 +782,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "All-cause mortality for COPD patients") + ylab ("%")
 
-  print(plot_all_cause_mortality_COPD ) #plot needs to be showing
+  plot(plot_all_cause_mortality_COPD ) #plot needs to be showing
   openxlsx::insertPlot(wb, "all_cause_mortality_COPD",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   #####################################################  Exacerbation mortality by severity and year #####################################################
@@ -801,7 +801,7 @@ export_figures <- function(nPatients = 1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "Exacerbation Mortality by Severity and Year") + ylab ("%")
 
-  print(plot_exac_mortality_by_sev_year) #plot needs to be showing
+  plot(plot_exac_mortality_by_sev_year) #plot needs to be showing
   openxlsx::insertPlot(wb, "exac_mortality_by_sev_year",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
 
@@ -830,7 +830,7 @@ export_figures <- function(nPatients = 1e4) {
   plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
 
-  print(plot_avg_pack_years_ctime) #plot needs to be showing
+  plot(plot_avg_pack_years_ctime) #plot needs to be showing
   openxlsx::insertPlot(wb, "avg_pack_years_ctime",  xy = c("G", 3), width = 20, height = 13.2 , fileType = "png", units = "cm")
 
   ####################################################### Save workbook #####################################################

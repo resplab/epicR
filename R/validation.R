@@ -132,7 +132,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
     theme(legend.title=element_blank()) +
     scale_y_continuous(name="Population", labels = scales::comma)
 
-  print (plot_population_growth)
+  plot (plot_population_growth)
   if (savePlots) ggsave(paste0("PopulationGrowth",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
 
@@ -178,7 +178,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
          scale_x_continuous(name="Age", labels = scales::comma)
     if (savePlots) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
-    print(p)
+    plot(p)
 
   }
 
@@ -292,7 +292,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
 
-  print(plot_smoking_status_ctime ) #plot needs to be showing
+  plot(plot_smoking_status_ctime ) #plot needs to be showing
 
   # Plotting pack-years over time
   dataS <- as.data.frame (Cget_all_events_matrix())
@@ -319,7 +319,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
     geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
 
-  print(plot_avg_pack_years_ctime) #plot needs to be showing
+  plot(plot_avg_pack_years_ctime) #plot needs to be showing
 
   # Plotting pack-years over age
 
@@ -340,7 +340,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable, ymin = 40, ymax = 100)) +
     geom_point () + geom_line() + labs(title = "Average pack-years per age ") + ylab ("Pack-years")
 
-  print(plot_avg_pack_years_age) #plot needs to be showing
+  plot(plot_avg_pack_years_age) #plot needs to be showing
 
 
   message("This test is over; terminating the session")
@@ -930,9 +930,9 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
                                   panel.background = element_blank())  # Change ggplot2 theme
   )
 
-  print (surv_plot)
+  plot (surv_plot)
 
-  if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = print(surv_plot), device = "tiff", dpi = 300)
+  if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = plot(surv_plot), device = "tiff", dpi = 300)
 
   fitcox <- coxph(Surv(age, death) ~ copd, data = cohort)
   ftest <- cox.zph(fitcox)
