@@ -1,12 +1,10 @@
-library(jsonlite)
-
 #' @export
 gateway_json<-function(func,...)
 {
   f<-get(func)
   out<-f(...)
 
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 #' @export
@@ -16,7 +14,7 @@ gateway_json0<-function(func)
   f<-get(func)
   out<-f()
 
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 #' @export
@@ -28,7 +26,7 @@ gateway_json1<-function(func,parms1)
   f<-get(func)
   out<-f(parms1)
 
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 #' @export
@@ -37,7 +35,7 @@ gateway_json2<-function(func,parms1,parms2)
   f<-get(func)
   out<-f(parms1,parms2)
 
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 
@@ -47,7 +45,7 @@ gateway_json3<-function(func,parms1,parms2,parms3)
   f<-get(func)
   out<-f(parms1,parms2,parms3)
 
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 
@@ -64,7 +62,7 @@ gateway_json0_s<-function(session,func)
   f<-get(func)
   out<-f()
   save_session(session)
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 #' @export
@@ -75,7 +73,7 @@ gateway_json1_s<-function(session,func,parms1)
   f<-get(func)
   out<-f(parms1)
   save_session(session)
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 #' @export
@@ -86,7 +84,7 @@ gateway_json2_s<-function(session,func,parms1,parms2)
   f<-get(func)
   out<-f(parms1,parms2)
   save_session(session)
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 
@@ -98,7 +96,7 @@ gateway_json3_s<-function(session,func,parms1,parms2,parms3)
   f<-get(func)
   out<-f(parms1,parms2,parms3)
   save_session(session)
-  return(toJSON(out))
+  return(jsonlite::toJSON(out))
 }
 
 
