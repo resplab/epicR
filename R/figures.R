@@ -183,8 +183,8 @@ export_figures <- function(nPatients = 1e4) {
   data_COPD_inc <- subset(data, event == 4)
 
   for (i in 1:input$global_parameters$time_horizon){
-    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((sex == 0) & (ceiling(local_time + time_at_creation) == i)) ))[1]
-    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((sex == 1) & (ceiling(local_time + time_at_creation) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 2] <- dim(subset(data_COPD_inc, ((female == 0) & (ceiling(local_time + time_at_creation) == i)) ))[1]
+    COPD_inc_by_year_sex [i, 3] <- dim(subset(data_COPD_inc, ((female == 1) & (ceiling(local_time + time_at_creation) == i)) ))[1]
   }
   COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] <- COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] / op_ex$n_alive_by_ctime_sex * 100 #converting to percentage
   SE_COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 1:2] <- sqrt (COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3] * (100 - COPD_inc_by_year_sex [1:input$global_parameters$time_horizon, 2:3]) / op_ex$n_alive_by_ctime_sex) #TODO Make sure it's correct and add it to ggplot.
@@ -310,10 +310,10 @@ export_figures <- function(nPatients = 1e4) {
   data_COPD <- subset (data, gold > 0)
 
   for (i in 0:input$global_parameters$time_horizon) {
-    temp_data_COPD_years <- subset(data, ((followup_after_COPD == i) & (sex == 0)))
+    temp_data_COPD_years <- subset(data, ((followup_after_COPD == i) & (female == 0)))
     fev1_by_sex[i+1, 2] <- mean (temp_data_COPD_years[,"FEV1"])
 
-    temp_data_COPD_years <- subset(data, ((followup_after_COPD == i) & (sex == 1)))
+    temp_data_COPD_years <- subset(data, ((followup_after_COPD == i) & (female == 1)))
     fev1_by_sex[i+1, 3] <- mean (temp_data_COPD_years[,"FEV1"])
 
     temp_data_COPD_years <- subset(data, followup_after_COPD == i)
@@ -639,8 +639,8 @@ export_figures <- function(nPatients = 1e4) {
   COPD_death_by_year[1:input$global_parameters$time_horizon, 1] <- c(2015:(2015+input$global_parameters$time_horizon-1))
 
   for (i in 1:input$global_parameters$time_horizon) {
-    COPD_death_by_year[i, 2] <- dim(subset(data_COPD_death, ((sex == 0) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 1] * 100
-    COPD_death_by_year[i, 3] <- dim(subset(data_COPD_death, ((sex == 1) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 2] * 100
+    COPD_death_by_year[i, 2] <- dim(subset(data_COPD_death, ((female == 0) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 1] * 100
+    COPD_death_by_year[i, 3] <- dim(subset(data_COPD_death, ((female == 1) & (floor(local_time + time_at_creation)==i))))[1] / op_ex$n_COPD_by_ctime_sex[i, 2] * 100
     COPD_death_by_year[i, 4] <- COPD_death_by_year[i, 2] + COPD_death_by_year[i, 3] / (op_ex$n_COPD_by_ctime_sex[i, 1] + op_ex$n_COPD_by_ctime_sex[i, 2]) * 100
   }
 
@@ -769,8 +769,8 @@ export_figures <- function(nPatients = 1e4) {
 
 
   for (i in 1:input$global_parameters$time_horizon) {
-    all_cause_mortality_COPD [i, 2] <- dim (subset(data_deaths_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
-    all_cause_mortality_COPD [i, 3] <- dim (subset(data_deaths_COPD, ((sex == 1)  & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((sex == 1) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    all_cause_mortality_COPD [i, 2] <- dim (subset(data_deaths_COPD, ((female == 0) & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((female == 0) & (floor(time_at_creation + local_time) == i ))))[1] * 100
+    all_cause_mortality_COPD [i, 3] <- dim (subset(data_deaths_COPD, ((female == 1)  & (floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((female == 1) & (floor(time_at_creation + local_time) == i ))))[1] * 100
     all_cause_mortality_COPD [i, 4] <- dim (subset(data_deaths_COPD, ((floor(time_at_creation + local_time) == i ))))[1] / dim(subset(data_annual_COPD, ((floor(time_at_creation + local_time) == i ))))[1] * 100
   }
 
