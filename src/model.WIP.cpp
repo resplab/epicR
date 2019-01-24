@@ -1052,6 +1052,9 @@ List get_agent(agent *ag)
 }
 
 
+
+
+
 //This is a generic function as both agent_stack and event_stack are arrays of agents;
 List get_agent(int id, agent agent_pointer[])
 {
@@ -1097,6 +1100,123 @@ List Cget_smith()
 +input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)                                                                        \
 +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time)                               \
 +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
+
+////////////////////////////////////////////////////////////////////event symptoms/////////////////////////////////////;
+double event_update_symptoms(agent *ag)
+{
+  arma::mat rand_effect_arma;
+  NumericVector mu (4); //default is zero
+  NumericMatrix covariance_COPD(4,4);
+  NumericMatrix covariance_nonCOPD(4,4);
+
+  for (int i=0; i<4; i++){
+    for (int j=0; j<4; j++) {
+      covariance_COPD(i,j) = input.symptoms.covariance_COPD[i][j];
+      covariance_nonCOPD(i,j) = input.symptoms.covariance_nonCOPD[i][j];
+    }
+  }
+
+  // Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
+  // Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
+  //
+  // Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
+  // Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
+
+  arma::vec mu_arma = as<arma::vec>(mu);
+  arma::mat covariance_COPD_arma = as<arma::mat>(covariance_COPD);
+  arma::mat covariance_nonCOPD_arma = as<arma::mat>(covariance_nonCOPD);
+
+  // Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
+  // Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
+
+  double p_cough = 0;
+  double p_phlegm = 0;
+  double p_wheeze = 0;
+  double p_dyspnea = 0;
+
+  if ((*ag).gold>0) {
+    // Rcout << "running mvrnormArma " << std::endl;
+    mvrnormArma(1, mu_arma, covariance_COPD_arma);
+    // Rcout << "assigning mvrnormArma " << std::endl;
+    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_COPD_arma);
+
+    (*ag).re_cough = rand_effect_arma(0);
+    (*ag).re_phlegm = rand_effect_arma(1);
+    (*ag).re_wheeze = rand_effect_arma(2);
+    (*ag).re_dyspnea = rand_effect_arma(3);
+
+    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+    p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_cough_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_cough_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_cough_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
+      input.symptoms.logit_p_cough_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_cough);
+
+    p_phlegm = exp(input.symptoms.logit_p_phlegm_COPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_phlegm_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_phlegm_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_phlegm_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
+      input.symptoms.logit_p_phlegm_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_phlegm);
+
+    p_wheeze = exp(input.symptoms.logit_p_wheeze_COPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_wheeze_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_wheeze_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_wheeze_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
+      input.symptoms.logit_p_wheeze_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_wheeze);
+
+    p_dyspnea = exp(input.symptoms.logit_p_dyspnea_COPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_dyspnea_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_dyspnea_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_dyspnea_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
+      input.symptoms.logit_p_dyspnea_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_dyspnea);
+
+  } else if ((*ag).gold==0) {
+    // Rcout << "running mvrnormArma non_COPD " << std::endl;
+    mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
+    // Rcout << "assigning mvrnormArma non_COPD " << std::endl;
+    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
+
+    (*ag).re_cough = rand_effect_arma(0);
+    (*ag).re_phlegm = rand_effect_arma(1);
+    (*ag).re_wheeze = rand_effect_arma(2);
+    (*ag).re_dyspnea = rand_effect_arma(3);
+
+    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
+
+    p_cough = exp(input.symptoms.logit_p_cough_nonCOPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_cough_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_cough_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_cough_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_cough);
+
+    p_phlegm = exp(input.symptoms.logit_p_phlegm_nonCOPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_phlegm_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_phlegm_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_phlegm_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_phlegm);
+
+    p_wheeze = exp(input.symptoms.logit_p_wheeze_nonCOPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_wheeze_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_wheeze_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_wheeze_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_wheeze);
+
+    p_dyspnea = exp(input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[0][(*ag).sex] +
+      input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +(*ag).re_dyspnea);
+  }
+
+  p_cough = p_cough / (1 + p_cough);
+  p_phlegm = p_phlegm / (1 + p_phlegm);
+  p_wheeze = p_wheeze / (1 + p_wheeze);
+  p_dyspnea = p_dyspnea / (1 + p_dyspnea);
+
+
+  if (rand_unif() < p_cough) {(*ag).cough = 1;}
+  if (rand_unif() < p_phlegm) {(*ag).phlegm = 1;}
+  if (rand_unif() < p_wheeze) {(*ag).wheeze = 1;}
+  if (rand_unif() < p_dyspnea) {(*ag).dyspnea = 1;}
+
+  return(0);
+}
 
 agent *create_agent(agent *ag,int id)
 {
@@ -1349,6 +1469,8 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
     (*ag).n_mi=0;
   }
 
+  //symptoms
+  event_update_symptoms(ag);
 
   //stroke
   double stroke_odds=exp(input.comorbidity.logit_p_stroke_betas_by_sex[0][(*ag).sex]
@@ -2544,122 +2666,6 @@ void event_exacerbation_death_process(agent *ag)
 
 
 
-////////////////////////////////////////////////////////////////////event symptoms/////////////////////////////////////;
-double event_update_symptoms(agent *ag)
-{
-  arma::mat rand_effect_arma;
-  NumericVector mu (4); //default is zero
-  NumericMatrix covariance_COPD(4,4);
-  NumericMatrix covariance_nonCOPD(4,4);
-
-  for (int i=0; i<4; i++){
-    for (int j=0; j<4; j++) {
-    covariance_COPD(i,j) = input.symptoms.covariance_COPD[i][j];
-    covariance_nonCOPD(i,j) = input.symptoms.covariance_nonCOPD[i][j];
-   }
- }
-
-  // Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
-  // Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
-  //
-  // Rcout << " covariance_nonCOPD = " << (input.symptoms.covariance_nonCOPD[0][1]) << std::endl;
-  // Rcout << " covariance_nonCOPD_NM = " << (covariance_nonCOPD(0,1)) << std::endl;
-
-  arma::vec mu_arma = as<arma::vec>(mu);
-  arma::mat covariance_COPD_arma = as<arma::mat>(covariance_COPD);
-  arma::mat covariance_nonCOPD_arma = as<arma::mat>(covariance_nonCOPD);
-
-  // Rcout << " covariance_COPD_arma = " << (covariance_COPD_arma) << std::endl; //debug
-  // Rcout << " covariance_nonCOPD_arma = " << (covariance_nonCOPD_arma) << std::endl;  //debug
-
-  double p_cough = 0;
-  double p_phlegm = 0;
-  double p_wheeze = 0;
-  double p_dyspnea = 0;
-
-  if ((*ag).gold>0) {
-   // Rcout << "running mvrnormArma " << std::endl;
-    mvrnormArma(1, mu_arma, covariance_COPD_arma);
-   // Rcout << "assigning mvrnormArma " << std::endl;
-    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_COPD_arma);
-
-    (*ag).re_cough = rand_effect_arma(0);
-    (*ag).re_phlegm = rand_effect_arma(1);
-    (*ag).re_wheeze = rand_effect_arma(2);
-    (*ag).re_dyspnea = rand_effect_arma(3);
-
-    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
-    p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_cough_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_cough_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_cough_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
-              input.symptoms.logit_p_cough_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_cough);
-
-    p_phlegm = exp(input.symptoms.logit_p_phlegm_COPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_phlegm_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_phlegm_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_phlegm_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
-              input.symptoms.logit_p_phlegm_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_phlegm);
-
-    p_wheeze = exp(input.symptoms.logit_p_wheeze_COPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_wheeze_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_wheeze_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_wheeze_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
-              input.symptoms.logit_p_wheeze_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_wheeze);
-
-    p_dyspnea = exp(input.symptoms.logit_p_dyspnea_COPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_dyspnea_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_dyspnea_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_dyspnea_COPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +
-              input.symptoms.logit_p_dyspnea_COPD_by_sex[4][(*ag).sex]*((*ag).fev1) + (*ag).re_dyspnea);
-
-  } else if ((*ag).gold==0) {
-    // Rcout << "running mvrnormArma non_COPD " << std::endl;
-    mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
-    // Rcout << "assigning mvrnormArma non_COPD " << std::endl;
-    rand_effect_arma = mvrnormArma(1, mu_arma, covariance_nonCOPD_arma);
-
-    (*ag).re_cough = rand_effect_arma(0);
-    (*ag).re_phlegm = rand_effect_arma(1);
-    (*ag).re_wheeze = rand_effect_arma(2);
-    (*ag).re_dyspnea = rand_effect_arma(3);
-
-    // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
-
-    p_cough = exp(input.symptoms.logit_p_cough_nonCOPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_cough_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_cough_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_cough_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_cough);
-
-    p_phlegm = exp(input.symptoms.logit_p_phlegm_nonCOPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_phlegm_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_phlegm_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_phlegm_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_phlegm);
-
-    p_wheeze = exp(input.symptoms.logit_p_wheeze_nonCOPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_wheeze_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_wheeze_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_wheeze_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) + (*ag).re_wheeze);
-
-    p_dyspnea = exp(input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[0][(*ag).sex] +
-              input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-              input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-              input.symptoms.logit_p_dyspnea_nonCOPD_by_sex[3][(*ag).sex]*((*ag).pack_years) +(*ag).re_dyspnea);
-  }
-
-  p_cough = p_cough / (1 + p_cough);
-  p_phlegm = p_phlegm / (1 + p_phlegm);
-  p_wheeze = p_wheeze / (1 + p_wheeze);
-  p_dyspnea = p_dyspnea / (1 + p_dyspnea);
-
-
-  if (rand_unif() < p_cough) {(*ag).cough = 1;}
-  if (rand_unif() < p_phlegm) {(*ag).phlegm = 1;}
-  if (rand_unif() < p_wheeze) {(*ag).wheeze = 1;}
-  if (rand_unif() < p_dyspnea) {(*ag).dyspnea = 1;}
-
-  return(0);
-}
 
 ////////////////////////////////////////////////////////////////////comorbidity events/////////////////////////////////////;
 double event_mi_tte(agent *ag)
