@@ -11,7 +11,10 @@ Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Fl
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
 
-![EPIC Structure] (https://journals.sagepub.com/na101/home/literatum/publisher/sage/journals/content/mdma/0/mdma.ahead-of-print/0272989x18824098/20190124/images/large/10.1177_0272989x18824098-fig1.jpeg)
+<p>
+    <img src="https://journals.sagepub.com/na101/home/literatum/publisher/sage/journals/content/mdma/0/mdma.ahead-of-print/0272989x18824098/20190124/images/large/10.1177_0272989x18824098-fig1.jpeg"/>
+</p>
+
 
 ## Installation
 ### Windows 7 or Later
