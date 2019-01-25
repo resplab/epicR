@@ -241,7 +241,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
   age_list <- list(a1 = c(35, 45), a2 = c(45, 65), a3 = c(65, 111))
   tab2 <- tab1
-  for (i in 0:1) for (j in 1:length(age_list)) tab2[i + 1, j] <- mean(dataS[which(dataS[, "sex"] == i & dataS[, "age_at_creation"] >
+  for (i in 0:1) for (j in 1:length(age_list)) tab2[i + 1, j] <- mean(dataS[which(dataS[, "female"] == i & dataS[, "age_at_creation"] >
                                                                                     age_list[[j]][1] & dataS[, "age_at_creation"] <= age_list[[j]][2]), "smoking_status"])
 
   cat("This is the model generated bar plot")
@@ -471,7 +471,7 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
   out$inc_copd <- sum(opx$n_inc_COPD_by_ctime_age)/opx$cumul_non_COPD_time
   out$inc_copd_by_sex <- sum(opx$n_inc_COPD_by_ctime_age)/opx$cumul_non_COPD_time
 
-  x <- sqldf::sqldf("SELECT sex, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY sex")
+  x <- sqldf::sqldf("SELECT female, SUM(gold>0) AS n_copd, COUNT(*) AS n FROM dataS GROUP BY female")
   out$p_copd_at_creation_by_sex <- x[, "n_copd"]/x[, "n"]
 
 
@@ -500,52 +500,52 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
   dataF[, "year"] <- dataF[, "local_time"] + dataF[, "time_at_creation"]
 
   if (exists('rxGlm')) {
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_copd_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_copd_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_copd_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_copd_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold2p_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_gold2p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold2p_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_gold2p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold3p_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_gold3p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- rxGlm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold3p_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_gold3p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
   }
   else {
-    res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_copd_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_copd_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_copd_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_copd_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
-    res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold2p_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_gold2p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold2p_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_gold2p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
-    res <- glm(data = dataF[which(dataF[, "sex"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold3p_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_gold3p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
 
-    res <- glm(data = dataF[which(dataF[, "sex"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
+    res <- glm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_gold3p_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_gold3p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
