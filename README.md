@@ -3,10 +3,18 @@
 
 
 # epicR
-R package for Evaluation Platform in COPD (EPIC). Currently under development.
+R package for Evaluation Platform in COPD (EPIC). Please refer to the published paper for more information: 
+
+Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., … Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. [https://doi.org/10.1177/0272989X18824098](https://doi.org/10.1177/0272989X18824098)
+
 
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
+
+<p>
+    <img src="https://journals.sagepub.com/na101/home/literatum/publisher/sage/journals/content/mdma/0/mdma.ahead-of-print/0272989x18824098/20190124/images/large/10.1177_0272989x18824098-fig1.jpeg"/>
+</p>
+
 
 ## Installation
 ### Windows 7 or Later
@@ -61,3 +69,8 @@ If the installation is successful, you should be able to start R:
 
   `devtools::install_github('aminadibi/epicR')`
 
+## Citation
+
+Please cite:
+
+```Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., … Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. https://doi.org/10.1177/0272989X18824098```
