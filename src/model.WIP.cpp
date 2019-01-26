@@ -149,6 +149,11 @@ _a > _b ? _b : _a; })       \
 double calendar_time;
 int last_id;
 
+//' Samples from a multivariate normal
+//' @param n number of samples to be taken
+//' @param mu the mean
+//' @param sigma the covariance matrix
+//' @return the multivariate normal sample
 //' @export
 // [[Rcpp::export]]
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
