@@ -172,6 +172,7 @@ get_all_events <- function() {
 #' @return 0 if successful.
 #' @export
 run <- function(max_n_agents = NULL, input = NULL) {
+
   Cinit_session()
   if (is.null(input))
     input <- model_input$values
@@ -185,7 +186,9 @@ run <- function(max_n_agents = NULL, input = NULL) {
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
   }
-  return(res)
+
+  #return(res)
+  return(input)
 }
 
 
@@ -211,6 +214,7 @@ resume <- function(max_n_agents = NULL) {
 process_input <- function(ls, decision = 1) {
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex - ls$manual$explicit_mortality_by_age_sex
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex
+
 
   ls$smoking$ln_h_inc_betas[1] <- ls$smoking$ln_h_inc_betas[1] + log(ls$manual$smoking$intercept_k)
 
