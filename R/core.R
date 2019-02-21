@@ -177,6 +177,8 @@ run <- function(max_n_agents = NULL, input = NULL) {
   if (is.null(input))
     input <- model_input$values
 
+  return(input)
+
   res <- set_Cmodel_inputs(process_input(input))
   if (res == 0) {
     if (is.null(max_n_agents))
@@ -187,8 +189,8 @@ run <- function(max_n_agents = NULL, input = NULL) {
     message("ERROR:", names(which(errors == res)))
   }
 
-  #return(res)
-  return(input)
+  return(res)
+
 }
 
 
