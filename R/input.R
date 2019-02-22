@@ -62,6 +62,8 @@ errors<-c(
 
 
 
+#' Returns a list of default model input values
+#' @param None
 #' @export
 init_input <- function() {
   input <- list()
