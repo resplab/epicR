@@ -89,6 +89,7 @@ get_list_elements <- function(ls, running_name = "") {
 
 
 set_Cmodel_inputs <- function(ls) {
+  if(length(ls)==0) return(0)
   nms <- get_list_elements(ls)
   for (i in 1:length(nms)) {
     last_var <- nms[i]
@@ -174,15 +175,13 @@ get_all_events <- function() {
 run <- function(max_n_agents = NULL, input = NULL) {
 
   #Cinit_session()
-
   #In the updated version (2019.02.21) user can submit partial input. So better first set the input with ddefault values so that partial inputs are incremental.
-  default_input<-init_input()
-  set_Cmodel_inputs(process_input(default_input))
 
-  if (!is.null(input)) set_Cmodel_inputs(process_input(input))
+  default_input<-init_input()$values
+  res<-set_Cmodel_inputs(process_input(default_input))
 
-  #return(input)
-  res <- set_Cmodel_inputs(process_input(input))
+  if (!is.null(input) || length(input)==0) res<-set_Cmodel_inputs(process_input(input))
+
   if (res == 0) {
     if (is.null(max_n_agents))
       max_n_agents = .Machine$integer.max
