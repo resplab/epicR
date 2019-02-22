@@ -173,9 +173,13 @@ get_all_events <- function() {
 #' @export
 run <- function(max_n_agents = NULL, input = NULL) {
 
-  Cinit_session()
-  if (is.null(input))
-    input <- init_input()$values
+  #Cinit_session()
+
+  #In the updated version (2019.02.21) user can submit partial input. So better first set the input with ddefault values so that partial inputs are incremental.
+  default_input<-init_input()
+  set_Cmodel_inputs(process_input(default_input))
+
+  if (!is.null(input)) set_Cmodel_inputs(process_input(input))
 
   #return(input)
   res <- set_Cmodel_inputs(process_input(input))
@@ -192,30 +196,6 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
 }
 
-
-
-
-#' Runs the model, after a session has been initialized.
-#' @param max_n_agents maximum number of agents
-#' @param input customized input criteria
-#' @return 0 if successful.
-#' @export
-run.simple <- function(max_n_agents = NULL, input) {
-
-  #return(input)
-  res <- set_Cmodel_inputs(input)
-  if (res == 0) {
-    if (is.null(max_n_agents))
-      max_n_agents = .Machine$integer.max
-    res <- Cmodel(max_n_agents)
-  }
-  if (res < 0) {
-    message("ERROR:", names(which(errors == res)))
-  }
-
-  return(res)
-
-}
 
 
 
@@ -239,13 +219,16 @@ resume <- function(max_n_agents = NULL) {
 # processes input and returns the processed one
 process_input <- function(ls, decision = 1)
 {
-  ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex - ls$manual$explicit_mortality_by_age_sex
-  ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex
+  if(!is.null(ls$manual))
+  {
+    ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex - ls$manual$explicit_mortality_by_age_sex
+    ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex
 
 
-  ls$smoking$ln_h_inc_betas[1] <- ls$smoking$ln_h_inc_betas[1] + log(ls$manual$smoking$intercept_k)
+    ls$smoking$ln_h_inc_betas[1] <- ls$smoking$ln_h_inc_betas[1] + log(ls$manual$smoking$intercept_k)
 
-  ls$manual <- NULL
+    ls$manual <- NULL
+  }
   return(ls)
 }
 
