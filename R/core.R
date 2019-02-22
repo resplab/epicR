@@ -194,6 +194,31 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
 
 
+
+#' Runs the model, after a session has been initialized.
+#' @param max_n_agents maximum number of agents
+#' @param input customized input criteria
+#' @return 0 if successful.
+#' @export
+run.simple <- function(max_n_agents = NULL, input) {
+
+  #return(input)
+  res <- set_Cmodel_inputs(input)
+  if (res == 0) {
+    if (is.null(max_n_agents))
+      max_n_agents = .Machine$integer.max
+    res <- Cmodel(max_n_agents)
+  }
+  if (res < 0) {
+    message("ERROR:", names(which(errors == res)))
+  }
+
+  return(res)
+
+}
+
+
+
 #' Resumes running of model.
 #' @param max_n_agents maximum number of agents
 #' @return 0 if successful.
@@ -212,7 +237,8 @@ resume <- function(max_n_agents = NULL) {
 
 
 # processes input and returns the processed one
-process_input <- function(ls, decision = 1) {
+process_input <- function(ls, decision = 1)
+{
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex - ls$manual$explicit_mortality_by_age_sex
   ls$agent$p_bgd_by_sex <- ls$agent$p_bgd_by_sex
 
