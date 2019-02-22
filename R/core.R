@@ -175,7 +175,7 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
   Cinit_session()
   if (is.null(input))
-    input <- model_input$values
+    input <- init_input()$values
 
   #return(input)
   res <- set_Cmodel_inputs(process_input(input))
