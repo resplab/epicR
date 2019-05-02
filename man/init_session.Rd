@@ -4,7 +4,7 @@
 \alias{init_session}
 \title{Initializes a model. Allocates memory to the C engine.}
 \usage{
-init_session(settings = default_settings)
+init_session(settings = get_default_settings())
 }
 \arguments{
 \item{settings}{customized settings.}
