@@ -16,13 +16,23 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
                          rexp_buffer_size = 5e4,
                          agent_stack_size = 0,
                          event_stack_size = 5e4 * 1.7 * 30)
+
+
+#' @export
+get_default_settings<-function()
+{
+  return(default_settings)
+}
+
+
+
 # Population of Canada over 40 years by StatsCan 18,415.60
 
 #' Initializes a model. Allocates memory to the C engine.
 #' @param settings customized settings.
 #' @return 0 if successful.
 #' @export
-init_session <- function(settings = default_settings) {
+init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
   if (exists("Cdeallocate_resources"))
     Cdeallocate_resources()
