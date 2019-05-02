@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/aminadibi/epicR.svg?branch=master)](https://travis-ci.org/aminadibi/epicR)
+[![Build Status](https://travis-ci.org/resplab/epicR.svg?branch=master)](https://travis-ci.org/resplab/epicR)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 
