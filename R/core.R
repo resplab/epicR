@@ -1,5 +1,11 @@
 Rcpp::sourceCpp("./src/model.WIP.cpp")
 
+session_env<-new.env()
+session_env$global_error_code_chain<-NULL
+session_env$global_error_message_chain<-NULL
+
+
+
 # Cleaning up when package unloads
 .onUnload <- function(libpath) {
   library.dynam.unload("epicR", libpath)
@@ -111,6 +117,7 @@ set_Cmodel_inputs <- function(ls) {
     res <- Cset_input_var(nms[i], val)
     if (res != 0) {
       message(last_var)
+      set_error(res,paste("Invalid input:",last_var))
       return(res)
     }
   }
@@ -185,12 +192,21 @@ get_all_events <- function() {
 run <- function(max_n_agents = NULL, input = NULL) {
 
   #Cinit_session()
-  #In the updated version (2019.02.21) user can submit partial input. So better first set the input with ddefault values so that partial inputs are incremental.
+  #In the updated version (2019.02.21) user can submit partial input. So better first set the input with default values so that partial inputs are incremental.
+
+  reset_errors()
 
   default_input<-init_input()$values
   res<-set_Cmodel_inputs(process_input(default_input))
 
-  if (!is.null(input) || length(input)==0) res<-set_Cmodel_inputs(process_input(input))
+  if (!is.null(input) || length(input)==0)
+  {
+    res<-set_Cmodel_inputs(process_input(input))
+    if(res<0)
+    {
+      set_error(res,"Bad Input")
+    }
+  }
 
   if (res == 0) {
     if (is.null(max_n_agents))
@@ -242,4 +258,27 @@ process_input <- function(ls, decision = 1)
 }
 
 
+
+
+reset_errors<-function()
+{
+  session_env$global_error_code_chain<-NULL
+  session_env$global_error_message_chain<-NULL
+}
+
+
+
+set_error <- function(error_code, error_message="")
+{
+  session_env$global_error_code_chain<-c(session_env$global_error_code_chain,error_code)
+  session_env$global_error_message_chain<-c(session_env$global_error_message_chain,error_message)
+}
+
+
+
+#' @export
+get_errors <- function()
+{
+  return(cbind(session_env$global_error_code_chain,session_env$global_error_message_chain))
+}
 
