@@ -23,7 +23,8 @@ default_settings <- list(record_mode = record_mode["record_mode_event"],
                          agent_stack_size = 0,
                          event_stack_size = 5e4 * 1.7 * 30)
 
-
+#' Exports default settings
+#' @return default settings
 #' @export
 get_default_settings<-function()
 {
