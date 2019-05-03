@@ -276,7 +276,8 @@ set_error <- function(error_code, error_message="")
 }
 
 
-
+#' Returns errors
+#' @return a text with description of error messages
 #' @export
 get_errors <- function()
 {
