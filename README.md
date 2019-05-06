@@ -67,7 +67,7 @@ If the installation is successful, you should be able to start R:
   `install.packages ('devtools')`
 5. Install epicR from GitHub:
 
-  `devtools::install_github('aminadibi/epicR')`
+  `devtools::install_github('resplab/epicR')`
 
 # PRISM: EPIC on the Cloud
 
