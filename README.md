@@ -33,7 +33,7 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
 ### Mac OS Sierra and Later
 1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
 2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-3. Install Xcode from Mac App Store. 
+3. Download and install `gfortran` and `clang` from [https://cran.r-project.org/bin/macosx/tools/](https://cran.r-project.org/bin/macosx/tools/)
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
   `install.packages ('devtools')`
@@ -67,7 +67,11 @@ If the installation is successful, you should be able to start R:
   `install.packages ('devtools')`
 5. Install epicR from GitHub:
 
-  `devtools::install_github('aminadibi/epicR')`
+  `devtools::install_github('resplab/epicR')`
+
+# PRISM: EPIC on the Cloud
+
+The [PRISM platform](https://prism.resp.core.ubc.ca) allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, please refer to the [PRISM model repository](http://resp.core.ubc.ca/ipress/prism)
 
 ## Citation
 
