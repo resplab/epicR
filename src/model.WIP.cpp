@@ -1216,9 +1216,13 @@ double event_update_symptoms(agent *ag)
 
 
   if (rand_unif() < p_cough) {(*ag).cough = 1;}
+    else {(*ag).cough = 0;}
   if (rand_unif() < p_phlegm) {(*ag).phlegm = 1;}
+    else {(*ag).phlegm = 0;}
   if (rand_unif() < p_wheeze) {(*ag).wheeze = 1;}
+    else {(*ag).wheeze = 0;}
   if (rand_unif() < p_dyspnea) {(*ag).dyspnea = 1;}
+    else {(*ag).dyspnea = 0;}
 
   return(0);
 }
