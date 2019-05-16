@@ -1121,6 +1121,8 @@ double event_update_symptoms(agent *ag)
     }
   }
 
+  //Rcout << " numeric vector mu = " << (mu) << std::endl;
+
   // Rcout << " covariance_COPD = " << (input.symptoms.covariance_COPD[1][1]) << std::endl;
   // Rcout << " covariance_COPD_NM = " << (covariance_COPD(1,1)) << std::endl;
   //
@@ -1145,10 +1147,10 @@ double event_update_symptoms(agent *ag)
     // Rcout << "assigning mvrnormArma " << std::endl;
     rand_effect_arma = mvrnormArma(1, mu_arma, covariance_COPD_arma);
 
-    (*ag).re_cough = rand_effect_arma(0);
-    (*ag).re_phlegm = rand_effect_arma(1);
-    (*ag).re_wheeze = rand_effect_arma(2);
-    (*ag).re_dyspnea = rand_effect_arma(3);
+    (*ag).re_cough = 0*rand_effect_arma(0);
+    (*ag).re_phlegm = 0*rand_effect_arma(1);
+    (*ag).re_wheeze = 0*rand_effect_arma(2);
+    (*ag).re_dyspnea = 0*rand_effect_arma(3);
 
     // Rcout << "random effect = " << (rand_effect_arma) << std::endl;
     p_cough = exp(input.symptoms.logit_p_cough_COPD_by_sex[0][(*ag).sex] +
