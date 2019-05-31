@@ -585,6 +585,8 @@ struct input
   {
     double ln_rate_gpvisits_COPD_by_sex[8][2];
     double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
+    double dispersion_gpvisits_COPD;
+    double dispersion_gpvisits_nonCOPD;
     double rate_doctor_visit;
     double p_specialist;
   } outpatient;
@@ -705,6 +707,11 @@ List Cget_inputs()
       Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex),
 
       Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex),
+      Rcpp::Named("ln_rate_gpvisits_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex),
+      Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
+      Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD,
+
+
       Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
 
 
@@ -966,6 +973,9 @@ struct agent
   bool dyspnea;
   bool wheeze;
 
+  bool diagnosis;
+  double gpvisits;
+
   double re_cough; //random effects for symptoms
   double re_phlegm;
   double re_dyspnea;
@@ -1072,6 +1082,10 @@ List get_agent(agent *ag)
   out["re_phlegm"] = (*ag).re_phlegm;
   out["re_dyspnea"] = (*ag).re_dyspnea;
   out["re_wheeze"] = (*ag).re_wheeze;
+
+  out["gpvisits"] = (*ag).gpvisits;
+  out["diagnosis"] = (*ag).diagnosis;
+
 
   return out;
 }
@@ -1245,6 +1259,38 @@ double event_update_symptoms(agent *ag)
     else {(*ag).wheeze = 0;}
   if (rand_unif() < p_dyspnea) {(*ag).dyspnea = 1;}
     else {(*ag).dyspnea = 0;}
+
+  return(0);
+}
+
+
+////////////////////////////////////////////////////////////////////event gpvisits/////////////////////////////////////;
+double event_update_gpvisits(agent *ag)
+{
+
+  double gpvisitRate = 0;
+
+  if ((*ag).gold==0) {
+
+  gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex] +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[3][(*ag).sex]*((*ag).cough) +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[4][(*ag).sex]*((*ag).phlegm) +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
+      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
+  } else {
+
+   gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[3][(*ag).sex]*((*ag).fev1) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[4][(*ag).sex]*((*ag).cough) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+     input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
+
+  }
 
   return(0);
 }
@@ -2269,8 +2315,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,23);
-  CharacterVector eventMatrixColNames(23);
+  NumericMatrix outm(event_stack_pointer,25);
+  CharacterVector eventMatrixColNames(25);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2298,6 +2344,8 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(20) = "phlegm";
   eventMatrixColNames(21) = "wheeze";
   eventMatrixColNames(22) = "dyspnea";
+  eventMatrixColNames(23) = "gpvisits";
+  eventMatrixColNames(24) = "diagnosis";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2326,6 +2374,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,20)=(*ag).phlegm;
     outm(i,21)=(*ag).wheeze;
     outm(i,22)=(*ag).dyspnea;
+    outm(i,23)=(*ag).gpvisits;
+    outm(i,24)=(*ag).diagnosis;
+
   }
 
   return(outm);
@@ -2991,6 +3042,7 @@ agent *event_fixed_process(agent *ag)
   payoffs_LPT(ag);
 
   event_update_symptoms(ag); //updating symptoms in the annual event
+  event_update_gpvisits(ag); //updating gp visits
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
