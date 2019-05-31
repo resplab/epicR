@@ -544,20 +544,18 @@ struct input
     double logit_p_wheeze_COPD_by_sex[5][2]; //intecept, age, smoking, pack_years, FEV1
     double logit_p_wheeze_nonCOPD_by_sex[4][2]; //intecept, age, smoking, pack_years
 
-    double ln_rate_gpvisits_COPD_by_sex[8][2];
-    double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
-
-
-    double logit_p_diagnosis_by_sex[9][2];
-
-
-
     double covariance_COPD[4][4];
     double covariance_nonCOPD[4][4];
     //NumericMatrix covariance_COPD; // for random effects
     //NumericMatrix covariance_nonCOPD; // for random effects
   } symptoms;
 
+
+  struct
+  {
+
+    double logit_p_diagnosis_by_sex[9][2];
+  } diagnosis;
 
   struct
   {
@@ -585,6 +583,8 @@ struct input
 
   struct
   {
+    double ln_rate_gpvisits_COPD_by_sex[8][2];
+    double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
     double rate_doctor_visit;
     double p_specialist;
   } outpatient;
