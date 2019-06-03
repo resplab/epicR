@@ -706,23 +706,23 @@ List Cget_inputs()
 
       Rcpp::Named("logit_p_wheeze_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.symptoms.logit_p_wheeze_nonCOPD_by_sex),
 
-      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex),
-      Rcpp::Named("ln_rate_gpvisits_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex),
-      Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
-      Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD,
-
-
-      Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
-
-
       Rcpp::Named("covariance_COPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_COPD),
       Rcpp::Named("covariance_nonCOPD")=AS_MATRIX_DOUBLE(input.symptoms.covariance_nonCOPD)
     ),
 
     Rcpp::Named("outpatient")=Rcpp::List::create(
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
-      Rcpp::Named("p_specialist")=input.outpatient.p_specialist
+      Rcpp::Named("p_specialist")=input.outpatient.p_specialist,
+      Rcpp::Named("ln_rate_gpvisits_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex),
+      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex),
+      Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
+      Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD
     ),
+
+    Rcpp::Named("diagnosis")=Rcpp::List::create(
+    Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex)
+    ),
+
     Rcpp::Named("comorbidity")=Rcpp::List::create(
       Rcpp::Named("logit_p_mi_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.logit_p_mi_betas_by_sex),
       Rcpp::Named("ln_h_mi_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.ln_h_mi_betas_by_sex),
@@ -832,8 +832,8 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="symptoms$logit_p_dyspnea_COPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_dyspnea_COPD_by_sex);
   if(name=="symptoms$logit_p_dyspnea_nonCOPD_by_sex") READ_R_MATRIX(value,input.symptoms.logit_p_dyspnea_nonCOPD_by_sex);
 
-  if(name=="outpatient$ln_rate_gpvisits_COPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_COPD_by_sex);
   if(name=="outpatient$ln_rate_gpvisits_nonCOPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex);
+  if(name=="outpatient$ln_rate_gpvisits_COPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_COPD_by_sex);
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
 
@@ -1279,6 +1279,13 @@ double event_update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[4][(*ag).sex]*((*ag).phlegm) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
+
+    //(*ag).gpvisits = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_nonCOPD, gpvisitRate);
+    NumericVector debugNonCOPD = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
+    Rcout << "  input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] " << input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] << std::endl;  //debug
+    Rcout << "  input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex]=" << (input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex]) << std::endl;  //debug
+
+
   } else {
 
    gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] +
@@ -1290,6 +1297,8 @@ double event_update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
+    //(*ag).gpvisits = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
+    NumericVector debug = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
   }
 
   return(0);
