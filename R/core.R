@@ -200,7 +200,7 @@ run <- function(max_n_agents = NULL, input = NULL) {
   default_input<-init_input()$values
   res<-set_Cmodel_inputs(process_input(default_input))
 
-  if (!is.null(input) || length(input)==0)
+  if (!is.null(input) || length(input)>0)
   {
     res<-set_Cmodel_inputs(process_input(input))
     if(res<0)

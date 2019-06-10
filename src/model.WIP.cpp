@@ -405,8 +405,6 @@ void rbvnorm(double rho, double x[2])
 
 
 
-
-
 double* R_rexp(int n)
 {
   NumericVector temp(rexp(n,1));
@@ -433,22 +431,41 @@ double rand_exp()
   return(temp);
 }
 
+int rand_Poisson(double rate)
+{
+  double out=0;
+  double time=0;
+  while(time<1)
+  {
+    time=time+rand_exp()/rate;
+    out++;
+  }
+  return(out-1);
+}
+
+
+
+int rand_NegBin(int r, double p)
+{
+  double success=0;
+  double failure=0;
+  while(failure<r)
+  {
+    int toss=1-(rand_unif()<p)*1;
+    if(toss==0) failure++; else success++;
+  }
+  return(success);
+}
+
+
+
+
 // [[Rcpp::export]]
 NumericVector Xrexp(int n, double rate)
 {
   double *temp=R_rexp(n);
   return(temp[0]/rate);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -585,8 +602,8 @@ struct input
   {
     double ln_rate_gpvisits_COPD_by_sex[8][2];
     double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
-    double dispersion_gpvisits_COPD;
-    double dispersion_gpvisits_nonCOPD;
+    //double dispersion_gpvisits_COPD;
+    //double dispersion_gpvisits_nonCOPD;
     double rate_doctor_visit;
     double p_specialist;
   } outpatient;
@@ -714,9 +731,9 @@ List Cget_inputs()
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
       Rcpp::Named("p_specialist")=input.outpatient.p_specialist,
       Rcpp::Named("ln_rate_gpvisits_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex),
-      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex),
-      Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
-      Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD
+      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex)
+      //, Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
+      //Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD
     ),
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
@@ -834,6 +851,8 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="outpatient$ln_rate_gpvisits_nonCOPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex);
   if(name=="outpatient$ln_rate_gpvisits_COPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_COPD_by_sex);
+  //if(name=="outpatient$dispersion_gpvisits_COPD") {input.outpatient.dispersion_gpvisits_COPD=value[0]; return(0);}
+  //if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
 
@@ -1140,8 +1159,8 @@ List Cget_smith()
 +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time)                               \
 +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
 
-////////////////////////////////////////////////////////////////////event symptoms/////////////////////////////////////;
-double event_update_symptoms(agent *ag)
+//////////////////////////////////////////////////////////////////// symptoms/////////////////////////////////////;
+double update_symptoms(agent *ag)
 {
   arma::mat rand_effect_arma;
   NumericVector mu (4); //default is zero
@@ -1264,45 +1283,65 @@ double event_update_symptoms(agent *ag)
 }
 
 
-////////////////////////////////////////////////////////////////////event gpvisits/////////////////////////////////////;
-double event_update_gpvisits(agent *ag)
+//////////////////////////////////////////////////////////////////// gpvisits/////////////////////////////////////;
+double update_gpvisits(agent *ag)
 {
 
   double gpvisitRate = 0;
 
   if ((*ag).gold==0) {
 
-  gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex] +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[3][(*ag).sex]*((*ag).cough) +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[4][(*ag).sex]*((*ag).phlegm) +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
-      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
+    gpvisitRate = exp(0.01);
+//  gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex] +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[3][(*ag).sex]*((*ag).cough) +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[4][(*ag).sex]*((*ag).phlegm) +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
+//      input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-    //(*ag).gpvisits = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_nonCOPD, gpvisitRate);
-    NumericVector debugNonCOPD = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
-    Rcout << "  input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] " << input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] << std::endl;  //debug
-    Rcout << "  input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex]=" << (input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex]) << std::endl;  //debug
-
+      (*ag).gpvisits = rand_Poisson(gpvisitRate);
 
   } else {
 
-   gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[3][(*ag).sex]*((*ag).fev1) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[4][(*ag).sex]*((*ag).cough) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[5][(*ag).sex]*((*ag).phlegm) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
-     input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
+    gpvisitRate = exp(0.01);
+//   gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[3][(*ag).sex]*((*ag).fev1) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[4][(*ag).sex]*((*ag).cough) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+//     input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-    //(*ag).gpvisits = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
-    NumericVector debug = Rcpp::rnbinom (1, input.outpatient.dispersion_gpvisits_COPD, gpvisitRate);
-  }
+     (*ag).gpvisits = rand_Poisson(gpvisitRate);
+    }
 
   return(0);
 }
+
+//////////////////////////////////////////////////////////////////// Diagnosis /////////////////////////////////////;
+// double update_diagnosis(agent *ag)
+//{
+
+//  double p_diagnosis = 0;
+
+//  p_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
+//      input.diagnosis.logit_p_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+//      input.diagnosis.logit_p_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+//      input.diagnosis.logit_p_diagnosis_by_sex[3][(*ag).sex]*((*ag).cough) +
+//      input.diagnosis.logit_p_diagnosis_by_sex[4][(*ag).sex]*((*ag).phlegm) +
+//      input.diagnosis.logit_p_diagnosis_by_sex[5][(*ag).sex]*((*ag).wheeze) +
+//      input.diagnosis.logit_p_diagnosis_by_sex[6][(*ag).sex]*((*ag).dyspnea));
+
+//  p_diagnosis = p_diagnosis / (1 + p_diagnosis);
+
+//  if (rand_unif() < p_diagnosis) {(*ag).diagnosis = 1;}
+
+//return(0);
+// }
+
+//////
 
 agent *create_agent(agent *ag,int id)
 {
@@ -1556,7 +1595,7 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   }
 
   //symptoms
-  event_update_symptoms(ag);
+  update_symptoms(ag);
 
   //stroke
   double stroke_odds=exp(input.comorbidity.logit_p_stroke_betas_by_sex[0][(*ag).sex]
@@ -3050,8 +3089,8 @@ agent *event_fixed_process(agent *ag)
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
 
-  event_update_symptoms(ag); //updating symptoms in the annual event
-  event_update_gpvisits(ag); //updating gp visits
+  update_symptoms(ag); //updating symptoms in the annual event
+  update_gpvisits(ag); //updating gp visits
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
