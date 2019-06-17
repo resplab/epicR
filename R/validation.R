@@ -77,7 +77,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_none"]
   settings$agent_stack_size <- 0
-  settings$n_base_agents <- 1e+06
+  settings$n_base_agents <- 1e+04
   settings$event_stack_size <- 1
   init_session(settings = settings)
   input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
