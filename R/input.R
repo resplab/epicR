@@ -420,10 +420,10 @@ init_input <- function() {
   ## Diagnosis;
 
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <-  cbind(male=c(intercept=2.6471, age=-0.0325, smoking=-0.082, FEV1=-0.784, gpvisits=0.0005,
-                                                          cough=0.4114, phlegm=0.3318, wheeze=-0.0196, dyspnea=0.744),
-                                                   female=c(intercept=2.6471-0.4742, age=-0.0325, smoking=-0.082, FEV1=-0.784,
-                                                            gpvisits=0.0005, cough=0.4114, phlegm=0.3318, wheeze=-0.0196, dyspnea=0.744))
+  input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=1.9614, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722),
+                                                           female=c(intercept=1.9614-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
 
 
