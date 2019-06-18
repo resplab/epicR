@@ -992,7 +992,7 @@ struct agent
 
   double gpvisits;
   double tmp_gpvisits_rate;
-  bool diagnosis;
+  int diagnosis;
 
   double re_cough; //random effects for symptoms
   double re_phlegm;
@@ -2719,6 +2719,11 @@ void event_exacerbation_process(agent *ag)
 //  }
 //  if (rand_unif() < p_hosp_diagnosis) {(*ag).diagnosis = 1;}
 
+if ((*ag).exac_status>2) {
+
+  (*ag).diagnosis = 99;
+  if ((*ag).diagnosis == 99) {Rprintf("Death by chocolate!\n");}
+  }
 }
 
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_END////////////////////////////////////;
