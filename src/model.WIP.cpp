@@ -1105,7 +1105,6 @@ List get_agent(agent *ag)
   out["tmp_gpvisits_rate"] = (*ag).tmp_gpvisits_rate;
   out["diagnosis"] = (*ag).diagnosis;
 
-
   return out;
 }
 
@@ -2377,8 +2376,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,26);
-  CharacterVector eventMatrixColNames(26);
+  NumericMatrix outm(event_stack_pointer,27);
+  CharacterVector eventMatrixColNames(27);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2402,13 +2401,14 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(16) = "height";
   eventMatrixColNames(17) = "followup_after_COPD";
   eventMatrixColNames(18) = "FEV1_baseline";
-  eventMatrixColNames(19) = "cough";
-  eventMatrixColNames(20) = "phlegm";
-  eventMatrixColNames(21) = "wheeze";
-  eventMatrixColNames(22) = "dyspnea";
-  eventMatrixColNames(23) = "gpvisits";
-  eventMatrixColNames(24) = "tmp_gpvisits_rate";
-  eventMatrixColNames(25) = "diagnosis";
+  eventMatrixColNames(19) = "exac_status";
+  eventMatrixColNames(20) = "cough";
+  eventMatrixColNames(21) = "phlegm";
+  eventMatrixColNames(22) = "wheeze";
+  eventMatrixColNames(23) = "dyspnea";
+  eventMatrixColNames(24) = "gpvisits";
+  eventMatrixColNames(25) = "tmp_gpvisits_rate";
+  eventMatrixColNames(26) = "diagnosis";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2433,13 +2433,14 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,16)=(*ag).height;
     outm(i,17)=(*ag).followup_time;
     outm(i,18)=(*ag).fev1_baseline;
-    outm(i,19)=(*ag).cough;
-    outm(i,20)=(*ag).phlegm;
-    outm(i,21)=(*ag).wheeze;
-    outm(i,22)=(*ag).dyspnea;
-    outm(i,23)=(*ag).gpvisits;
-    outm(i,24)=(*ag).tmp_gpvisits_rate;
-    outm(i,25)=(*ag).diagnosis;
+    outm(i,19)=(*ag).exac_status;
+    outm(i,20)=(*ag).cough;
+    outm(i,21)=(*ag).phlegm;
+    outm(i,22)=(*ag).wheeze;
+    outm(i,23)=(*ag).dyspnea;
+    outm(i,24)=(*ag).gpvisits;
+    outm(i,25)=(*ag).tmp_gpvisits_rate;
+    outm(i,26)=(*ag).diagnosis;
 
   }
 
