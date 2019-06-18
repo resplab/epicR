@@ -420,7 +420,7 @@ init_input <- function() {
   ## Diagnosis;
 
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=1.9614, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=1.9614, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                   gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722),
                                                            female=c(intercept=1.9614-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                     gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722))
