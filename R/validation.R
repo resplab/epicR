@@ -942,4 +942,47 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 }
 
 
+#' Returns results of validation tests for diagnosis
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_diagnosis <- function(n_sim = 1e+04) {
+  cat("Let's take a look at diagnosis\n")
+  petoc()
 
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("The average proportion of COPD patients that are diagnosed is", mean(output_ex$n_Diagnosed_by_ctime_sex/output_ex$n_COPD_by_ctime_sex), "\n")
+
+  diag <- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                     COPD=rowSums(output_ex$n_COPD_by_ctime_sex),
+                     Diagnosed=rowSums(output_ex$n_Diagnosed_by_ctime_sex))
+
+  diag$Proportion <- round(diag$Diagnosed/diag$COPD,2)
+
+  print(diag)
+
+  diag <- tidyr::gather(data=diag, key="Variable", value="Number", c(COPD,Diagnosed))
+
+  diag.plot <- ggplot2::ggplot(diag, aes(x=Year, y=Number, col=Variable)) +
+                  geom_line() + geom_point() + expand_limits(y = 0) +
+                  theme_bw() + ylab("Number of COPD patients") + xlab("Years")
+
+  plot(diag.plot)
+
+  terminate_session()
+}
