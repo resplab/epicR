@@ -572,6 +572,7 @@ struct input
   struct
   {
     double logit_p_diagnosis_by_sex[9][2];
+    double p_hosp_diagnosis;
   } diagnosis;
 
   struct
@@ -735,7 +736,8 @@ List Cget_inputs()
     ),
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
-    Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex)
+    Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
+    Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis
     ),
 
     Rcpp::Named("comorbidity")=Rcpp::List::create(
@@ -853,7 +855,7 @@ int Cset_input_var(std::string name, NumericVector value)
   //if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
-
+  if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
   if(name=="symptoms$covariance_nonCOPD")  READ_R_MATRIX(value, input.symptoms.covariance_nonCOPD);
@@ -993,6 +995,7 @@ struct agent
   double gpvisits;
   double tmp_gpvisits_rate;
   int diagnosis;
+  double p_hosp_diagnosis;
 
   double re_cough; //random effects for symptoms
   double re_phlegm;
@@ -2714,15 +2717,14 @@ void event_exacerbation_process(agent *ag)
 
 #endif
 
-  double p_hosp_diagnosis;
+  double hosp_diagnosis;
 
   if (((*ag).diagnosis==0) & ((*ag).gold>0) & ((*ag).exac_status>2)) {
-    p_hosp_diagnosis = 0.9;
+    hosp_diagnosis = input.diagnosis.p_hosp_diagnosis;
   } else {
-    p_hosp_diagnosis = 0;
+    hosp_diagnosis = 0;
   }
-  if (rand_unif() < p_hosp_diagnosis) {(*ag).diagnosis = 1;}
-
+  if (rand_unif() < hosp_diagnosis) {(*ag).diagnosis = 1;}
 }
 
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_END////////////////////////////////////;
