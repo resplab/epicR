@@ -2710,20 +2710,15 @@ void event_exacerbation_process(agent *ag)
 
 #endif
 
-//  double p_hosp_diagnosis;
+  double p_hosp_diagnosis;
 
-//  if (((*ag).diagnosis==0) & ((*ag).gold>0) & ((*ag).exac_status>2)) {
-//    p_hosp_diagnosis = 0.9;
-//  } else {
-//    p_hosp_diagnosis = 0;
-//  }
-//  if (rand_unif() < p_hosp_diagnosis) {(*ag).diagnosis = 1;}
-
-if ((*ag).exac_status>2) {
-
-  (*ag).diagnosis = 99;
-  if ((*ag).diagnosis == 99) {Rprintf("Death by chocolate!\n");}
+  if (((*ag).diagnosis==0) & ((*ag).gold>0) & ((*ag).exac_status>2)) {
+    p_hosp_diagnosis = 0.9;
+  } else {
+    p_hosp_diagnosis = 0;
   }
+  if (rand_unif() < p_hosp_diagnosis) {(*ag).diagnosis = 1;}
+
 }
 
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_END////////////////////////////////////;
