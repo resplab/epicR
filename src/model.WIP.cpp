@@ -23,9 +23,10 @@ Layout:
 #define OUTPUT_EX_LUNG_FUNCTION 8
 #define OUTPUT_EX_COPD 16
 #define OUTPUT_EX_EXACERBATION 32
-#define OUTPUT_EX_MORTALITY 64
-#define OUTPUT_EX_MEDICATION 128
-#define OUTPUT_EX_POPULATION 256
+#define OUTPUT_EX_GPSYMPTOMS 64
+#define OUTPUT_EX_MORTALITY 128
+#define OUTPUT_EX_MEDICATION 256
+#define OUTPUT_EX_POPULATION 512
 
 #define OUTPUT_EX 65535
 
@@ -1788,7 +1789,6 @@ struct output_ex
   int n_COPD_by_age_sex[111][2];
   int n_Diagnosed_by_ctime_sex[1000][2];
   int cumul_time_by_ctime_GOLD[100][5];
-
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1801,6 +1801,10 @@ struct output_ex
   int n_exac_by_gold_severity[4][4];
   int n_exac_by_ctime_severity_female[100][4];
   int n_exac_by_ctime_GOLD[100][4];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS) > 0
+  int n_GPvisits_by_ctime_sex[1000][2];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
@@ -1886,7 +1890,6 @@ List Cget_output_ex()
     out["n_COPD_by_age_sex"]=AS_MATRIX_INT(output_ex.n_COPD_by_age_sex),
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
-
 #endif
 
 
@@ -1902,6 +1905,9 @@ List Cget_output_ex()
     out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
+#if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
+    out["n_GPvisits_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_GPvisits_by_ctime_sex,input.global_parameters.time_horizon);
+#endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
     out["n_mi"]=output_ex.n_mi;
@@ -1984,6 +1990,10 @@ void update_output_ex(agent *ag)
       output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
 
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
+      output_ex.n_GPvisits_by_ctime_sex[time][(*ag).sex]+=((*ag).gpvisits)*1;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
