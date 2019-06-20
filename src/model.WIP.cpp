@@ -1805,6 +1805,8 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS) > 0
   int n_GPvisits_by_ctime_sex[1000][2];
+  int n_GPvisits_by_ctime_severity[1000][5];
+  int n_GPvisits_by_ctime_diagnosis[1000][2];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
@@ -1906,7 +1908,9 @@ List Cget_output_ex()
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
-    out["n_GPvisits_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_GPvisits_by_ctime_sex,input.global_parameters.time_horizon);
+    out["n_GPvisits_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_GPvisits_by_ctime_sex,input.global_parameters.time_horizon),
+    out["n_GPvisits_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_GPvisits_by_ctime_severity,input.global_parameters.time_horizon),
+    out["n_GPvisits_by_ctime_diagnosis"]=AS_MATRIX_INT_SIZE(output_ex.n_GPvisits_by_ctime_diagnosis,input.global_parameters.time_horizon),
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
@@ -1994,6 +1998,8 @@ void update_output_ex(agent *ag)
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
       output_ex.n_GPvisits_by_ctime_sex[time][(*ag).sex]+=((*ag).gpvisits)*1;
+      output_ex.n_GPvisits_by_ctime_severity[time][(*ag).gold]+=((*ag).gpvisits)*1;
+      if((*ag).gold>0) output_ex.n_GPvisits_by_ctime_diagnosis[time][(*ag).diagnosis]+=((*ag).gpvisits)*1;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
