@@ -986,3 +986,63 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 
   terminate_session()
 }
+
+#' Returns results of validation tests for GP visits
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_gpvisits <- function(n_sim = 1e+04) {
+  cat("Let's take a look at GP visits\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("\n")
+  cat("Here is the Average number of GP visits by sex:\n")
+
+  GPSex <- data.frame(1:inputs$global_parameters$time_horizon,
+             output_ex$n_GPvisits_by_ctime_sex/output_ex$n_alive_by_ctime_sex)
+
+  names(GPSex) <- c("Year","Male","Female")
+
+  print(GPSex)
+  cat("\n")
+
+  cat("Here is the Average number of GP visits by COPD severity:\n")
+
+  GPCOPD <- data.frame(1:inputs$global_parameters$time_horizon,
+                      output_ex$n_GPvisits_by_ctime_severity/output_ex$cumul_time_by_ctime_GOLD)
+
+  names(GPCOPD) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(GPCOPD[-1,])
+  cat("\n")
+
+  cat("Here is the Average number of GP visits by COPD diagnosis status:\n")
+
+  Diagnosed <- rowSums(output_ex$n_Diagnosed_by_ctime_sex)
+  Undiagnosed <- rowSums(output_ex$cumul_time_by_ctime_GOLD[,2:5]) - Diagnosed
+  data <- cbind(Undiagnosed, Diagnosed)
+
+  GPDiag<- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                       output_ex$n_GPvisits_by_ctime_diagnosis/data)
+
+  print(GPDiag[-1,])
+  cat("\n")
+
+  terminate_session()
+}
