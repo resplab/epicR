@@ -1044,6 +1044,17 @@ validate_gpvisits <- function(n_sim = 1e+04) {
   names(GPSex) <- c("Year","Male","Female")
 
   print(GPSex)
+
+  GPSex.plot <- tidyr::gather(data=GPSex, key="Sex", value="Visits", c(Male,Female))
+
+  GPSex.plot <- subset(GPSex.plot, Year!=1)
+
+  GPSex.plotted <- ggplot2::ggplot(GPSex.plot, aes(x=Year, y=Visits, col=Sex)) +
+                      geom_line() + geom_point() + expand_limits(y = 0) +
+                      theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPSex.plotted)
+
   cat("\n")
 
   cat("Here is the Average number of GP visits by COPD severity:\n")
@@ -1054,6 +1065,18 @@ validate_gpvisits <- function(n_sim = 1e+04) {
   names(GPCOPD) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
   print(GPCOPD[-1,])
+
+
+  GPCOPD.plot <- tidyr::gather(data=GPCOPD, key="COPD", value="Visits", c(NoCOPD:GOLD4))
+
+  GPCOPD.plot <- subset(GPCOPD.plot, Year!=1)
+
+  GPCOPD.plotted <- ggplot2::ggplot(GPCOPD.plot, aes(x=Year, y=Visits, col=COPD)) +
+                        geom_line() + geom_point() + expand_limits(y = 0) +
+                        theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPCOPD.plotted)
+
   cat("\n")
 
   cat("Here is the Average number of GP visits by COPD diagnosis status:\n")
@@ -1066,6 +1089,17 @@ validate_gpvisits <- function(n_sim = 1e+04) {
                        output_ex$n_GPvisits_by_ctime_diagnosis/data)
 
   print(GPDiag[-1,])
+
+  GPDiag.plot <- tidyr::gather(data=GPDiag, key="Diagnosis", value="Visits", c(Undiagnosed,Diagnosed))
+
+  GPDiag.plot <- subset(GPDiag.plot, Year!=1)
+
+  GPDiag.plotted <- ggplot2::ggplot(GPDiag.plot, aes(x=Year, y=Visits, col=Diagnosis)) +
+                        geom_line() + geom_point() + expand_limits(y = 0) +
+                        theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPDiag.plotted)
+
   cat("\n")
 
   terminate_session()
