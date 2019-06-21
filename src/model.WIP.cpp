@@ -117,23 +117,6 @@ medication_classes<-c(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /////////////////////////////////////////////////////////////////////BASICS//////////////////////////////////////////////
 #define max(a,b)            \
 ({ __typeof__ (a) _a = (a); \
@@ -1788,6 +1771,7 @@ struct output_ex
   int n_COPD_by_ctime_severity[100][5]; //no COPD to GOLD 4;
   int n_COPD_by_age_sex[111][2];
   int n_Diagnosed_by_ctime_sex[1000][2];
+  int n_Diagnosed_by_ctime_severity[1000][5];
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1895,6 +1879,7 @@ List Cget_output_ex()
     out["n_COPD_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_COPD_by_ctime_severity,input.global_parameters.time_horizon),
     out["n_COPD_by_age_sex"]=AS_MATRIX_INT(output_ex.n_COPD_by_age_sex),
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
+    out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
 #endif
 
@@ -2000,6 +1985,7 @@ void update_output_ex(agent *ag)
       output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
       output_ex.n_COPD_by_age_sex[age-1][(*ag).sex]+=1;
       output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
+      if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
 
 #endif
