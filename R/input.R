@@ -428,6 +428,10 @@ init_input <- function() {
   input$diagnosis$p_hosp_diagnosis <- 0.8
 
   # medication log-hazard regression matrix for initiation of each medication
+  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1),SABA_LABA=log(1), LAMA=log(1-0.20), LAMA_SABA=log(1),
+                                            LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1), ICS=log(1), ICS_SABA=log(1),
+                                            ICS_LABA=log(1), ICS_LABA_SABA=log(1), ICS_LAMA=log(1), ICS_LAMA_SABA=log(1),
+                                            ICS_LAMA_LABA=log(1), ICS_LAMA_LABA_SABA=log(1))
 
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL

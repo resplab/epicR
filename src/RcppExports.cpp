@@ -118,16 +118,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Ccreate_agents
-int Ccreate_agents();
-RcppExport SEXP _epicR_Ccreate_agents() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(Ccreate_agents());
-    return rcpp_result_gen;
-END_RCPP
-}
 // Cget_output
 List Cget_output();
 RcppExport SEXP _epicR_Cget_output() {
@@ -145,6 +135,16 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(Cget_output_ex());
+    return rcpp_result_gen;
+END_RCPP
+}
+// Ccreate_agents
+int Ccreate_agents();
+RcppExport SEXP _epicR_Ccreate_agents() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(Ccreate_agents());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -284,9 +284,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_epicR_get_sample_output", (DL_FUNC) &_epicR_get_sample_output, 2},
     {"_epicR_Cget_agent", (DL_FUNC) &_epicR_Cget_agent, 1},
     {"_epicR_Cget_smith", (DL_FUNC) &_epicR_Cget_smith, 0},
-    {"_epicR_Ccreate_agents", (DL_FUNC) &_epicR_Ccreate_agents, 0},
     {"_epicR_Cget_output", (DL_FUNC) &_epicR_Cget_output, 0},
     {"_epicR_Cget_output_ex", (DL_FUNC) &_epicR_Cget_output_ex, 0},
+    {"_epicR_Ccreate_agents", (DL_FUNC) &_epicR_Ccreate_agents, 0},
     {"_epicR_Cget_event", (DL_FUNC) &_epicR_Cget_event, 1},
     {"_epicR_Cget_n_events", (DL_FUNC) &_epicR_Cget_n_events, 0},
     {"_epicR_Cget_agent_events", (DL_FUNC) &_epicR_Cget_agent_events, 1},
