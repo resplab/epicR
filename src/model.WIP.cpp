@@ -555,7 +555,7 @@ struct input
 
   struct
   {
-    double logit_p_diagnosis_by_sex[9][2];
+    double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
   } diagnosis;
 
@@ -989,7 +989,9 @@ struct agent
   double re_phlegm;
   double re_dyspnea;
   double re_wheeze;
+
   //Define your project-specific variables here;
+  bool case_detection;
 };
 
 
@@ -1095,6 +1097,7 @@ List get_agent(agent *ag)
   out["gpvisits"] = (*ag).gpvisits;
   out["tmp_gpvisits_rate"] = (*ag).tmp_gpvisits_rate;
   out["diagnosis"] = (*ag).diagnosis;
+  out["case_detection"] = (*ag).case_detection;
 
   out["tmp_exac_rate"] = (*ag).tmp_exac_rate;
 
@@ -1777,7 +1780,8 @@ double update_gpvisits(agent *ag)
       input.diagnosis.logit_p_diagnosis_by_sex[5][(*ag).sex]*((*ag).cough) +
       input.diagnosis.logit_p_diagnosis_by_sex[6][(*ag).sex]*((*ag).phlegm) +
       input.diagnosis.logit_p_diagnosis_by_sex[7][(*ag).sex]*((*ag).wheeze) +
-      input.diagnosis.logit_p_diagnosis_by_sex[8][(*ag).sex]*((*ag).dyspnea));
+      input.diagnosis.logit_p_diagnosis_by_sex[8][(*ag).sex]*((*ag).dyspnea) +
+      input.diagnosis.logit_p_diagnosis_by_sex[9][(*ag).sex]*((*ag).case_detection));
 
     p_diagnosis = p_diagnosis / (1 + p_diagnosis);
    }
@@ -1822,6 +1826,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).gpvisits  = 0;
 (*ag).tmp_gpvisits_rate  = 0;
 (*ag).diagnosis = 0;
+(*ag).case_detection = 0;
 
 (*ag).tmp_exac_rate = 0;
 
@@ -2416,8 +2421,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,29);
-  CharacterVector eventMatrixColNames(29);
+  NumericMatrix outm(event_stack_pointer,30);
+  CharacterVector eventMatrixColNames(30);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2451,6 +2456,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(26) = "diagnosis";
   eventMatrixColNames(27) = "medication_status";
   eventMatrixColNames(28) = "tmp_exac_rate";
+  eventMatrixColNames(29) = "case_detection";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2485,6 +2491,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,26)=(*ag).diagnosis;
     outm(i,27)=(*ag).medication_status;
     outm(i,28)=(*ag).tmp_exac_rate;
+    outm(i,29)=(*ag).case_detection;
 
   }
 
