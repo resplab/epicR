@@ -946,6 +946,7 @@ struct agent
   double cumul_exac_time[4];
   double exac_LPT;  //the last time cumul exacerbation time was processed;
   int exac_status;    //current exacerbation status 0: no exacerbation, in 1: mild, 2:moderate, 3:severe exacerbation
+  double tmp_exac_rate;
 
   double symptom_score;
 
@@ -1094,6 +1095,8 @@ List get_agent(agent *ag)
   out["gpvisits"] = (*ag).gpvisits;
   out["tmp_gpvisits_rate"] = (*ag).tmp_gpvisits_rate;
   out["diagnosis"] = (*ag).diagnosis;
+
+  out["tmp_exac_rate"] = (*ag).tmp_exac_rate;
 
   return out;
 }
@@ -1820,6 +1823,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).tmp_gpvisits_rate  = 0;
 (*ag).diagnosis = 0;
 
+(*ag).tmp_exac_rate = 0;
 
 (*ag).time_at_creation=calendar_time;
 (*ag).sex=rand_unif()<input.agent.p_female;
@@ -2412,8 +2416,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,28);
-  CharacterVector eventMatrixColNames(28);
+  NumericMatrix outm(event_stack_pointer,29);
+  CharacterVector eventMatrixColNames(29);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2446,6 +2450,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(25) = "tmp_gpvisits_rate";
   eventMatrixColNames(26) = "diagnosis";
   eventMatrixColNames(27) = "medication_status";
+  eventMatrixColNames(28) = "tmp_exac_rate";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2479,6 +2484,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,25)=(*ag).tmp_gpvisits_rate;
     outm(i,26)=(*ag).diagnosis;
     outm(i,27)=(*ag).medication_status;
+    outm(i,28)=(*ag).tmp_exac_rate;
 
   }
 
@@ -2677,9 +2683,9 @@ double event_exacerbation_tte(agent *ag)
                     +input.exacerbation.ln_rate_betas[6]*((*ag).gold==3)
                     +input.exacerbation.ln_rate_betas[7]*((*ag).gold==4)
 
-                    +input.medication.medication_ln_hr_exac[(*ag).medication_status]
-  );
+                    +input.medication.medication_ln_hr_exac[(*ag).medication_status] );
 
+  (*ag).tmp_exac_rate= rate;
 
   if((*ag).medication_status>0)
   {
