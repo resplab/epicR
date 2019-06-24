@@ -494,7 +494,7 @@ struct input
     double minimum_smoking_prevalence;
     double mortality_factor_current[5]; // ratio of overall minus COPD mortality rate in current smokers vs non-smokers
     double mortality_factor_former[5]; // ratio of overall minus COPD mortality rate in former smokers vs non-smokers
-    double ln_h_ces_betas[5]; //intercept, sex, age, age*2 calendar time,
+    double ln_h_ces_betas[6]; //intercept, sex, age, age*2 calendar time diagnosis,
   } smoking;
 
 
@@ -2491,7 +2491,8 @@ double event_smoking_change_tte(agent *ag)
                +input.smoking.ln_h_ces_betas[1]*(*ag).sex
                +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
                +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
-               +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
+               +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time)
+               +input.smoking.ln_h_ces_betas[5]*(*ag).diagnosis);
   }
 
 
