@@ -557,6 +557,10 @@ struct input
   {
     double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
+    double p_case_detection;
+    double min_cd_age;
+    double min_cd_pack_years;
+    int min_cd_smokers;
   } diagnosis;
 
   struct
@@ -722,7 +726,11 @@ List Cget_inputs()
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
     Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
-    Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis
+    Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis,
+    Rcpp::Named("p_case_detection")=input.diagnosis.p_case_detection,
+    Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
+    Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
+    Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers
     ),
 
     Rcpp::Named("comorbidity")=Rcpp::List::create(
@@ -842,6 +850,10 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
+  if(name=="diagnosis$p_case_detection") {input.diagnosis.p_case_detection=value[0]; return(0);};
+  if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
+  if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
+  if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
   if(name=="symptoms$covariance_nonCOPD")  READ_R_MATRIX(value, input.symptoms.covariance_nonCOPD);
@@ -984,6 +996,11 @@ struct agent
   double tmp_gpvisits_rate;
   int diagnosis;
   double p_hosp_diagnosis;
+  double case_detection;
+  double p_case_detection;
+  double min_cd_age;
+  double min_cd_pack_years;
+  int min_cd_smokers;
 
   double re_cough; //random effects for symptoms
   double re_phlegm;
@@ -991,7 +1008,7 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
-  bool case_detection;
+
 };
 
 
@@ -1770,9 +1787,13 @@ double update_gpvisits(agent *ag)
 
   double p_diagnosis = 0;
 
-  if ((*ag).gpvisits!=0 && (*ag).gold!=0) {
+  if ((*ag).gpvisits!=0) {
 
-  p_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
+double apply_case_detection();
+
+  if((*ag).gold!=0)
+  {
+    p_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
       input.diagnosis.logit_p_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
       input.diagnosis.logit_p_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
       input.diagnosis.logit_p_diagnosis_by_sex[3][(*ag).sex]*((*ag).fev1) +
@@ -1783,19 +1804,41 @@ double update_gpvisits(agent *ag)
       input.diagnosis.logit_p_diagnosis_by_sex[8][(*ag).sex]*((*ag).dyspnea) +
       input.diagnosis.logit_p_diagnosis_by_sex[9][(*ag).sex]*((*ag).case_detection));
 
-    p_diagnosis = p_diagnosis / (1 + p_diagnosis);
-   }
 
-  if (rand_unif() < p_diagnosis)
-  {
-    (*ag).diagnosis = 1;
-    (*ag).medication_status=MED_CLASS_LAMA;
-    medication_LPT(ag);
-  }
+    p_diagnosis = p_diagnosis / (1 + p_diagnosis);
+
+    if (rand_unif() < p_diagnosis) {
+            (*ag).diagnosis = 1;
+            (*ag).medication_status=MED_CLASS_LAMA;
+            medication_LPT(ag);
+          }
+        }
+      }
   return(0);
  }
 
+//////////////////////////////////////////////////////////////////Case detection /////////////////////////////////////;
+double apply_case_detection(agent *ag)
+{
+  if((*ag).case_detection>0) return(0);
+
+  double p_detection = 0;
+
+    if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
+        ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
+        ((*ag).smoking_status>= input.diagnosis.min_cd_smokers)) {
+
+              p_detection = input.diagnosis.p_case_detection;
+            }
+
+        if (rand_unif() < p_detection) {
+                (*ag).case_detection = 1;
+          }
+  return(0);
+}
+
 //////
+
 
 agent *create_agent(agent *ag,int id)
 {
@@ -3183,6 +3226,7 @@ agent *event_fixed_process(agent *ag)
   update_symptoms(ag); //updating symptoms in the annual event
   update_gpvisits(ag); //updating gp visits in the annual event
   update_diagnosis(ag); //updating diagnosis in the annual event
+
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
