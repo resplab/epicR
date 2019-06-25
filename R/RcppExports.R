@@ -74,10 +74,6 @@ Cget_smith <- function() {
     .Call(`_epicR_Cget_smith`)
 }
 
-Ccreate_agents <- function() {
-    .Call(`_epicR_Ccreate_agents`)
-}
-
 #' Main outputs of the current run.
 #' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 #' @export
@@ -90,6 +86,10 @@ Cget_output <- function() {
 #' @export
 Cget_output_ex <- function() {
     .Call(`_epicR_Cget_output_ex`)
+}
+
+Ccreate_agents <- function() {
+    .Call(`_epicR_Ccreate_agents`)
 }
 
 #' Returns the events stack.

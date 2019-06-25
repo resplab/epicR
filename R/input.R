@@ -203,7 +203,7 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01)
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = 0.16)
   input_ref$smoking$ln_h_ces_betas <- ""
 
 
@@ -420,14 +420,20 @@ init_input <- function() {
   ## Diagnosis;
 
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=1.9614, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722),
-                                                           female=c(intercept=1.9614-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722))
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                           case_detection=log(1.5)),
+                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                             case_detection=log(1.5)))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-
+  input$diagnosis$p_hosp_diagnosis <- 0.8
 
   # medication log-hazard regression matrix for initiation of each medication
+  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1),SABA_LABA=log(1), LAMA=log(1-0.20), LAMA_SABA=log(1),
+                                            LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1), ICS=log(1), ICS_SABA=log(1),
+                                            ICS_LABA=log(1), ICS_LABA_SABA=log(1), ICS_LAMA=log(1), ICS_LAMA_SABA=log(1),
+                                            ICS_LAMA_LABA=log(1), ICS_LAMA_LABA_SABA=log(1))
 
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL

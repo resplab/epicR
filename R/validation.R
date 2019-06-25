@@ -942,4 +942,298 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 }
 
 
+#' Returns results of validation tests for diagnosis
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_diagnosis <- function(n_sim = 1e+04) {
+  cat("Let's take a look at diagnosis\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("Here are the proportion of COPD patients diagnosed over model time: \n")
+
+  diag <- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                     COPD=rowSums(output_ex$n_COPD_by_ctime_sex),
+                     Diagnosed=rowSums(output_ex$n_Diagnosed_by_ctime_sex))
+
+  diag$Proportion <- round(diag$Diagnosed/diag$COPD,2)
+
+  print(diag)
+
+  cat("The average proportion diagnosed from year", round(length(diag$Proportion)/2,0), "to", length(diag$Proportion), "is",
+      mean(diag$Proportion[(round(length(diag$Proportion)/2,0)):(length(diag$Proportion))]),"\n")
+
+  diag.plot <- tidyr::gather(data=diag, key="Variable", value="Number", c(COPD,Diagnosed))
+
+  diag.plotted <- ggplot2::ggplot(diag.plot, aes(x=Year, y=Number, col=Variable)) +
+                  geom_line() + geom_point() + expand_limits(y = 0) +
+                  theme_bw() + ylab("Number of COPD patients") + xlab("Years")
+
+  plot(diag.plotted)
+
+  cat("\n")
+  cat("Now let's look at the proportion diagnosed by COPD severity.\n")
+
+  prop <- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                     output_ex$n_Diagnosed_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)[,c(1,3,4,5,6)]
+
+  names(prop) <- c("Year","GOLD1","GOLD2","GOLD3","GOLD4")
+  prop <- prop[-1,]
+  print(prop)
+
+  cat("The average proportion of GOLD 1 and 2 that are diagnosed from year", round(nrow(prop)/2,0), "to", max(prop$Year), "is",
+      (mean(prop$GOLD1[round((nrow(prop)/2),0):nrow(prop)]) + mean(prop$GOLD2[round((nrow(prop)/2),0):nrow(prop)]))/2,"\n")
+
+  prop.plot <- tidyr::gather(data=prop, key="GOLD", value="Proportion", c(GOLD1:GOLD4))
+
+  prop.plotted <- ggplot2::ggplot(prop.plot, aes(x=Year, y=Proportion, col=GOLD)) +
+                    geom_line() + geom_point() + expand_limits(y = 0) +
+                    theme_bw() + ylab("Proportion diagnosed") + xlab("Years")
+
+  plot(prop.plotted)
+
+  terminate_session()
+}
+
+#' Returns results of validation tests for GP visits
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_gpvisits <- function(n_sim = 1e+04) {
+  cat("Let's take a look at GP visits\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("\n")
+  cat("Here is the Average number of GP visits by sex:\n")
+
+  GPSex <- data.frame(1:inputs$global_parameters$time_horizon,
+             output_ex$n_GPvisits_by_ctime_sex/output_ex$n_alive_by_ctime_sex)
+
+  names(GPSex) <- c("Year","Male","Female")
+
+  print(GPSex)
+
+  GPSex.plot <- tidyr::gather(data=GPSex, key="Sex", value="Visits", c(Male,Female))
+
+  GPSex.plot <- subset(GPSex.plot, Year!=1)
+
+  GPSex.plotted <- ggplot2::ggplot(GPSex.plot, aes(x=Year, y=Visits, col=Sex)) +
+                      geom_line() + geom_point() + expand_limits(y = 0) +
+                      theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPSex.plotted)
+
+  cat("\n")
+
+  cat("Here is the Average number of GP visits by COPD severity:\n")
+
+  GPCOPD <- data.frame(1:inputs$global_parameters$time_horizon,
+                      output_ex$n_GPvisits_by_ctime_severity/output_ex$cumul_time_by_ctime_GOLD)
+
+  names(GPCOPD) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(GPCOPD[-1,])
+
+
+  GPCOPD.plot <- tidyr::gather(data=GPCOPD, key="COPD", value="Visits", c(NoCOPD:GOLD4))
+
+  GPCOPD.plot <- subset(GPCOPD.plot, Year!=1)
+
+  GPCOPD.plotted <- ggplot2::ggplot(GPCOPD.plot, aes(x=Year, y=Visits, col=COPD)) +
+                        geom_line() + geom_point() + expand_limits(y = 0) +
+                        theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPCOPD.plotted)
+
+  cat("\n")
+
+  cat("Here is the Average number of GP visits by COPD diagnosis status:\n")
+
+  Diagnosed <- rowSums(output_ex$n_Diagnosed_by_ctime_sex)
+  Undiagnosed <- rowSums(output_ex$cumul_time_by_ctime_GOLD[,2:5]) - Diagnosed
+  data <- cbind(Undiagnosed, Diagnosed)
+
+  GPDiag<- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                       output_ex$n_GPvisits_by_ctime_diagnosis/data)
+
+  print(GPDiag[-1,])
+
+  GPDiag.plot <- tidyr::gather(data=GPDiag, key="Diagnosis", value="Visits", c(Undiagnosed,Diagnosed))
+
+  GPDiag.plot <- subset(GPDiag.plot, Year!=1)
+
+  GPDiag.plotted <- ggplot2::ggplot(GPDiag.plot, aes(x=Year, y=Visits, col=Diagnosis)) +
+                        geom_line() + geom_point() + expand_limits(y = 0) +
+                        theme_bw() + ylab("Average GP visits/year") + xlab("Years")
+
+  plot(GPDiag.plotted)
+
+  cat("\n")
+
+  terminate_session()
+}
+
+#' Returns results of validation tests for Symptoms
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_symptoms <- function(n_sim = 1e+04) {
+  cat("Let's take a look at symptoms\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  # COUGH
+  cat("\n")
+  cat("I'm going to plot the prevalence of each symptom over time and by GOLD stage\n")
+  cat("\n")
+  cat("Cough:\n")
+  cat("\n")
+
+  cough <- data.frame(1:inputs$global_parameters$time_horizon,
+                      output_ex$n_cough_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
+
+  names(cough) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(cough)
+
+  # plot
+  cough.plot <- tidyr::gather(data=cough, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
+  cough.plot$Symptom <- "cough"
+
+  cough.plotted <- ggplot2::ggplot(cough.plot, aes(x=Year, y=Prevalence, col=GOLD)) +
+                      geom_smooth(method=lm, formula = y~x, level=0) + geom_point() + expand_limits(y = 0) +
+                      theme_bw() + ylab("Proportion with cough") + xlab("Model Year")
+
+  #plot(cough.plotted)
+
+  cat("\n")
+
+  # PHLEGM
+  cat("Phlegm:\n")
+  cat("\n")
+
+  phlegm <- data.frame(1:inputs$global_parameters$time_horizon,
+                      output_ex$n_phlegm_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
+
+  names(phlegm) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(phlegm)
+
+  # plot
+  phlegm.plot <- tidyr::gather(data=phlegm, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
+  phlegm.plot$Symptom <- "phlegm"
+
+  phlegm.plotted <- ggplot2::ggplot(phlegm.plot, aes(x=Year, y=Prevalence, col=GOLD)) +
+    geom_smooth(method=lm, formula = y~x, level=0) + geom_point() + expand_limits(y = 0) +
+    theme_bw() + ylab("Proportion with phlegm") + xlab("Model Year")
+
+  #plot(phlegm.plotted)
+
+  cat("\n")
+
+  # WHEEZE
+  cat("Wheeze:\n")
+  cat("\n")
+
+  wheeze <- data.frame(1:inputs$global_parameters$time_horizon,
+                       output_ex$n_wheeze_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
+
+  names(wheeze) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(wheeze)
+
+  # plot
+  wheeze.plot <- tidyr::gather(data=wheeze, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
+  wheeze.plot$Symptom <- "wheeze"
+
+  wheeze.plotted <- ggplot2::ggplot(wheeze.plot, aes(x=Year, y=Prevalence, col=GOLD)) +
+    geom_smooth(method=lm, formula = y~x, level=0) + geom_point() + expand_limits(y = 0) +
+    theme_bw() + ylab("Proportion with wheeze") + xlab("Model Year")
+
+  #plot(wheeze.plotted)
+
+  cat("\n")
+
+  # DYSPNEA
+  cat("Dyspnea:\n")
+  cat("\n")
+
+  dyspnea <- data.frame(1:inputs$global_parameters$time_horizon,
+                       output_ex$n_dyspnea_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
+
+  names(dyspnea) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  print(dyspnea)
+
+  # plot
+  dyspnea.plot <- tidyr::gather(data=dyspnea, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
+  dyspnea.plot$Symptom <- "dyspnea"
+
+  dyspnea.plotted <- ggplot2::ggplot(dyspnea.plot, aes(x=Year, y=Prevalence, col=GOLD)) +
+    geom_smooth(method=lm, formula = y~x, level=0) + geom_point() + expand_limits(y = 0) +
+    theme_bw() + ylab("Proportion with dyspnea") + xlab("Model Year")
+
+  #plot(dyspnea.plotted)
+
+  cat("\n")
+  cat("All symptoms plotted together:\n")
+
+  all.plot <- rbind(cough.plot, phlegm.plot, wheeze.plot, dyspnea.plot)
+
+  all.plotted <- ggplot2::ggplot(all.plot, aes(x=Year, y=Prevalence, col=GOLD)) +
+    geom_smooth(method=lm, formula = y~x, level=0) + geom_point() + facet_wrap(~Symptom) +
+    expand_limits(y = 0) +  theme_bw() + ylab("Proportion with symptom") + xlab("Model Year")
+
+  plot(all.plotted)
+
+  terminate_session()
+}
+
 
