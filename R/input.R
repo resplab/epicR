@@ -63,7 +63,6 @@ errors<-c(
 
 
 #' Returns a list of default model input values
-#' @param None
 #' @export
 init_input <- function() {
   input <- list()
@@ -422,10 +421,10 @@ init_input <- function() {
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
   input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(1.5)),
+                                                           case_detection=log(1.82)),
                                                     female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(1.5)))
+                                                             case_detection=log(1.82)))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$diagnosis$p_hosp_diagnosis <- 0.8
 

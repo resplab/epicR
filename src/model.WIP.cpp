@@ -1783,7 +1783,7 @@ double update_gpvisits(agent *ag)
 
 double apply_case_detection(agent *ag)
 {
-  if((*ag).case_detection>0) return(0);
+// if((*ag).case_detection>0) return(0);
 
   double p_detection = 0;
 
@@ -1796,6 +1796,8 @@ double apply_case_detection(agent *ag)
 
   if (rand_unif() < p_detection) {
     (*ag).case_detection = 1;
+  } else {
+    (*ag).case_detection = 0;
   }
   return(0);
 }
@@ -1810,7 +1812,7 @@ double apply_case_detection(agent *ag)
 
   if ((*ag).gpvisits!=0) {
 
-apply_case_detection(ag);
+  apply_case_detection(ag);
 
   if((*ag).gold!=0)
   {
@@ -1838,7 +1840,7 @@ apply_case_detection(ag);
   return(0);
  }
 
-//////////////////////////////////////////////////////////////////Case detection /////////////////////////////////////;
+////
 
 
 agent *create_agent(agent *ag,int id)
