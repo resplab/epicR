@@ -1780,6 +1780,27 @@ double update_gpvisits(agent *ag)
 }
 
 //////////////////////////////////////////////////////////////////// Diagnosis /////////////////////////////////////;
+
+double apply_case_detection(agent *ag)
+{
+  if((*ag).case_detection>0) return(0);
+
+  double p_detection = 0;
+
+  if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
+      ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
+      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers)) {
+
+    p_detection = input.diagnosis.p_case_detection;
+  }
+
+  if (rand_unif() < p_detection) {
+    (*ag).case_detection = 1;
+  }
+  return(0);
+}
+
+
  double update_diagnosis(agent *ag)
 {
 
@@ -1789,7 +1810,7 @@ double update_gpvisits(agent *ag)
 
   if ((*ag).gpvisits!=0) {
 
-double apply_case_detection();
+apply_case_detection(ag);
 
   if((*ag).gold!=0)
   {
@@ -1818,26 +1839,6 @@ double apply_case_detection();
  }
 
 //////////////////////////////////////////////////////////////////Case detection /////////////////////////////////////;
-double apply_case_detection(agent *ag)
-{
-  if((*ag).case_detection>0) return(0);
-
-  double p_detection = 0;
-
-    if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
-        ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
-        ((*ag).smoking_status>= input.diagnosis.min_cd_smokers)) {
-
-              p_detection = input.diagnosis.p_case_detection;
-            }
-
-        if (rand_unif() < p_detection) {
-                (*ag).case_detection = 1;
-          }
-  return(0);
-}
-
-//////
 
 
 agent *create_agent(agent *ag,int id)
@@ -3226,7 +3227,6 @@ agent *event_fixed_process(agent *ag)
   update_symptoms(ag); //updating symptoms in the annual event
   update_gpvisits(ag); //updating gp visits in the annual event
   update_diagnosis(ag); //updating diagnosis in the annual event
-
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
