@@ -1236,4 +1236,96 @@ validate_symptoms <- function(n_sim = 1e+04) {
   terminate_session()
 }
 
+#' Returns results of validation tests for Treatment
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_treatment<- function(n_sim = 1e+04) {
+  cat("Let's make sure that treatment (which is initiated at diagnosis) is affecting the exacerbation rate.\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("\n")
+  cat("Exacerbation rate for undiagnosed COPD patients.\n")
+  cat("\n")
+
+  undiagnosed <- data.frame(cbind(1:inputs$global_parameters$time_horizon, output_ex$n_exac_by_ctime_severity_undiagnosed/
+                                    (rowSums(output_ex$n_COPD_by_ctime_severity[,-1]) - rowSums(output_ex$n_Diagnosed_by_ctime_sex))))
+
+  names(undiagnosed) <- c("Year","Mild","Moderate","Severe","VerySevere")
+  print(undiagnosed)
+  undiagnosed$Diagnosis <- "undiagnosed"
+
+  cat("\n")
+  cat("Exacerbation rate for diagnosed COPD patients.\n")
+  cat("\n")
+
+  diagnosed <- data.frame(cbind(1:inputs$global_parameters$time_horizon,
+                                output_ex$n_exac_by_ctime_severity_diagnosed/rowSums(output_ex$n_Diagnosed_by_ctime_sex)))
+
+  diagnosed[1,2:5] <- c(0,0,0,0)
+  names(diagnosed) <- c("Year","Mild","Moderate","Severe","VerySevere")
+  print(diagnosed)
+  diagnosed$Diagnosis <- "diagnosed"
+
+  # plot
+  exac.plot <- tidyr::gather(data=rbind(undiagnosed, diagnosed), key="Exacerbation", value="Rate", Mild:VerySevere)
+
+  exac.plotted <- ggplot2::ggplot(exac.plot, aes(x=Year, y=Rate, fill=Diagnosis)) +
+    geom_bar(stat="identity", position="dodge") + facet_wrap(~Exacerbation, labeller=label_both) +
+    scale_y_continuous(expand = c(0, 0)) +
+    xlab("Model Year") + ylab("Annual rate of exacerbations") + theme_bw()
+
+  plot(exac.plotted)
+
+  cat("\n")
+  terminate_session()
+
+  ###
+  cat("\n")
+  cat("Now, set the treatment effects to 0 and make sure the number of exacerbations increased among diagnosed patients.\n")
+  cat("\n")
+
+  init_session(settings = settings)
+
+  input_nt <- model_input$values
+
+  input_nt$medication$medication_ln_hr_exac <- rep(0, length(inputs$medication$medication_ln_hr_exac))
+
+  res <- run(input = input_nt)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs_nt <- Cget_inputs()
+  output_ex_nt <- Cget_output_ex()
+
+  exac.diff <- data.frame(cbind(1:inputs_nt$global_parameters$time_horizon,
+                          output_ex_nt$n_exac_by_ctime_severity_diagnosed - output_ex$n_exac_by_ctime_severity_diagnosed))
+
+  names(exac.diff) <- c("Year","Mild","Moderate","Severe","VerySevere")
+
+  cat("Without treatment, there was an average of:\n")
+  cat(mean(exac.diff$Mild),"more mild exacerbations,\n")
+  cat(mean(exac.diff$Moderate),"more moderate exacerbations,\n")
+  cat(mean(exac.diff$Severe),"more severe exacerbations, and\n")
+  cat(mean(exac.diff$VerySevere),"more very severe exacerbations per year.\n")
+
+  terminate_session()
+}
+
 

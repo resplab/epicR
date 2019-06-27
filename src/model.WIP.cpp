@@ -1408,7 +1408,8 @@ struct output_ex
   int n_exac_by_gold_severity[4][4];
   int n_exac_by_ctime_severity_female[100][4];
   int n_exac_by_ctime_GOLD[100][4];
-  int n_exac_by_ctime_diagnosis[100][2];
+  int n_exac_by_ctime_severity_undiagnosed[100][4];
+  int n_exac_by_ctime_severity_diagnosed[100][4];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS) > 0
@@ -1518,7 +1519,8 @@ List Cget_output_ex()
     out["n_exac_by_gold_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_gold_severity,4);
     out["n_exac_by_ctime_severity_female"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_female,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
-    out["n_exac_by_ctime_diagnosis"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_diagnosis,input.global_parameters.time_horizon);
+    out["n_exac_by_ctime_severity_undiagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_undiagnosed,input.global_parameters.time_horizon);
+    out["n_exac_by_ctime_severity_diagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_diagnosed,input.global_parameters.time_horizon);
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
@@ -2810,7 +2812,8 @@ void event_exacerbation_process(agent *ag)
   output_ex.n_exac_by_ctime_severity_female[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=(*ag).sex;
   output_ex.n_exac_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold-1]+=1;
   if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
-  output_ex.n_exac_by_ctime_diagnosis[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=(*ag).diagnosis;
+  if ((*ag).diagnosis==0) output_ex.n_exac_by_ctime_severity_undiagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  if ((*ag).diagnosis==1) output_ex.n_exac_by_ctime_severity_diagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
 
 #endif
 
@@ -3407,7 +3410,7 @@ int Callocate_resources2()
 
 // [[Rcpp::export]]
 int Cinit_session() //Does not deal with memory allocation only resets counters etc;
-  {
+{
   event_stack_pointer=0;
 
   reset_output();
@@ -3418,7 +3421,7 @@ int Cinit_session() //Does not deal with memory allocation only resets counters 
   last_id=0;
 
   return(0);
-  }
+}
 
 
 
