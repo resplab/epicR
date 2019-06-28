@@ -1287,9 +1287,9 @@ validate_treatment<- function(n_sim = 1e+04) {
   exac.plot <- tidyr::gather(data=rbind(undiagnosed, diagnosed), key="Exacerbation", value="Rate", Mild:VerySevere)
 
   exac.plotted <- ggplot2::ggplot(exac.plot, aes(x=Year, y=Rate, fill=Diagnosis)) +
-    geom_bar(stat="identity", position="dodge") + facet_wrap(~Exacerbation, labeller=label_both) +
-    scale_y_continuous(expand = c(0, 0)) +
-    xlab("Model Year") + ylab("Annual rate of exacerbations") + theme_bw()
+                      geom_bar(stat="identity", position="dodge") + facet_wrap(~Exacerbation, labeller=label_both) +
+                      scale_y_continuous(expand = c(0, 0)) +
+                      xlab("Model Year") + ylab("Annual rate of exacerbations") + theme_bw()
 
   plot(exac.plotted)
 
@@ -1324,6 +1324,127 @@ validate_treatment<- function(n_sim = 1e+04) {
   cat(mean(exac.diff$Moderate),"more moderate exacerbations,\n")
   cat(mean(exac.diff$Severe),"more severe exacerbations, and\n")
   cat(mean(exac.diff$VerySevere),"more very severe exacerbations per year.\n")
+
+  terminate_session()
+}
+
+#' Returns results of Case Detection strategies
+#' @param n_sim number of agents
+#' @param p_of_CD probability of recieving case detection given that an agent meets the selection criteria
+#' @param min_age minimum age that can recieve case detection
+#' @param min_pack_year minimum pack years that can recieve case detection
+#' @param only_smokers set to 1 if only smokers should recieve case detection
+#' @param OR_of_CD odds ratio for the impact of recieving case detection on the odds of being diagnosed
+#' @return validation test results
+#' @export
+test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, OR_of_CD=1.82) {
+  cat("Comparing a case detection strategy to no case detection.\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  input$diagnosis$p_case_detection <- p_of_CD
+  input$diagnosis$min_cd_age <- min_age
+  input$diagnosis$min_cd_pack_years <- min_pack_years
+  input$diagnosis$min_cd_smokers <-only_smokers
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                  case_detection=log(OR_of_CD)),
+                                                           female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                    case_detection=log(OR_of_CD)))
+  cat("\n")
+  cat("Here are your inputs for the case detection strategy:\n")
+  cat("\n")
+  print(input$diagnosis)
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+
+  # Exacerbations
+  output <- Cget_output()
+  exac <- output$total_exac
+  names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+
+  # GOLD
+  output_ex <- Cget_output_ex()
+  gold <- data.frame(CD="Case detection",
+                         Proportion=colMeans(output_ex$n_COPD_by_ctime_severity/rowSums(output_ex$n_alive_by_ctime_sex)))
+  gold$GOLD <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  terminate_session()
+
+  ## Rerunning with no case detection
+
+  init_session(settings = settings)
+
+  input_nocd <- model_input$values
+
+  input_nocd$diagnosis$p_case_detection <- 0
+  input_nocd$diagnosis$min_cd_age <- min_age
+  input_nocd$diagnosis$min_cd_pack_years <- min_pack_years
+  input_nocd$diagnosis$min_cd_smokers <-only_smokers
+  input_nocd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                           case_detection=log(OR_of_CD)),
+                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                             case_detection=log(OR_of_CD)))
+  cat("\n")
+  cat("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
+  cat("\n")
+
+  res <- run(input = input_nocd)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs_nocd <- Cget_inputs()
+
+  # Exacerbations
+  output_nocd <- Cget_output()
+  exac_nocd <- output_nocd$total_exac
+  names(exac_nocd) <- c("Mild","Moderate","Severe","VerySevere")
+
+  # GOLD
+  output_ex_nocd <- Cget_output_ex()
+  gold_nocd<- data.frame(CD="No case detection",
+                         Proportion=colMeans(output_ex_nocd$n_COPD_by_ctime_severity/rowSums(output_ex_nocd$n_alive_by_ctime_sex)))
+  gold_nocd$GOLD <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+
+  ## Difference between CD and No CD
+  # Exacerbations
+  exac.diff <- data.frame(cbind(CD=exac, NOCD=exac_nocd))
+  exac.diff$Delta <- exac.diff$NOCD - exac.diff$CD
+
+  cat("Here are total number of exacerbations by severity:\n")
+  cat("\n")
+  print(exac.diff)
+
+  # GOLD
+  # plot
+  cat("\n")
+  cat("The average proportion of agents in each gold stage is plotted.\n")
+
+  gold.plot <- rbind(gold, gold_nocd)
+
+  gold.plotted <- ggplot2::ggplot(gold.plot, aes(x=GOLD, y=Proportion, fill=CD)) +
+                      geom_bar(stat="identity", position="dodge")  +
+                      scale_y_continuous(expand = c(0,0), limits=c(0,1)) +
+                      xlab("GOLD stage") + ylab("Average proportion") + theme_bw()
+
+  plot(gold.plotted)
+
+  cat("\n")
 
   terminate_session()
 }
