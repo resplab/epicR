@@ -1335,7 +1335,7 @@ validate_treatment<- function(n_sim = 1e+04) {
 #' @param min_pack_year minimum pack years that can recieve case detection
 #' @param only_smokers set to 1 if only smokers should recieve case detection
 #' @param OR_of_CD odds ratio for the impact of recieving case detection on the odds of being diagnosed
-#' @return validation test results
+#' @return results of case detection strategy compared to no case detection
 #' @export
 test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, OR_of_CD=1.82) {
   cat("Comparing a case detection strategy to no case detection.\n")
@@ -1343,7 +1343,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_none"]
-  settings$agent_stack_size <- 0
+#  settings$agent_stack_size <- 0
   settings$n_base_agents <- n_sim
   settings$event_stack_size <- 0
   init_session(settings = settings)
@@ -1370,14 +1370,27 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
     stop("Execution stopped.\n")
 
   inputs <- Cget_inputs()
+  output <- Cget_output()
+  output_ex <- Cget_output_ex()
 
   # Exacerbations
-  output <- Cget_output()
   exac <- output$total_exac
   names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+    # rate
+  total.gold <- colSums(output_ex$n_COPD_by_ctime_severity[,2:5])
+  names(total.gold) <- c("GOLD1","GOLD2","GOLD3","GOLD4")
+
+  exac.gs <- data.frame(output_ex$n_exac_by_gold_severity)
+  colnames(exac.gs) <- c("Mild","Moderate","Severe","VerySevere")
+
+  exac_rate <- rbind(GOLD1=exac.gs[1,]/total.gold[1],
+                     GOLD2=exac.gs[2,]/total.gold[2],
+                     GOLD3=exac.gs[3,]/total.gold[3],
+                     GOLD4=exac.gs[4,]/total.gold[4])
+  exac_rate$CD <- "Case detection"
+  exac_rate$GOLD <- rownames(exac_rate)
 
   # GOLD
-  output_ex <- Cget_output_ex()
   gold <- data.frame(CD="Case detection",
                          Proportion=colMeans(output_ex$n_COPD_by_ctime_severity/rowSums(output_ex$n_alive_by_ctime_sex)))
   gold$GOLD <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
@@ -1409,14 +1422,27 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
     stop("Execution stopped.\n")
 
   inputs_nocd <- Cget_inputs()
+  output_nocd <- Cget_output()
+  output_ex_nocd <- Cget_output_ex()
 
   # Exacerbations
-  output_nocd <- Cget_output()
   exac_nocd <- output_nocd$total_exac
   names(exac_nocd) <- c("Mild","Moderate","Severe","VerySevere")
+    # rate
+  total.gold_nocd <- colSums(output_ex_nocd$n_COPD_by_ctime_severity[,2:5])
+  names(total.gold_nocd) <- c("GOLD1","GOLD2","GOLD3","GOLD4")
+
+  exac.gs_nocd <- data.frame(output_ex_nocd$n_exac_by_gold_severity)
+  colnames(exac.gs_nocd) <- c("Mild","Moderate","Severe","VerySevere")
+
+  exac_rate_nocd <- rbind(GOLD1=exac.gs_nocd[1,]/total.gold_nocd[1],
+                     GOLD2=exac.gs_nocd[2,]/total.gold_nocd[2],
+                     GOLD3=exac.gs_nocd[3,]/total.gold_nocd[3],
+                     GOLD4=exac.gs_nocd[4,]/total.gold_nocd[4])
+  exac_rate_nocd$CD <- "No Case detection"
+  exac_rate_nocd$GOLD <- rownames(exac_rate_nocd)
 
   # GOLD
-  output_ex_nocd <- Cget_output_ex()
   gold_nocd<- data.frame(CD="No case detection",
                          Proportion=colMeans(output_ex_nocd$n_COPD_by_ctime_severity/rowSums(output_ex_nocd$n_alive_by_ctime_sex)))
   gold_nocd$GOLD <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
@@ -1430,17 +1456,44 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   cat("\n")
   print(exac.diff)
 
+  cat("\n")
+  cat("The annual rate of exacerbations with case detection is:\n")
+  print(exac_rate[,1:4])
+  cat("\n")
+  cat("The annual rate of exacerbations without case detection is:\n")
+  print(exac_rate_nocd[,1:4])
+  cat("\n")
+  cat("This data is also plotted.\n")
+
+  #plot
+  exac.plot <- tidyr::gather(rbind(exac_rate, exac_rate_nocd), key="Exacerbation", value="Rate", Mild:VerySevere)
+
+  exac.plotted <-ggplot2::ggplot(exac.plot, aes(x=Exacerbation, y=Rate, fill=CD)) +
+                      geom_bar(stat="identity", position="dodge") + facet_wrap(~GOLD, scales="free_y") +
+                      scale_y_continuous(expand = expand_scale(mult=c(0, 0.1))) +
+                      xlab("Exacerbation") + ylab("Annual rate of exacerbations") + theme_bw()
+
+  exac.plotted <- exac.plotted + theme(axis.text.x=element_text(angle=45, hjust=1)) +
+                    theme(legend.title = element_blank())
+
+  plot(exac.plotted)
+
+
   # GOLD
   # plot
   cat("\n")
-  cat("The average proportion of agents in each gold stage is plotted.\n")
+  cat("The average proportion of agents in each gold stage is also plotted.\n")
 
   gold.plot <- rbind(gold, gold_nocd)
 
+  gold.plot$GOLD <- factor(gold.plot$GOLD, levels=c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4"))
+
   gold.plotted <- ggplot2::ggplot(gold.plot, aes(x=GOLD, y=Proportion, fill=CD)) +
-                      geom_bar(stat="identity", position="dodge")  +
+                      geom_bar(stat="identity", position="dodge") +
                       scale_y_continuous(expand = c(0,0), limits=c(0,1)) +
                       xlab("GOLD stage") + ylab("Average proportion") + theme_bw()
+
+  gold.plotted <- gold.plotted + theme(legend.title = element_blank())
 
   plot(gold.plotted)
 

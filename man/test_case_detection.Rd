@@ -21,7 +21,7 @@ test_case_detection(n_sim = 10000, p_of_CD = 0.1, min_age = 40,
 \item{min_pack_year}{minimum pack years that can recieve case detection}
 }
 \value{
-validation test results
+results of case detection strategy compared to no case detection
 }
 \description{
 Returns results of Case Detection strategies
