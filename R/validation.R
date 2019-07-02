@@ -1332,7 +1332,7 @@ validate_treatment<- function(n_sim = 1e+04) {
 #' @param n_sim number of agents
 #' @param p_of_CD probability of recieving case detection given that an agent meets the selection criteria
 #' @param min_age minimum age that can recieve case detection
-#' @param min_pack_year minimum pack years that can recieve case detection
+#' @param min_pack_years minimum pack years that can recieve case detection
 #' @param only_smokers set to 1 if only smokers should recieve case detection
 #' @param OR_of_CD odds ratio for the impact of recieving case detection on the odds of being diagnosed
 #' @return results of case detection strategy compared to no case detection

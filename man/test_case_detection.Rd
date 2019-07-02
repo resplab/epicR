@@ -14,11 +14,11 @@ test_case_detection(n_sim = 10000, p_of_CD = 0.1, min_age = 40,
 
 \item{min_age}{minimum age that can recieve case detection}
 
+\item{min_pack_years}{minimum pack years that can recieve case detection}
+
 \item{only_smokers}{set to 1 if only smokers should recieve case detection}
 
 \item{OR_of_CD}{odds ratio for the impact of recieving case detection on the odds of being diagnosed}
-
-\item{min_pack_year}{minimum pack years that can recieve case detection}
 }
 \value{
 results of case detection strategy compared to no case detection
