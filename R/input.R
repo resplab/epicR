@@ -63,7 +63,6 @@ errors<-c(
 
 
 #' Returns a list of default model input values
-#' @param None
 #' @export
 init_input <- function() {
   input <- list()
@@ -422,19 +421,43 @@ init_input <- function() {
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
   input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(1.5)),
+                                                           case_detection=log(1.82)),
                                                     female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(1.5)))
+                                                             case_detection=log(1.82)))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$diagnosis$p_hosp_diagnosis <- 0.8
 
+  # Case detection;
+
+  input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
+  input$diagnosis$p_case_detection <- 0.1
+  input_ref$diagnosis$p_case_detection <- ""
+
+  input_help$diagnosis$min_cd_age <- "Minimum age for recieving case detection"
+  input$diagnosis$min_cd_age <- 40
+  input_ref$diagnosis$min_cd_age <- ""
+
+  input_help$diagnosis$min_cd_pack_years <- "Minimum pack-years smoking to recieve case detection"
+  input$diagnosis$min_cd_pack_years <- 0
+  input_ref$diagnosis$min_cd_pack_years <- ""
+
+  input_help$diagnosis$min_cd_smokers <- "Set to 1 if only current smokers should recieve case detection"
+  input$diagnosis$min_cd_smokers <- 0
+  input_ref$diagnosis$min_cd_smokers <- ""
+
+
+  ## Medication;
+
   # medication log-hazard regression matrix for initiation of each medication
+  input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
   input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1),SABA_LABA=log(1), LAMA=log(1-0.20), LAMA_SABA=log(1),
                                             LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1), ICS=log(1), ICS_SABA=log(1),
                                             ICS_LABA=log(1), ICS_LABA_SABA=log(1), ICS_LAMA=log(1), ICS_LAMA_SABA=log(1),
                                             ICS_LAMA_LABA=log(1), ICS_LAMA_LABA_SABA=log(1))
+  input_ref$medication$medication_ln_hr_exac <- ""
 
+  # medication event
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL
   for (i in medication_classes) mx <- rbind(mx, template)

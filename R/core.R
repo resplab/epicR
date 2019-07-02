@@ -46,6 +46,7 @@ init_session <- function(settings = get_default_settings()) {
   if (!is.null(settings))
     apply_settings(settings)
   init_input()
+  Cinit_session()
   return(Callocate_resources())
 }
 
