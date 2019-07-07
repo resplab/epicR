@@ -33,14 +33,29 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
 ### Mac OS Sierra and Later
 1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
 2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-3. Download and install `gfortran` and `clang` from [https://cran.r-project.org/bin/macosx/tools/](https://cran.r-project.org/bin/macosx/tools/)
-4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+3. Install homebrew from [https://brew.sh](https://brew.sh) and [Xcode](https://developer.apple.com/xcode/) developer tools from the App store.
+4. Open the Terminal and use brew to install `llvm`:
+
+  `brew install llvm`
+
+5. Add the following to your `~/.bash_profile`:
+  `export PATH="/usr/local/opt/llvm/bin:$PATH"`
+  
+  And this to your `~/.Rprofile`:
+  `Sys.setenv(PATH=paste("/usr/local/opt/llvm/bin", Sys.getenv("PATH"), sep=":"))`
+  
+6. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
   `install.packages ('devtools')`
 
-5. Install epicR from GitHub:
+7. Install epicR from GitHub:
 
-`devtools::install_github('aminadibi/epicR')`
+`devtools::install_github('resplab/epicR')`
+
+Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
+
+`brew install gfortran`
+
 
 ### Ubuntu 16.04 and Later
 1. Install R by executing the following commands in Terminal:
