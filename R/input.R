@@ -294,7 +294,7 @@ init_input <- function() {
   ## Exacerbation;
 
   input_help$exacerbation$ln_rate_betas = "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.10, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
+  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.5, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
                                                    gold2 = 1.1, gold3 = 1.9, gold4 = 2.4)))
   input_ref$exacerbation$ln_rate_betas = "Rates from DOI: 10.2147/COPD.S13826, adjusted to account for diganosis bias. Adjusted on 2018-10-02 to match manuscript"
 
@@ -419,14 +419,14 @@ init_input <- function() {
   ## Diagnosis;
 
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=0, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                            case_detection=log(1.82)),
-                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                    female=c(intercept=0-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                              case_detection=log(1.82)))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-  input$diagnosis$p_hosp_diagnosis <- 0.8
+  input$diagnosis$p_hosp_diagnosis <- 0.5
 
   # Case detection;
 
