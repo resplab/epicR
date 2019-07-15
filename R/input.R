@@ -294,7 +294,7 @@ init_input <- function() {
   ## Exacerbation;
 
   input_help$exacerbation$ln_rate_betas = "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.10, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
+  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.5, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
                                                    gold2 = 1.1, gold3 = 1.9, gold4 = 2.4)))
   input_ref$exacerbation$ln_rate_betas = "Rates from DOI: 10.2147/COPD.S13826, adjusted to account for diganosis bias. Adjusted on 2018-10-02 to match manuscript"
 
@@ -396,20 +396,20 @@ init_input <- function() {
 
     # Primary care visits;
   input_help$outpatient$ln_rate_gpvisits_COPD_by_sex <- "Rate of GP visits for COPD patients"
-  input$outpatient$ln_rate_gpvisits_COPD_by_sex <- cbind(male=c(intercept=0.4647, age=0.012, smoking=0.0671, fev1=-0.147, cough=0.0116,
-                                                                phlegm=-0.011, wheeze=0.0561, dyspnea=0.0887),
-                                                         female=c(intercept=0.4647-0.0816, age=0.012, smoking=0.0671, fev1=-0.147,
-                                                                  cough=0.0116, phlegm=-0.011, wheeze=0.0561, dyspnea=0.0887))
-  #input$outpatient$dispersion_gpvisits_COPD <- 0.431
+  input$outpatient$ln_rate_gpvisits_COPD_by_sex <- cbind(male=c(intercept=0.4472, age=0.012, smoking=0.0669, fev1=-0.1414, cough=-0.0037,
+                                                                phlegm=-0.0108, wheeze=0.0553, dyspnea=0.0947),
+                                                         female=c(intercept=0.4472-0.0725, age=0.012, smoking=0.0669, fev1=-0.1414,
+                                                                  cough=-0.0037, phlegm=-0.0108, wheeze=0.0553, dyspnea=0.0947))
+  input$outpatient$dispersion_gpvisits_COPD <- 0.431
   input_ref$outpatient$ln_rate_gpvisits_COPD_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
 
   input_help$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <- "Rate of GP visits for Non-COPD patients"
-  input$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <-  cbind(male=c(intercept=-0.3589, age=0.017, smoking=0.0657,  cough=0.181, phlegm=-0.0377,
-                                                                    wheeze=0.2344, dyspnea=0.0756),
-                                                             female=c(intercept=-0.3589+0.0099, age=0.017, smoking=0.0657, cough=0.181,
-                                                                      phlegm=-0.0377, wheeze=0.2344, dyspnea=0.0756))
+  input$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <-  cbind(male=c(intercept=-0.3596, age=0.0169, smoking=0.0722,  cough=0.181, phlegm=-0.0275,
+                                                                    wheeze=0.2262, dyspnea=0.0807),
+                                                             female=c(intercept=-0.3596+0.0095, age=0.0169, smoking=0.0722, cough=0.181,
+                                                                      phlegm=-0.0275, wheeze=0.2262, dyspnea=0.0807))
   input_ref$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-  #input$outpatient$dispersion_gpvisits_nonCOPD <- 0.4093
+  input$outpatient$dispersion_gpvisits_nonCOPD <- 0.4093
 
     # Extras
   input$outpatient$rate_doctor_visit <- 0.1
@@ -419,14 +419,14 @@ init_input <- function() {
   ## Diagnosis;
 
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=0, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                            case_detection=log(1.82)),
-                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                    female=c(intercept=0-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                              case_detection=log(1.82)))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-  input$diagnosis$p_hosp_diagnosis <- 0.8
+  input$diagnosis$p_hosp_diagnosis <- 0.5
 
   # Case detection;
 
