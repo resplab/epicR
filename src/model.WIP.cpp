@@ -147,6 +147,12 @@ arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
 }
 
 
+arma::vec rand_gamma(double alpha, double beta) {
+  arma::vec lambda = arma::randg<arma::vec>(1, arma::distr_param(alpha, beta));
+  return lambda;
+}
+
+
 NumericMatrix array_to_Rmatrix(std::vector<double> x, int nCol)
 {
   int nRow=x.size()/nCol;
@@ -429,19 +435,30 @@ int rand_Poisson(double rate)
 }
 
 
-
-int rand_NegBin(int r, double p)
+int rand_NegBin(double rate, double dispersion)
 {
-  double success=0;
-  double failure=0;
-  while(failure<r)
+  if (dispersion != 1)
   {
-    int toss=1-(rand_unif()<p)*1;
-    if(toss==0) failure++; else success++;
-  }
-  return(success);
-}
+    double size=1/dispersion;
+    double p=size/(size+rate);
+    double alpha=size;
+    double beta=(1-p)/p;
 
+    arma::vec lambda_arma = rand_gamma(alpha,beta);
+    double lambda = lambda_arma(0);
+
+    int x=rand_Poisson(lambda);
+    return(x);
+  }
+
+  if (dispersion == 1)
+    {
+    int x=rand_Poisson(rate);
+    return(x);
+    }
+
+  return(0);
+}
 
 
 
@@ -591,8 +608,8 @@ struct input
   {
     double ln_rate_gpvisits_COPD_by_sex[8][2];
     double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
-    //double dispersion_gpvisits_COPD;
-    //double dispersion_gpvisits_nonCOPD;
+    double dispersion_gpvisits_COPD;
+    double dispersion_gpvisits_nonCOPD;
     double rate_doctor_visit;
     double p_specialist;
   } outpatient;
@@ -719,9 +736,9 @@ List Cget_inputs()
       Rcpp::Named("rate_doctor_visit")=input.outpatient.rate_doctor_visit,
       Rcpp::Named("p_specialist")=input.outpatient.p_specialist,
       Rcpp::Named("ln_rate_gpvisits_nonCOPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex),
-      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex)
-      //, Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
-      //Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD
+      Rcpp::Named("ln_rate_gpvisits_COPD_by_sex")=AS_MATRIX_DOUBLE(input.outpatient.ln_rate_gpvisits_COPD_by_sex),
+      Rcpp::Named("dispersion_gpvisits_COPD")=input.outpatient.dispersion_gpvisits_COPD,
+      Rcpp::Named("dispersion_gpvisits_nonCOPD")=input.outpatient.dispersion_gpvisits_nonCOPD
     ),
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
@@ -845,8 +862,8 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="outpatient$ln_rate_gpvisits_nonCOPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex);
   if(name=="outpatient$ln_rate_gpvisits_COPD_by_sex") READ_R_MATRIX(value,input.outpatient.ln_rate_gpvisits_COPD_by_sex);
-  //if(name=="outpatient$dispersion_gpvisits_COPD") {input.outpatient.dispersion_gpvisits_COPD=value[0]; return(0);}
-  //if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
+  if(name=="outpatient$dispersion_gpvisits_COPD") {input.outpatient.dispersion_gpvisits_COPD=value[0]; return(0);}
+  if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
@@ -1761,7 +1778,7 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_Poisson(gpvisitRate);
+      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
       (*ag).tmp_gpvisits_rate=gpvisitRate;
       (*ag).gpvisits = tmp;
 
@@ -1776,7 +1793,7 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_Poisson(gpvisitRate);
+      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
       (*ag).tmp_gpvisits_rate=gpvisitRate;
       (*ag).gpvisits = tmp;
 
