@@ -56,6 +56,68 @@ Note: If epicR is still not compiling correctly, `gfortran` needs to be installe
 
 `brew install gfortran`
 
+Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
+
+```console
+brew install gcc
+```
+
+Now, by default, R does not look for the HomeBrew version of gcc, so you will need to change this as well. First, you need to find the version of gcc you
+are using:
+
+```console
+brew list --versions gcc
+```
+
+The first number is {YOUR_GCC_MAIN_VERSION}, and the whole name is {YOUR_GCC_FULL_VERSION}. For example, on my computer, it is:
+
+```
+9.1.0
+```
+
+You will also need the folder name for your gcc, which you will need to log in as sudo to do:
+
+```console
+sudo cd 
+```
+
+```console
+cd ~/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION}/gcc
+ls
+```
+
+The folder name printed out is {YOUR_GCC_TARGET}. For example, on my computer, it is:
+
+```console
+x86_64-apple-darwin18
+```
+
+In terminal, use your favourite text editor to open the file "~/.R/Makevars":
+
+```console
+open ~/.R/Makevars
+```
+
+This may open a blank file, or it might have some content already. Somewhere in the file, add the following:
+
+```
+CC = gcc-{YOUR_GCC_MAIN_VERSION}
+CXX = g++-{YOUR_GCC_MAIN_VERSION}
+FLIBS = -L/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION}/gcc/{YOUR_GCC_TARGET}/{YOUR_GCC_FULL_VERSION} 
+-L/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION} -lgfortran -lquadmath -lm
+```
+
+For example, on my computer it would be:
+
+```
+CC = gcc-9
+CXX = g++-9
+FLIBS = -L/usr/local/lib/gcc/9/gcc/x86_64-apple-darwin18/9.1.0
+-L/usr/local/lib/gcc/9 -lgfortran -lquadmath -lm
+```
+
+Once you have done this, save the file and close the text editor. You may need to restart RStudio, and try Step 7 again.
+
 
 ### Ubuntu 16.04 and Later
 1. Install R by executing the following commands in Terminal:
