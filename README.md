@@ -23,11 +23,15 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
 3. Download and Install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/) 
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
-  `install.packages ('devtools')`
+```r
+  install.packages ('devtools')
+```
 
 5. Install epicR from GitHub:
 
-`devtools::install_github('aminadibi/epicR')`
+```r
+devtools::install_github('aminadibi/epicR')
+```
 
 
 ### Mac OS Sierra and Later
@@ -36,7 +40,9 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
 3. Install homebrew from [https://brew.sh](https://brew.sh) and [Xcode](https://developer.apple.com/xcode/) developer tools from the App store.
 4. Open the Terminal and use brew to install `llvm`:
 
-  `brew install llvm`
+```bash
+  brew install llvm
+```
 
 5. Add the following to your `~/.bash_profile`:
   `export PATH="/usr/local/opt/llvm/bin:$PATH"`
@@ -46,26 +52,31 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
   
 6. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
-  `install.packages ('devtools')`
+```r
+install.packages ('devtools')
+```
 
 7. Install epicR from GitHub:
-
-`devtools::install_github('resplab/epicR')`
-
-Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
-
-`brew install gfortran`
+```r
+devtools::install_github('resplab/epicR')
+```
 
 Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
 
-```console
+```bash
+brew install gfortran
+```
+
+Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
+
+```bash
 brew install gcc
 ```
 
 Now, by default, R does not look for the HomeBrew version of gcc, so you will need to change this as well. First, you need to find the version of gcc you
 are using:
 
-```console
+```bash
 brew list --versions gcc
 ```
 
@@ -77,24 +88,24 @@ The first number is {YOUR_GCC_MAIN_VERSION}, and the whole name is {YOUR_GCC_FUL
 
 You will also need the folder name for your gcc, which you will need to log in as sudo to do:
 
-```console
+```bash
 sudo cd 
 ```
 
-```console
+```bash
 cd ~/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION}/gcc
 ls
 ```
 
 The folder name printed out is {YOUR_GCC_TARGET}. For example, on my computer, it is:
 
-```console
+```bash
 x86_64-apple-darwin18
 ```
 
 In terminal, use your favourite text editor to open the file "~/.R/Makevars":
 
-```console
+```bash
 open ~/.R/Makevars
 ```
 
@@ -122,29 +133,41 @@ Once you have done this, save the file and close the text editor. You may need t
 ### Ubuntu 16.04 and Later
 1. Install R by executing the following commands in Terminal:
 
-  `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9`
-
-  `sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'`
-
-  `sudo apt-get update`
-
-  `sudo apt-get install r-base`
-
+```bash
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+```
+```bash
+  sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
+```
+```bash
+  sudo apt-get update
+```
+```bash
+  sudo apt-get install r-base
+```
 If the installation is successful, you should be able to start R:
-
-  `sudo -i R`
+```bash
+  sudo -i R
+```
 
 2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
 3. Install `libcurl` from Terminal: 
 
-  `sudo apt-get install libcurl4-openssl-dev libssl-dev`
+```bash
+  sudo apt-get install libcurl4-openssl-dev libssl-dev
+```
 
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
-  `install.packages ('devtools')`
+```r
+install.packages ('devtools')
+```
+  
 5. Install epicR from GitHub:
 
-  `devtools::install_github('resplab/epicR')`
+```r
+devtools::install_github('resplab/epicR')
+```
 
 # PRISM: EPIC on the Cloud
 
