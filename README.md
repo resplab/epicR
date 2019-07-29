@@ -11,11 +11,6 @@ Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Fl
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
 
-<p>
-    <img src="https://journals.sagepub.com/na101/home/literatum/publisher/sage/journals/content/mdma/0/mdma.ahead-of-print/0272989x18824098/20190124/images/large/10.1177_0272989x18824098-fig1.jpeg"/>
-</p>
-
-
 ## Installation
 ### Windows 7 or Later
 1. Download and Install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
@@ -66,69 +61,6 @@ Note: If epicR is still not compiling correctly, `gfortran` needs to be installe
 ```bash
 brew install gfortran
 ```
-
-Note: If epicR is still not compiling correctly, `gfortran` needs to be installed separately. In the terminal:
-
-```bash
-brew install gcc
-```
-
-Now, by default, R does not look for the HomeBrew version of gcc, so you will need to change this as well. First, you need to find the version of gcc you
-are using:
-
-```bash
-brew list --versions gcc
-```
-
-The first number is {YOUR_GCC_MAIN_VERSION}, and the whole name is {YOUR_GCC_FULL_VERSION}. For example, on my computer, it is:
-
-```
-9.1.0
-```
-
-You will also need the folder name for your gcc, which you will need to log in as sudo to do:
-
-```bash
-sudo cd 
-```
-
-```bash
-cd ~/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION}/gcc
-ls
-```
-
-The folder name printed out is {YOUR_GCC_TARGET}. For example, on my computer, it is:
-
-```bash
-x86_64-apple-darwin18
-```
-
-In terminal, use your favourite text editor to open the file "~/.R/Makevars":
-
-```bash
-open ~/.R/Makevars
-```
-
-This may open a blank file, or it might have some content already. Somewhere in the file, add the following:
-
-```
-CC = gcc-{YOUR_GCC_MAIN_VERSION}
-CXX = g++-{YOUR_GCC_MAIN_VERSION}
-FLIBS = -L/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION}/gcc/{YOUR_GCC_TARGET}/{YOUR_GCC_FULL_VERSION} 
--L/usr/local/lib/gcc/{YOUR_GCC_MAIN_VERSION} -lgfortran -lquadmath -lm
-```
-
-For example, on my computer it would be:
-
-```
-CC = gcc-9
-CXX = g++-9
-FLIBS = -L/usr/local/lib/gcc/9/gcc/x86_64-apple-darwin18/9.1.0
--L/usr/local/lib/gcc/9 -lgfortran -lquadmath -lm
-```
-
-Once you have done this, save the file and close the text editor. You may need to restart RStudio, and try Step 7 again.
-
 
 ### Ubuntu 16.04 and Later
 1. Install R by executing the following commands in Terminal:
