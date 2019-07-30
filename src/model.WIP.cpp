@@ -574,6 +574,8 @@ struct input
   {
     double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
+    double logit_p_overdiagnosis_by_sex[9][2];
+    double p_correct_overdiagnosis;
     double p_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
@@ -744,6 +746,8 @@ List Cget_inputs()
     Rcpp::Named("diagnosis")=Rcpp::List::create(
     Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
     Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis,
+    Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
+    Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
     Rcpp::Named("p_case_detection")=input.diagnosis.p_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
@@ -867,6 +871,8 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
+  if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
+  if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
   if(name=="diagnosis$p_case_detection") {input.diagnosis.p_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
@@ -1009,11 +1015,12 @@ struct agent
   bool dyspnea;
   bool wheeze;
 
-  double gpvisits;
+  int gpvisits;
   double tmp_gpvisits_rate;
   int diagnosis;
   double p_hosp_diagnosis;
-  double case_detection;
+  double p_correct_overdiagnosis;
+  int case_detection;
   double p_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
@@ -1411,6 +1418,7 @@ struct output_ex
   int n_COPD_by_ctime_severity[100][5]; //no COPD to GOLD 4;
   int n_COPD_by_age_sex[111][2];
   int n_Diagnosed_by_ctime_sex[1000][2];
+  int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
@@ -1522,6 +1530,7 @@ List Cget_output_ex()
     out["n_COPD_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_COPD_by_ctime_severity,input.global_parameters.time_horizon),
     out["n_COPD_by_age_sex"]=AS_MATRIX_INT(output_ex.n_COPD_by_age_sex),
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
+    out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
 #endif
@@ -1630,7 +1639,8 @@ void update_output_ex(agent *ag)
       output_ex.n_COPD_by_ctime_age[time][age-1]+=((*ag).gold>0)*1;
       output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
       output_ex.n_COPD_by_age_sex[age-1][(*ag).sex]+=1;
-      output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
+      if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
+      if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
 
@@ -1829,16 +1839,16 @@ double apply_case_detection(agent *ag)
  double update_diagnosis(agent *ag)
 {
 
-   if((*ag).diagnosis>0) return(0);
-
   double p_diagnosis = 0;
 
   if ((*ag).gpvisits!=0) {
 
   apply_case_detection(ag);
 
-  if((*ag).gold!=0)
-  {
+  if((*ag).gold!=0)  {
+
+    if((*ag).diagnosis>0) return(0);
+
     p_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
       input.diagnosis.logit_p_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
       input.diagnosis.logit_p_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
@@ -1857,10 +1867,52 @@ double apply_case_detection(agent *ag)
             (*ag).medication_status=MED_CLASS_LAMA;
             medication_LPT(ag);
           }
-        }
+
+  } else {
+
+    double correct_overdiagnosis;
+    correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
+
+      if((*ag).diagnosis>0) {
+
+        if(rand_unif() < correct_overdiagnosis) {
+
+        (*ag).diagnosis = 0;
+
+         return(0);
       }
+
+    } else {
+
+      double p_overdiagnosis = 0;
+
+      p_overdiagnosis = exp(input.diagnosis.logit_p_overdiagnosis_by_sex[0][(*ag).sex] +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[3][(*ag).sex]*((*ag).gpvisits) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[4][(*ag).sex]*((*ag).cough) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[7][(*ag).sex]*((*ag).dyspnea) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[8][(*ag).sex]*((*ag).case_detection));
+
+      p_overdiagnosis = p_overdiagnosis / (1 + p_overdiagnosis);
+
+      if (rand_unif() < p_overdiagnosis) {
+        (*ag).diagnosis = 1;
+
+      } else {
+
+        (*ag).diagnosis = 0;
+
+          }
+        }
+    }
+  }
   return(0);
- }
+}
+
+
 
 ////
 

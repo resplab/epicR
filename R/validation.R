@@ -1325,6 +1325,78 @@ validate_treatment<- function(n_sim = 1e+04) {
   cat(mean(exac.diff$Severe),"more severe exacerbations, and\n")
   cat(mean(exac.diff$VerySevere),"more very severe exacerbations per year.\n")
 
+  ###
+  cat("\n")
+  cat("Now, set all COPD patients to diagnosed, then undiagnosed, and compare the exacerbation rates.\n")
+  cat("\n")
+
+  init_session(settings = settings)
+
+  input_nd <- model_input$values
+
+  input_nd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                              case_detection=0),
+                                                       female=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                case_detection=0))
+
+  res <- run(input = input_nd)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  output_ex_nd <- Cget_output_ex()
+
+  exac_rate_nodiag <- rowSums(output_ex_nd$n_exac_by_ctime_severity)/rowSums(output_ex_nd$n_COPD_by_ctime_sex)
+
+  terminate_session()
+
+  ###
+
+  init_session(settings = settings)
+
+  input_d <- model_input$values
+
+  input_d$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                              case_detection=0),
+                                                       female=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                case_detection=0))
+
+  res <- run(input = input_d)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs_d <- Cget_inputs()
+  output_ex_d <- Cget_output_ex()
+
+  exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
+
+  ##
+  cat("Annual exacerbation rate:\n")
+  cat("\n")
+
+  trt_effect<- data.frame(Year=1:inputs_d$global_parameters$time_horizon,
+                          Diagnosed = exac_rate_diag,
+                          Undiagnosed = exac_rate_nodiag)
+
+  trt_effect$Delta <- trt_effect$Undiagnosed - trt_effect$Diagnosed
+
+  print(trt_effect)
+
+  cat("\n")
+  cat("Treatment reduces the rate of exacerbations by a mean of:", mean(trt_effect$Delta),"\n")
+
+  # plot
+  trt.plot <- tidyr::gather(data=trt_effect, key="Diagnosis", value="Rate", Diagnosed:Undiagnosed)
+
+  trt.plotted <- ggplot2::ggplot(trt.plot, aes(x=Year, y=Rate, col=Diagnosis)) +
+                            geom_line() + geom_point() + expand_limits(y = 0) +
+                            theme_bw() + ylab("Annual exacerbation rate") + xlab("Years")
+
+  plot(trt.plotted)
+
   terminate_session()
 }
 
@@ -1503,3 +1575,53 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 }
 
 
+#' Returns results of validation tests for overdiagnosis
+#' @param n_sim number of agents
+#' @return validation test results
+#' @export
+validate_overdiagnosis <- function(n_sim = 1e+04) {
+  cat("Let's take a look at overdiagnosis\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 0
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  cat("Here are the proportion of non-COPD subjects overdiagnosed over model time: \n")
+
+  overdiag <- data.frame(Year=1:inputs$global_parameters$time_horizon,
+                     NonCOPD=output_ex$n_COPD_by_ctime_severity[,1],
+                     Overdiagnosed=rowSums(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+  overdiag$Proportion <- overdiag$Overdiagnosed/overdiag$NonCOPD
+
+  print(overdiag)
+
+  cat("The average proportion overdiagnosed from year", round(length(overdiag$Proportion)/2,0), "to", length(overdiag$Proportion), "is",
+      mean(overdiag$Proportion[(round(length(overdiag$Proportion)/2,0)):(length(overdiag$Proportion))]),"\n")
+
+  overdiag.plot <- tidyr::gather(data=overdiag, key="Variable", value="Number", c(NonCOPD, Overdiagnosed))
+
+  overdiag.plotted <- ggplot2::ggplot(overdiag.plot, aes(x=Year, y=Number, col=Variable)) +
+    geom_line() + geom_point() + expand_limits(y = 0) +
+    theme_bw() + ylab("Number of non-COPD subjects") + xlab("Years")
+
+  plot(overdiag.plotted)
+
+  cat("\n")
+
+  terminate_session()
+
+  }
