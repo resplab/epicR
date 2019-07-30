@@ -1879,34 +1879,34 @@ double apply_case_detection(agent *ag)
 
         (*ag).diagnosis = 0;
 
-          return(0);
+         return(0);
       }
 
     } else {
 
       double p_overdiagnosis = 0;
 
-    p_overdiagnosis = exp(input.diagnosis.logit_p_overdiagnosis_by_sex[0][(*ag).sex] +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[3][(*ag).sex]*((*ag).gpvisits) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[4][(*ag).sex]*((*ag).cough) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[5][(*ag).sex]*((*ag).phlegm) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[6][(*ag).sex]*((*ag).wheeze) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[7][(*ag).sex]*((*ag).dyspnea) +
-      input.diagnosis.logit_p_overdiagnosis_by_sex[8][(*ag).sex]*((*ag).case_detection));
+      p_overdiagnosis = exp(input.diagnosis.logit_p_overdiagnosis_by_sex[0][(*ag).sex] +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[3][(*ag).sex]*((*ag).gpvisits) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[4][(*ag).sex]*((*ag).cough) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[7][(*ag).sex]*((*ag).dyspnea) +
+        input.diagnosis.logit_p_overdiagnosis_by_sex[8][(*ag).sex]*((*ag).case_detection));
 
-    p_overdiagnosis = p_overdiagnosis / (1 + p_overdiagnosis);
+      p_overdiagnosis = p_overdiagnosis / (1 + p_overdiagnosis);
 
-    if (rand_unif() < p_overdiagnosis) {
-      (*ag).diagnosis = 1;
+      if (rand_unif() < p_overdiagnosis) {
+        (*ag).diagnosis = 1;
 
-    } else {
+      } else {
 
-      (*ag).diagnosis = 0;
+        (*ag).diagnosis = 0;
 
+          }
         }
-      }
     }
   }
   return(0);
