@@ -1381,7 +1381,7 @@ validate_treatment<- function(n_sim = 1e+04) {
                           Diagnosed = exac_rate_diag,
                           Undiagnosed = exac_rate_nodiag)
 
-  trt_effect$Delta <- trt_effect$Undiagnosed - trt_effect$Diagnosed
+  trt_effect$Delta <- (trt_effect$Undiagnosed - trt_effect$Diagnosed)/trt_effect$Undiagnosed
 
   print(trt_effect)
 
