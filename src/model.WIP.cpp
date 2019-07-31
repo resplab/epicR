@@ -1016,7 +1016,6 @@ struct agent
   bool wheeze;
 
   int gpvisits;
-  double tmp_gpvisits_rate;
   int diagnosis;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
@@ -1136,7 +1135,6 @@ List get_agent(agent *ag)
   out["re_wheeze"] = (*ag).re_wheeze;
 
   out["gpvisits"] = (*ag).gpvisits;
-  out["tmp_gpvisits_rate"] = (*ag).tmp_gpvisits_rate;
   out["diagnosis"] = (*ag).diagnosis;
   out["case_detection"] = (*ag).case_detection;
 
@@ -1788,9 +1786,8 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
-      (*ag).tmp_gpvisits_rate=gpvisitRate;
-      (*ag).gpvisits = tmp;
+      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      (*ag).gpvisits = gpvisits;
 
   } else {
 
@@ -1803,9 +1800,8 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
-      (*ag).tmp_gpvisits_rate=gpvisitRate;
-      (*ag).gpvisits = tmp;
+      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      (*ag).gpvisits = gpvisits;
 
     }
 
@@ -1944,7 +1940,6 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).re_dyspnea = 0;
 
 (*ag).gpvisits  = 0;
-(*ag).tmp_gpvisits_rate  = 0;
 (*ag).diagnosis = 0;
 (*ag).case_detection = 0;
 
@@ -2541,8 +2536,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,30);
-  CharacterVector eventMatrixColNames(30);
+  NumericMatrix outm(event_stack_pointer,29);
+  CharacterVector eventMatrixColNames(29);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2572,11 +2567,10 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(22) = "wheeze";
   eventMatrixColNames(23) = "dyspnea";
   eventMatrixColNames(24) = "gpvisits";
-  eventMatrixColNames(25) = "tmp_gpvisits_rate";
-  eventMatrixColNames(26) = "diagnosis";
-  eventMatrixColNames(27) = "medication_status";
-  eventMatrixColNames(28) = "tmp_exac_rate";
-  eventMatrixColNames(29) = "case_detection";
+  eventMatrixColNames(25) = "diagnosis";
+  eventMatrixColNames(26) = "medication_status";
+  eventMatrixColNames(27) = "tmp_exac_rate";
+  eventMatrixColNames(28) = "case_detection";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2607,11 +2601,10 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,22)=(*ag).wheeze;
     outm(i,23)=(*ag).dyspnea;
     outm(i,24)=(*ag).gpvisits;
-    outm(i,25)=(*ag).tmp_gpvisits_rate;
-    outm(i,26)=(*ag).diagnosis;
-    outm(i,27)=(*ag).medication_status;
-    outm(i,28)=(*ag).tmp_exac_rate;
-    outm(i,29)=(*ag).case_detection;
+    outm(i,25)=(*ag).diagnosis;
+    outm(i,26)=(*ag).medication_status;
+    outm(i,27)=(*ag).tmp_exac_rate;
+    outm(i,28)=(*ag).case_detection;
 
   }
 
