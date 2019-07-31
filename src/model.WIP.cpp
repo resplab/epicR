@@ -983,6 +983,9 @@ struct agent
   int exac_status;    //current exacerbation status 0: no exacerbation, in 1: mild, 2:moderate, 3:severe exacerbation
   double tmp_exac_rate;
 
+  double exac_history_time_first, exac_history_time_second;
+  int exac_history_severity_first, exac_history_severity_second;
+
   double symptom_score;
 
   double last_doctor_visit_time;
@@ -1091,9 +1094,9 @@ List get_agent(agent *ag)
     Rcpp::Named("logit_exac_severity_intercept")=(*ag).logit_exac_severity_intercept,
 
     Rcpp::Named("cumul_exac0")=(*ag).cumul_exac[0],
-                                               Rcpp::Named("cumul_exac1")=(*ag).cumul_exac[1],
-                                                                                          Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2],
-                                                                                                                                     Rcpp::Named("cumul_exac3")=(*ag).cumul_exac[3]
+    Rcpp::Named("cumul_exac1")=(*ag).cumul_exac[1],
+    Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2],
+    Rcpp::Named("cumul_exac3")=(*ag).cumul_exac[3]
 
 
   );
@@ -1139,6 +1142,10 @@ List get_agent(agent *ag)
   out["case_detection"] = (*ag).case_detection;
 
   out["tmp_exac_rate"] = (*ag).tmp_exac_rate;
+  out["exac_time_first"] = (*ag).exac_history_time_first;
+  out["exac_severity_first"] = (*ag).exac_history_severity_first;
+  out["exac_time_second"] = (*ag).exac_history_time_second;
+  out["exac_severity_second"] = (*ag).exac_history_severity_second;
 
   return out;
 }
@@ -2056,6 +2063,8 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   (*ag).exac_status=0;
   (*ag).exac_LPT=0;
 
+  (*ag).exac_history_time_first=0;
+  (*ag).exac_history_time_second=0;
 
   //COPD;
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
@@ -2352,7 +2361,6 @@ agent *event_end_process(agent *ag)
   output.total_exac_time[2]+=(*ag).cumul_exac_time[2];
   output.total_exac_time[3]+=(*ag).cumul_exac_time[3];
 
-
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;
 
@@ -2536,8 +2544,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,29);
-  CharacterVector eventMatrixColNames(29);
+  NumericMatrix outm(event_stack_pointer,33);
+  CharacterVector eventMatrixColNames(33);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2571,6 +2579,11 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(26) = "medication_status";
   eventMatrixColNames(27) = "tmp_exac_rate";
   eventMatrixColNames(28) = "case_detection";
+  eventMatrixColNames(29) = "exac_time_first";
+  eventMatrixColNames(30) = "exac_severity_first";
+  eventMatrixColNames(31) = "exac_time_second";
+  eventMatrixColNames(32) = "exac_severity_second";
+
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2605,7 +2618,10 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,26)=(*ag).medication_status;
     outm(i,27)=(*ag).tmp_exac_rate;
     outm(i,28)=(*ag).case_detection;
-
+    outm(i,29)=(*ag).exac_history_time_first;
+    outm(i,30)=(*ag).exac_history_severity_first;
+    outm(i,31)=(*ag).exac_history_time_second;
+    outm(i,32)=(*ag).exac_history_severity_second;
   }
 
   return(outm);
@@ -2856,6 +2872,7 @@ void event_exacerbation_process(agent *ag)
   (*ag).cumul_exac[(*ag).exac_status-1]+=1;
   (*ag).exac_LPT=(*ag).local_time;
 
+
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   if((*ag).medication_status>0)
   {
@@ -2881,6 +2898,14 @@ void event_exacerbation_process(agent *ag)
 #endif
 
   double hosp_diagnosis;
+
+
+  //Update exacerbation history
+  (*ag).exac_history_time_first=(*ag).exac_history_time_second;
+  (*ag).exac_history_severity_first=(*ag).exac_history_severity_second;
+  (*ag).exac_history_time_second=(*ag).local_time;
+  (*ag).exac_history_severity_second=(*ag).exac_status;
+
 
   if ((*ag).diagnosis==0)
   {
