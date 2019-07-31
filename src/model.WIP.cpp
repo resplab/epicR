@@ -2901,10 +2901,10 @@ void event_exacerbation_process(agent *ag)
 
 
   //Update exacerbation history
-  (*ag).exac_history_time_first=(*ag).exac_history_time_second;
-  (*ag).exac_history_severity_first=(*ag).exac_history_severity_second;
-  (*ag).exac_history_time_second=(*ag).local_time;
-  (*ag).exac_history_severity_second=(*ag).exac_status;
+  (*ag).exac_history_time_second=(*ag).exac_history_time_first;
+  (*ag).exac_history_severity_second=(*ag).exac_history_severity_first;
+  (*ag).exac_history_time_first=(*ag).local_time;
+  (*ag).exac_history_severity_first=(*ag).exac_status;
 
 
   if ((*ag).diagnosis==0)
