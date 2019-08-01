@@ -462,10 +462,11 @@ init_input <- function() {
 
   # medication log-hazard regression matrix for initiation of each medication
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
-  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1),SABA_LABA=log(1), LAMA=log(1-0.20), LAMA_SABA=log(1),
-                                            LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1), ICS=log(1), ICS_SABA=log(1),
-                                            ICS_LABA=log(1), ICS_LABA_SABA=log(1), ICS_LAMA=log(1), ICS_LAMA_SABA=log(1),
-                                            ICS_LAMA_LABA=log(1), ICS_LAMA_LABA_SABA=log(1))
+  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1-0.20),SABA_LABA=log(1-0.20), LAMA=log(1-0.22),
+                                            LAMA_SABA=log(1-0.22), LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1-0.23),
+                                            ICS=log(1-0.19), ICS_SABA=log(1-0.19), ICS_LABA=log(1-0.25), ICS_LABA_SABA=log(1-0.25),
+                                            ICS_LAMA=log(1), ICS_LAMA_SABA=log(1), ICS_LAMA_LABA=log(1-0.34),
+                                            ICS_LAMA_LABA_SABA=log(1-0.34))
   input_ref$medication$medication_ln_hr_exac <- ""
 
   # medication event

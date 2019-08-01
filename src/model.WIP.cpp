@@ -1865,11 +1865,24 @@ double apply_case_detection(agent *ag)
 
     p_diagnosis = p_diagnosis / (1 + p_diagnosis);
 
-    if (rand_unif() < p_diagnosis) {
+    if (rand_unif() < p_diagnosis)
+      {
             (*ag).diagnosis = 1;
-            (*ag).medication_status=MED_CLASS_LAMA;
-            medication_LPT(ag);
-          }
+      }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0 && ((*ag).local_time - (*ag).exac_history_time_first) >1 &&
+        ((*ag).local_time - (*ag).exac_history_time_second) >1)
+      {
+        (*ag).medication_status=MED_CLASS_SABA;
+         medication_LPT(ag);
+      }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1 && ((*ag).local_time - (*ag).exac_history_time_first) >1 &&
+        ((*ag).local_time - (*ag).exac_history_time_second) >1)
+      {
+        (*ag).medication_status=MED_CLASS_LAMA;
+        medication_LPT(ag);
+      }
 
   } else {
 
@@ -1881,6 +1894,9 @@ double apply_case_detection(agent *ag)
         if(rand_unif() < correct_overdiagnosis) {
 
         (*ag).diagnosis = 0;
+
+        (*ag).medication_status=0;
+        medication_LPT(ag);
 
          return(0);
       }
@@ -1901,15 +1917,20 @@ double apply_case_detection(agent *ag)
 
       p_overdiagnosis = p_overdiagnosis / (1 + p_overdiagnosis);
 
-      if (rand_unif() < p_overdiagnosis) {
-        (*ag).diagnosis = 1;
-
-      } else {
-
-        (*ag).diagnosis = 0;
-
+      if (rand_unif() < p_overdiagnosis)
+        {
+            (*ag).diagnosis = 1;
+        } else
+          {
+            (*ag).diagnosis = 0;
           }
-        }
+
+            if((*ag).diagnosis == 1 && (*ag).gold==0)
+              {
+                (*ag).medication_status=MED_CLASS_SABA;
+                medication_LPT(ag);
+              }
+      }
     }
   }
   return(0);
@@ -2804,7 +2825,7 @@ void event_COPD_process(agent *ag)
 
 
 
-//////////////////////////////////////////////////////////////////EVENT_EXACERBATIN////////////////////////////////////;
+//////////////////////////////////////////////////////////////////EVENT_EXACERBATION////////////////////////////////////;
 double event_exacerbation_tte(agent *ag)
 {
   if((*ag).gold==0 || (*ag).exac_status>0) return(HUGE_VAL);
@@ -2923,11 +2944,34 @@ void event_exacerbation_process(agent *ag)
   }
 
 
-  if((*ag).diagnosis==1 && (*ag).exac_status>2)
+  if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==1)
+  {
+    (*ag).medication_status= MED_CLASS_LAMA;
+    medication_LPT(ag);
+  }
+
+  if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==0)
+  {
+    (*ag).medication_status=MED_CLASS_SABA;
+    medication_LPT(ag);
+  }
+
+  if((*ag).diagnosis==1 && (*ag).dyspnea==0 && (((*ag).exac_status>2) |
+     ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
+     (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
   {
     (*ag).medication_status=MED_CLASS_LAMA | MED_CLASS_LABA;
     medication_LPT(ag);
   }
+
+  if((*ag).diagnosis==1 && (*ag).dyspnea==1 && (((*ag).exac_status>2) |
+     ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
+     (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
+  {
+    (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+    medication_LPT(ag);
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_END////////////////////////////////////;
