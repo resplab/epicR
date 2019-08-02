@@ -1870,19 +1870,13 @@ double apply_case_detection(agent *ag)
             (*ag).diagnosis = 1;
       }
 
-    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0 &&
-        ((((*ag).local_time - (*ag).exac_history_time_first) >1 && ((*ag).local_time - (*ag).exac_history_time_second) >1) |
-        (((*ag).local_time - (*ag).exac_history_time_first) <1 && ((*ag).local_time - (*ag).exac_history_time_first) >0 &&
-        ((*ag).exac_history_severity_first == 2 | (*ag).exac_history_severity_first == 1))))
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
       {
         (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
          medication_LPT(ag);
       }
 
-    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1 &&
-        ((((*ag).local_time - (*ag).exac_history_time_first) >1 && ((*ag).local_time - (*ag).exac_history_time_second) >1) |
-        (((*ag).local_time - (*ag).exac_history_time_first) <1 && ((*ag).local_time - (*ag).exac_history_time_first) >0 &&
-        ((*ag).exac_history_severity_first == 2 | (*ag).exac_history_severity_first == 1))))
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
       {
         (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
         medication_LPT(ag);
