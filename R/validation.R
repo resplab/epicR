@@ -1374,7 +1374,7 @@ validate_treatment<- function(n_sim = 1e+04) {
   exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
 
   ##
-  cat("Annual exacerbation rate:\n")
+  cat("Annual exacerbation rate (also plotted):\n")
   cat("\n")
 
   trt_effect<- data.frame(Year=1:inputs_d$global_parameters$time_horizon,
@@ -1624,4 +1624,69 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 
   terminate_session()
 
-  }
+}
+
+
+#' Returns results of validation tests for medication module.
+#' @param n_sim number of agents
+#' @return validation test results for medication
+#' @export
+
+validate_medication <- function(n_sim = 5e+04) {
+  cat("\n")
+  cat("Plotting medication usage over time:")
+  cat("\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+res <- run(input = input)
+if (res < 0)
+  stop("Execution stopped.\n")
+
+all_events <- as.data.frame(Cget_all_events_matrix())
+all_annual_events <- all_events[all_events$event==1,] # only annual event
+
+# Prop on each med class over time and by gold
+all_annual_events$time <- floor(all_annual_events$local_time + all_annual_events$time_at_creation)
+
+med.plot <- all_annual_events %>%
+  group_by(time, gold) %>%
+  count(medication_status) %>%
+  mutate(prop=n/sum(n))
+
+med.plot$gold <- as.character(med.plot$gold )
+
+# overall among COPD patients
+copd <- med.plot %>%
+  filter(gold>0) %>%
+  group_by(time, medication_status) %>%
+  summarise(n=sum(n)) %>%
+  mutate(prop=n/sum(n), gold="all copd") %>%
+  select(time, gold, everything())
+
+med.plot <- rbind(med.plot, copd)
+
+med.plot$medication_status <- ifelse(med.plot$medication_status==0,"none",
+                                     ifelse(med.plot$medication_status==1,"SABA",
+                                            ifelse(med.plot$medication_status==4,"LAMA",
+                                                   ifelse(med.plot$medication_status==6,"LAMA/LABA",
+                                                          ifelse(med.plot$medication_status==14,"ICS/LAMA/LABA",9)))))
+
+med.plotted <- ggplot2::ggplot(data=med.plot, aes(x=time, y=prop, col=medication_status)) +
+  geom_line() + facet_wrap(~gold, labeller=label_both) +
+  expand_limits(y = 0) + theme_bw() + ylab("Proportion per medication class") + xlab("Years") +
+  theme(legend.title=element_blank())
+
+plot(med.plotted)
+
+terminate_session()
+
+}
