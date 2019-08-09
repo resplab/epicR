@@ -572,6 +572,7 @@ struct input
 
   struct
   {
+    double logit_p_prevalent_diagnosis_by_sex[9][2];
     double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
     double logit_p_overdiagnosis_by_sex[9][2];
@@ -744,6 +745,7 @@ List Cget_inputs()
     ),
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
+    Rcpp::Named("logit_p_prevalent_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_prevalent_diagnosis_by_sex),
     Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
     Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis,
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
@@ -869,6 +871,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="outpatient$dispersion_gpvisits_COPD") {input.outpatient.dispersion_gpvisits_COPD=value[0]; return(0);}
   if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
 
+  if(name=="diagnosis$logit_p_prevalent_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_prevalent_diagnosis_by_sex);
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
@@ -1849,15 +1852,15 @@ double update_prevalent_diagnosis(agent *ag)
 
     if((*ag).diagnosis>0) return(0);
 
-    p_prev_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
-      input.diagnosis.logit_p_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
-      input.diagnosis.logit_p_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
-      input.diagnosis.logit_p_diagnosis_by_sex[3][(*ag).sex]*((*ag).fev1) +
-      input.diagnosis.logit_p_diagnosis_by_sex[5][(*ag).sex]*((*ag).cough) +
-      input.diagnosis.logit_p_diagnosis_by_sex[6][(*ag).sex]*((*ag).phlegm) +
-      input.diagnosis.logit_p_diagnosis_by_sex[7][(*ag).sex]*((*ag).wheeze) +
-      input.diagnosis.logit_p_diagnosis_by_sex[8][(*ag).sex]*((*ag).dyspnea) +
-      input.diagnosis.logit_p_diagnosis_by_sex[9][(*ag).sex]*((*ag).case_detection));
+    p_prev_diagnosis = exp(input.diagnosis.logit_p_prevalent_diagnosis_by_sex[0][(*ag).sex] +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[3][(*ag).sex]*((*ag).fev1) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[4][(*ag).sex]*((*ag).cough) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[7][(*ag).sex]*((*ag).dyspnea) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[8][(*ag).sex]*((*ag).case_detection));
 
     p_prev_diagnosis = p_prev_diagnosis / (1 + p_prev_diagnosis);
 

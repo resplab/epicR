@@ -418,15 +418,28 @@ init_input <- function() {
 
   ## Diagnosis;
 
+  # Baseline diagnosis
+  input_help$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Probability of being diagnosed for patients with prevalent COPD"
+  input$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                           cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                           case_detection=0),
+                                                    female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                             cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                             case_detection=0))
+  input_ref$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-08-09"
+
+  # Follow-up diagnosis
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
   input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=0, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(1.82)),
+                                                           case_detection=0),
                                                     female=c(intercept=0-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(1.82)))
+                                                             case_detection=0))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$diagnosis$p_hosp_diagnosis <- 0.5
+
+  # Overdiagnosis
 
   input_help$diagnosis$logit_p_overdiagnosis_by_sex <- "Probability of being overdiagnosed for non-COPD subjects"
   input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
