@@ -1838,6 +1838,52 @@ double apply_case_detection(agent *ag)
   return(0);
 }
 
+/// Baseline diagnosis
+
+double update_prevalent_diagnosis(agent *ag)
+{
+
+  double p_prev_diagnosis = 0;
+
+  if((*ag).gold!=0)  {
+
+    if((*ag).diagnosis>0) return(0);
+
+    p_prev_diagnosis = exp(input.diagnosis.logit_p_diagnosis_by_sex[0][(*ag).sex] +
+      input.diagnosis.logit_p_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.diagnosis.logit_p_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.diagnosis.logit_p_diagnosis_by_sex[3][(*ag).sex]*((*ag).fev1) +
+      input.diagnosis.logit_p_diagnosis_by_sex[5][(*ag).sex]*((*ag).cough) +
+      input.diagnosis.logit_p_diagnosis_by_sex[6][(*ag).sex]*((*ag).phlegm) +
+      input.diagnosis.logit_p_diagnosis_by_sex[7][(*ag).sex]*((*ag).wheeze) +
+      input.diagnosis.logit_p_diagnosis_by_sex[8][(*ag).sex]*((*ag).dyspnea) +
+      input.diagnosis.logit_p_diagnosis_by_sex[9][(*ag).sex]*((*ag).case_detection));
+
+    p_prev_diagnosis = p_prev_diagnosis / (1 + p_prev_diagnosis);
+
+    if (rand_unif() < p_prev_diagnosis)
+    {
+      (*ag).diagnosis = 1;
+    }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
+    {
+      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+      medication_LPT(ag);
+    }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
+    {
+      (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+      medication_LPT(ag);
+    }
+
+  }
+  return(0);
+}
+
+
+/// Follow-up diagnosis
 
  double update_diagnosis(agent *ag)
 {
@@ -2200,6 +2246,9 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
   //symptoms
   update_symptoms(ag);
+
+  //diagnosis
+  update_prevalent_diagnosis(ag);
 
   //stroke
   double stroke_odds=exp(input.comorbidity.logit_p_stroke_betas_by_sex[0][(*ag).sex]
