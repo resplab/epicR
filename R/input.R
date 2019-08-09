@@ -430,10 +430,10 @@ init_input <- function() {
 
   # Follow-up diagnosis
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=0, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                            case_detection=0),
-                                                    female=c(intercept=0-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                    female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                              case_detection=0))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
