@@ -1144,12 +1144,6 @@ List get_agent(agent *ag)
   out["diagnosis"] = (*ag).diagnosis;
   out["case_detection"] = (*ag).case_detection;
 
-  out["tmp_exac_rate"] = (*ag).tmp_exac_rate;
-  out["exac_time_first"] = (*ag).exac_history_time_first;
-  out["exac_severity_first"] = (*ag).exac_history_severity_first;
-  out["exac_time_second"] = (*ag).exac_history_time_second;
-  out["exac_severity_second"] = (*ag).exac_history_severity_second;
-
   return out;
 }
 
@@ -2615,8 +2609,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,33);
-  CharacterVector eventMatrixColNames(33);
+  NumericMatrix outm(event_stack_pointer,28);
+  CharacterVector eventMatrixColNames(28);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2648,12 +2642,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(24) = "gpvisits";
   eventMatrixColNames(25) = "diagnosis";
   eventMatrixColNames(26) = "medication_status";
-  eventMatrixColNames(27) = "tmp_exac_rate";
-  eventMatrixColNames(28) = "case_detection";
-  eventMatrixColNames(29) = "exac_time_first";
-  eventMatrixColNames(30) = "exac_severity_first";
-  eventMatrixColNames(31) = "exac_time_second";
-  eventMatrixColNames(32) = "exac_severity_second";
+  eventMatrixColNames(27) = "case_detection";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2687,12 +2676,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,24)=(*ag).gpvisits;
     outm(i,25)=(*ag).diagnosis;
     outm(i,26)=(*ag).medication_status;
-    outm(i,27)=(*ag).tmp_exac_rate;
-    outm(i,28)=(*ag).case_detection;
-    outm(i,29)=(*ag).exac_history_time_first;
-    outm(i,30)=(*ag).exac_history_severity_first;
-    outm(i,31)=(*ag).exac_history_time_second;
-    outm(i,32)=(*ag).exac_history_severity_second;
+    outm(i,27)=(*ag).case_detection;
   }
 
   return(outm);
