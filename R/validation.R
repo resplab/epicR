@@ -1334,12 +1334,28 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   input_nd <- model_input$values
 
+  input_nd$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=-100, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                            cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                            case_detection=0),
+                                                                     female=c(intercept=-100-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                              cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                              case_detection=0))
+
+  input_nd$diagnosis$p_hosp_diagnosis <- 0
+
   input_nd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                              case_detection=0),
-                                                       female=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                case_detection=0))
+                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                  case_detection=0),
+                                                           female=c(intercept=-100-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                    case_detection=0))
+
+  input_nd$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-100, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                      cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                      case_detection=0),
+                                                               female=c(intercept=-100+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                        cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                        case_detection=0))
 
   res <- run(input = input_nd)
   if (res < 0)
@@ -1357,12 +1373,22 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   input_d <- model_input$values
 
+  input_d$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=100, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                        cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                        case_detection=0),
+                                                                 female=c(intercept=100-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                          cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                          case_detection=0))
+
+  input_d$diagnosis$p_hosp_diagnosis <- 1
+
   input_d$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                               gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                               case_detection=0),
-                                                       female=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                       female=c(intercept=100-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                 gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                                 case_detection=0))
+
 
   res <- run(input = input_d)
   if (res < 0)
@@ -1374,7 +1400,7 @@ validate_treatment<- function(n_sim = 1e+04) {
   exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
 
   ##
-  cat("Annual exacerbation rate (also plotted):\n")
+  cat("Annual exacerbation rate (this is also plotted):\n")
   cat("\n")
 
   trt_effect<- data.frame(Year=1:inputs_d$global_parameters$time_horizon,
