@@ -434,15 +434,13 @@ init_input <- function() {
   input$diagnosis$min_cd_smokers <- 0
   input_ref$diagnosis$min_cd_smokers <- ""
 
-  #input_help$diagnosis$case_detection_methods <- ""
-  #input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
-  #                                                CDQ195= c(0.4742, 0.1858),
-  #                                                CDQ165= c(0.6069, 0.4115),
-  #                                                FlowMeter= c(0.5676, 0.0735),
-  #                                                FlowMeter_CDQ= c(0.5366, 0.0134))
-  #input_ref$diagnosis$case_detection_methods <- ""
-
-  #input$diagnosis$active_cd_method <- input$diagnosis$case_detection_methods[,"None"]
+  input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
+  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
+                                                  CDQ195= c(0.4742, 0.1858),
+                                                  CDQ165= c(0.6069, 0.4115),
+                                                  FlowMeter= c(0.5676, 0.0735),
+                                                  FlowMeter_CDQ= c(0.5366, 0.0134))
+  input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
 
 
   ## Diagnosis;
@@ -451,20 +449,20 @@ init_input <- function() {
   input_help$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Probability of being diagnosed for patients with prevalent COPD"
   input$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146,
                                                            cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
-                                                           case_detection=0),
+                                                           case_detection=input$diagnosis$case_detection_methods[1,"None"]),
                                                     female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
                                                              cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
-                                                             case_detection=0))
+                                                             case_detection=input$diagnosis$case_detection_methods[1,"None"]))
   input_ref$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-08-09"
 
   # Follow-up diagnosis
   input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
   input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=0),
+                                                           case_detection=input$diagnosis$case_detection_methods[1,"None"]),
                                                     female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=0))
+                                                             case_detection=input$diagnosis$case_detection_methods[1,"None"]))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$diagnosis$p_hosp_diagnosis <- 0.5
 
@@ -473,10 +471,10 @@ init_input <- function() {
   input_help$diagnosis$logit_p_overdiagnosis_by_sex <- "Probability of being overdiagnosed for non-COPD subjects"
   input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
                                                                cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
-                                                               case_detection=0),
+                                                               case_detection=input$diagnosis$case_detection_methods[2,"None"]),
                                                     female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
                                                              cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
-                                                             case_detection=0))
+                                                             case_detection=input$diagnosis$case_detection_methods[2,"None"]))
   input_ref$diagnosis$logit_p_overdiagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-07-16"
   input$diagnosis$p_correct_overdiagnosis <- 0.9
 
