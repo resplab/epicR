@@ -1432,10 +1432,10 @@ validate_treatment<- function(n_sim = 1e+04) {
 #' @param min_age minimum age that can recieve case detection
 #' @param min_pack_years minimum pack years that can recieve case detection
 #' @param only_smokers set to 1 if only smokers should recieve case detection
-#' @param OR_of_CD odds ratio for the impact of recieving case detection on the odds of being diagnosed
+#' @param CD_method Choose one case detection method: CDQ195", "CDQ165", "FlowMeter", "FlowMeter_CDQ"
 #' @return results of case detection strategy compared to no case detection
 #' @export
-test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, OR_of_CD=1.82) {
+test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, CD_method="CDQ195") {
   cat("Comparing a case detection strategy to no case detection.\n")
   petoc()
 
@@ -1454,10 +1454,10 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input$diagnosis$min_cd_smokers <-only_smokers
   input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                   gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                  case_detection=log(OR_of_CD)),
+                                                                  case_detection=input$diagnosis$case_detection_methods[1,"None"]),
                                                            female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                     gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                    case_detection=log(OR_of_CD)))
+                                                                    case_detection=input$diagnosis$case_detection_methods[1,"None"]))
   cat("\n")
   cat("Here are your inputs for the case detection strategy:\n")
   cat("\n")
@@ -1507,10 +1507,10 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input_nocd$diagnosis$min_cd_smokers <-only_smokers
   input_nocd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                            gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(OR_of_CD)),
+                                                           case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
                                                     female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(OR_of_CD)))
+                                                             case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
   cat("\n")
   cat("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
   cat("\n")
