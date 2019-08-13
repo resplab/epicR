@@ -81,7 +81,7 @@ init_input <- function() {
   input_ref$agent$p_female <- "Model assumption"
 
 
-  input_help$agent$height_0_betas <- "Regressoin coefficients for estimating height (in meters) at baseline"
+  input_help$agent$height_0_betas <- "Regression coefficients for estimating height (in meters) at baseline"
   input$agent$height_0_betas <- t(as.matrix(c(intercept = 1.82657, sex = -0.13093, age = -0.00125, age2 = 2.31e-06, sex_age = -0.0001651)))
   input_ref$agent$height_0_betas <- ""
 
@@ -416,6 +416,35 @@ init_input <- function() {
   input$outpatient$p_specialist <- 0.1
 
 
+  ## Case detection;
+
+  input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
+  input$diagnosis$p_case_detection <- 0.1
+  input_ref$diagnosis$p_case_detection <- ""
+
+  input_help$diagnosis$min_cd_age <- "Minimum age for recieving case detection"
+  input$diagnosis$min_cd_age <- 40
+  input_ref$diagnosis$min_cd_age <- ""
+
+  input_help$diagnosis$min_cd_pack_years <- "Minimum pack-years smoking to recieve case detection"
+  input$diagnosis$min_cd_pack_years <- 0
+  input_ref$diagnosis$min_cd_pack_years <- ""
+
+  input_help$diagnosis$min_cd_smokers <- "Set to 1 if only current smokers should recieve case detection"
+  input$diagnosis$min_cd_smokers <- 0
+  input_ref$diagnosis$min_cd_smokers <- ""
+
+  #input_help$diagnosis$case_detection_methods <- ""
+  #input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
+  #                                                CDQ195= c(0.4742, 0.1858),
+  #                                                CDQ165= c(0.6069, 0.4115),
+  #                                                FlowMeter= c(0.5676, 0.0735),
+  #                                                FlowMeter_CDQ= c(0.5366, 0.0134))
+  #input_ref$diagnosis$case_detection_methods <- ""
+
+  #input$diagnosis$active_cd_method <- input$diagnosis$case_detection_methods[,"None"]
+
+
   ## Diagnosis;
 
   # Baseline diagnosis
@@ -450,25 +479,6 @@ init_input <- function() {
                                                              case_detection=0))
   input_ref$diagnosis$logit_p_overdiagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-07-16"
   input$diagnosis$p_correct_overdiagnosis <- 0.9
-
-
-  # Case detection;
-
-  input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
-  input$diagnosis$p_case_detection <- 0.1
-  input_ref$diagnosis$p_case_detection <- ""
-
-  input_help$diagnosis$min_cd_age <- "Minimum age for recieving case detection"
-  input$diagnosis$min_cd_age <- 40
-  input_ref$diagnosis$min_cd_age <- ""
-
-  input_help$diagnosis$min_cd_pack_years <- "Minimum pack-years smoking to recieve case detection"
-  input$diagnosis$min_cd_pack_years <- 0
-  input_ref$diagnosis$min_cd_pack_years <- ""
-
-  input_help$diagnosis$min_cd_smokers <- "Set to 1 if only current smokers should recieve case detection"
-  input$diagnosis$min_cd_smokers <- 0
-  input_ref$diagnosis$min_cd_smokers <- ""
 
 
   ## Medication;

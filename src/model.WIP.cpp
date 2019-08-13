@@ -581,6 +581,8 @@ struct input
     double min_cd_age;
     double min_cd_pack_years;
     int min_cd_smokers;
+    //double case_detection_methods[2][5];
+    //double active_cd_method[2];
   } diagnosis;
 
   struct
@@ -754,6 +756,8 @@ List Cget_inputs()
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
     Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers
+    //Rcpp::Named("case_detection_methods")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods)
+    //Rcpp::Named("active_cd_method")=input.diagnosis.active_cd_method
     ),
 
     Rcpp::Named("comorbidity")=Rcpp::List::create(
@@ -880,6 +884,8 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
   if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
+  //if(name=="diagnosis$case_detection_methods") READ_R_MATRIX(value,input.diagnosis.case_detection_methods);
+  //if(name=="diagnosis$active_cd_method") READ_R_VECTOR(value,input.diagnosis.active_cd_method);
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
   if(name=="symptoms$covariance_nonCOPD")  READ_R_MATRIX(value, input.symptoms.covariance_nonCOPD);
