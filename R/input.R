@@ -541,6 +541,12 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
+  input$cost$cost_case_detection <- 25
+  input_help$cost$cost_case_detection <- "Cost of case detection"
+
+  input$cost$cost_diagnosis <- 50
+  input_help$cost$cost_diagnosis <- "Cost of diagnostic spirometry"
+
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
   input$utility$bg_util_by_stage=t(as.matrix(c(N=0.85, I=0.81,II=0.72,III=0.68,IV=0.58)))

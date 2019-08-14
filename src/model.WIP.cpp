@@ -588,8 +588,10 @@ struct input
   {
     double bg_cost_by_stage[5];
     double exac_dcost[4];
-    double doctor_visit_by_type[2];
+    double cost_case_detection;
+    double cost_diagnosis;
 
+    double doctor_visit_by_type[2];
     double mi_dcost;
     double mi_post_cost;
     double stroke_dcost;
@@ -772,6 +774,9 @@ List Cget_inputs()
     Rcpp::Named("cost")=Rcpp::List::create(
       Rcpp::Named("bg_cost_by_stage")=AS_VECTOR_DOUBLE(input.cost.bg_cost_by_stage),
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
+      Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
+      Rcpp::Named("cost_diagnosis")=input.cost.cost_diagnosis,
+
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
     ),
     Rcpp::Named("utility")=Rcpp::List::create(
@@ -891,6 +896,8 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
 
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
+  if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
+  if(name=="cost$cost_diagnosis") {input.cost.cost_diagnosis=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
   if(name=="medication$ln_h_start_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_start_betas_by_class);
@@ -1750,11 +1757,9 @@ void payoffs_LPT(agent *ag)
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
-
   //annual cost and qaly
   (*ag).annual_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).annual_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
-
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
