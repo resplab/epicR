@@ -602,6 +602,7 @@ struct input
   {
     double bg_util_by_stage[5];
     double exac_dutil[4][4];
+    double symptom_utility;
 
     double mi_dutil;
     double mi_post_dutil;
@@ -781,7 +782,8 @@ List Cget_inputs()
     ),
     Rcpp::Named("utility")=Rcpp::List::create(
       Rcpp::Named("bg_util_by_stage")=AS_VECTOR_DOUBLE(input.utility.bg_util_by_stage),
-      Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil)
+      Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil),
+      Rcpp::Named("symptom_utility")=input.utility.symptom_utility
     )
   ,
   Rcpp::Named("medication")=Rcpp::List::create(
@@ -910,6 +912,7 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="utility$bg_util_by_stage") READ_R_VECTOR(value,input.utility.bg_util_by_stage);
   if(name=="utility$exac_dutil") READ_R_MATRIX(value,input.utility.exac_dutil);
+  if(name=="utility$symptom_utility") {input.utility.symptom_utility=value[0]; return(0);};
 
   if(name=="comorbidity$logit_p_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_mi_betas_by_sex);
   if(name=="comorbidity$ln_h_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_mi_betas_by_sex);
@@ -1837,9 +1840,11 @@ double apply_case_detection(agent *ag)
 
   if (rand_unif() < p_detection) {
     (*ag).case_detection = 1;
+    (*ag).cumul_cost+=input.cost.cost_case_detection;
   } else {
     (*ag).case_detection = 0;
   }
+
   return(0);
 }
 
@@ -1869,6 +1874,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
+      (*ag).cumul_cost+=input.cost.cost_diagnosis;
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1918,7 +1924,8 @@ double update_prevalent_diagnosis(agent *ag)
 
     if (rand_unif() < p_diagnosis)
       {
-            (*ag).diagnosis = 1;
+        (*ag).diagnosis = 1;
+        (*ag).cumul_cost+=input.cost.cost_diagnosis;
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1969,6 +1976,8 @@ double update_prevalent_diagnosis(agent *ag)
       if (rand_unif() < p_overdiagnosis)
         {
             (*ag).diagnosis = 1;
+            (*ag).cumul_cost+=input.cost.cost_diagnosis;
+
         } else
           {
             (*ag).diagnosis = 0;

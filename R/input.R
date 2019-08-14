@@ -549,7 +549,7 @@ init_input <- function() {
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
-  input$utility$bg_util_by_stage=t(as.matrix(c(N=0.85, I=0.81,II=0.72,III=0.68,IV=0.58)))
+  input$utility$bg_util_by_stage=t(as.matrix(c(N=0.86, I=0.81,II=0.72,III=0.68,IV=0.58)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
   #  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
   input$utility$exac_dutil=cbind(
@@ -559,6 +559,9 @@ init_input <- function() {
     gold4=c(mild=-0.0488, moderate=-0.0488, severe=-0.0655, verysevere=-0.0655)
   );
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
+
+  input$utility$symptom_utility <- 0.023
+  input_help$utility$symptom_utility <- "Utility addition for COPD patients on treatment"
 
   input$manual$MORT_COEFF<-1
   input$manual$smoking$intercept_k<-1
