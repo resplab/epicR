@@ -602,7 +602,7 @@ struct input
   {
     double bg_util_by_stage[5];
     double exac_dutil[4][4];
-    double symptom_utility;
+    double treatment_utility;
 
     double mi_dutil;
     double mi_post_dutil;
@@ -624,6 +624,7 @@ struct input
   struct
   {
     double medication_ln_hr_exac[16];
+    double medication_costs[16];
     double ln_h_start_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_h_stop_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_rr_exac_by_class[N_MED_CLASS];
@@ -783,11 +784,12 @@ List Cget_inputs()
     Rcpp::Named("utility")=Rcpp::List::create(
       Rcpp::Named("bg_util_by_stage")=AS_VECTOR_DOUBLE(input.utility.bg_util_by_stage),
       Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil),
-      Rcpp::Named("symptom_utility")=input.utility.symptom_utility
+      Rcpp::Named("treatment_utility")=input.utility.treatment_utility
     )
   ,
   Rcpp::Named("medication")=Rcpp::List::create(
     Rcpp::Named("medication_ln_hr_exac")=AS_VECTOR_DOUBLE(input.medication.medication_ln_hr_exac),
+    Rcpp::Named("medication_costs")=AS_VECTOR_DOUBLE(input.medication.medication_costs),
     Rcpp::Named("ln_h_start_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_start_betas_by_class),
     Rcpp::Named("ln_h_stop_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_stop_betas_by_class),
     Rcpp::Named("ln_rr_exac_by_class")=AS_VECTOR_DOUBLE(input.medication.ln_rr_exac_by_class)
@@ -902,6 +904,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="cost$cost_diagnosis") {input.cost.cost_diagnosis=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
+  if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
   if(name=="medication$ln_h_start_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_start_betas_by_class);
   if(name=="medication$ln_h_stop_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_stop_betas_by_class);
   if(name=="medication$ln_rr_exac_by_class") READ_R_VECTOR(value,input.medication.ln_rr_exac_by_class);
@@ -912,7 +915,7 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="utility$bg_util_by_stage") READ_R_VECTOR(value,input.utility.bg_util_by_stage);
   if(name=="utility$exac_dutil") READ_R_MATRIX(value,input.utility.exac_dutil);
-  if(name=="utility$symptom_utility") {input.utility.symptom_utility=value[0]; return(0);};
+  if(name=="utility$treatment_utility") {input.utility.treatment_utility=value[0]; return(0);};
 
   if(name=="comorbidity$logit_p_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_mi_betas_by_sex);
   if(name=="comorbidity$ln_h_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_mi_betas_by_sex);
@@ -1770,14 +1773,22 @@ void payoffs_LPT(agent *ag)
 
 void medication_LPT(agent *ag)
 {
-#if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
-  for(int i=0;i<N_MED_CLASS;i++)
-    if(((*ag).medication_status >> i) & 1)
-    {
-      output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
-    }
+  #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+    for(int i=0;i<N_MED_CLASS;i++)
+      if(((*ag).medication_status >> i) & 1)
+      {
+        output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+      }
+  #endif
+    // costs
+      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
-#endif
+    // qaly
+      if((*ag).gold>0 && ((*ag).cough==1|(*ag).phlegm==1|(*ag).wheeze==1|(*ag).dyspnea==1))
+        {
+          (*ag).cumul_qaly+=input.utility.treatment_utility[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+        }
+
     (*ag).medication_LPT=(*ag).local_time;
 }
 
@@ -1874,7 +1885,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      (*ag).cumul_cost+=input.cost.cost_diagnosis;
+      (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1925,7 +1936,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_diagnosis)
       {
         (*ag).diagnosis = 1;
-        (*ag).cumul_cost+=input.cost.cost_diagnosis;
+        (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1942,14 +1953,14 @@ double update_prevalent_diagnosis(agent *ag)
 
   } else {
 
-    double correct_overdiagnosis;
-    correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
+    double correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
 
       if((*ag).diagnosis>0) {
 
         if(rand_unif() < correct_overdiagnosis) {
 
         (*ag).diagnosis = 0;
+        (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
         (*ag).medication_status=0;
         medication_LPT(ag);
@@ -1976,7 +1987,7 @@ double update_prevalent_diagnosis(agent *ag)
       if (rand_unif() < p_overdiagnosis)
         {
             (*ag).diagnosis = 1;
-            (*ag).cumul_cost+=input.cost.cost_diagnosis;
+            (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
         } else
           {

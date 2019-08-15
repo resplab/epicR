@@ -490,6 +490,14 @@ init_input <- function() {
                                             ICS_LAMA_LABA_SABA=log(1-0.34))
   input_ref$medication$medication_ln_hr_exac <- ""
 
+  # cost of medications
+  input_help$medication$medication_costs <- "Costs of treatment"
+  input$medication$medication_costs <-c(None=0,SABA=50,LABA=0,SABA_LABA=0, LAMA=100, LAMA_SABA=0, LAMA_LABA=150, LAMA_LAMA_SABA=0,
+                                        ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0, ICS_LAMA_SABA=0,
+                                        ICS_LAMA_LABA=200, ICS_LAMA_LABA_SABA=0)
+  input_ref$medication$medication_costs <- "BC administrative data"
+
+
   # medication event
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL
@@ -560,8 +568,8 @@ init_input <- function() {
   );
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
 
-  input$utility$symptom_utility <- 0.023
-  input_help$utility$symptom_utility <- "Utility addition for COPD patients on treatment"
+  input$utility$treatment_utility <- 0.023
+  input_help$utility$treatment_utility <- "Utility benefit for COPD patients with symptoms and on treatment"
 
   input$manual$MORT_COEFF<-1
   input$manual$smoking$intercept_k<-1
