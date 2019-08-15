@@ -602,7 +602,6 @@ struct input
   {
     double bg_util_by_stage[5];
     double exac_dutil[4][4];
-    double treatment_utility;
 
     double mi_dutil;
     double mi_post_dutil;
@@ -625,6 +624,7 @@ struct input
   {
     double medication_ln_hr_exac[16];
     double medication_costs[16];
+    double medication_utility[16];
     double ln_h_start_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_h_stop_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_rr_exac_by_class[N_MED_CLASS];
@@ -783,13 +783,13 @@ List Cget_inputs()
     ),
     Rcpp::Named("utility")=Rcpp::List::create(
       Rcpp::Named("bg_util_by_stage")=AS_VECTOR_DOUBLE(input.utility.bg_util_by_stage),
-      Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil),
-      Rcpp::Named("treatment_utility")=input.utility.treatment_utility
+      Rcpp::Named("exac_dutil")=AS_MATRIX_DOUBLE(input.utility.exac_dutil)
     )
   ,
   Rcpp::Named("medication")=Rcpp::List::create(
     Rcpp::Named("medication_ln_hr_exac")=AS_VECTOR_DOUBLE(input.medication.medication_ln_hr_exac),
     Rcpp::Named("medication_costs")=AS_VECTOR_DOUBLE(input.medication.medication_costs),
+    Rcpp::Named("medication_utility")=AS_VECTOR_DOUBLE(input.medication.medication_utility),
     Rcpp::Named("ln_h_start_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_start_betas_by_class),
     Rcpp::Named("ln_h_stop_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_stop_betas_by_class),
     Rcpp::Named("ln_rr_exac_by_class")=AS_VECTOR_DOUBLE(input.medication.ln_rr_exac_by_class)
@@ -905,6 +905,7 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
   if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
+  if(name=="medication$medication_utility") READ_R_VECTOR(value,input.medication.medication_utility);
   if(name=="medication$ln_h_start_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_start_betas_by_class);
   if(name=="medication$ln_h_stop_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_stop_betas_by_class);
   if(name=="medication$ln_rr_exac_by_class") READ_R_VECTOR(value,input.medication.ln_rr_exac_by_class);
@@ -915,7 +916,6 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="utility$bg_util_by_stage") READ_R_VECTOR(value,input.utility.bg_util_by_stage);
   if(name=="utility$exac_dutil") READ_R_MATRIX(value,input.utility.exac_dutil);
-  if(name=="utility$treatment_utility") {input.utility.treatment_utility=value[0]; return(0);};
 
   if(name=="comorbidity$logit_p_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_mi_betas_by_sex);
   if(name=="comorbidity$ln_h_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_mi_betas_by_sex);
@@ -1784,9 +1784,9 @@ void medication_LPT(agent *ag)
       (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
-      if((*ag).gold>0 && ((*ag).cough==1|(*ag).phlegm==1|(*ag).wheeze==1|(*ag).dyspnea==1))
+      if((*ag).gold>0 && (((*ag).cough==1)|((*ag).phlegm==1)|((*ag).wheeze==1)|((*ag).dyspnea==1)))
         {
-          (*ag).cumul_qaly+=input.utility.treatment_utility[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
 
     (*ag).medication_LPT=(*ag).local_time;

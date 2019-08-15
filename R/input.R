@@ -497,6 +497,13 @@ init_input <- function() {
                                         ICS_LAMA_LABA=200, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_costs <- "BC administrative data"
 
+  # utility from medications
+  input_help$medication$medication_utility <- "Utility addition from treatment"
+  input$medication$medication_utility <-c(None=0,SABA=0.0367,LABA=0,SABA_LABA=0, LAMA=0.0367, LAMA_SABA=0, LAMA_LABA=0.0367,
+                                        LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0,
+                                        ICS_LAMA_SABA=0, ICS_LAMA_LABA=0.0367, ICS_LAMA_LABA_SABA=0)
+  input_ref$medication$medication_utility <- "Lambe et al. Thorax 2019"
+
 
   # medication event
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
@@ -560,6 +567,7 @@ init_input <- function() {
   input$utility$bg_util_by_stage=t(as.matrix(c(N=0.86, I=0.81,II=0.72,III=0.68,IV=0.58)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
   #  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
+
   input$utility$exac_dutil=cbind(
     gold1=c(mild=-0.0225, moderate=-0.0225, severe=-0.0728, verysevere=-0.0728),
     gold2=c(mild=-0.0155, moderate=-0.0155, severe=-0.0683, verysevere=-0.0683),
@@ -568,8 +576,6 @@ init_input <- function() {
   );
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
 
-  input$utility$treatment_utility <- 0.023
-  input_help$utility$treatment_utility <- "Utility benefit for COPD patients with symptoms and on treatment"
 
   input$manual$MORT_COEFF<-1
   input$manual$smoking$intercept_k<-1
