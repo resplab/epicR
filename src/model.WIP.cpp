@@ -1781,12 +1781,13 @@ void medication_LPT(agent *ag)
       }
   #endif
     // costs
-      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    //(*ag).cumul_cost+=1;
+          (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
       if((*ag).gold>0 && (((*ag).cough==1)|((*ag).phlegm==1)|((*ag).wheeze==1)|((*ag).dyspnea==1)))
         {
-          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
 
     (*ag).medication_LPT=(*ag).local_time;
@@ -1851,7 +1852,7 @@ double apply_case_detection(agent *ag)
 
   if (rand_unif() < p_detection) {
     (*ag).case_detection = 1;
-    (*ag).cumul_cost+=input.cost.cost_case_detection;
+    (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   } else {
     (*ag).case_detection = 0;
   }
