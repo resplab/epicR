@@ -1785,7 +1785,7 @@ void medication_LPT(agent *ag)
           (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
-      if((*ag).gold>0 && (((*ag).cough==1)|((*ag).phlegm==1)|((*ag).wheeze==1)|((*ag).dyspnea==1)))
+      if((*ag).gold>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
           (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
@@ -3260,6 +3260,9 @@ void event_hf_process(agent *ag)
 #endif
 }
 
+
+
+
 ////////////////////////////////////////////////////////////////////EVENT_bgd/////////////////////////////////////;
 double event_bgd_tte(agent *ag)
 {
@@ -3382,22 +3385,6 @@ void event_doctor_visit_process(agent *ag)
 
 
 
-//////////////////////////////////////////////////////////////////EVENT_MEDICATION_CHANGE////////////////////////////////////;
-double event_medicaiton_change_tte(agent *ag)
-{
-  //if((*ag).medication_status==(*ag).recommended_)
-  return(HUGE_VAL);
-}
-
-
-
-
-
-void event_medication_change_process(agent *ag)
-{
-  //medication_LPT(ag);
-}
-
 
 
 
@@ -3427,6 +3414,7 @@ agent *event_fixed_process(agent *ag)
   smoking_LPT(ag);
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
+  medication_LPT(ag);
 
   update_symptoms(ag); //updating symptoms in the annual event
   update_gpvisits(ag); //updating gp visits in the annual event
@@ -3724,13 +3712,6 @@ int Cmodel(int max_n_agents)
         winner=event_doctor_visit;
       }
 
-      temp=event_medicaiton_change_tte(ag);
-      if(temp<tte)
-      {
-        tte=temp;
-        winner=event_medication_change;
-      }
-
       /*temp=event_mi_tte(ag);
       if(temp<tte)
       {
@@ -3808,11 +3789,7 @@ int Cmodel(int max_n_agents)
           event_doctor_visit_process(ag);
           (*ag).event=event_doctor_visit;
           break;
-        case event_medication_change:
-          event_medication_change_process(ag);
-          (*ag).event=event_medication_change;
-          break;
-          /*case event_mi:
+        /*case event_mi:
           event_mi_process(ag);
           (*ag).event=event_mi;
           break;
