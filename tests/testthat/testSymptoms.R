@@ -3,7 +3,7 @@ library(epicR)
 library(dplyr)
 
 
-context("The prevalence of symptoms test")
+context("Symptoms tests")
 
 test_that("The average GP visits in eeach of the 4 symptoms (cough, phlegm, wheeze, dyspnea) has increased by Severity", {
 

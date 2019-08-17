@@ -3,7 +3,7 @@ library(epicR)
 library(dplyr)
 
 
-context("Diagnosis Tests")
+context("Diagnosis tests")
 
 test_that("Proportion diagnosed in GOLD 1 and 2 is no greater than 40%, and increased by Gold stage, proportion of non-COPD subjects overdiagnosed over model time is no greater than 5%", {
 

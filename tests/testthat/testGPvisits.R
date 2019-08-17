@@ -3,7 +3,7 @@ library(epicR)
 library(dplyr)
 library(tidyverse)
 
-context("The average GP visits test")
+context("The average GP visits tests")
 
 test_that("The average GP visits has increased by Gold stage and it is higher in diagnosed patients compared to undiagnosed", {
 
