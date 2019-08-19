@@ -589,7 +589,7 @@ struct input
     double bg_cost_by_stage[5];
     double exac_dcost[4];
     double cost_case_detection;
-    double cost_diagnosis;
+    double cost_outpatient_diagnosis;
 
     double doctor_visit_by_type[2];
     double mi_dcost;
@@ -777,7 +777,7 @@ List Cget_inputs()
       Rcpp::Named("bg_cost_by_stage")=AS_VECTOR_DOUBLE(input.cost.bg_cost_by_stage),
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
       Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
-      Rcpp::Named("cost_diagnosis")=input.cost.cost_diagnosis,
+      Rcpp::Named("cost_outpatient_diagnosis")=input.cost.cost_outpatient_diagnosis,
 
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
     ),
@@ -901,7 +901,7 @@ int Cset_input_var(std::string name, NumericVector value)
 
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
   if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
-  if(name=="cost$cost_diagnosis") {input.cost.cost_diagnosis=value[0]; return(0);};
+  if(name=="cost$cost_outpatient_diagnosis") {input.cost.cost_outpatient_diagnosis=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
   if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
@@ -1845,7 +1845,8 @@ double apply_case_detection(agent *ag)
 
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
-      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers)) {
+      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
+      ((*ag).gpvisits!=0)) {
 
     p_detection = input.diagnosis.p_case_detection;
   }
@@ -1886,7 +1887,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1913,9 +1914,9 @@ double update_prevalent_diagnosis(agent *ag)
 
   double p_diagnosis = 0;
 
-  if ((*ag).gpvisits!=0) {
+   apply_case_detection(ag);
 
-  apply_case_detection(ag);
+  if ((*ag).gpvisits!=0) {
 
   if((*ag).gold!=0)  {
 
@@ -1937,7 +1938,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_diagnosis)
       {
         (*ag).diagnosis = 1;
-        (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+        (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1961,8 +1962,7 @@ double update_prevalent_diagnosis(agent *ag)
         if(rand_unif() < correct_overdiagnosis) {
 
         (*ag).diagnosis = 0;
-        (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-
+        (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
         (*ag).medication_status=0;
         medication_LPT(ag);
 
@@ -1988,7 +1988,7 @@ double update_prevalent_diagnosis(agent *ag)
       if (rand_unif() < p_overdiagnosis)
         {
             (*ag).diagnosis = 1;
-            (*ag).cumul_cost+=input.cost.cost_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+            (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
         } else
           {

@@ -559,8 +559,8 @@ init_input <- function() {
   input$cost$cost_case_detection <- 25
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_diagnosis <- 50
-  input_help$cost$cost_diagnosis <- "Cost of diagnostic spirometry"
+  input$cost$cost_outpatient_diagnosis <- 50
+  input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
