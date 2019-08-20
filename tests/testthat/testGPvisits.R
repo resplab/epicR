@@ -3,9 +3,9 @@ library(epicR)
 library(dplyr)
 library(tidyverse)
 
-context("The average GP visits tests")
+context("GP visits tests")
 
-test_that("The average GP visits has increased by Gold stage and it is higher in diagnosed patients compared to undiagnosed", {
+test_that("(1) Average GP visits increases by GOLD stage, and (2) is higher in diagnosed than undiagnosed patients", {
 
   init_session()
   run()
@@ -21,7 +21,7 @@ test_that("The average GP visits has increased by Gold stage and it is higher in
   GPvisits <- GPvisits[-1,]
 
 
-  #Average Gpvisits in diagnosed and undiagnosed
+  # Average GPvisits in diagnosed and undiagnosed
   Diagnosed <- rowSums(output_ex$n_Diagnosed_by_ctime_sex)
 
   Undiagnosed <- rowSums(output_ex$cumul_time_by_ctime_GOLD[,2:5]) - Diagnosed
@@ -48,8 +48,6 @@ test_that("The average GP visits has increased by Gold stage and it is higher in
   GPvisits_Diagtest$difference <- GPvisits_Diagtest$mean - lag(GPvisits_Diagtest$mean)
 
   expect_gt(GPvisits_Diagtest$difference[2], 0)
-
-
 
   terminate_session()
 

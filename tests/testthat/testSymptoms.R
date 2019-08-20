@@ -5,7 +5,7 @@ library(dplyr)
 
 context("Symptoms tests")
 
-test_that("The average GP visits in eeach of the 4 symptoms (cough, phlegm, wheeze, dyspnea) has increased by Severity", {
+test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD stage", {
 
   init_session()
   run()
@@ -33,7 +33,7 @@ test_that("The average GP visits in eeach of the 4 symptoms (cough, phlegm, whee
   names(dyspnea) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
 
-  #Test average prevalence of each of the symptoms has increased by GOLD stage for the overall years:
+  # Average prevalence of each symptom increased by GOLD stage for all years years:
 
   ##COUGH
   cough_prop= data.frame(mean=colMeans(cough[,2:6]))
