@@ -1,44 +1,93 @@
+library(testthat)
 library(epicR)
-context("Exacerbation Tests")
+library(dplyr)
+library(tidyverse)
 
-test_that("Exacerbation rates per GOLD stage are not more than 10% off when compared with literature", {
-  input <- model_input$values
+context("Exacerbation tests")
+
+test_that("The number of severe exacerbations per year is close to 100,000,The annual rate of all exacerbations in Diagnosed is higher than Undiagnosed,
+          The annual rate of all exacerbations in Diagnosed is higher that Undiagnosed in no treatment patients,
+          The exacerbation rate and severe exacerbation rate is increased by Gold stage in no treatment patients ", {
+
   init_session()
   run()
-  op <- Cget_output()
-  all_events <- as.data.frame(Cget_all_events_matrix())
-  exac_events <- subset(all_events, event == 5)
-  exit_events <- subset(all_events, event == 14)
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
 
-  Follow_up_Gold <- c(0, 0, 0, 0)
-  last_GOLD_transition_time <- 0
-  for (i in 2:dim(all_events)[1]) {
-    if (all_events[i, "id"] != all_events[i - 1, "id"])
-      last_GOLD_transition_time <- 0
-    if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
-      Follow_up_Gold[all_events[i - 1, "gold"]] = Follow_up_Gold[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
-        last_GOLD_transition_time
-      last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
-    }
-    if (all_events[i, "event"] == 14)
-      Follow_up_Gold[all_events[i, "gold"]] = Follow_up_Gold[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
-        last_GOLD_transition_time
-  }
+
+  n_exac <- data.frame(year= 1:inputs$global_parameters$time_horizon,
+                      Severe_Exacerbations = output_ex$n_exac_by_ctime_severity_diagnosed[,3]* (18.6e6/rowSums(output_ex$n_alive_by_ctime_sex)))
+
+  averagen_severeexac <- mean (n_exac$Severe_Exacerbations)
+
+
+  #Test number of severe exacerbations per year close to 100,000:
+  expect_equal(averagen_severeexac, 100000, tolerance= 5e+3)
+
+
+
+  #Exacerbation rate in Diagnosed patients
+  diag_exacrate <- mean((rowSums(output_ex$n_exac_by_ctime_severity_diagnosed)/rowSums(output_ex$n_Diagnosed_by_ctime_sex))[-1])
+
+  #Exacerbatio rate in undiagnosed patients
+  undiag_exacrate <- mean((rowSums(output_ex$n_exac_by_ctime_severity - output_ex$n_exac_by_ctime_severity_diagnosed)/
+                             rowSums(output_ex$n_COPD_by_ctime_sex - output_ex$n_Diagnosed_by_ctime_sex))[-1])
+
+
+  #Test annual rate of rate of all exacerbations higher in diagnosed than undiagnosed
+  expect_lt(undiag_exacrate, diag_exacrate )
+
+
+
+  ## Set the treatment effect to 0 and redo the test
+  init_session()
+  input_nt <- init_input()
+  input_nt$values$medication$medication_ln_hr_exac <- rep(0, length(input_nt$values$medication$medication_ln_hr_exac))
+  run(input = input_nt$values)
+
+  inputs <- Cget_inputs()
+  output_ex <- Cget_output_ex()
+
+  #Exacerbation rate in Diagnosed patients
+  diag_exacrate_nt <- mean((rowSums(output_ex$n_exac_by_ctime_severity_diagnosed)/rowSums(output_ex$n_Diagnosed_by_ctime_sex))[-1])
+
+  #Exacerbatio rate in undiagnosed patients
+  undiag_exacrate_nt <- mean((rowSums(output_ex$n_exac_by_ctime_severity - output_ex$n_exac_by_ctime_severity_diagnosed)/
+                             rowSums(output_ex$n_COPD_by_ctime_sex - output_ex$n_Diagnosed_by_ctime_sex))[-1])
+
+
+  #Test annual rate of rate of all exacerbations higher in diagnosed than undiagnosed
+  expect_lt(undiag_exacrate_nt,diag_exacrate_nt)
+
+
+
+  #Rate of exacerbation by Gold stage
+  diag_exacrate_gold_nt <- rowSums(output_ex$n_exac_by_gold_severity_diagnosed)/colSums(output_ex$n_Diagnosed_by_ctime_severity[,2:5])
+  diag_exacrategoldTest_nt= data.frame(mean=diag_exacrate_gold_nt)
+  diag_exacrategoldTest_nt$difference <- diag_exacrategoldTest_nt$mean - lag(diag_exacrategoldTest_nt$mean)
+
+  #Test the average rate of exacerbation has increased by Gold stage
+  expect_gt(diag_exacrategoldTest_nt$difference[2], 0)
+  expect_gt(diag_exacrategoldTest_nt$difference[3], 0)
+  expect_gt(diag_exacrategoldTest_nt$difference[4], 0)
+
+
+
+  #Rate of severe exacerbation by Gold stage
+  diag_sevexacrate_gold_nt <- output_ex$n_exac_by_gold_severity_diagnosed[,3]/colSums(output_ex$n_Diagnosed_by_ctime_severity[,2:5])
+  diag_sevexacrategoldTest_nt= data.frame(mean=diag_sevexacrate_gold_nt)
+  diag_sevexacrategoldTest_nt$difference <- diag_sevexacrategoldTest_nt$mean - lag(diag_sevexacrategoldTest_nt$mean)
+
+  #Test the average rate of severe exacerbation has increased by Gold stage
+  expect_gt(diag_sevexacrategoldTest_nt$difference[2], 0)
+  expect_gt(diag_sevexacrategoldTest_nt$difference[3], 0)
+  expect_gt(diag_sevexacrategoldTest_nt$difference[4], 0)
+
+
 
   terminate_session()
-  GOLD_I_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1]) - 0.1927)
-  GOLD_II_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2]) - 0.434)
-  GOLD_III_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3]) - 0.939)
-  GOLD_IV_diff <- abs((as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4]) - 1.92)
-  total_exac_severep <- (op$total_exac[3] + op$total_exac[4]) / (input$global_parameters$time_horizon * default_settings$n_base_agents) * 18.6e6 #18.6e6 is roughly the 40+ population of Canada as of 2017
 
-  # to be recalculated;
-  expect_lt (GOLD_I_diff/0.1927, 0.4)
-  expect_lt (GOLD_II_diff/0.434, 0.4)
-  expect_lt (GOLD_III_diff/0.939, 0.4)
-  expect_lt (GOLD_IV_diff/1.92, 0.4)
-
-#  expect_lt (total_exac_severep, 10e4)
-#  expect_gt (total_exac_severep, 7e4)
 })
+
+
 
