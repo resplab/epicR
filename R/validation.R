@@ -1452,12 +1452,27 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input$diagnosis$min_cd_age <- min_age
   input$diagnosis$min_cd_pack_years <- min_pack_years
   input$diagnosis$min_cd_smokers <-only_smokers
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                  case_detection=input$diagnosis$case_detection_methods[1,"None"]),
-                                                           female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                    case_detection=input$diagnosis$case_detection_methods[1,"None"]))
+
+  input$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                     cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                     case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
+                                                              female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                       cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                       case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
+
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                           case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
+                                                    female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                             case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
+
+  input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                               cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                               case_detection=input$diagnosis$case_detection_methods[2,CD_method]),
+                                                        female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                 cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                 case_detection=input$diagnosis$case_detection_methods[2,CD_method]))
   cat("\n")
   cat("Here are your inputs for the case detection strategy:\n")
   cat("\n")
@@ -1502,15 +1517,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input_nocd <- model_input$values
 
   input_nocd$diagnosis$p_case_detection <- 0
-  input_nocd$diagnosis$min_cd_age <- min_age
-  input_nocd$diagnosis$min_cd_pack_years <- min_pack_years
-  input_nocd$diagnosis$min_cd_smokers <-only_smokers
-  input_nocd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
-                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
+
   cat("\n")
   cat("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
   cat("\n")
@@ -1548,7 +1555,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   ## Difference between CD and No CD
   # Exacerbations
   exac.diff <- data.frame(cbind(CD=exac, NOCD=exac_nocd))
-  exac.diff$Delta <- exac.diff$NOCD - exac.diff$CD
+  exac.diff$Delta <- exac.diff$CD - exac.diff$NOCD
 
   cat("Here are total number of exacerbations by severity:\n")
   cat("\n")
