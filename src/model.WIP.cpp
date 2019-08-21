@@ -1785,7 +1785,7 @@ void medication_LPT(agent *ag)
           (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
-      if((*ag).gold>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
+      if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
           (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
