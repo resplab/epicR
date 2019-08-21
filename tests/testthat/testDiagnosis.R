@@ -2,11 +2,11 @@ library(testthat)
 library(epicR)
 library(dplyr)
 
-
 context("Diagnosis tests")
 
-test_that("(1) Mean diagnosis in GOLD 1 and 2 is < 40%, (2) Proportion diagnosed increases by GOLD stage,
-          (3) The overdiagnosis rate is always < 5%", {
+test_that("(1) The average proportion diagnosed in GOLD 1 and 2 is < 40%,
+           (2) The proportion diagnosed increases by GOLD stage, and
+           (3) The overdiagnosis rate is always < 5%", {
 
   init_session()
   run()
@@ -19,16 +19,13 @@ test_that("(1) Mean diagnosis in GOLD 1 and 2 is < 40%, (2) Proportion diagnosed
 
   names(diag_prop) <- c("Year","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  diag_prop <- diag_prop[-1,]
+  Gold_meanprop <- mean(c(diag_prop$GOLD1, diag_prop$GOLD2))
 
-  Gold_I_meanprop <- mean(diag_prop$GOLD1[1:nrow(diag_prop)])
-  Gold_II_meanprop <-mean(diag_prop$GOLD2[1:nrow(diag_prop)])
+  expect_lt(Gold_meanprop,0.4)
 
-  expect_lt(Gold_I_meanprop,0.4)
-  expect_lt(Gold_II_meanprop,0.4)
-
-  # Proportion diagnosed in GOLD 1 and GOLD 2 is <0.4 in every model year
+  # Proportion diagnosed in GOLD 1 is <0.4 in every model year
   Gold_I_propTest <- diag_prop %>% filter(GOLD1>0.4)
+
   expect_equal(nrow(Gold_I_propTest),0)
 
   # (2) Proportion diagnosed increases by GOLD stage
@@ -38,7 +35,6 @@ test_that("(1) Mean diagnosis in GOLD 1 and 2 is < 40%, (2) Proportion diagnosed
   expect_gt(Gold_meanpropTest$difference[2], 0)
   expect_gt(Gold_meanpropTest$difference[3], 0)
   expect_gt(Gold_meanpropTest$difference[4], 0)
-
 
   # (3) Proportion overdiagnosed in every model year:
   overdiag_prop <- data.frame(Year=1:inputs$global_parameters$time_horizon,

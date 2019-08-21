@@ -2,7 +2,6 @@ library(testthat)
 library(epicR)
 library(dplyr)
 
-
 context("Symptoms tests")
 
 test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD stage", {
@@ -36,7 +35,7 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
   # Average prevalence of each symptom increased by GOLD stage for all years years:
 
   ##COUGH
-  cough_prop= data.frame(mean=colMeans(cough[,2:6]))
+  cough_prop <- data.frame(mean=colMeans(cough[,2:6]))
   cough_prop$difference <- cough_prop$mean - lag(cough_prop$mean)
 
   expect_gt(cough_prop$difference[2], 0)
@@ -46,7 +45,7 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
 
 
   ##PHLEGM
-  phlegm_prop= data.frame(mean=colMeans(phlegm[,2:6]))
+  phlegm_prop <- data.frame(mean=colMeans(phlegm[,2:6]))
   phlegm_prop$difference <- phlegm_prop$mean - lag(phlegm_prop$mean)
 
   #expect_gt(phlegm_prop$difference[2], 0)
@@ -56,7 +55,7 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
 
 
   ##WHEEZE
-  wheeze_prop= data.frame(mean=colMeans(wheeze[,2:6]))
+  wheeze_prop <- data.frame(mean=colMeans(wheeze[,2:6]))
   wheeze_prop$difference <- wheeze_prop$mean - lag(wheeze_prop$mean)
 
   expect_gt(wheeze_prop$difference[2], 0)
@@ -66,7 +65,7 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
 
 
   ##DYSPNEA
-  dyspnea_prop= data.frame(mean=colMeans(dyspnea[,2:6]))
+  dyspnea_prop <- data.frame(mean=colMeans(dyspnea[,2:6]))
   dyspnea_prop$difference <- dyspnea_prop$mean - lag(dyspnea_prop$mean)
 
   expect_gt(dyspnea_prop$difference[2], 0)
