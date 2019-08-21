@@ -1334,12 +1334,28 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   input_nd <- model_input$values
 
+  input_nd$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=-100, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                            cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                            case_detection=0),
+                                                                     female=c(intercept=-100-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                              cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                              case_detection=0))
+
+  input_nd$diagnosis$p_hosp_diagnosis <- 0
+
   input_nd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                              case_detection=0),
-                                                       female=c(intercept=-100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                case_detection=0))
+                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                  case_detection=0),
+                                                           female=c(intercept=-100-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                                    case_detection=0))
+
+  input_nd$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-100, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                      cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                      case_detection=0),
+                                                               female=c(intercept=-100+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                        cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                        case_detection=0))
 
   res <- run(input = input_nd)
   if (res < 0)
@@ -1357,12 +1373,22 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   input_d <- model_input$values
 
+  input_d$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=100, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                        cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                        case_detection=0),
+                                                                 female=c(intercept=100-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                          cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                          case_detection=0))
+
+  input_d$diagnosis$p_hosp_diagnosis <- 1
+
   input_d$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                               gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                               case_detection=0),
-                                                       female=c(intercept=100, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                       female=c(intercept=100-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
                                                                 gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                                 case_detection=0))
+
 
   res <- run(input = input_d)
   if (res < 0)
@@ -1374,14 +1400,14 @@ validate_treatment<- function(n_sim = 1e+04) {
   exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
 
   ##
-  cat("Annual exacerbation rate:\n")
+  cat("Annual exacerbation rate (this is also plotted):\n")
   cat("\n")
 
   trt_effect<- data.frame(Year=1:inputs_d$global_parameters$time_horizon,
                           Diagnosed = exac_rate_diag,
                           Undiagnosed = exac_rate_nodiag)
 
-  trt_effect$Delta <- trt_effect$Undiagnosed - trt_effect$Diagnosed
+  trt_effect$Delta <- (trt_effect$Undiagnosed - trt_effect$Diagnosed)/trt_effect$Undiagnosed
 
   print(trt_effect)
 
@@ -1406,10 +1432,10 @@ validate_treatment<- function(n_sim = 1e+04) {
 #' @param min_age minimum age that can recieve case detection
 #' @param min_pack_years minimum pack years that can recieve case detection
 #' @param only_smokers set to 1 if only smokers should recieve case detection
-#' @param OR_of_CD odds ratio for the impact of recieving case detection on the odds of being diagnosed
+#' @param CD_method Choose one case detection method: CDQ195", "CDQ165", "FlowMeter", "FlowMeter_CDQ"
 #' @return results of case detection strategy compared to no case detection
 #' @export
-test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, OR_of_CD=1.82) {
+test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, CD_method="CDQ195") {
   cat("Comparing a case detection strategy to no case detection.\n")
   petoc()
 
@@ -1426,12 +1452,27 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input$diagnosis$min_cd_age <- min_age
   input$diagnosis$min_cd_pack_years <- min_pack_years
   input$diagnosis$min_cd_smokers <-only_smokers
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                  gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                  case_detection=log(OR_of_CD)),
-                                                           female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                                    gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                                    case_detection=log(OR_of_CD)))
+
+  input$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                     cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                     case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
+                                                              female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                                       cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                                       case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
+
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                           case_detection=input$diagnosis$case_detection_methods[1,CD_method]),
+                                                    female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                             case_detection=input$diagnosis$case_detection_methods[1,CD_method]))
+
+  input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                               cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                               case_detection=input$diagnosis$case_detection_methods[2,CD_method]),
+                                                        female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                                 cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                                 case_detection=input$diagnosis$case_detection_methods[2,CD_method]))
   cat("\n")
   cat("Here are your inputs for the case detection strategy:\n")
   cat("\n")
@@ -1476,15 +1517,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   input_nocd <- model_input$values
 
   input_nocd$diagnosis$p_case_detection <- 0
-  input_nocd$diagnosis$min_cd_age <- min_age
-  input_nocd$diagnosis$min_cd_pack_years <- min_pack_years
-  input_nocd$diagnosis$min_cd_smokers <-only_smokers
-  input_nocd$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-5, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(OR_of_CD)),
-                                                    female=c(intercept=-5-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(OR_of_CD)))
+
   cat("\n")
   cat("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
   cat("\n")
@@ -1522,7 +1555,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   ## Difference between CD and No CD
   # Exacerbations
   exac.diff <- data.frame(cbind(CD=exac, NOCD=exac_nocd))
-  exac.diff$Delta <- exac.diff$NOCD - exac.diff$CD
+  exac.diff$Delta <- exac.diff$CD - exac.diff$NOCD
 
   cat("Here are total number of exacerbations by severity:\n")
   cat("\n")
@@ -1624,4 +1657,69 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 
   terminate_session()
 
-  }
+}
+
+
+#' Returns results of validation tests for medication module.
+#' @param n_sim number of agents
+#' @return validation test results for medication
+#' @export
+
+validate_medication <- function(n_sim = 5e+04) {
+  cat("\n")
+  cat("Plotting medication usage over time:")
+  cat("\n")
+  petoc()
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+res <- run(input = input)
+if (res < 0)
+  stop("Execution stopped.\n")
+
+all_events <- as.data.frame(Cget_all_events_matrix())
+all_annual_events <- all_events[all_events$event==1,] # only annual event
+
+# Prop on each med class over time and by gold
+all_annual_events$time <- floor(all_annual_events$local_time + all_annual_events$time_at_creation)
+
+med.plot <- all_annual_events %>%
+  group_by(time, gold) %>%
+  count(medication_status) %>%
+  mutate(prop=n/sum(n))
+
+med.plot$gold <- as.character(med.plot$gold )
+
+# overall among COPD patients
+copd <- med.plot %>%
+  filter(gold>0) %>%
+  group_by(time, medication_status) %>%
+  summarise(n=sum(n)) %>%
+  mutate(prop=n/sum(n), gold="all copd") %>%
+  select(time, gold, everything())
+
+med.plot <- rbind(med.plot, copd)
+
+med.plot$medication_status <- ifelse(med.plot$medication_status==0,"none",
+                                     ifelse(med.plot$medication_status==1,"SABA",
+                                            ifelse(med.plot$medication_status==4,"LAMA",
+                                                   ifelse(med.plot$medication_status==6,"LAMA/LABA",
+                                                          ifelse(med.plot$medication_status==14,"ICS/LAMA/LABA",9)))))
+
+med.plotted <- ggplot2::ggplot(data=med.plot, aes(x=time, y=prop, col=medication_status)) +
+  geom_line() + facet_wrap(~gold, labeller=label_both) +
+  expand_limits(y = 0) + theme_bw() + ylab("Proportion per medication class") + xlab("Years") +
+  theme(legend.title=element_blank())
+
+plot(med.plotted)
+
+terminate_session()
+
+}

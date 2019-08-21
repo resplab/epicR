@@ -572,6 +572,7 @@ struct input
 
   struct
   {
+    double logit_p_prevalent_diagnosis_by_sex[9][2];
     double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
     double logit_p_overdiagnosis_by_sex[9][2];
@@ -580,14 +581,17 @@ struct input
     double min_cd_age;
     double min_cd_pack_years;
     int min_cd_smokers;
+    double case_detection_methods[2][5];
   } diagnosis;
 
   struct
   {
     double bg_cost_by_stage[5];
     double exac_dcost[4];
-    double doctor_visit_by_type[2];
+    double cost_case_detection;
+    double cost_outpatient_diagnosis;
 
+    double doctor_visit_by_type[2];
     double mi_dcost;
     double mi_post_cost;
     double stroke_dcost;
@@ -619,6 +623,8 @@ struct input
   struct
   {
     double medication_ln_hr_exac[16];
+    double medication_costs[16];
+    double medication_utility[16];
     double ln_h_start_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_h_stop_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_rr_exac_by_class[N_MED_CLASS];
@@ -744,6 +750,7 @@ List Cget_inputs()
     ),
 
     Rcpp::Named("diagnosis")=Rcpp::List::create(
+    Rcpp::Named("logit_p_prevalent_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_prevalent_diagnosis_by_sex),
     Rcpp::Named("logit_p_diagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_diagnosis_by_sex),
     Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis,
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
@@ -751,7 +758,8 @@ List Cget_inputs()
     Rcpp::Named("p_case_detection")=input.diagnosis.p_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
-    Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers
+    Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers,
+    Rcpp::Named("case_detection_methods")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods)
     ),
 
     Rcpp::Named("comorbidity")=Rcpp::List::create(
@@ -768,6 +776,9 @@ List Cget_inputs()
     Rcpp::Named("cost")=Rcpp::List::create(
       Rcpp::Named("bg_cost_by_stage")=AS_VECTOR_DOUBLE(input.cost.bg_cost_by_stage),
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
+      Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
+      Rcpp::Named("cost_outpatient_diagnosis")=input.cost.cost_outpatient_diagnosis,
+
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
     ),
     Rcpp::Named("utility")=Rcpp::List::create(
@@ -777,6 +788,8 @@ List Cget_inputs()
   ,
   Rcpp::Named("medication")=Rcpp::List::create(
     Rcpp::Named("medication_ln_hr_exac")=AS_VECTOR_DOUBLE(input.medication.medication_ln_hr_exac),
+    Rcpp::Named("medication_costs")=AS_VECTOR_DOUBLE(input.medication.medication_costs),
+    Rcpp::Named("medication_utility")=AS_VECTOR_DOUBLE(input.medication.medication_utility),
     Rcpp::Named("ln_h_start_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_start_betas_by_class),
     Rcpp::Named("ln_h_stop_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_stop_betas_by_class),
     Rcpp::Named("ln_rr_exac_by_class")=AS_VECTOR_DOUBLE(input.medication.ln_rr_exac_by_class)
@@ -869,6 +882,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="outpatient$dispersion_gpvisits_COPD") {input.outpatient.dispersion_gpvisits_COPD=value[0]; return(0);}
   if(name=="outpatient$dispersion_gpvisits_nonCOPD") {input.outpatient.dispersion_gpvisits_nonCOPD=value[0]; return(0);}
 
+  if(name=="diagnosis$logit_p_prevalent_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_prevalent_diagnosis_by_sex);
   if(name=="diagnosis$logit_p_diagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_diagnosis_by_sex);
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
@@ -877,6 +891,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
   if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
+  if(name=="diagnosis$case_detection_methods") READ_R_MATRIX(value,input.diagnosis.case_detection_methods);
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
   if(name=="symptoms$covariance_nonCOPD")  READ_R_MATRIX(value, input.symptoms.covariance_nonCOPD);
@@ -885,8 +900,12 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="outpatient$p_specialist") {input.outpatient.p_specialist=value[0]; return(0);}
 
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
+  if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
+  if(name=="cost$cost_outpatient_diagnosis") {input.cost.cost_outpatient_diagnosis=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
+  if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
+  if(name=="medication$medication_utility") READ_R_VECTOR(value,input.medication.medication_utility);
   if(name=="medication$ln_h_start_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_start_betas_by_class);
   if(name=="medication$ln_h_stop_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_stop_betas_by_class);
   if(name=="medication$ln_rr_exac_by_class") READ_R_VECTOR(value,input.medication.ln_rr_exac_by_class);
@@ -983,6 +1002,9 @@ struct agent
   int exac_status;    //current exacerbation status 0: no exacerbation, in 1: mild, 2:moderate, 3:severe exacerbation
   double tmp_exac_rate;
 
+  double exac_history_time_first, exac_history_time_second;
+  int exac_history_severity_first, exac_history_severity_second;
+
   double symptom_score;
 
   double last_doctor_visit_time;
@@ -1016,7 +1038,6 @@ struct agent
   bool wheeze;
 
   int gpvisits;
-  double tmp_gpvisits_rate;
   int diagnosis;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
@@ -1092,9 +1113,9 @@ List get_agent(agent *ag)
     Rcpp::Named("logit_exac_severity_intercept")=(*ag).logit_exac_severity_intercept,
 
     Rcpp::Named("cumul_exac0")=(*ag).cumul_exac[0],
-                                               Rcpp::Named("cumul_exac1")=(*ag).cumul_exac[1],
-                                                                                          Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2],
-                                                                                                                                     Rcpp::Named("cumul_exac3")=(*ag).cumul_exac[3]
+    Rcpp::Named("cumul_exac1")=(*ag).cumul_exac[1],
+    Rcpp::Named("cumul_exac2")=(*ag).cumul_exac[2],
+    Rcpp::Named("cumul_exac3")=(*ag).cumul_exac[3]
 
 
   );
@@ -1136,11 +1157,8 @@ List get_agent(agent *ag)
   out["re_wheeze"] = (*ag).re_wheeze;
 
   out["gpvisits"] = (*ag).gpvisits;
-  out["tmp_gpvisits_rate"] = (*ag).tmp_gpvisits_rate;
   out["diagnosis"] = (*ag).diagnosis;
   out["case_detection"] = (*ag).case_detection;
-
-  out["tmp_exac_rate"] = (*ag).tmp_exac_rate;
 
   return out;
 }
@@ -1745,11 +1763,9 @@ void payoffs_LPT(agent *ag)
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
-
   //annual cost and qaly
   (*ag).annual_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).annual_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
-
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
@@ -1757,14 +1773,23 @@ void payoffs_LPT(agent *ag)
 
 void medication_LPT(agent *ag)
 {
-#if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
-  for(int i=0;i<N_MED_CLASS;i++)
-    if(((*ag).medication_status >> i) & 1)
-    {
-      output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
-    }
+  #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+    for(int i=0;i<N_MED_CLASS;i++)
+      if(((*ag).medication_status >> i) & 1)
+      {
+        output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+      }
+  #endif
+    // costs
+    //(*ag).cumul_cost+=1;
+          (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
-#endif
+    // qaly
+      if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
+        {
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+        }
+
     (*ag).medication_LPT=(*ag).local_time;
 }
 
@@ -1788,9 +1813,8 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
-      (*ag).tmp_gpvisits_rate=gpvisitRate;
-      (*ag).gpvisits = tmp;
+      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      (*ag).gpvisits = gpvisits;
 
   } else {
 
@@ -1803,9 +1827,8 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double tmp=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
-      (*ag).tmp_gpvisits_rate=gpvisitRate;
-      (*ag).gpvisits = tmp;
+      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      (*ag).gpvisits = gpvisits;
 
     }
 
@@ -1822,28 +1845,78 @@ double apply_case_detection(agent *ag)
 
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
-      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers)) {
+      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
+      ((*ag).gpvisits!=0)) {
 
     p_detection = input.diagnosis.p_case_detection;
   }
 
   if (rand_unif() < p_detection) {
     (*ag).case_detection = 1;
+    (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   } else {
     (*ag).case_detection = 0;
+  }
+
+  return(0);
+}
+
+/// Baseline diagnosis
+
+double update_prevalent_diagnosis(agent *ag)
+{
+
+  double p_prev_diagnosis = 0;
+
+  if((*ag).gold!=0)  {
+
+    if((*ag).diagnosis>0) return(0);
+
+    p_prev_diagnosis = exp(input.diagnosis.logit_p_prevalent_diagnosis_by_sex[0][(*ag).sex] +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[3][(*ag).sex]*((*ag).fev1) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[4][(*ag).sex]*((*ag).cough) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[7][(*ag).sex]*((*ag).dyspnea) +
+      input.diagnosis.logit_p_prevalent_diagnosis_by_sex[8][(*ag).sex]*((*ag).case_detection));
+
+    p_prev_diagnosis = p_prev_diagnosis / (1 + p_prev_diagnosis);
+
+    if (rand_unif() < p_prev_diagnosis)
+    {
+      (*ag).diagnosis = 1;
+      (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
+    {
+      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+      medication_LPT(ag);
+    }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
+    {
+      (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+      medication_LPT(ag);
+    }
+
   }
   return(0);
 }
 
+
+/// Follow-up diagnosis
 
  double update_diagnosis(agent *ag)
 {
 
   double p_diagnosis = 0;
 
-  if ((*ag).gpvisits!=0) {
+   apply_case_detection(ag);
 
-  apply_case_detection(ag);
+  if ((*ag).gpvisits!=0) {
 
   if((*ag).gold!=0)  {
 
@@ -1862,22 +1935,36 @@ double apply_case_detection(agent *ag)
 
     p_diagnosis = p_diagnosis / (1 + p_diagnosis);
 
-    if (rand_unif() < p_diagnosis) {
-            (*ag).diagnosis = 1;
-            (*ag).medication_status=MED_CLASS_LAMA;
-            medication_LPT(ag);
-          }
+    if (rand_unif() < p_diagnosis)
+      {
+        (*ag).diagnosis = 1;
+        (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
+      {
+        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+         medication_LPT(ag);
+      }
+
+    if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
+      {
+        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+        medication_LPT(ag);
+      }
 
   } else {
 
-    double correct_overdiagnosis;
-    correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
+    double correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
 
       if((*ag).diagnosis>0) {
 
         if(rand_unif() < correct_overdiagnosis) {
 
         (*ag).diagnosis = 0;
+        (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+        (*ag).medication_status=0;
+        medication_LPT(ag);
 
          return(0);
       }
@@ -1898,15 +1985,22 @@ double apply_case_detection(agent *ag)
 
       p_overdiagnosis = p_overdiagnosis / (1 + p_overdiagnosis);
 
-      if (rand_unif() < p_overdiagnosis) {
-        (*ag).diagnosis = 1;
+      if (rand_unif() < p_overdiagnosis)
+        {
+            (*ag).diagnosis = 1;
+            (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
-      } else {
-
-        (*ag).diagnosis = 0;
-
+        } else
+          {
+            (*ag).diagnosis = 0;
           }
-        }
+
+            if((*ag).diagnosis == 1 && (*ag).gold==0)
+              {
+                (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+                medication_LPT(ag);
+              }
+      }
     }
   }
   return(0);
@@ -1944,7 +2038,6 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).re_dyspnea = 0;
 
 (*ag).gpvisits  = 0;
-(*ag).tmp_gpvisits_rate  = 0;
 (*ag).diagnosis = 0;
 (*ag).case_detection = 0;
 
@@ -2061,6 +2154,8 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   (*ag).exac_status=0;
   (*ag).exac_LPT=0;
 
+  (*ag).exac_history_time_first=0;
+  (*ag).exac_history_time_second=0;
 
   //COPD;
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
@@ -2177,6 +2272,9 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
   //symptoms
   update_symptoms(ag);
+
+  //diagnosis
+  update_prevalent_diagnosis(ag);
 
   //stroke
   double stroke_odds=exp(input.comorbidity.logit_p_stroke_betas_by_sex[0][(*ag).sex]
@@ -2356,7 +2454,6 @@ agent *event_end_process(agent *ag)
   output.total_exac_time[1]+=(*ag).cumul_exac_time[1];
   output.total_exac_time[2]+=(*ag).cumul_exac_time[2];
   output.total_exac_time[3]+=(*ag).cumul_exac_time[3];
-
 
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;
@@ -2541,8 +2638,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,30);
-  CharacterVector eventMatrixColNames(30);
+  NumericMatrix outm(event_stack_pointer,28);
+  CharacterVector eventMatrixColNames(28);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2572,11 +2669,10 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(22) = "wheeze";
   eventMatrixColNames(23) = "dyspnea";
   eventMatrixColNames(24) = "gpvisits";
-  eventMatrixColNames(25) = "tmp_gpvisits_rate";
-  eventMatrixColNames(26) = "diagnosis";
-  eventMatrixColNames(27) = "medication_status";
-  eventMatrixColNames(28) = "tmp_exac_rate";
-  eventMatrixColNames(29) = "case_detection";
+  eventMatrixColNames(25) = "diagnosis";
+  eventMatrixColNames(26) = "medication_status";
+  eventMatrixColNames(27) = "case_detection";
+
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
@@ -2607,12 +2703,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,22)=(*ag).wheeze;
     outm(i,23)=(*ag).dyspnea;
     outm(i,24)=(*ag).gpvisits;
-    outm(i,25)=(*ag).tmp_gpvisits_rate;
-    outm(i,26)=(*ag).diagnosis;
-    outm(i,27)=(*ag).medication_status;
-    outm(i,28)=(*ag).tmp_exac_rate;
-    outm(i,29)=(*ag).case_detection;
-
+    outm(i,25)=(*ag).diagnosis;
+    outm(i,26)=(*ag).medication_status;
+    outm(i,27)=(*ag).case_detection;
   }
 
   return(outm);
@@ -2795,7 +2888,7 @@ void event_COPD_process(agent *ag)
 
 
 
-//////////////////////////////////////////////////////////////////EVENT_EXACERBATIN////////////////////////////////////;
+//////////////////////////////////////////////////////////////////EVENT_EXACERBATION////////////////////////////////////;
 double event_exacerbation_tte(agent *ag)
 {
   if((*ag).gold==0 || (*ag).exac_status>0) return(HUGE_VAL);
@@ -2863,6 +2956,7 @@ void event_exacerbation_process(agent *ag)
   (*ag).cumul_exac[(*ag).exac_status-1]+=1;
   (*ag).exac_LPT=(*ag).local_time;
 
+
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   if((*ag).medication_status>0)
   {
@@ -2882,12 +2976,20 @@ void event_exacerbation_process(agent *ag)
   output_ex.n_exac_by_ctime_severity_female[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=(*ag).sex;
   output_ex.n_exac_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold-1]+=1;
   if ((*ag).exac_status > 2) output_ex.n_severep_exac_by_ctime_age[(int)floor((*ag).time_at_creation+(*ag).local_time)][(int)(floor((*ag).age_at_creation+(*ag).local_time))]+=1;
-  if ((*ag).diagnosis==0) output_ex.n_exac_by_ctime_severity_undiagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
-  if ((*ag).diagnosis==1) output_ex.n_exac_by_ctime_severity_diagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  if ((*ag).diagnosis==0 && (*ag).gold>0) output_ex.n_exac_by_ctime_severity_undiagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
+  if ((*ag).diagnosis==1 && (*ag).gold>0) output_ex.n_exac_by_ctime_severity_diagnosed[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).exac_status-1]+=1;
 
 #endif
 
   double hosp_diagnosis;
+
+
+  //Update exacerbation history
+  (*ag).exac_history_time_second=(*ag).exac_history_time_first;
+  (*ag).exac_history_severity_second=(*ag).exac_history_severity_first;
+  (*ag).exac_history_time_first=(*ag).local_time;
+  (*ag).exac_history_severity_first=(*ag).exac_status;
+
 
   if ((*ag).diagnosis==0)
   {
@@ -2905,11 +3007,34 @@ void event_exacerbation_process(agent *ag)
   }
 
 
-  if((*ag).diagnosis==1 && (*ag).exac_status>2)
+  if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==1)
   {
-    (*ag).medication_status=MED_CLASS_LAMA | MED_CLASS_LABA;
+    (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
     medication_LPT(ag);
   }
+
+  if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==0)
+  {
+    (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+    medication_LPT(ag);
+  }
+
+  if((*ag).diagnosis==1 && (*ag).dyspnea==0 && (((*ag).exac_status>2) |
+     ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
+     (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
+  {
+    (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
+    medication_LPT(ag);
+  }
+
+  if((*ag).diagnosis==1 && (*ag).dyspnea==1 && (((*ag).exac_status>2) |
+     ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
+     (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
+  {
+    (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+    medication_LPT(ag);
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////EVENT_EXACERBATIN_END////////////////////////////////////;
@@ -3135,6 +3260,9 @@ void event_hf_process(agent *ag)
 #endif
 }
 
+
+
+
 ////////////////////////////////////////////////////////////////////EVENT_bgd/////////////////////////////////////;
 double event_bgd_tte(agent *ag)
 {
@@ -3257,22 +3385,6 @@ void event_doctor_visit_process(agent *ag)
 
 
 
-//////////////////////////////////////////////////////////////////EVENT_MEDICATION_CHANGE////////////////////////////////////;
-double event_medicaiton_change_tte(agent *ag)
-{
-  //if((*ag).medication_status==(*ag).recommended_)
-  return(HUGE_VAL);
-}
-
-
-
-
-
-void event_medication_change_process(agent *ag)
-{
-  //medication_LPT(ag);
-}
-
 
 
 
@@ -3302,6 +3414,7 @@ agent *event_fixed_process(agent *ag)
   smoking_LPT(ag);
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
+  medication_LPT(ag);
 
   update_symptoms(ag); //updating symptoms in the annual event
   update_gpvisits(ag); //updating gp visits in the annual event
@@ -3599,13 +3712,6 @@ int Cmodel(int max_n_agents)
         winner=event_doctor_visit;
       }
 
-      temp=event_medicaiton_change_tte(ag);
-      if(temp<tte)
-      {
-        tte=temp;
-        winner=event_medication_change;
-      }
-
       /*temp=event_mi_tte(ag);
       if(temp<tte)
       {
@@ -3683,11 +3789,7 @@ int Cmodel(int max_n_agents)
           event_doctor_visit_process(ag);
           (*ag).event=event_doctor_visit;
           break;
-        case event_medication_change:
-          event_medication_change_process(ag);
-          (*ag).event=event_medication_change;
-          break;
-          /*case event_mi:
+        /*case event_mi:
           event_mi_process(ag);
           (*ag).event=event_mi;
           break;

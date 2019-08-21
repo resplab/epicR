@@ -81,7 +81,7 @@ init_input <- function() {
   input_ref$agent$p_female <- "Model assumption"
 
 
-  input_help$agent$height_0_betas <- "Regressoin coefficients for estimating height (in meters) at baseline"
+  input_help$agent$height_0_betas <- "Regression coefficients for estimating height (in meters) at baseline"
   input$agent$height_0_betas <- t(as.matrix(c(intercept = 1.82657, sex = -0.13093, age = -0.00125, age2 = 2.31e-06, sex_age = -0.0001651)))
   input_ref$agent$height_0_betas <- ""
 
@@ -416,30 +416,7 @@ init_input <- function() {
   input$outpatient$p_specialist <- 0.1
 
 
-  ## Diagnosis;
-
-  input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
-  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=0, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                           case_detection=log(1.82)),
-                                                    female=c(intercept=0-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
-                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
-                                                             case_detection=log(1.82)))
-  input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-  input$diagnosis$p_hosp_diagnosis <- 0.5
-
-  input_help$diagnosis$logit_p_overdiagnosis_by_sex <- "Probability of being overdiagnosed for non-COPD subjects"
-  input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
-                                                               cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
-                                                               case_detection=0),
-                                                    female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
-                                                             cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
-                                                             case_detection=0))
-  input_ref$diagnosis$logit_p_overdiagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-07-16"
-  input$diagnosis$p_correct_overdiagnosis <- 0.9
-
-
-  # Case detection;
+  ## Case detection;
 
   input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
   input$diagnosis$p_case_detection <- 0.1
@@ -457,16 +434,76 @@ init_input <- function() {
   input$diagnosis$min_cd_smokers <- 0
   input_ref$diagnosis$min_cd_smokers <- ""
 
+  input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
+  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
+                                                  CDQ195= c(0.4742, 0.1858),
+                                                  CDQ165= c(0.6069, 0.4115),
+                                                  FlowMeter= c(0.5676, 0.0735),
+                                                  FlowMeter_CDQ= c(0.5366, 0.0134))
+  input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
+
+
+  ## Diagnosis;
+
+  # Baseline diagnosis
+  input_help$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Probability of being diagnosed for patients with prevalent COPD"
+  input$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                           cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                           case_detection=input$diagnosis$case_detection_methods[1,"None"]),
+                                                    female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146,
+                                                             cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414,
+                                                             case_detection=input$diagnosis$case_detection_methods[1,"None"]))
+  input_ref$diagnosis$logit_p_prevalent_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-08-09"
+
+  # Follow-up diagnosis
+  input_help$diagnosis$logit_p_diagnosis_by_sex <- "Probability of being diagnosed for COPD patients"
+  input$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                           gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                           case_detection=input$diagnosis$case_detection_methods[1,"None"]),
+                                                    female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+                                                             gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
+                                                             case_detection=input$diagnosis$case_detection_methods[1,"None"]))
+  input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
+  input$diagnosis$p_hosp_diagnosis <- 0.5
+
+  # Overdiagnosis
+
+  input_help$diagnosis$logit_p_overdiagnosis_by_sex <- "Probability of being overdiagnosed for non-COPD subjects"
+  input$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                               cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                               case_detection=input$diagnosis$case_detection_methods[2,"None"]),
+                                                    female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+                                                             cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
+                                                             case_detection=input$diagnosis$case_detection_methods[2,"None"]))
+  input_ref$diagnosis$logit_p_overdiagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-07-16"
+  input$diagnosis$p_correct_overdiagnosis <- 0.9
+
 
   ## Medication;
 
   # medication log-hazard regression matrix for initiation of each medication
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
-  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1),SABA_LABA=log(1), LAMA=log(1-0.20), LAMA_SABA=log(1),
-                                            LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1), ICS=log(1), ICS_SABA=log(1),
-                                            ICS_LABA=log(1), ICS_LABA_SABA=log(1), ICS_LAMA=log(1), ICS_LAMA_SABA=log(1),
-                                            ICS_LAMA_LABA=log(1), ICS_LAMA_LABA_SABA=log(1))
+  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1-0.20),SABA_LABA=log(1-0.20), LAMA=log(1-0.22),
+                                            LAMA_SABA=log(1-0.22), LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1-0.23),
+                                            ICS=log(1-0.19), ICS_SABA=log(1-0.19), ICS_LABA=log(1-0.25), ICS_LABA_SABA=log(1-0.25),
+                                            ICS_LAMA=log(1), ICS_LAMA_SABA=log(1), ICS_LAMA_LABA=log(1-0.34),
+                                            ICS_LAMA_LABA_SABA=log(1-0.34))
   input_ref$medication$medication_ln_hr_exac <- ""
+
+  # cost of medications
+  input_help$medication$medication_costs <- "Costs of treatment"
+  input$medication$medication_costs <-c(None=0,SABA=50,LABA=0,SABA_LABA=0, LAMA=100, LAMA_SABA=0, LAMA_LABA=150, LAMA_LAMA_SABA=0,
+                                        ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0, ICS_LAMA_SABA=0,
+                                        ICS_LAMA_LABA=200, ICS_LAMA_LABA_SABA=0)
+  input_ref$medication$medication_costs <- "BC administrative data"
+
+  # utility from medications
+  input_help$medication$medication_utility <- "Utility addition from treatment"
+  input$medication$medication_utility <-c(None=0,SABA=0.0367,LABA=0,SABA_LABA=0, LAMA=0.0367, LAMA_SABA=0, LAMA_LABA=0.0367,
+                                        LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0,
+                                        ICS_LAMA_SABA=0, ICS_LAMA_LABA=0.0367, ICS_LAMA_LABA_SABA=0)
+  input_ref$medication$medication_utility <- "Lambe et al. Thorax 2019"
+
 
   # medication event
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
@@ -519,11 +556,18 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
+  input$cost$cost_case_detection <- 25
+  input_help$cost$cost_case_detection <- "Cost of case detection"
+
+  input$cost$cost_outpatient_diagnosis <- 50
+  input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
+
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
-  input$utility$bg_util_by_stage=t(as.matrix(c(N=0.85, I=0.81,II=0.72,III=0.68,IV=0.58)))
+  input$utility$bg_util_by_stage=t(as.matrix(c(N=0.86, I=0.81,II=0.72,III=0.68,IV=0.58)))
   input_help$utility$bg_util_by_stage="Background utilities for non-COPD, and COPD by GOLD grades"
   #  input$utility$exac_dutil=t(as.matrix(c(mild=-0.07, moderate=-0.37/2, severe=-0.3)))
+
   input$utility$exac_dutil=cbind(
     gold1=c(mild=-0.0225, moderate=-0.0225, severe=-0.0728, verysevere=-0.0728),
     gold2=c(mild=-0.0155, moderate=-0.0155, severe=-0.0683, verysevere=-0.0683),
@@ -531,6 +575,7 @@ init_input <- function() {
     gold4=c(mild=-0.0488, moderate=-0.0488, severe=-0.0655, verysevere=-0.0655)
   );
   input_help$utility$exac_dutil="Incremental change in utility during exacerbations by severity level"
+
 
   input$manual$MORT_COEFF<-1
   input$manual$smoking$intercept_k<-1
