@@ -626,6 +626,7 @@ struct input
     double medication_ln_hr_exac[16];
     double medication_costs[16];
     double medication_utility[16];
+    double medication_adherence;
     double ln_h_start_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_h_stop_betas_by_class[N_MED_CLASS][3+N_MED_CLASS];
     double ln_rr_exac_by_class[N_MED_CLASS];
@@ -792,6 +793,7 @@ List Cget_inputs()
     Rcpp::Named("medication_ln_hr_exac")=AS_VECTOR_DOUBLE(input.medication.medication_ln_hr_exac),
     Rcpp::Named("medication_costs")=AS_VECTOR_DOUBLE(input.medication.medication_costs),
     Rcpp::Named("medication_utility")=AS_VECTOR_DOUBLE(input.medication.medication_utility),
+    Rcpp::Named("medication_adherence")=input.medication.medication_adherence,
     Rcpp::Named("ln_h_start_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_start_betas_by_class),
     Rcpp::Named("ln_h_stop_betas_by_class")=AS_MATRIX_DOUBLE(input.medication.ln_h_stop_betas_by_class),
     Rcpp::Named("ln_rr_exac_by_class")=AS_VECTOR_DOUBLE(input.medication.ln_rr_exac_by_class)
@@ -909,6 +911,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
   if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
   if(name=="medication$medication_utility") READ_R_VECTOR(value,input.medication.medication_utility);
+  if(name=="medication$medication_adherence") {input.medication.medication_adherence=value[0]; return(0);};
   if(name=="medication$ln_h_start_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_start_betas_by_class);
   if(name=="medication$ln_h_stop_betas_by_class") READ_R_MATRIX(value,input.medication.ln_h_stop_betas_by_class);
   if(name=="medication$ln_rr_exac_by_class") READ_R_VECTOR(value,input.medication.ln_rr_exac_by_class);
@@ -1953,8 +1956,10 @@ double update_prevalent_diagnosis(agent *ag)
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
       {
-        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
-         medication_LPT(ag);
+        if (rand_unif() < input.medication.medication_adherence) {
+               (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+               medication_LPT(ag);
+        }
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)

@@ -508,8 +508,12 @@ init_input <- function() {
                                         ICS_LAMA_SABA=0, ICS_LAMA_LABA=0.0367, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_utility <- "Lambe et al. Thorax 2019"
 
+  # adherence to medication
+  input_help$medication$medication_adherence <- "Number of years between case detection"
+  input$medication$medication_adherence <- 0.7
+  input_ref$medication$medication_adherence <- ""
 
-  # medication event
+  # medication event - disabled
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL
   for (i in medication_classes) mx <- rbind(mx, template)
