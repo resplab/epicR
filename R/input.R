@@ -419,8 +419,12 @@ init_input <- function() {
   ## Case detection;
 
   input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
-  input$diagnosis$p_case_detection <- 0.1
+  input$diagnosis$p_case_detection <- 1
   input_ref$diagnosis$p_case_detection <- ""
+
+  input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
+  input$diagnosis$years_btw_case_detection <- 5
+  input_ref$diagnosis$years_btw_case_detection <- ""
 
   input_help$diagnosis$min_cd_age <- "Minimum age for recieving case detection"
   input$diagnosis$min_cd_age <- 40

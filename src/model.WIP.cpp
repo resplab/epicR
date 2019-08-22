@@ -578,6 +578,7 @@ struct input
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
     double p_case_detection;
+    int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
     int min_cd_smokers;
@@ -756,6 +757,7 @@ List Cget_inputs()
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
     Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
     Rcpp::Named("p_case_detection")=input.diagnosis.p_case_detection,
+    Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
     Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers,
@@ -888,6 +890,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
   if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
   if(name=="diagnosis$p_case_detection") {input.diagnosis.p_case_detection=value[0]; return(0);};
+  if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
   if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
@@ -1040,7 +1043,9 @@ struct agent
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
+  int last_case_detection;
   double p_case_detection;
+  int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
   int min_cd_smokers;
@@ -1126,9 +1131,6 @@ List get_agent(agent *ag)
   out["fev1_tail"] = (*ag).fev1_tail;
   out["gold"] = (*ag).gold;
   out["local_time_at_COPD"]=(*ag).local_time_at_COPD;
-
-  out["cumul_cost"] = (*ag).cumul_cost;
-  out["cumul_qaly"] = (*ag).cumul_qaly;
 
   out["tte"] = (*ag).tte;
   out["event"] = (*ag).event;
@@ -1836,23 +1838,36 @@ double apply_case_detection(agent *ag)
 {
 // if((*ag).case_detection>0) return(0); include if case detection should only happen once
 
+  (*ag).case_detection = 0;
   double p_detection = 0;
 
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
       ((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
-      ((*ag).gpvisits!=0)) {
+      ((*ag).gpvisits!=0) &&
+      ((*ag).diagnosis==0))  {
 
-    p_detection = input.diagnosis.p_case_detection;
-  }
+    if ((*ag).last_case_detection == 0)
+        {
+          p_detection = input.diagnosis.p_case_detection;
+        }
+
+      else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
+          {
+            p_detection = 1;
+          }
 
   if (rand_unif() < p_detection) {
+
     (*ag).case_detection = 1;
     (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-  } else {
-    (*ag).case_detection = 0;
-  }
+    (*ag).last_case_detection = (*ag).local_time;
 
+    } else {
+
+    (*ag).case_detection = 0;
+    }
+  }
   return(0);
 }
 
@@ -2035,6 +2050,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).gpvisits  = 0;
 (*ag).diagnosis = 0;
 (*ag).case_detection = 0;
+(*ag).last_case_detection = 0;
 
 (*ag).tmp_exac_rate = 0;
 
@@ -2628,8 +2644,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,30);
-  CharacterVector eventMatrixColNames(30);
+  NumericMatrix outm(event_stack_pointer,31);
+  CharacterVector eventMatrixColNames(31);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2662,8 +2678,9 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(25) = "diagnosis";
   eventMatrixColNames(26) = "medication_status";
   eventMatrixColNames(27) = "case_detection";
-  eventMatrixColNames(28) = "cumul_cost";
-  eventMatrixColNames(29) = "cumul_qaly";
+  eventMatrixColNames(28) = "last_case_detection";
+  eventMatrixColNames(29) = "cumul_cost";
+  eventMatrixColNames(30) = "cumul_qaly";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2698,8 +2715,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,25)=(*ag).diagnosis;
     outm(i,26)=(*ag).medication_status;
     outm(i,27)=(*ag).case_detection;
-    outm(i,28)=(*ag).cumul_cost;
-    outm(i,29)=(*ag).cumul_qaly;
+    outm(i,28)=(*ag).last_case_detection;
+    outm(i,29)=(*ag).cumul_cost;
+    outm(i,30)=(*ag).cumul_qaly;
   }
 
   return(outm);
