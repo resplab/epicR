@@ -1015,8 +1015,6 @@ struct agent
 
   double cumul_cost;
   double cumul_qaly;
-  double annual_cost;
-  double annual_qaly;
 
   double payoffs_LPT;
 
@@ -1131,8 +1129,6 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
-  out["annual_cost"] = (*ag).annual_cost;
-  out["annual_qaly"] = (*ag).annual_qaly;
 
   out["tte"] = (*ag).tte;
   out["event"] = (*ag).event;
@@ -1159,6 +1155,9 @@ List get_agent(agent *ag)
   out["gpvisits"] = (*ag).gpvisits;
   out["diagnosis"] = (*ag).diagnosis;
   out["case_detection"] = (*ag).case_detection;
+
+  out["cumul_cost"] = (*ag).cumul_cost;
+  out["cumul_qaly"] = (*ag).cumul_qaly;
 
   return out;
 }
@@ -1411,10 +1410,10 @@ struct output_ex
   int n_smoking_status_by_ctime[1000][3];
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
-  double cumul_cost_ctime[1000];
-  double cumul_cost_gold_ctime[1000][5];
-  double cumul_qaly_ctime[1000];
-  double cumul_qaly_gold_ctime[1000][5];
+  //double cumul_cost_ctime[1000];
+  //double cumul_cost_gold_ctime[1000][5];
+  //double cumul_qaly_ctime[1000];
+  //double cumul_qaly_gold_ctime[1000][5];
   double sum_fev1_ltime[1000];
   double cumul_time_by_smoking_status[3];
   double sum_time_by_ctime_sex[100][2];
@@ -1520,10 +1519,10 @@ List Cget_output_ex()
     Rcpp::Named("n_alive_by_ctime_age")=AS_MATRIX_INT_SIZE(output_ex.n_alive_by_ctime_age,input.global_parameters.time_horizon),
     Rcpp::Named("n_smoking_status_by_ctime")=AS_MATRIX_INT_SIZE(output_ex.n_smoking_status_by_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("n_current_smoker_by_ctime_sex")=AS_MATRIX_INT_SIZE(output_ex.n_current_smoker_by_ctime_sex,input.global_parameters.time_horizon),
-    Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
-    Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
-    Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
-    Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
+    //Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
+    //Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
+    //Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
+    //Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("sum_fev1_ltime")=AS_VECTOR_DOUBLE_SIZE(output_ex.sum_fev1_ltime,input.global_parameters.time_horizon),
     Rcpp::Named("cumul_time_by_smoking_status")=AS_VECTOR_DOUBLE(output_ex.cumul_time_by_smoking_status),
     Rcpp::Named("cumul_non_COPD_time")=output_ex.cumul_non_COPD_time,
@@ -1630,12 +1629,12 @@ void update_output_ex(agent *ag)
       else
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
 
-      output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
-      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
-      output_ex.cumul_qaly_ctime[time]+=(*ag).annual_qaly;
-      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).annual_qaly;
+      //output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
+      //output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
+      //output_ex.cumul_qaly_ctime[time]+=(*ag).annual_qaly;
+      //output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).annual_qaly;
 
-      output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
+        output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
 
       double odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
                         +input.COPD.logit_p_COPD_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)
@@ -1762,10 +1761,6 @@ void payoffs_LPT(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
-
-  //annual cost and qaly
-  (*ag).annual_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-  (*ag).annual_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
@@ -2327,8 +2322,6 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   //payoffs;
   (*ag).cumul_cost=0;
   (*ag).cumul_qaly=0;
-  (*ag).annual_cost=0;
-  (*ag).annual_qaly=0;
 
   (*ag).payoffs_LPT=0;
 
@@ -2427,9 +2420,6 @@ agent *event_end_process(agent *ag)
     //NOTE: exacerbation timing is an LPT process and is treated separately.
     (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
-
-    (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-    (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
   }
 
@@ -2638,8 +2628,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,28);
-  CharacterVector eventMatrixColNames(28);
+  NumericMatrix outm(event_stack_pointer,30);
+  CharacterVector eventMatrixColNames(30);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2672,6 +2662,8 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(25) = "diagnosis";
   eventMatrixColNames(26) = "medication_status";
   eventMatrixColNames(27) = "case_detection";
+  eventMatrixColNames(28) = "cumul_cost";
+  eventMatrixColNames(29) = "cumul_qaly";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2706,6 +2698,8 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,25)=(*ag).diagnosis;
     outm(i,26)=(*ag).medication_status;
     outm(i,27)=(*ag).case_detection;
+    outm(i,28)=(*ag).cumul_cost;
+    outm(i,29)=(*ag).cumul_qaly;
   }
 
   return(outm);
@@ -3060,9 +3054,6 @@ void event_exacerbation_end_process(agent *ag)
   (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
   (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
 
-  (*ag).annual_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
-  (*ag).annual_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
-
   (*ag).exac_status=0;
 }
 
@@ -3416,17 +3407,17 @@ agent *event_fixed_process(agent *ag)
   payoffs_LPT(ag);
   medication_LPT(ag);
 
-  update_symptoms(ag); //updating symptoms in the annual event
-  update_gpvisits(ag); //updating gp visits in the annual event
-  update_diagnosis(ag); //updating diagnosis in the annual event
+  update_symptoms(ag); //updating in the annual event
+  update_gpvisits(ag);
+  update_diagnosis(ag);
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
 #endif
 
   //resetting annual cost and qaly
-  (*ag).annual_cost=0;
-  (*ag).annual_qaly=0;
+    //(*ag).annual_cost=0;
+    //(*ag).annual_qaly=0;
 
   //COPD;
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
