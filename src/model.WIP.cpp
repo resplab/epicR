@@ -1905,14 +1905,20 @@ double update_prevalent_diagnosis(agent *ag)
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
     {
-      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
-      medication_LPT(ag);
+          if (rand_unif() < input.medication.medication_adherence)
+          {
+            (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+            medication_LPT(ag);
+          }
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
     {
-      (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
-      medication_LPT(ag);
+          if (rand_unif() < input.medication.medication_adherence)
+          {
+            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            medication_LPT(ag);
+          }
     }
 
   }
@@ -1956,16 +1962,20 @@ double update_prevalent_diagnosis(agent *ag)
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
       {
-        if (rand_unif() < input.medication.medication_adherence) {
+        if (rand_unif() < input.medication.medication_adherence)
+          {
                (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
                medication_LPT(ag);
-        }
+          }
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==1)
       {
-        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
-        medication_LPT(ag);
+          if (rand_unif() < input.medication.medication_adherence)
+          {
+            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            medication_LPT(ag);
+          }
       }
 
   } else {
@@ -2012,8 +2022,11 @@ double update_prevalent_diagnosis(agent *ag)
 
             if((*ag).diagnosis == 1 && (*ag).gold==0)
               {
-                (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
-                medication_LPT(ag);
+                  if (rand_unif() < input.medication.medication_adherence)
+                    {
+                      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+                      medication_LPT(ag);
+                    }
               }
       }
     }
@@ -3026,30 +3039,42 @@ void event_exacerbation_process(agent *ag)
 
   if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==1)
   {
-    (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
-    medication_LPT(ag);
+    if (rand_unif() < input.medication.medication_adherence)
+        {
+        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+        medication_LPT(ag);
+        }
   }
 
   if((*ag).diagnosis==1 && (*ag).exac_status==2 && (*ag).dyspnea==0)
   {
-    (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
-    medication_LPT(ag);
+      if (rand_unif() < input.medication.medication_adherence)
+        {
+        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+        medication_LPT(ag);
+        }
   }
 
   if((*ag).diagnosis==1 && (*ag).dyspnea==0 && (((*ag).exac_status>2) |
      ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
      (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
   {
-    (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
-    medication_LPT(ag);
+        if (rand_unif() < input.medication.medication_adherence)
+        {
+          (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
+          medication_LPT(ag);
+        }
   }
 
   if((*ag).diagnosis==1 && (*ag).dyspnea==1 && (((*ag).exac_status>2) |
      ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
      (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
   {
-    (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
-    medication_LPT(ag);
+      if (rand_unif() < input.medication.medication_adherence)
+        {
+          (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+          medication_LPT(ag);
+        }
   }
 
 }
