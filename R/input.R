@@ -487,7 +487,7 @@ init_input <- function() {
 
   # adherence to medication
   input_help$medication$medication_adherence <- "Proportion adherent to medication"
-  input$medication$medication_adherence <- 0.7
+  input$medication$medication_adherence <- 1
   input_ref$medication$medication_adherence <- ""
 
   # medication log-hazard regression matrix for initiation of each medication
