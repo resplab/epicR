@@ -1043,6 +1043,7 @@ struct agent
 
   int gpvisits;
   int diagnosis;
+  int time_at_diagnosis;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
@@ -1159,6 +1160,7 @@ List get_agent(agent *ag)
 
   out["gpvisits"] = (*ag).gpvisits;
   out["diagnosis"] = (*ag).diagnosis;
+  out["time_at_diagnosis"] = (*ag).time_at_diagnosis;
   out["case_detection"] = (*ag).case_detection;
 
   out["cumul_cost"] = (*ag).cumul_cost;
@@ -1443,6 +1445,7 @@ struct output_ex
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
   int cumul_time_by_ctime_GOLD[100][5];
+  int cumul_diagnosed_time;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1555,6 +1558,7 @@ List Cget_output_ex()
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
+    out["cumul_diagnosed_time"]=output_ex.cumul_diagnosed_time;
 #endif
 
 
@@ -1664,8 +1668,8 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD [time][((*ag).gold)]+=1;
-
+      if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
+      if((*ag).diagnosis>0 && (*ag).local_time>0) output_ex.cumul_diagnosed_time+=(*ag).local_time - (*ag).time_at_diagnosis;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
@@ -1901,6 +1905,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
       (*ag).diagnosis = 1;
       (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).time_at_diagnosis=(*ag).local_time;
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -1958,6 +1963,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
         (*ag).diagnosis = 1;
         (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+        (*ag).time_at_diagnosis=(*ag).local_time;
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -2067,6 +2073,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 
 (*ag).gpvisits  = 0;
 (*ag).diagnosis = 0;
+(*ag).time_at_diagnosis = 0;
 (*ag).case_detection = 0;
 (*ag).last_case_detection = 0;
 
@@ -2662,8 +2669,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,31);
-  CharacterVector eventMatrixColNames(31);
+  NumericMatrix outm(event_stack_pointer,32);
+  CharacterVector eventMatrixColNames(32);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2694,11 +2701,12 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(23) = "dyspnea";
   eventMatrixColNames(24) = "gpvisits";
   eventMatrixColNames(25) = "diagnosis";
-  eventMatrixColNames(26) = "medication_status";
-  eventMatrixColNames(27) = "case_detection";
-  eventMatrixColNames(28) = "last_case_detection";
-  eventMatrixColNames(29) = "cumul_cost";
-  eventMatrixColNames(30) = "cumul_qaly";
+  eventMatrixColNames(26) = "time_at_diagnosis";
+  eventMatrixColNames(27) = "medication_status";
+  eventMatrixColNames(28) = "case_detection";
+  eventMatrixColNames(29) = "last_case_detection";
+  eventMatrixColNames(30) = "cumul_cost";
+  eventMatrixColNames(31) = "cumul_qaly";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2731,11 +2739,12 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,23)=(*ag).dyspnea;
     outm(i,24)=(*ag).gpvisits;
     outm(i,25)=(*ag).diagnosis;
-    outm(i,26)=(*ag).medication_status;
-    outm(i,27)=(*ag).case_detection;
-    outm(i,28)=(*ag).last_case_detection;
-    outm(i,29)=(*ag).cumul_cost;
-    outm(i,30)=(*ag).cumul_qaly;
+    outm(i,26)=(*ag).time_at_diagnosis;
+    outm(i,27)=(*ag).medication_status;
+    outm(i,28)=(*ag).case_detection;
+    outm(i,29)=(*ag).last_case_detection;
+    outm(i,30)=(*ag).cumul_cost;
+    outm(i,31)=(*ag).cumul_qaly;
   }
 
   return(outm);
@@ -3033,6 +3042,7 @@ void event_exacerbation_process(agent *ag)
     if (rand_unif() < hosp_diagnosis)
     {
       (*ag).diagnosis = 1;
+      (*ag).time_at_diagnosis=(*ag).local_time;
     }
   }
 
