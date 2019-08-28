@@ -440,10 +440,10 @@ init_input <- function() {
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
-                                                  CDQ195= c(1.0357, 1.6183),
-                                                  CDQ165= c(1.6215, 2.0889),
-                                                  FlowMeter= c(1.3757, 1.1577),
-                                                  FlowMeter_CDQ= c(1.2397, 0.3813))
+                                                  CDQ195= c(2.3848, 3.7262),
+                                                  CDQ165= c(3.7336, 4.8098),
+                                                  FlowMeter= c(3.1677, 2.6657),
+                                                  FlowMeter_CDQ= c(2.8545, 0.8779))
   input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
 
 
