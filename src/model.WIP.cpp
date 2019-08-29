@@ -1446,6 +1446,7 @@ struct output_ex
   int n_Diagnosed_by_ctime_severity[1000][5];
   int cumul_time_by_ctime_GOLD[100][5];
   double cumul_diagnosed_time[100];
+  double cumul_overdiagnosed_time[100];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1559,6 +1560,7 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
     out["cumul_diagnosed_time"]=AS_VECTOR_DOUBLE(output_ex.cumul_diagnosed_time);
+    out["cumul_overdiagnosed_time"]=AS_VECTOR_DOUBLE(output_ex.cumul_overdiagnosed_time);
 #endif
 
 
@@ -1669,7 +1671,8 @@ void update_output_ex(agent *ag)
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
-      if((*ag).diagnosis>0 && (*ag).gold>0) output_ex.cumul_diagnosed_time[time]+=((*ag).local_time-(*ag).time_at_diagnosis);
+      if((*ag).diagnosis>0 && (*ag).gold>0) output_ex.cumul_diagnosed_time[time]+=(*ag).local_time-(*ag).time_at_diagnosis;
+      if((*ag).diagnosis>0 && (*ag).gold==0) output_ex.cumul_overdiagnosed_time[time]+=((*ag).local_time+1)-(*ag).time_at_diagnosis;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
@@ -1996,6 +1999,7 @@ double update_prevalent_diagnosis(agent *ag)
         (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
         (*ag).medication_status=0;
         medication_LPT(ag);
+        (*ag).time_at_diagnosis=0;
 
          return(0);
       }
@@ -2020,6 +2024,7 @@ double update_prevalent_diagnosis(agent *ag)
         {
             (*ag).diagnosis = 1;
             (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+            (*ag).time_at_diagnosis=(*ag).local_time;
 
         } else
           {
