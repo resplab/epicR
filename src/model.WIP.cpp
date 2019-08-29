@@ -1043,7 +1043,7 @@ struct agent
 
   int gpvisits;
   int diagnosis;
-  int time_at_diagnosis;
+  double time_at_diagnosis;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
@@ -1445,7 +1445,7 @@ struct output_ex
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
   int cumul_time_by_ctime_GOLD[100][5];
-  int cumul_diagnosed_time;
+  double cumul_diagnosed_time[100];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1558,7 +1558,7 @@ List Cget_output_ex()
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon),
-    out["cumul_diagnosed_time"]=output_ex.cumul_diagnosed_time;
+    out["cumul_diagnosed_time"]=AS_VECTOR_DOUBLE(output_ex.cumul_diagnosed_time);
 #endif
 
 
@@ -1669,7 +1669,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
-      if((*ag).diagnosis>0 && (*ag).local_time>0) output_ex.cumul_diagnosed_time+=(*ag).local_time - (*ag).time_at_diagnosis;
+      if((*ag).diagnosis>0 && (*ag).gold>0) output_ex.cumul_diagnosed_time[time]+=((*ag).local_time-(*ag).time_at_diagnosis);
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
