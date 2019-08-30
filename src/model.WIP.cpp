@@ -1671,7 +1671,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      output_ex.n_total_case_detection+=1;
+      output_ex.n_total_case_detection+=((*ag).case_detection>0)*1;;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
