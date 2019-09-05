@@ -582,7 +582,7 @@ struct input
     double min_cd_age;
     double min_cd_pack_years;
     int min_cd_smokers;
-    double case_detection_methods[2][5];
+    double case_detection_methods[3][5];
   } diagnosis;
 
   struct

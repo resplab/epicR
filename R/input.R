@@ -575,7 +575,7 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
-  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"CDQ195"]
+  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"None"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
   input$cost$cost_outpatient_diagnosis <- 26.91 + 75.99
