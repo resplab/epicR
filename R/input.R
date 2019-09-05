@@ -438,12 +438,12 @@ init_input <- function() {
   input$diagnosis$min_cd_smokers <- 0
   input_ref$diagnosis$min_cd_smokers <- ""
 
-  input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
-  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
-                                                  CDQ195= c(2.3848, 3.7262),
-                                                  CDQ165= c(3.7336, 4.8098),
-                                                  FlowMeter= c(3.1677, 2.6657),
-                                                  FlowMeter_CDQ= c(2.8545, 0.8779))
+  input_help$diagnosis$case_detection_methods <- "Sensitivity, pecificity, and cost of case detection methods"
+  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
+                                                  CDQ195= c(2.3848, 3.7262, 75.99),
+                                                  CDQ165= c(3.7336, 4.8098, 75.99),
+                                                  FlowMeter= c(3.1677, 2.6657, (18.9+75.99)),
+                                                  FlowMeter_CDQ= c(2.8545, 0.8779, (18.9+75.99)))
   input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
 
 
@@ -490,7 +490,7 @@ init_input <- function() {
   input$medication$medication_adherence <- 1
   input_ref$medication$medication_adherence <- ""
 
-  # medication log-hazard regression matrix for initiation of each medication
+  # medication log-hazard regression matrix for rate reduction in exacerbations
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
   input$medication$medication_ln_hr_exac<-c(None=0, SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
                                             SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
@@ -575,10 +575,10 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
-  input$cost$cost_case_detection <- 18.9
+  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"CDQ195"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_outpatient_diagnosis <- 26.91
+  input$cost$cost_outpatient_diagnosis <- 26.91 + 75.99
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
