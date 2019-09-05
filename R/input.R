@@ -142,7 +142,7 @@ init_input <- function() {
 
 
   input_help$agent$l_inc_betas <- "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
+  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55-100, y = 0.01, y2 = 0))) # disabled so there are no incident patients,
   input_ref$agent$l_inc_betas <- ""
 
 
@@ -438,7 +438,7 @@ init_input <- function() {
   input$diagnosis$min_cd_smokers <- 0
   input_ref$diagnosis$min_cd_smokers <- ""
 
-  input_help$diagnosis$case_detection_methods <- "Sensitivity, pecificity, and cost of case detection methods"
+  input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
                                                   CDQ195= c(2.3848, 3.7262, 75.99),
                                                   CDQ165= c(3.7336, 4.8098, 75.99),
@@ -575,7 +575,7 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
-  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"CDQ195"]
+  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"None"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
   input$cost$cost_outpatient_diagnosis <- 26.91 + 75.99
