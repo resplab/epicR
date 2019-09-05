@@ -418,9 +418,13 @@ init_input <- function() {
 
   ## Case detection;
 
-  input_help$diagnosis$p_case_detection <- "Probability of having case detection given an undiagnosed patient meets the selection criteria"
-  input$diagnosis$p_case_detection <- 0.1
+  input_help$diagnosis$p_case_detection <- "Probability of recieving case detection given they meet the selection criteria"
+  input$diagnosis$p_case_detection <- 1
   input_ref$diagnosis$p_case_detection <- ""
+
+  input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
+  input$diagnosis$years_btw_case_detection <- 5
+  input_ref$diagnosis$years_btw_case_detection <- ""
 
   input_help$diagnosis$min_cd_age <- "Minimum age for recieving case detection"
   input$diagnosis$min_cd_age <- 40
@@ -436,10 +440,10 @@ init_input <- function() {
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
-                                                  CDQ195= c(0.4742, 0.1858),
-                                                  CDQ165= c(0.6069, 0.4115),
-                                                  FlowMeter= c(0.5676, 0.0735),
-                                                  FlowMeter_CDQ= c(0.5366, 0.0134))
+                                                  CDQ195= c(2.3848, 3.7262),
+                                                  CDQ165= c(3.7336, 4.8098),
+                                                  FlowMeter= c(3.1677, 2.6657),
+                                                  FlowMeter_CDQ= c(2.8545, 0.8779))
   input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
 
 
@@ -481,20 +485,36 @@ init_input <- function() {
 
   ## Medication;
 
+  # adherence to medication
+  input_help$medication$medication_adherence <- "Proportion adherent to medication"
+  input$medication$medication_adherence <- 1
+  input_ref$medication$medication_adherence <- ""
+
   # medication log-hazard regression matrix for initiation of each medication
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
-  input$medication$medication_ln_hr_exac<-c(None=0,SABA=0,LABA=log(1-0.20),SABA_LABA=log(1-0.20), LAMA=log(1-0.22),
-                                            LAMA_SABA=log(1-0.22), LAMA_LABA=log(1-0.23), LAMA_LAMA_SABA=log(1-0.23),
-                                            ICS=log(1-0.19), ICS_SABA=log(1-0.19), ICS_LABA=log(1-0.25), ICS_LABA_SABA=log(1-0.25),
-                                            ICS_LAMA=log(1), ICS_LAMA_SABA=log(1), ICS_LAMA_LABA=log(1-0.34),
-                                            ICS_LAMA_LABA_SABA=log(1-0.34))
-  input_ref$medication$medication_ln_hr_exac <- ""
+  input$medication$medication_ln_hr_exac<-c(None=0, SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
+                                            SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
+                                            LAMA=log((1-0.22)^input$medication$medication_adherence),
+                                            LAMA_SABA=log((1-0.22)^input$medication$medication_adherence),
+                                            LAMA_LABA=log((1-0.23)^input$medication$medication_adherence),
+                                            LAMA_LAMA_SABA=log((1-0.23)^input$medication$medication_adherence),
+                                            ICS=log((1-0.19)^input$medication$medication_adherence),
+                                            ICS_SABA=log((1-0.19)^input$medication$medication_adherence),
+                                            ICS_LABA=log((1-0.25)^input$medication$medication_adherence),
+                                            ICS_LABA_SABA=log((1-0.25)^input$medication$medication_adherence),
+                                            ICS_LAMA=log(1^input$medication$medication_adherence),
+                                            ICS_LAMA_SABA=log(1^input$medication$medication_adherence),
+                                            ICS_LAMA_LABA=log((1-0.34)^input$medication$medication_adherence),
+                                            ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence))
+  input_ref$medication$medication_ln_hr_exac <- "LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
 
   # cost of medications
   input_help$medication$medication_costs <- "Costs of treatment"
-  input$medication$medication_costs <-c(None=0,SABA=50,LABA=0,SABA_LABA=0, LAMA=100, LAMA_SABA=0, LAMA_LABA=150, LAMA_LAMA_SABA=0,
+  input$medication$medication_costs <-c(None=0,SABA=72.15*input$medication$medication_adherence, LABA=0, SABA_LABA=0,
+                                        LAMA=479.35*input$medication$medication_adherence, LAMA_SABA=0,
+                                        LAMA_LABA=876.76*input$medication$medication_adherence, LAMA_LAMA_SABA=0,
                                         ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0, ICS_LAMA_SABA=0,
-                                        ICS_LAMA_LABA=200, ICS_LAMA_LABA_SABA=0)
+                                        ICS_LAMA_LABA=1549.97*input$medication$medication_adherence, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_costs <- "BC administrative data"
 
   # utility from medications
@@ -504,8 +524,7 @@ init_input <- function() {
                                         ICS_LAMA_SABA=0, ICS_LAMA_LABA=0.0367, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_utility <- "Lambe et al. Thorax 2019"
 
-
-  # medication event
+  # medication event - disabled
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL
   for (i in medication_classes) mx <- rbind(mx, template)
@@ -549,17 +568,17 @@ init_input <- function() {
 
 
   ##cost and utility
-  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=615, II=1831, III=2619, IV=3021)))
-  input_help$cost$bg_cost_by_stage="Annual direct costs for non-COPD, and COPD by GOLD grades"
+  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=135, II=330, III=864, IV=1178)))
+  input_help$cost$bg_cost_by_stage="Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades"
   #  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
   #  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
-  input$cost$cost_case_detection <- 25
+  input$cost$cost_case_detection <- 18.9
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_outpatient_diagnosis <- 50
+  input$cost$cost_outpatient_diagnosis <- 26.91
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
