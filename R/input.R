@@ -91,7 +91,7 @@ init_input <- function() {
   input_ref$agent$height_0_sd <- ""
 
 
-  input_help$agent$weight_0_betas <- "Regressoin coefficients for estimating weiight (in Kg) at baseline"
+  input_help$agent$weight_0_betas <- "Regression coefficients for estimating weiight (in Kg) at baseline"
   input$agent$weight_0_betas <- t(as.matrix(c(intercept = 50, sex = -5, age = 0.1, age2 = 0, sex_age = 0, height = 1, year = 0.01)))
   input_ref$agent$weight_0_betas <- ""
 
