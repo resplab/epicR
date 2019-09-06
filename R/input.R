@@ -440,10 +440,10 @@ init_input <- function() {
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
-                                                  CDQ195= c(2.3848, 3.7262, 75.99),
-                                                  CDQ165= c(3.7336, 4.8098, 75.99),
-                                                  FlowMeter= c(3.1677, 2.6657, (18.9+75.99)),
-                                                  FlowMeter_CDQ= c(2.8545, 0.8779, (18.9+75.99)))
+                                                  CDQ195= c(2.3848, 3.7262, 73.03),
+                                                  CDQ165= c(3.7336, 4.8098, 73.03),
+                                                  FlowMeter= c(3.1677, 2.6657, 91.19),
+                                                  FlowMeter_CDQ= c(2.8545, 0.8779, 91.99))
   input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
 
 
@@ -578,7 +578,7 @@ init_input <- function() {
   input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"None"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_outpatient_diagnosis <- 26.91 + 75.99
+  input$cost$cost_outpatient_diagnosis <- 98.89
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
