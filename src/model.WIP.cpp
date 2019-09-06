@@ -1778,8 +1778,8 @@ void exacerbation_LPT(agent *ag)
 
 void payoffs_LPT(agent *ag)
 {
-  (*ag).cumul_cost+=(input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
-  (*ag).cumul_qaly+=(input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time))*(*ag).cohort;
+  (*ag).cumul_cost+=(input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+  (*ag).cumul_qaly+=(input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time-1))*(*ag).cohort;
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
@@ -1796,12 +1796,12 @@ void medication_LPT(agent *ag)
   #endif
     // costs
     //(*ag).cumul_cost+=1;
-    (*ag).cumul_cost+=(input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
+    (*ag).cumul_cost+=(input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
 
     // qaly
       if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
-          (*ag).cumul_qaly+=(input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time))*(*ag).cohort;
+          (*ag).cumul_qaly+=(input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time-1))*(*ag).cohort;
         }
 
     (*ag).medication_LPT=(*ag).local_time;
@@ -1877,7 +1877,7 @@ double apply_case_detection(agent *ag)
   if (rand_unif() < p_detection) {
 
     (*ag).case_detection = 1;
-    (*ag).cumul_cost+=(input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
+    (*ag).cumul_cost+=(input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
     (*ag).last_case_detection = (*ag).local_time;
     (*ag).cohort = 1;
 
@@ -1920,7 +1920,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort ;
+      (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort ;
       (*ag).time_at_diagnosis=(*ag).local_time;
     }
 
@@ -1978,7 +1978,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_diagnosis)
       {
         (*ag).diagnosis = 1;
-        (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
+        (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
         (*ag).time_at_diagnosis=(*ag).local_time;
       }
 
@@ -2009,7 +2009,7 @@ double update_prevalent_diagnosis(agent *ag)
         if(rand_unif() < correct_overdiagnosis) {
 
         (*ag).diagnosis = 0;
-        (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
+        (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
         (*ag).medication_status=0;
         medication_LPT(ag);
         (*ag).time_at_diagnosis=0;
@@ -2036,7 +2036,7 @@ double update_prevalent_diagnosis(agent *ag)
       if (rand_unif() < p_overdiagnosis)
         {
             (*ag).diagnosis = 1;
-            (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
+            (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
             (*ag).time_at_diagnosis=(*ag).local_time;
 
         } else
@@ -2478,8 +2478,8 @@ agent *event_end_process(agent *ag)
   if((*ag).exac_status>0)
   {
     //NOTE: exacerbation timing is an LPT process and is treated separately.
-    (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time))*(*ag).cohort;
-    (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time))*(*ag).cohort;
+    (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+    (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time-1))*(*ag).cohort;
 
   }
 
@@ -3128,8 +3128,8 @@ double event_exacerbation_end_tte(agent *ag)
 
 void event_exacerbation_end_process(agent *ag)
 {
-  (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time)))*(*ag).cohort;
-  (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time)))*(*ag).cohort;
+  (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time-1))*(*ag).cohort;
+  (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time-1))*(*ag).cohort;
 
   (*ag).exac_status=0;
 }
