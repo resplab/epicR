@@ -1059,6 +1059,8 @@ struct agent
   double re_dyspnea;
   double re_wheeze;
 
+  bool cohort;
+
   //Define your project-specific variables here;
 
 };
@@ -1165,6 +1167,8 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+
+  out["cohort"] = (*ag).cohort;
 
   return out;
 }
@@ -1771,8 +1775,8 @@ void exacerbation_LPT(agent *ag)
 
 void payoffs_LPT(agent *ag)
 {
-  if((*ag).local_time>=1) (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-  if((*ag).local_time>=1) (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+  (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+  (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
@@ -1789,12 +1793,12 @@ void medication_LPT(agent *ag)
   #endif
     // costs
     //(*ag).cumul_cost+=1;
-    if((*ag).local_time>=1) (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
       if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
-          if((*ag).local_time>=1) (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
 
     (*ag).medication_LPT=(*ag).local_time;
@@ -1872,6 +1876,7 @@ double apply_case_detection(agent *ag)
     (*ag).case_detection = 1;
     (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     (*ag).last_case_detection = (*ag).local_time;
+    (*ag).cohort = 1;
 
     } else {
 
@@ -1912,7 +1917,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      if((*ag).local_time>=1) (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
       (*ag).time_at_diagnosis=(*ag).local_time;
     }
 
@@ -2086,6 +2091,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).time_at_diagnosis = 0;
 (*ag).case_detection = 0;
 (*ag).last_case_detection = 0;
+(*ag).cohort = 0;
 
 (*ag).tmp_exac_rate = 0;
 
@@ -2469,8 +2475,8 @@ agent *event_end_process(agent *ag)
   if((*ag).exac_status>0)
   {
     //NOTE: exacerbation timing is an LPT process and is treated separately.
-    if((*ag).local_time>=1) (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
-    if((*ag).local_time>=1) (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+    (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
   }
 
@@ -2680,8 +2686,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,30);
-  CharacterVector eventMatrixColNames(30);
+  NumericMatrix outm(event_stack_pointer,31);
+  CharacterVector eventMatrixColNames(31);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2716,6 +2722,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(27) = "case_detection";
   eventMatrixColNames(28) = "cumul_cost";
   eventMatrixColNames(29) = "cumul_qaly";
+  eventMatrixColNames(30) = "cohort";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2752,6 +2759,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,27)=(*ag).case_detection;
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
+    outm(i,30)=(*ag).cohort;
   }
 
   return(outm);
@@ -3116,8 +3124,8 @@ double event_exacerbation_end_tte(agent *ag)
 
 void event_exacerbation_end_process(agent *ag)
 {
-  if((*ag).local_time>=1) (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
-  if((*ag).local_time>=1) (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
+  (*ag).cumul_cost+=input.cost.exac_dcost[(*ag).exac_status-1]/(1+pow(input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time));
+  (*ag).cumul_qaly+=input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/(1+pow(input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time));
 
   (*ag).exac_status=0;
 }
