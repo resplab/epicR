@@ -3478,12 +3478,13 @@ agent *event_fixed_process(agent *ag)
   (*ag).weight+=input.agent.weight_0_betas[6];
   (*ag).weight_LPT=(*ag).local_time;
 
+  smoking_LPT(ag);
+
   update_symptoms(ag); //updating in the annual event
   update_gpvisits(ag);
   update_diagnosis(ag);
 
   lung_function_LPT(ag);
-  smoking_LPT(ag);
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
   medication_LPT(ag);
