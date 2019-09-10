@@ -581,7 +581,7 @@ struct input
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
-    int min_cd_smokers;
+    //int min_cd_smokers;
     double case_detection_methods[3][5];
   } diagnosis;
 
@@ -761,7 +761,7 @@ List Cget_inputs()
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
-    Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers,
+    //Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers,
     Rcpp::Named("case_detection_methods")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods)
     ),
 
@@ -895,7 +895,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
-  if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
+  //if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
   if(name=="diagnosis$case_detection_methods") READ_R_MATRIX(value,input.diagnosis.case_detection_methods);
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
@@ -1052,7 +1052,7 @@ struct agent
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
-  int min_cd_smokers;
+  //int min_cd_smokers;
 
   double re_cough; //random effects for symptoms
   double re_phlegm;
@@ -1860,7 +1860,7 @@ double apply_case_detection(agent *ag)
 
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
-      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
+      //((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
       ((*ag).gpvisits!=0) &&
       ((*ag).diagnosis==0))  {
 
