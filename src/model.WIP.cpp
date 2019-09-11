@@ -1777,7 +1777,7 @@ void smoking_LPT(agent *ag)
 void exacerbation_LPT(agent *ag)
 {
   if((*ag).exac_status>0)
-    (*ag).cumul_exac_time[(*ag).exac_status-1]+=(*ag).local_time-(*ag).exac_LPT;
+    (*ag).cumul_exac_time[(*ag).exac_status-1]+=((*ag).local_time-(*ag).exac_LPT)*(*ag).cohort;
   (*ag).exac_LPT=(*ag).local_time;
 }
 
@@ -2513,10 +2513,10 @@ agent *event_end_process(agent *ag)
   output.total_exac[2]+=(*ag).cumul_exac[2]*(*ag).cohort;
   output.total_exac[3]+=(*ag).cumul_exac[3]*(*ag).cohort;
 
-  output.total_exac_time[0]+=(*ag).cumul_exac_time[0]*(*ag).cohort;
-  output.total_exac_time[1]+=(*ag).cumul_exac_time[1]*(*ag).cohort;
-  output.total_exac_time[2]+=(*ag).cumul_exac_time[2]*(*ag).cohort;
-  output.total_exac_time[3]+=(*ag).cumul_exac_time[3]*(*ag).cohort;
+  output.total_exac_time[0]+=(*ag).cumul_exac_time[0];
+  output.total_exac_time[1]+=(*ag).cumul_exac_time[1];
+  output.total_exac_time[2]+=(*ag).cumul_exac_time[2];
+  output.total_exac_time[3]+=(*ag).cumul_exac_time[3];
 
   output.total_cost+=(*ag).cumul_cost;
   output.total_qaly+=(*ag).cumul_qaly;
