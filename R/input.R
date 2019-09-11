@@ -434,10 +434,6 @@ init_input <- function() {
   input$diagnosis$min_cd_pack_years <- 0
   input_ref$diagnosis$min_cd_pack_years <- ""
 
-  #input_help$diagnosis$min_cd_smokers <- "Set to 1 if only current smokers should recieve case detection at baseline"
-  #input$diagnosis$min_cd_smokers <- 0
-  #input_ref$diagnosis$min_cd_smokers <- ""
-
   input_help$diagnosis$min_cd_symptoms <- "Set to 1 if only patients with symptoms should recieve case detection at baseline"
   input$diagnosis$min_cd_symptoms <- 0
   input_ref$diagnosis$min_cd_symptoms <- ""
