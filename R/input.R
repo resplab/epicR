@@ -445,8 +445,8 @@ init_input <- function() {
   input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods in the total population"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
                                                   CDQ17= c(4.1013, 4.394, 73.03),
-                                                  FlowMeter= c(3.174, 1.6025, 91.99),
-                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 91.99))
+                                                  FlowMeter= c(3.174, 1.6025, 91.19),
+                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 91.19))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Sichletidis et al 2011"
 
   input_help$diagnosis$case_detection_methods_eversmokers <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
@@ -454,7 +454,7 @@ init_input <- function() {
                                                               CDQ195= c(2.3848, 3.7262, 73.03),
                                                               CDQ165= c(3.7336, 4.8098, 73.03),
                                                               FlowMeter= c(3.1677, 2.6657, 85.30),
-                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 91.99))
+                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 91.19))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Haroon et al. BMJ Open 2015"
 
   input_help$diagnosis$case_detection_methods_symptomatic <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
