@@ -1890,9 +1890,9 @@ double apply_case_detection(agent *ag)
   if (rand_unif() < p_detection) {
 
     (*ag).case_detection = 1;
-    (*ag).cumul_cost+=(input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
-    (*ag).last_case_detection = (*ag).local_time;
     (*ag).cohort = 1;
+    (*ag).last_case_detection = (*ag).local_time;
+    (*ag).cumul_cost+=(input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
 
     } else {
 
