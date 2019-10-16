@@ -142,7 +142,7 @@ init_input <- function() {
 
 
   input_help$agent$l_inc_betas <- "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
+  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55-100, y = 0.01, y2 = 0))) # disabled so there are no incident patients,
   input_ref$agent$l_inc_betas <- ""
 
 
