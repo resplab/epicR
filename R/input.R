@@ -91,7 +91,7 @@ init_input <- function() {
   input_ref$agent$height_0_sd <- ""
 
 
-  input_help$agent$weight_0_betas <- "Regressoin coefficients for estimating weiight (in Kg) at baseline"
+  input_help$agent$weight_0_betas <- "Regression coefficients for estimating weiight (in Kg) at baseline"
   input$agent$weight_0_betas <- t(as.matrix(c(intercept = 50, sex = -5, age = 0.1, age2 = 0, sex_age = 0, height = 1, year = 0.01)))
   input_ref$agent$weight_0_betas <- ""
 
@@ -411,7 +411,7 @@ init_input <- function() {
   input_ref$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$outpatient$dispersion_gpvisits_nonCOPD <- 0.4093
 
-    # Extras
+    # Extras - DISABLED
   input$outpatient$rate_doctor_visit <- 0.1
   input$outpatient$p_specialist <- 0.1
 
@@ -434,17 +434,29 @@ init_input <- function() {
   input$diagnosis$min_cd_pack_years <- 0
   input_ref$diagnosis$min_cd_pack_years <- ""
 
-  input_help$diagnosis$min_cd_smokers <- "Set to 1 if only current smokers should recieve case detection"
-  input$diagnosis$min_cd_smokers <- 0
-  input_ref$diagnosis$min_cd_smokers <- ""
+  input_help$diagnosis$min_cd_symptoms <- "Set to 1 if only patients with symptoms should recieve case detection at baseline"
+  input$diagnosis$min_cd_symptoms <- 0
+  input_ref$diagnosis$min_cd_symptoms <- ""
 
-  input_help$diagnosis$case_detection_methods <- "Sensitivity and specificity of possible case detection methods"
-  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0),
-                                                  CDQ195= c(2.3848, 3.7262),
-                                                  CDQ165= c(3.7336, 4.8098),
-                                                  FlowMeter= c(3.1677, 2.6657),
-                                                  FlowMeter_CDQ= c(2.8545, 0.8779))
-  input_ref$diagnosis$case_detection_methods <- "Haroon et al. BMJ Open 2015"
+  input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods in the total population"
+  input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
+                                                  CDQ17= c(4.1013, 4.394, 73.03),
+                                                  FlowMeter= c(3.174, 1.6025, 91.19),
+                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 91.19))
+  input_ref$diagnosis$case_detection_methods_eversmokers <- "Sichletidis et al 2011"
+
+  input_help$diagnosis$case_detection_methods_eversmokers <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
+  input$diagnosis$case_detection_methods_eversmokers <- cbind(None=c(0, 0, 0),
+                                                              CDQ195= c(2.3848, 3.7262, 73.03),
+                                                              CDQ165= c(3.7336, 4.8098, 73.03),
+                                                              FlowMeter= c(3.1677, 2.6657, 85.30),
+                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 91.19))
+  input_ref$diagnosis$case_detection_methods_eversmokers <- "Haroon et al. BMJ Open 2015"
+
+  input_help$diagnosis$case_detection_methods_symptomatic <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
+  input$diagnosis$case_detection_methods_symptomatic <- cbind(None=c(0, 0, 0),
+                                                              FlowMeter= c(3.2705, 2.2735, 85.30))
+  input_ref$diagnosis$case_detection_methods_symptomatic <- "CanCOLD analysed on Sept 9, 2019"
 
 
   ## Diagnosis;
@@ -487,10 +499,10 @@ init_input <- function() {
 
   # adherence to medication
   input_help$medication$medication_adherence <- "Proportion adherent to medication"
-  input$medication$medication_adherence <- 1
+  input$medication$medication_adherence <- 0.7
   input_ref$medication$medication_adherence <- ""
 
-  # medication log-hazard regression matrix for initiation of each medication
+  # medication log-hazard regression matrix for rate reduction in exacerbations
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
   input$medication$medication_ln_hr_exac<-c(None=0, SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
                                             SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
@@ -534,7 +546,7 @@ init_input <- function() {
   input$medication$ln_rr_exac_by_class <- rep(log(1), length(medication_classes))  #TODO: update this to represent different medication effect
 
 
-  ### comorbidity mi
+  ### comorbidity mi - not implemented
   input$comorbidity$logit_p_mi_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
                                                              calendar_time = 0, bmi = 0, gold = 0.05), female = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
                                                                                                                   calendar_time = 0, bmi = 0, gold = 0.05))
@@ -544,7 +556,7 @@ init_input <- function() {
   input$comorbidity$p_mi_death <- 0.05
 
 
-  #stroke
+  #stroke - not implemented
   input$comorbidity$logit_p_stroke_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, b_mi=0, gold=0.05, b_mi=0, n_mi=0),
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0)
@@ -556,7 +568,7 @@ init_input <- function() {
   input$comorbidity$p_stroke_death<-0.18;
 
 
-  #hf
+  #hf - not implemented
   input$comorbidity$logit_p_hf_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)
@@ -575,10 +587,10 @@ init_input <- function() {
   input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
-  input$cost$cost_case_detection <- 18.9
+  input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"None"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_outpatient_diagnosis <- 26.91
+  input$cost$cost_outpatient_diagnosis <- 98.89
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))

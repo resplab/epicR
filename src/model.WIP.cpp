@@ -581,8 +581,10 @@ struct input
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
-    int min_cd_smokers;
-    double case_detection_methods[2][5];
+    int min_cd_symptoms;
+    double case_detection_methods[3][4];
+    double case_detection_methods_eversmokers[3][5];
+    double case_detection_methods_symptomatic[3][2];
   } diagnosis;
 
   struct
@@ -761,8 +763,10 @@ List Cget_inputs()
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
-    Rcpp::Named("min_cd_smokers")=input.diagnosis.min_cd_smokers,
-    Rcpp::Named("case_detection_methods")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods)
+    Rcpp::Named("min_cd_symptoms")=input.diagnosis.min_cd_symptoms,
+    Rcpp::Named("case_detection_methods")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods),
+    Rcpp::Named("case_detection_methods_eversmokers")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods_eversmokers),
+    Rcpp::Named("case_detection_methods_symptomatic")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods_symptomatic)
     ),
 
     Rcpp::Named("comorbidity")=Rcpp::List::create(
@@ -895,8 +899,10 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
-  if(name=="diagnosis$min_cd_smokers") {input.diagnosis.min_cd_smokers=value[0]; return(0);};
+  if(name=="diagnosis$min_cd_symptoms") {input.diagnosis.min_cd_symptoms=value[0]; return(0);};
   if(name=="diagnosis$case_detection_methods") READ_R_MATRIX(value,input.diagnosis.case_detection_methods);
+  if(name=="diagnosis$case_detection_methods_eversmokers") READ_R_MATRIX(value,input.diagnosis.case_detection_methods_eversmokers);
+  if(name=="diagnosis$case_detection_methods_symptomatic") READ_R_MATRIX(value,input.diagnosis.case_detection_methods_symptomatic);
 
   if(name=="symptoms$covariance_COPD") READ_R_MATRIX(value, input.symptoms.covariance_COPD);
   if(name=="symptoms$covariance_nonCOPD")  READ_R_MATRIX(value, input.symptoms.covariance_nonCOPD);
@@ -1052,7 +1058,7 @@ struct agent
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
-  int min_cd_smokers;
+  int min_cd_symptoms;
 
   double re_cough; //random effects for symptoms
   double re_phlegm;
@@ -1853,31 +1859,34 @@ double apply_case_detection(agent *ag)
 
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
-      ((*ag).smoking_status>= input.diagnosis.min_cd_smokers) &&
       ((*ag).gpvisits!=0) &&
       ((*ag).diagnosis==0))  {
 
     if ((*ag).last_case_detection == 0)
         {
+      if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
+          {
           p_detection = input.diagnosis.p_case_detection;
+          }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
-            p_detection = 1;
+            p_detection = input.diagnosis.p_case_detection;
           }
 
   if (rand_unif() < p_detection) {
 
     (*ag).case_detection = 1;
-    (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
     (*ag).last_case_detection = (*ag).local_time;
+    (*ag).cumul_cost+=input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     } else {
 
     (*ag).case_detection = 0;
-    }
-  }
+      }
+        }
+
   return(0);
 }
 
@@ -2675,8 +2684,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,31);
-  CharacterVector eventMatrixColNames(31);
+  NumericMatrix outm(event_stack_pointer,30);
+  CharacterVector eventMatrixColNames(30);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2707,11 +2716,10 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(23) = "dyspnea";
   eventMatrixColNames(24) = "gpvisits";
   eventMatrixColNames(25) = "diagnosis";
-  eventMatrixColNames(26) = "time_at_diagnosis";
-  eventMatrixColNames(27) = "medication_status";
-  eventMatrixColNames(28) = "case_detection";
-  eventMatrixColNames(29) = "cumul_cost";
-  eventMatrixColNames(30) = "cumul_qaly";
+  eventMatrixColNames(26) = "medication_status";
+  eventMatrixColNames(27) = "case_detection";
+  eventMatrixColNames(28) = "cumul_cost";
+  eventMatrixColNames(29) = "cumul_qaly";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2744,11 +2752,10 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,23)=(*ag).dyspnea;
     outm(i,24)=(*ag).gpvisits;
     outm(i,25)=(*ag).diagnosis;
-    outm(i,26)=(*ag).time_at_diagnosis;
-    outm(i,27)=(*ag).medication_status;
-    outm(i,28)=(*ag).case_detection;
-    outm(i,29)=(*ag).cumul_cost;
-    outm(i,30)=(*ag).cumul_qaly;
+    outm(i,26)=(*ag).medication_status;
+    outm(i,27)=(*ag).case_detection;
+    outm(i,28)=(*ag).cumul_cost;
+    outm(i,29)=(*ag).cumul_qaly;
   }
 
   return(outm);
@@ -3463,15 +3470,19 @@ agent *event_fixed_process(agent *ag)
   (*ag).weight+=input.agent.weight_0_betas[6];
   (*ag).weight_LPT=(*ag).local_time;
 
-  lung_function_LPT(ag);
+
   smoking_LPT(ag);
-  exacerbation_LPT(ag);
-  payoffs_LPT(ag);
-  medication_LPT(ag);
 
   update_symptoms(ag); //updating in the annual event
   update_gpvisits(ag);
   update_diagnosis(ag);
+
+  lung_function_LPT(ag);
+  exacerbation_LPT(ag);
+  payoffs_LPT(ag);
+  medication_LPT(ag);
+
+
 
 #ifdef OUTPUT_EX
   update_output_ex(ag);
