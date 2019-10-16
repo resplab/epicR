@@ -411,7 +411,7 @@ init_input <- function() {
   input_ref$outpatient$ln_rate_gpvisits_nonCOPD_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
   input$outpatient$dispersion_gpvisits_nonCOPD <- 0.4093
 
-    # Extras
+    # Extras - DISABLED
   input$outpatient$rate_doctor_visit <- 0.1
   input$outpatient$p_specialist <- 0.1
 
@@ -457,7 +457,6 @@ init_input <- function() {
   input$diagnosis$case_detection_methods_symptomatic <- cbind(None=c(0, 0, 0),
                                                               FlowMeter= c(3.2705, 2.2735, 85.30))
   input_ref$diagnosis$case_detection_methods_symptomatic <- "CanCOLD analysed on Sept 9, 2019"
-
 
 
   ## Diagnosis;
@@ -547,7 +546,7 @@ init_input <- function() {
   input$medication$ln_rr_exac_by_class <- rep(log(1), length(medication_classes))  #TODO: update this to represent different medication effect
 
 
-  ### comorbidity mi
+  ### comorbidity mi - not implemented
   input$comorbidity$logit_p_mi_betas_by_sex = cbind(male = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
                                                              calendar_time = 0, bmi = 0, gold = 0.05), female = c(intercept = -3000, age = 0.001, age2 = 0, pack_years = 0.01, smoking = 0.001,
                                                                                                                   calendar_time = 0, bmi = 0, gold = 0.05))
@@ -557,7 +556,7 @@ init_input <- function() {
   input$comorbidity$p_mi_death <- 0.05
 
 
-  #stroke
+  #stroke - not implemented
   input$comorbidity$logit_p_stroke_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, b_mi=0, gold=0.05, b_mi=0, n_mi=0),
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0)
@@ -569,7 +568,7 @@ init_input <- function() {
   input$comorbidity$p_stroke_death<-0.18;
 
 
-  #hf
+  #hf - not implemented
   input$comorbidity$logit_p_hf_betas_by_sex=cbind(
     male=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0),
     female=c(intercept=-3000, age=0.001, age2=0, pack_years=0.01, smoking=0.001, calendar_time=0, bmi=0.01, gold=0.05, b_mi=0, n_mi=0.01, b_stroke=0, n_stroke=0)

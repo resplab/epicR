@@ -1873,6 +1873,8 @@ double apply_case_detection(agent *ag)
       {
       if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
         {
+      if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
+          {
           p_detection = input.diagnosis.p_case_detection;
 
         } else {
@@ -1894,6 +1896,7 @@ double apply_case_detection(agent *ag)
     (*ag).last_case_detection = (*ag).local_time;
     (*ag).cumul_cost+=(input.cost.cost_case_detection/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
 
+
     } else {
 
     (*ag).case_detection = 0;
@@ -1903,6 +1906,7 @@ double apply_case_detection(agent *ag)
 
         (*ag).alive = 0;
   }
+
 
   return(0);
 }
@@ -2703,8 +2707,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,31);
-  CharacterVector eventMatrixColNames(31);
+  NumericMatrix outm(event_stack_pointer,30);
+  CharacterVector eventMatrixColNames(30);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2742,6 +2746,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(30) = "cohort";
 
 
+
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
   {
@@ -2777,6 +2782,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
     outm(i,30)=(*ag).cohort;
+
   }
 
   return(outm);
@@ -3501,8 +3507,6 @@ agent *event_fixed_process(agent *ag)
   exacerbation_LPT(ag);
   payoffs_LPT(ag);
   medication_LPT(ag);
-
-
 
 
 #ifdef OUTPUT_EX

@@ -12,7 +12,7 @@ session_env$global_error_message_chain<-NULL
 }
 
 
-default_settings <- list(record_mode = record_mode["record_mode_event"],
+default_settings <- list(record_mode = record_mode["record_mode_none"],
                          events_to_record = c(0),
                          agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
