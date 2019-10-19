@@ -593,6 +593,7 @@ struct input
     double exac_dcost[4];
     double cost_case_detection;
     double cost_outpatient_diagnosis;
+    double cost_smoking_cessation;
 
     double doctor_visit_by_type[2];
     double mi_dcost;
@@ -785,6 +786,7 @@ List Cget_inputs()
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
       Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
       Rcpp::Named("cost_outpatient_diagnosis")=input.cost.cost_outpatient_diagnosis,
+      Rcpp::Named("cost_smoking_cessation")=input.cost.cost_smoking_cessation,
 
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
     ),
@@ -913,6 +915,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
   if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
   if(name=="cost$cost_outpatient_diagnosis") {input.cost.cost_outpatient_diagnosis=value[0]; return(0);};
+  if(name=="cost$cost_smoking_cessation") {input.cost.cost_smoking_cessation=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
   if(name=="medication$medication_costs") READ_R_VECTOR(value,input.medication.medication_costs);
@@ -1955,6 +1958,11 @@ double update_prevalent_diagnosis(agent *ag)
           }
     }
 
+    if ((*ag).diagnosis==1 && (*ag).smoking_status==1)
+    {
+      (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+    }
+
   }
   return(0);
 }
@@ -2013,7 +2021,12 @@ double update_prevalent_diagnosis(agent *ag)
           }
       }
 
-  } else {
+    if ((*ag).diagnosis==1 && (*ag).smoking_status==1)
+      {
+        (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+      }
+
+  } else if ((*ag).gold==0) {
 
     double correct_overdiagnosis = input.diagnosis.p_correct_overdiagnosis;
 
@@ -2030,7 +2043,7 @@ double update_prevalent_diagnosis(agent *ag)
          return(0);
       }
 
-    } else {
+      } else if ((*ag).diagnosis==0) {
 
       double p_overdiagnosis = 0;
 
@@ -2065,6 +2078,11 @@ double update_prevalent_diagnosis(agent *ag)
                       medication_LPT(ag);
                     }
               }
+
+            if ((*ag).diagnosis==1 && (*ag).smoking_status==1 && (*ag).gold==0)
+            {
+              (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+            }
       }
     }
   }
@@ -2802,12 +2820,15 @@ double event_smoking_change_tte(agent *ag)
   }
   else
   {
-    rate=exp(input.smoking.ln_h_ces_betas[0]
-               +input.smoking.ln_h_ces_betas[1]*(*ag).sex
-               +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
-               +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
-               +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time)
-               +input.smoking.ln_h_ces_betas[5]*(*ag).diagnosis);
+    background_rate=exp(input.smoking.ln_h_ces_betas[0]
+                          +input.smoking.ln_h_ces_betas[1]*(*ag).sex
+                          +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
+                          +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
+                          +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
+
+    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - ((*ag).local_time)-(*ag).time_at_diagnosis);
+
+    rate = background_rate + (*ag).diagnosis * diagnosed_rate;
   }
 
 
@@ -3118,6 +3139,11 @@ void event_exacerbation_process(agent *ag)
           (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
           medication_LPT(ag);
         }
+  }
+
+  if ((*ag).diagnosis==1 && (*ag).smoking_status==1)
+  {
+    (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
   }
 
 }

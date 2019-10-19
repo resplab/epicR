@@ -202,8 +202,8 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = 0.16)
-  input_ref$smoking$ln_h_ces_betas <- ""
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.71))
+  input_ref$smoking$ln_h_ces_betas <- "Diagnosis coefficient from Wu et al. BMC Public Health 2006"
 
 
   ## COPD
@@ -499,7 +499,7 @@ init_input <- function() {
 
   # adherence to medication
   input_help$medication$medication_adherence <- "Proportion adherent to medication"
-  input$medication$medication_adherence <- 0.7
+  input$medication$medication_adherence <- 0.6
   input_ref$medication$medication_adherence <- ""
 
   # medication log-hazard regression matrix for rate reduction in exacerbations
@@ -592,6 +592,9 @@ init_input <- function() {
 
   input$cost$cost_outpatient_diagnosis <- 98.89
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
+
+  input$cost$cost_smoking_cessation <- 350
+  input_help$cost$cost_smoking_cessation <- "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
