@@ -2767,7 +2767,7 @@ NumericMatrix Cget_all_events_matrix()
 //////////////////////////////////////////////////////////////////EVENT_SMOKING////////////////////////////////////;
 double event_smoking_change_tte(agent *ag)
 {
-  double rate;
+  double rate, background_rate, diagnosed_rate;
 
 
   if((*ag).smoking_status==0)
@@ -2780,12 +2780,15 @@ double event_smoking_change_tte(agent *ag)
   }
   else
   {
-    rate=exp(input.smoking.ln_h_ces_betas[0]
+    background_rate=exp(input.smoking.ln_h_ces_betas[0]
                +input.smoking.ln_h_ces_betas[1]*(*ag).sex
                +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
                +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
-               +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time)
-               +input.smoking.ln_h_ces_betas[5]*(*ag).diagnosis);
+               +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
+
+    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - ((*ag).time_at_diagnosis-(*ag).local_time));
+
+    rate = background_rate + (*ag).diagnosis * diagnosed_rate;
   }
 
 
