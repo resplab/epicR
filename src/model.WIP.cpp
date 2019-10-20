@@ -1053,6 +1053,7 @@ struct agent
   int gpvisits;
   int diagnosis;
   double time_at_diagnosis;
+  int smoking_at_diagnosis;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
@@ -1172,6 +1173,7 @@ List get_agent(agent *ag)
   out["gpvisits"] = (*ag).gpvisits;
   out["diagnosis"] = (*ag).diagnosis;
   out["time_at_diagnosis"] = (*ag).time_at_diagnosis;
+  out["smoking_at_diagnosis"] = (*ag).smoking_at_diagnosis;
   out["case_detection"] = (*ag).case_detection;
 
   out["cumul_cost"] = (*ag).cumul_cost;
@@ -1938,6 +1940,7 @@ double update_prevalent_diagnosis(agent *ag)
       (*ag).diagnosis = 1;
       (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort ;
       (*ag).time_at_diagnosis=(*ag).local_time;
+      (*ag).smoking_at_diagnosis=(*ag).smoking_status;
     }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -2001,6 +2004,7 @@ double update_prevalent_diagnosis(agent *ag)
         (*ag).diagnosis = 1;
         (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
         (*ag).time_at_diagnosis=(*ag).local_time;
+        (*ag).smoking_at_diagnosis=(*ag).smoking_status;
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -2039,6 +2043,7 @@ double update_prevalent_diagnosis(agent *ag)
         (*ag).medication_status=0;
         medication_LPT(ag);
         (*ag).time_at_diagnosis=0;
+        (*ag).smoking_at_diagnosis=0;
 
          return(0);
       }
@@ -2064,6 +2069,7 @@ double update_prevalent_diagnosis(agent *ag)
             (*ag).diagnosis = 1;
             (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
             (*ag).time_at_diagnosis=(*ag).local_time;
+            (*ag).smoking_at_diagnosis=(*ag).smoking_status;
 
         } else
           {
@@ -2123,6 +2129,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).gpvisits  = 0;
 (*ag).diagnosis = 0;
 (*ag).time_at_diagnosis = 0;
+(*ag).smoking_at_diagnosis = 0;
 (*ag).case_detection = 0;
 (*ag).last_case_detection = 0;
 (*ag).cohort = 0;
@@ -2760,7 +2767,6 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(30) = "cohort";
 
 
-
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
   {
@@ -2796,6 +2802,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
     outm(i,30)=(*ag).cohort;
+
   }
 
   return(outm);
@@ -2807,11 +2814,12 @@ NumericMatrix Cget_all_events_matrix()
 //////////////////////////////////////////////////////////////////EVENT_SMOKING////////////////////////////////////;
 double event_smoking_change_tte(agent *ag)
 {
-  double rate;
 
+  double rate, background_rate, diagnosed_rate;
 
   if((*ag).smoking_status==0)
   {
+
     rate=exp(input.smoking.ln_h_inc_betas[0]
                +input.smoking.ln_h_inc_betas[1]*(*ag).sex
                +input.smoking.ln_h_inc_betas[2]*((*ag).age_at_creation+(*ag).local_time)
@@ -2826,9 +2834,10 @@ double event_smoking_change_tte(agent *ag)
                           +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
                           +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
 
-    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - ((*ag).local_time)-(*ag).time_at_diagnosis);
+    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - ((*ag).local_time-(*ag).time_at_diagnosis));
 
-    rate = background_rate + (*ag).diagnosis * diagnosed_rate;
+    rate = background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * diagnosed_rate;
+
   }
 
 
@@ -2846,7 +2855,9 @@ void event_smoking_change_process(agent *ag)
   smoking_LPT(ag);
  // if ((*ag).gold==0) { //for debug porpuses. No smoking change when COPD present
     if((*ag).smoking_status==0) {
+
       (*ag).smoking_status=1;
+
     }
 
     else {
@@ -3097,6 +3108,12 @@ void event_exacerbation_process(agent *ag)
     {
       (*ag).diagnosis = 1;
       (*ag).time_at_diagnosis=(*ag).local_time;
+      (*ag).smoking_at_diagnosis=(*ag).smoking_status;
+
+      if ((*ag).smoking_status==1)
+      {
+        (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
+      }
     }
   }
 
@@ -3139,11 +3156,6 @@ void event_exacerbation_process(agent *ag)
           (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
           medication_LPT(ag);
         }
-  }
-
-  if ((*ag).diagnosis==1 && (*ag).smoking_status==1)
-  {
-    (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
   }
 
 }
