@@ -512,6 +512,7 @@ struct input
     double mortality_factor_current[5]; // ratio of overall minus COPD mortality rate in current smokers vs non-smokers
     double mortality_factor_former[5]; // ratio of overall minus COPD mortality rate in former smokers vs non-smokers
     double ln_h_ces_betas[6]; //intercept, sex, age, age*2 calendar time diagnosis,
+    double smoking_ces_coefficient; //coefficient for the decay rate of smoking cessation treatment
   } smoking;
 
 
@@ -701,7 +702,8 @@ List Cget_inputs()
       Rcpp::Named("minimum_smoking_prevalence")=input.smoking.minimum_smoking_prevalence,
       Rcpp::Named("mortality_factor_current")=AS_VECTOR_DOUBLE(input.smoking.mortality_factor_current),
       Rcpp::Named("mortality_factor_former")=AS_VECTOR_DOUBLE(input.smoking.mortality_factor_former),
-      Rcpp::Named("ln_h_ces_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_ces_betas)
+      Rcpp::Named("ln_h_ces_betas")=AS_VECTOR_DOUBLE(input.smoking.ln_h_ces_betas),
+      Rcpp::Named("smoking_ces_coefficient")=input.smoking.smoking_ces_coefficient
     ),
     Rcpp::Named("COPD")=Rcpp::List::create(
       Rcpp::Named("ln_h_COPD_betas_by_sex")=AS_MATRIX_DOUBLE(input.COPD.ln_h_COPD_betas_by_sex),
@@ -853,6 +855,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="smoking$mortality_factor_current") READ_R_VECTOR(value,input.smoking.mortality_factor_current);
   if(name=="smoking$mortality_factor_former") READ_R_VECTOR(value,input.smoking.mortality_factor_former);
   if(name=="smoking$ln_h_ces_betas") READ_R_VECTOR(value,input.smoking.ln_h_ces_betas);
+  if(name=="smoking$smoking_ces_coefficient") {input.smoking.smoking_ces_coefficient=value[0]; return(0);}
 
   if(name=="COPD$ln_h_COPD_betas_by_sex") READ_R_MATRIX(value,input.COPD.ln_h_COPD_betas_by_sex);
   if(name=="COPD$logit_p_COPD_betas_by_sex") READ_R_MATRIX(value,input.COPD.logit_p_COPD_betas_by_sex);
@@ -2834,7 +2837,7 @@ double event_smoking_change_tte(agent *ag)
                           +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
                           +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
 
-    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - ((*ag).local_time-(*ag).time_at_diagnosis));
+    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - input.smoking.smoking_ces_coefficient*((*ag).local_time-(*ag).time_at_diagnosis));
 
     rate = background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * diagnosed_rate;
 
