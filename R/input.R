@@ -209,6 +209,10 @@ init_input <- function() {
   input$smoking$smoking_ces_coefficient <- 100
   input_ref$smoking$smoking_ces_coefficient <- ""
 
+  input_help$smoking$smoking_cessation_adherence <- "Proportion adherent to smoking cessation treatment"
+  input$smoking$smoking_cessation_adherence <- 0.7
+  input_ref$smoking$smoking_cessation_adherence <- ""
+
   ## COPD
   input_help$COPD$logit_p_COPD_betas_by_sex <- "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)"
   input$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.522189  , age = 0.033070   , age2 = 0, pack_years = 0.025049   ,
@@ -539,7 +543,8 @@ init_input <- function() {
                                         ICS_LAMA_SABA=0, ICS_LAMA_LABA=0.0367, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_utility <- "Lambe et al. Thorax 2019"
 
-  # medication event - disabled
+
+    # medication event - disabled
   template = c(int = 0, sex = 0, age = 0, med_class = rep(0, length(medication_classes)))
   mx <- NULL
   for (i in medication_classes) mx <- rbind(mx, template)
