@@ -2088,8 +2088,13 @@ double update_prevalent_diagnosis(agent *ag)
             (*ag).time_at_diagnosis=(*ag).local_time;
             (*ag).smoking_at_diagnosis=(*ag).smoking_status;
 
-        } else
+        } else  {
+            (*ag).diagnosis = 0;
+          }
+
+        if ((*ag).diagnosis == 1 && (*ag).case_detection==1)
           {
+            (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
             (*ag).diagnosis = 0;
           }
 
@@ -2108,11 +2113,6 @@ double update_prevalent_diagnosis(agent *ag)
                 (*ag).smoking_cessation=1;
               }
 
-            if ((*ag).diagnosis == 1 && (*ag).case_detection==1)
-              {
-                (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
-                (*ag).diagnosis = 0;
-              }
       }
     }
   }
@@ -2853,7 +2853,8 @@ NumericMatrix Cget_all_events_matrix()
 double event_smoking_change_tte(agent *ag)
 {
 
-  double rate, background_rate, diagnosed_rate=0;
+  double rate;
+  //, background_rate, diagnosed_rate=0;
 
   if((*ag).smoking_status==0)
   {
@@ -2866,16 +2867,16 @@ double event_smoking_change_tte(agent *ag)
   }
   else
   {
-    background_rate=exp(input.smoking.ln_h_ces_betas[0]
+    (*ag).background_rate=exp(input.smoking.ln_h_ces_betas[0]
                           +input.smoking.ln_h_ces_betas[1]*(*ag).sex
                           +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
                           +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
                           +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
 
-    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - input.smoking.smoking_ces_coefficient*((*ag).local_time-(*ag).time_at_diagnosis));
+    (*ag).diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - input.smoking.smoking_ces_coefficient*((*ag).local_time-(*ag).time_at_diagnosis));
 
-    rate = background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * (*ag).smoking_cessation * diagnosed_rate;
-
+    (*ag).rate = (*ag).background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * (*ag).smoking_cessation * (*ag).diagnosed_rate;
+    rate= (*ag).rate;
   }
 
 
