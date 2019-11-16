@@ -2096,6 +2096,8 @@ double update_prevalent_diagnosis(agent *ag)
           {
             (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1))*(*ag).cohort;
             (*ag).diagnosis = 0;
+            (*ag).time_at_diagnosis=0;
+            (*ag).smoking_at_diagnosis=0;
           }
 
             if((*ag).diagnosis == 1 && (*ag).gold==0)
