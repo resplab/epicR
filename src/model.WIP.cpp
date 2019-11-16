@@ -1061,9 +1061,6 @@ struct agent
   double time_at_diagnosis;
   int smoking_at_diagnosis;
   bool smoking_cessation;
-  double diagnosed_rate;
-  double background_rate;
-  double rate;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
@@ -1191,10 +1188,6 @@ List get_agent(agent *ag)
   out["cumul_qaly"] = (*ag).cumul_qaly;
 
   out["cohort"] = (*ag).cohort;
-
-  out["background_rate"] = (*ag).background_rate;
-  out["diagnosed_rate"] = (*ag).diagnosed_rate;
-  out["rate"] = (*ag).rate;
 
   return out;
 }
@@ -2162,9 +2155,6 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).cohort = 0;
 
 (*ag).tmp_exac_rate = 0;
-(*ag).diagnosed_rate=0;
-(*ag).background_rate=0;
-(*ag).rate=0;
 
 (*ag).time_at_creation=calendar_time;
 (*ag).sex=rand_unif()<input.agent.p_female;
@@ -2758,8 +2748,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,36);
-  CharacterVector eventMatrixColNames(36);
+  NumericMatrix outm(event_stack_pointer,31);
+  CharacterVector eventMatrixColNames(31);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2795,11 +2785,6 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(28) = "cumul_cost";
   eventMatrixColNames(29) = "cumul_qaly";
   eventMatrixColNames(30) = "cohort";
-  eventMatrixColNames(31) = "smoking_cessation";
-  eventMatrixColNames(32) = "smoking_at_diagnosis";
-  eventMatrixColNames(33) = "background_rate";
-  eventMatrixColNames(34) = "diagnosed_rate";
-  eventMatrixColNames(35) = "rate";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2837,11 +2822,6 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
     outm(i,30)=(*ag).cohort;
-    outm(i,31)=(*ag).smoking_cessation;
-    outm(i,32)=(*ag).smoking_at_diagnosis;
-    outm(i,33)=(*ag).background_rate;
-    outm(i,34)=(*ag).diagnosed_rate;
-    outm(i,35)=(*ag).rate;
 
   }
 
@@ -2855,8 +2835,7 @@ NumericMatrix Cget_all_events_matrix()
 double event_smoking_change_tte(agent *ag)
 {
 
-  double rate;
-  //, background_rate, diagnosed_rate=0;
+  double rate, background_rate, diagnosed_rate=0;
 
   if((*ag).smoking_status==0)
   {
@@ -2869,16 +2848,15 @@ double event_smoking_change_tte(agent *ag)
   }
   else
   {
-    (*ag).background_rate=exp(input.smoking.ln_h_ces_betas[0]
+    background_rate=exp(input.smoking.ln_h_ces_betas[0]
                           +input.smoking.ln_h_ces_betas[1]*(*ag).sex
                           +input.smoking.ln_h_ces_betas[2]*((*ag).age_at_creation+(*ag).local_time)
                           +input.smoking.ln_h_ces_betas[3]*pow((*ag).age_at_creation+(*ag).local_time,2)
                           +input.smoking.ln_h_ces_betas[4]*(calendar_time+(*ag).local_time));
 
-    (*ag).diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - input.smoking.smoking_ces_coefficient*((*ag).local_time-(*ag).time_at_diagnosis));
+    diagnosed_rate=exp(input.smoking.ln_h_ces_betas[5] - input.smoking.smoking_ces_coefficient*((*ag).local_time-(*ag).time_at_diagnosis));
 
-    (*ag).rate = (*ag).background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * (*ag).smoking_cessation * (*ag).diagnosed_rate;
-    rate= (*ag).rate;
+    rate = background_rate + (*ag).diagnosis * (*ag).smoking_at_diagnosis * (*ag).smoking_cessation * diagnosed_rate;
   }
 
 
