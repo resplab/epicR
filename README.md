@@ -11,7 +11,7 @@ Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Fl
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
 
-## Case detection Analysis
+## Case Detection Analysis
 In order to simulate the cost-effectiveness of case detection strategies for COPD analysis, follow the steps below. 
 
 1. Follow the instructions below to install epicR from GitHub, but replace with:
