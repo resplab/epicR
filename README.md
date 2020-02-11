@@ -21,9 +21,18 @@ devtools::install_github('KateJohnson/epicR', ref="closed_cohort")
 ```
 Confirm that `packageVersion("epicR")` is `1.27.6`.
 
-2. Download and knit the following [markdown file](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection) to replicate the case detection scenario results.
+2. In order to replicate the [case detection scenario results](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection), go to `Case_Detection_Results.Rmd`, click the `Raw` button and copy all text that opens in the new page. 
 
-Refer to the publication for more information:
+3. Locally, start a new R Studio project, create a new R Markdown file (delete the default text), and paste the copied text.
+
+4. Click knit and that's it!
+
+Alternatively, you can clone this repo to get a local copy of `Case_Detection_Results.Rmd`.
+
+
+Keep in mind that the analysis version of these results simulates 100 million agents with 3 and 5 year intervals between case detection. In order to do this you'll have to run the markdown script twice, once with `yrs_btw_CD = 3`, and once with `yrs_btw_CD = 5`. Make sure to change the values for all `Inputs [scenario name]` code chunks. Each time will take ~8 hours to run.
+
+Refer to the forthcoming publication for more information:
 
 Kate M. Johnson, Mohsen Sadatsafavi, Amin Adibi, Larry Lynd, Mark Harrison, Hamid Tavakoli, Don D. Sin, and Stirling Bryan. Cost-Effectiveness of Case Detection Strategies for the Early Detection of COPD.
 
