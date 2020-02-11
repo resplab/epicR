@@ -11,12 +11,8 @@ Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Fl
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
 
-## Case detection
+## Case detection Analysis
 In order to simulate the cost-effectiveness of case detection strategies for COPD analysis, follow the steps below. 
-
-Refer to the publication for more information:
-
-Kate M. Johnson, Mohsen Sadatsafavi, Amin Adibi, Larry Lynd, Mark Harrison, Hamid Tavakoli, Don D. Sin, and Stirling Bryan. Cost-Effectiveness of Case Detection Strategies for the Early Detection of COPD.
 
 1. Follow the instructions below to install epicR from GitHub, but replace with:
 
@@ -25,7 +21,11 @@ devtools::install_github('KateJohnson/epicR', ref="closed_cohort")
 ```
 Confirm that `packageVersion("epicR")` is `1.27.6`.
 
-2. Download and knit the following [markdown file]() to replicate the case detection scenario results.
+2. Download and knit the following [markdown file](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection) to replicate the case detection scenario results.
+
+Refer to the publication for more information:
+
+Kate M. Johnson, Mohsen Sadatsafavi, Amin Adibi, Larry Lynd, Mark Harrison, Hamid Tavakoli, Don D. Sin, and Stirling Bryan. Cost-Effectiveness of Case Detection Strategies for the Early Detection of COPD.
 
 
 ## Installation
