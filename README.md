@@ -21,7 +21,7 @@ devtools::install_github('KateJohnson/epicR', ref="closed_cohort")
 ```
 Confirm that `packageVersion("epicR")` is `1.27.6`.
 
-2. Download and knit the following [.rmd markdown file](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection) to replicate the case detection scenario results.
+2. Download and knit the following [markdown file](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection) to replicate the case detection scenario results.
 
 Refer to the publication for more information:
 
