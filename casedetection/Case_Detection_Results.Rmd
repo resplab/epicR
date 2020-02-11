@@ -23,7 +23,7 @@ record_mode<-c(
   
 settings <- get_default_settings()
 settings$record_mode <- record_mode["record_mode_none"]
-settings$n_base_agents <- 1e+4 # change number of agents here: 100e+6 is used in the analysis
+settings$n_base_agents <- 1e+6 # change number of agents here: 100e+6 is used in the analysis
 lambda=50000 # change WTP threshold here
   
 init_session(settings = settings)
@@ -60,7 +60,6 @@ All patients are eligible.  The cost of case detection is:
 ```{r S1 CD costs, echo=FALSE}
 costs <- data.frame(t(input$values$diagnosis$case_detection_methods[3,]))
 kable(costs) 
-#%>%  kable_styling(full_width=FALSE, position = "left")
 ```
 
 
@@ -542,8 +541,6 @@ s1$IncrementalNMB <- c(0, 0, 0,
                          s1[s1$Scenario=="S1c","NMB"] - s1[s1$Scenario=="S1NoCD","NMB"])
 
 kable(s1, digits=3) 
-#%>%  kable_styling() %>%
-#  scroll_box(width = "100%")
 ```
 
 *Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
@@ -564,7 +561,6 @@ input <- init_input()
 
 costs <- data.frame(t(input$values$diagnosis$case_detection_methods_symptomatic[3,]))
 kable(costs) 
-#%>%   kable_styling(full_width=FALSE, position = "left")
 ```
 
 
@@ -758,8 +754,6 @@ S2$ICER <- S2$IncrementalCosts/S2$IncrementalQALY
 S2$IncrementalNMB <- c(0, S2[S2$Scenario=="S2a","NMB"] - S2[S2$Scenario=="S2NoCD","NMB"])
 
 kable(S2, digits=3)
-#%>%   kable_styling() %>%
-#  scroll_box(width = "100%")
 ```
 
 *Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
@@ -781,7 +775,6 @@ input <- init_input()
 
 costs <- data.frame(t(input$values$diagnosis$case_detection_methods_eversmokers[3,]))
 kable(costs) 
-#%>%   kable_styling(full_width=FALSE, position = "left")
 ```
 
 
@@ -1259,8 +1252,6 @@ s3$IncrementalNMB <- c(0,
                          s3[s3$Scenario=="S3d","NMB"] - s3[s3$Scenario=="S3NoCD","NMB"])
 
 kable(s3, digits=3) 
-#%>%   kable_styling() %>%
-#  scroll_box(width = "100%")
 ```
 
 *Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
@@ -1283,8 +1274,6 @@ sall.tab <- sall %>%
                   arrange(desc(IncrementalNMB))
 
 kable(sall.tab, digits=3) 
-#%>%  kable_styling() %>%
-  #scroll_box(width = "100%")
 ```
 
 ---
@@ -1343,8 +1332,6 @@ ceplane$INMB <- ceplane$NMB - ceplane[ceplane$Scenario=="S1NoCDAvg","NMB"]
 ceplane <- select(ceplane, Scenario, Agents, PropAgents, Cost, CostpAgent, CostpAgentExcluded, CostpAgentAll, QALY, QALYpAgent, QALYpAgentExcluded, QALYpAgentAll, IncrementalCosts, IncrementalQALY, ICERAdj, ICER, INMB)
 
 kable(ceplane) 
-#%>%    kable_styling() %>%
-      #scroll_box(width = "100%")  
 ```
 
 
@@ -1533,9 +1520,6 @@ clinical.results <-
 clinical.results.tab <- select(clinical.results, Scenario, PropAgents, ProppPatientYears, ProppCopdPYs, SABAAll, LAMAAll, LAMALABAAll, ICSLAMALABAAll, MildpAgentAll, ModeratepAgentAll, SeverepAgentAll, VerySeverepAgentAll, NoCOPDpPYAll, GOLD1pPYAll, GOLD2pPYAll, GOLD3pPYAll, GOLD4pPYAll, DiagnosedpPYAll)
 
 kable(clinical.results.tab) 
-#%>%    kable_styling() %>%
-#      scroll_box(width = "100%")      
-               
 ```
 
 
