@@ -447,22 +447,22 @@ init_input <- function() {
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods in the total population"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
-                                                  CDQ17= c(4.1013, 4.394, 11.10),
-                                                  FlowMeter= c(3.174, 1.6025, 29.27),
-                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 40.37))
+                                                  CDQ17= c(4.1013, 4.394, 11.56),
+                                                  FlowMeter= c(3.174, 1.6025, 30.46),
+                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 42.01))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Sichletidis et al 2011"
 
   input_help$diagnosis$case_detection_methods_eversmokers <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_eversmokers <- cbind(None=c(0, 0, 0),
-                                                              CDQ195= c(2.3848, 3.7262, 11.10),
-                                                              CDQ165= c(3.7336, 4.8098, 11.10),
-                                                              FlowMeter= c(3.1677, 2.6657, 23.38),
-                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 40.37))
+                                                              CDQ195= c(2.3848, 3.7262, 11.56),
+                                                              CDQ165= c(3.7336, 4.8098, 11.56),
+                                                              FlowMeter= c(3.1677, 2.6657, 24.33),
+                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 42.01))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Haroon et al. BMJ Open 2015"
 
   input_help$diagnosis$case_detection_methods_symptomatic <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_symptomatic <- cbind(None=c(0, 0, 0),
-                                                              FlowMeter= c(3.2705, 2.2735, 23.38))
+                                                              FlowMeter= c(3.2705, 2.2735, 24.33))
   input_ref$diagnosis$case_detection_methods_symptomatic <- "CanCOLD analysed on Sept 9, 2019"
 
 
@@ -529,11 +529,11 @@ init_input <- function() {
 
   # cost of medications
   input_help$medication$medication_costs <- "Costs of treatment"
-  input$medication$medication_costs <-c(None=0,SABA=72.15*input$medication$medication_adherence, LABA=0, SABA_LABA=0,
-                                        LAMA=479.35*input$medication$medication_adherence, LAMA_SABA=0,
-                                        LAMA_LABA=876.76*input$medication$medication_adherence, LAMA_LAMA_SABA=0,
+  input$medication$medication_costs <-c(None=0,SABA=75.96*input$medication$medication_adherence, LABA=0, SABA_LABA=0,
+                                        LAMA=504.66*input$medication$medication_adherence, LAMA_SABA=0,
+                                        LAMA_LABA=923.06*input$medication$medication_adherence, LAMA_LAMA_SABA=0,
                                         ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0, ICS_LAMA=0, ICS_LAMA_SABA=0,
-                                        ICS_LAMA_LABA=1549.97*input$medication$medication_adherence, ICS_LAMA_LABA_SABA=0)
+                                        ICS_LAMA_LABA=1631.81*input$medication$medication_adherence, ICS_LAMA_LABA_SABA=0)
   input_ref$medication$medication_costs <- "BC administrative data"
 
   # utility from medications
@@ -588,20 +588,20 @@ init_input <- function() {
 
 
   ##cost and utility
-  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=135, II=330, III=864, IV=1178)))
+  input$cost$bg_cost_by_stage=t(as.matrix(c(N=0, I=135*1.0528, II=330*1.0528, III=864*1.0528, IV=1178*1.0528)))
   input_help$cost$bg_cost_by_stage="Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades"
   #  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
   #  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
-  input$cost$exac_dcost=t(as.matrix(c(mild=29,moderate=726,severe=9212, verysevere=20170)))
+  input$cost$exac_dcost=t(as.matrix(c(mild=29*1.0528,moderate=726*1.0528,severe=9212*1.0528, verysevere=20170*1.0528)))
   input_help$cost$exac_dcost="Incremental direct costs of exacerbations by severity levels"
 
   input$cost$cost_case_detection <- input$diagnosis$case_detection_methods[3,"None"]
   input_help$cost$cost_case_detection <- "Cost of case detection"
 
-  input$cost$cost_outpatient_diagnosis <- 58.79
+  input$cost$cost_outpatient_diagnosis <- 61.18
   input_help$cost$cost_outpatient_diagnosis <- "Cost of GP visit and diagnostic spirometry w bronchodilator"
 
-  input$cost$cost_smoking_cessation <- 350.36
+  input$cost$cost_smoking_cessation <- 368.76
   input_help$cost$cost_smoking_cessation <- "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014"
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
