@@ -521,6 +521,8 @@ s1NoCDavg <-  s1NoCDavg %>%
                     mutate(Scenario="S1NoCDAvg", CostpAgent=sum(Cost)/sum(Agents), QALYpAgent=sum(QALY)/sum(Agents)) %>% 
                       select(Scenario, everything())
 
+s1NoCDavg$Agents <- round(s1NoCDavg$Agents,0)
+
 s1 <- rbind(s1NoCD, s1NoCD2, s1NoCDavg, s1a, s1b, s1c)
 s1$IncrementalCosts <- c(0, 0, 0,
                          s1[s1$Scenario=="S1a","CostpAgent"] - s1[s1$Scenario=="S1NoCD","CostpAgent"],
