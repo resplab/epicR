@@ -1,6 +1,6 @@
 Case Detection Scenario Main Analysis
 ================
-11 February, 2020
+20 February, 2020
 
     ## Initializing the session
 
@@ -11,7 +11,6 @@ Case Detection Scenario Main Analysis
   - Medication adherence is 0.7
   - Smoking adherence is 0.7
   - Cost discounting: 0.015
-      - *The default price year for costs is 2015 CAD*
   - QALY discounting: 0.015
   - Time horizon: 20
   - The WTP threshold for NMB is 50000
@@ -19,7 +18,7 @@ Case Detection Scenario Main Analysis
 **Case detection inputs:**
 
   - Case detection occurs at 3 year intervals.
-  - An outpatient diagnosis costs 58.79
+  - An outpatient diagnosis costs 61.18
   - The utility gain due to symptom relief from treatment is 0.0367
 
 ## S1 All patients scenario
@@ -72,19 +71,19 @@ FlowMeter\_CDQ
 
 <td style="text-align:right;">
 
-11.1
+11.56
 
 </td>
 
 <td style="text-align:right;">
 
-29.27
+30.46
 
 </td>
 
 <td style="text-align:right;">
 
-40.37
+42.01
 
 </td>
 
@@ -370,37 +369,37 @@ S1NoCD
 
 <td style="text-align:right;">
 
-744269.0
+74381
 
 </td>
 
 <td style="text-align:right;">
 
-12528884
+1249214
 
 </td>
 
 <td style="text-align:right;">
 
-1432236
+142295.3
 
 </td>
 
 <td style="text-align:right;">
 
-3821799
+380963
 
 </td>
 
 <td style="text-align:right;">
 
-266594.9
+26864.41
 
 </td>
 
 <td style="text-align:right;">
 
-267294
+26471.0
 
 </td>
 
@@ -412,49 +411,49 @@ S1NoCD
 
 <td style="text-align:right;">
 
-0.136
+0.137
 
 </td>
 
 <td style="text-align:right;">
 
-0.152
+0.154
 
 </td>
 
 <td style="text-align:right;">
 
-0.080
+0.082
 
 </td>
 
 <td style="text-align:right;">
 
-311920.0
+31103
 
 </td>
 
 <td style="text-align:right;">
 
-58468.0
+5842
 
 </td>
 
 <td style="text-align:right;">
 
-97515.0
+9767.0
 
 </td>
 
 <td style="text-align:right;">
 
-8375
+834.0
 
 </td>
 
 <td style="text-align:right;">
 
-0.218
+0.219
 
 </td>
 
@@ -466,7 +465,7 @@ S1NoCD
 
 <td style="text-align:right;">
 
-0.068
+0.069
 
 </td>
 
@@ -478,61 +477,61 @@ S1NoCD
 
 <td style="text-align:right;">
 
-10548526
+1052277
 
 </td>
 
 <td style="text-align:right;">
 
-581070
+57448
 
 </td>
 
 <td style="text-align:right;">
 
-619058.0
+61706
 
 </td>
 
 <td style="text-align:right;">
 
-137875
+13678
 
 </td>
 
 <td style="text-align:right;">
 
-24213
+2491
 
 </td>
 
 <td style="text-align:right;">
 
-1525622239
+160700373
 
 </td>
 
 <td style="text-align:right;">
 
-2049.826
+2160.503
 
 </td>
 
 <td style="text-align:right;">
 
-9338608
+931258.3
 
 </td>
 
 <td style="text-align:right;">
 
-12.547
+12.520
 
 </td>
 
 <td style="text-align:right;">
 
-625318.0
+623845.0
 
 </td>
 
@@ -572,37 +571,37 @@ S1NoCD2
 
 <td style="text-align:right;">
 
-743618.0
+74455
 
 </td>
 
 <td style="text-align:right;">
 
-12519993
+1254482
 
 </td>
 
 <td style="text-align:right;">
 
-1423050
+144754.5
 
 </td>
 
 <td style="text-align:right;">
 
-2493413
+249557
 
 </td>
 
 <td style="text-align:right;">
 
-266532.5
+27399.12
 
 </td>
 
 <td style="text-align:right;">
 
-326966
+32482.0
 
 </td>
 
@@ -614,55 +613,55 @@ S1NoCD2
 
 <td style="text-align:right;">
 
-0.135
+0.136
 
 </td>
 
 <td style="text-align:right;">
 
-0.151
+0.153
 
 </td>
 
 <td style="text-align:right;">
 
-0.080
+0.082
 
 </td>
 
 <td style="text-align:right;">
 
-309851.0
+31041
 
 </td>
 
 <td style="text-align:right;">
 
-57833.0
+5736
 
 </td>
 
 <td style="text-align:right;">
 
-96592.0
+9824.0
 
 </td>
 
 <td style="text-align:right;">
 
-8349
+819.0
 
 </td>
 
 <td style="text-align:right;">
 
-0.218
+0.214
 
 </td>
 
 <td style="text-align:right;">
 
-0.041
+0.040
 
 </td>
 
@@ -680,61 +679,61 @@ S1NoCD2
 
 <td style="text-align:right;">
 
-10548868
+1054890
 
 </td>
 
 <td style="text-align:right;">
 
-577142
+59496
 
 </td>
 
 <td style="text-align:right;">
 
-613079.0
+61264
 
 </td>
 
 <td style="text-align:right;">
 
-139011
+14408
 
 </td>
 
 <td style="text-align:right;">
 
-24293
+2551
 
 </td>
 
 <td style="text-align:right;">
 
-1516619405
+162093650
 
 </td>
 
 <td style="text-align:right;">
 
-2039.514
+2177.069
 
 </td>
 
 <td style="text-align:right;">
 
-9332708
+934933.0
 
 </td>
 
 <td style="text-align:right;">
 
-12.550
+12.557
 
 </td>
 
 <td style="text-align:right;">
 
-625480.8
+625674.0
 
 </td>
 
@@ -774,37 +773,37 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-743943.5
+74418
 
 </td>
 
 <td style="text-align:right;">
 
-12524438
+1251848
 
 </td>
 
 <td style="text-align:right;">
 
-1427643
+143524.9
 
 </td>
 
 <td style="text-align:right;">
 
-3157606
+315260
 
 </td>
 
 <td style="text-align:right;">
 
-266563.7
+27131.76
 
 </td>
 
 <td style="text-align:right;">
 
-297130
+29476.5
 
 </td>
 
@@ -816,55 +815,55 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-0.135
+0.137
 
 </td>
 
 <td style="text-align:right;">
 
-0.151
+0.153
 
 </td>
 
 <td style="text-align:right;">
 
-0.080
+0.082
 
 </td>
 
 <td style="text-align:right;">
 
-310885.5
+31072
 
 </td>
 
 <td style="text-align:right;">
 
-58150.5
+5789
 
 </td>
 
 <td style="text-align:right;">
 
-97053.5
+9795.5
 
 </td>
 
 <td style="text-align:right;">
 
-8362
+826.5
 
 </td>
 
 <td style="text-align:right;">
 
-0.218
+0.217
 
 </td>
 
 <td style="text-align:right;">
 
-0.041
+0.040
 
 </td>
 
@@ -882,61 +881,61 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-10548697
+1053584
 
 </td>
 
 <td style="text-align:right;">
 
-579106
+58472
 
 </td>
 
 <td style="text-align:right;">
 
-616068.5
+61485
 
 </td>
 
 <td style="text-align:right;">
 
-138443
+14043
 
 </td>
 
 <td style="text-align:right;">
 
-24253
+2521
 
 </td>
 
 <td style="text-align:right;">
 
-1521120822
+161397011
 
 </td>
 
 <td style="text-align:right;">
 
-2044.673
+2168.790
 
 </td>
 
 <td style="text-align:right;">
 
-9335658
+933095.7
 
 </td>
 
 <td style="text-align:right;">
 
-12.549
+12.539
 
 </td>
 
 <td style="text-align:right;">
 
-625399.4
+624759.5
 
 </td>
 
@@ -976,37 +975,37 @@ S1a
 
 <td style="text-align:right;">
 
-743564.0
+74371
 
 </td>
 
 <td style="text-align:right;">
 
-12515614
+1255151
 
 </td>
 
 <td style="text-align:right;">
 
-1424207
+144269.0
 
 </td>
 
 <td style="text-align:right;">
 
-3720384
+372943
 
 </td>
 
 <td style="text-align:right;">
 
-661458.0
+66804.86
 
 </td>
 
 <td style="text-align:right;">
 
-266677
+26432.0
 
 </td>
 
@@ -1018,49 +1017,49 @@ S1a
 
 <td style="text-align:right;">
 
-0.159
+0.158
 
 </td>
 
 <td style="text-align:right;">
 
-0.310
+0.308
 
 </td>
 
 <td style="text-align:right;">
 
-0.094
+0.093
 
 </td>
 
 <td style="text-align:right;">
 
-297936.0
+29765
 
 </td>
 
 <td style="text-align:right;">
 
-55789.0
+5556
 
 </td>
 
 <td style="text-align:right;">
 
-95052.0
+9583.0
 
 </td>
 
 <td style="text-align:right;">
 
-8268
+756.0
 
 </td>
 
 <td style="text-align:right;">
 
-0.209
+0.206
 
 </td>
 
@@ -1072,97 +1071,97 @@ S1a
 
 <td style="text-align:right;">
 
-0.067
+0.066
 
 </td>
 
 <td style="text-align:right;">
 
-0.006
+0.005
 
 </td>
 
 <td style="text-align:right;">
 
-10543334
+1056053
 
 </td>
 
 <td style="text-align:right;">
 
-580186
+59481
 
 </td>
 
 <td style="text-align:right;">
 
-613031.0
+61353
 
 </td>
 
 <td style="text-align:right;">
 
-138162
+13927
 
 </td>
 
 <td style="text-align:right;">
 
-23168
+2461
 
 </td>
 
 <td style="text-align:right;">
 
-1723464261
+181363804
 
 </td>
 
 <td style="text-align:right;">
 
-2317.843
+2438.636
 
 </td>
 
 <td style="text-align:right;">
 
-9338959
+936417.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.560
+12.591
 
 </td>
 
 <td style="text-align:right;">
 
-625668.4
+627119.3
 
 </td>
 
 <td style="text-align:right;">
 
-268.016
+278.133
 
 </td>
 
 <td style="text-align:right;">
 
-0.012
+0.071
 
 </td>
 
 <td style="text-align:right;">
 
-21668.68
+3914.696
 
 </td>
 
 <td style="text-align:right;">
 
-350.425
+3274.290
 
 </td>
 
@@ -1178,37 +1177,37 @@ S1b
 
 <td style="text-align:right;">
 
-744031.0
+74640
 
 </td>
 
 <td style="text-align:right;">
 
-12527232
+1254998
 
 </td>
 
 <td style="text-align:right;">
 
-1423476
+145127.3
 
 </td>
 
 <td style="text-align:right;">
 
-3771104
+377503
 
 </td>
 
 <td style="text-align:right;">
 
-472651.8
+47864.08
 
 </td>
 
 <td style="text-align:right;">
 
-267732
+27030.0
 
 </td>
 
@@ -1220,55 +1219,55 @@ S1b
 
 <td style="text-align:right;">
 
-0.147
+0.143
 
 </td>
 
 <td style="text-align:right;">
 
-0.239
+0.236
 
 </td>
 
 <td style="text-align:right;">
 
-0.086
+0.087
 
 </td>
 
 <td style="text-align:right;">
 
-300061.0
+30732
 
 </td>
 
 <td style="text-align:right;">
 
-56282.0
+5904
 
 </td>
 
 <td style="text-align:right;">
 
-95022.0
+9722.0
 
 </td>
 
 <td style="text-align:right;">
 
-8238
+823.0
 
 </td>
 
 <td style="text-align:right;">
 
-0.211
+0.212
 
 </td>
 
 <td style="text-align:right;">
 
-0.040
+0.041
 
 </td>
 
@@ -1286,85 +1285,85 @@ S1b
 
 <td style="text-align:right;">
 
-10555170
+1055073
 
 </td>
 
 <td style="text-align:right;">
 
-579985
+58017
 
 </td>
 
 <td style="text-align:right;">
 
-611930.0
+63455
 
 </td>
 
 <td style="text-align:right;">
 
-137971
+13915
 
 </td>
 
 <td style="text-align:right;">
 
-24093
+2606
 
 </td>
 
 <td style="text-align:right;">
 
-1658870879
+177925068
 
 </td>
 
 <td style="text-align:right;">
 
-2229.572
+2383.776
 
 </td>
 
 <td style="text-align:right;">
 
-9343234
+935793.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.558
+12.537
 
 </td>
 
 <td style="text-align:right;">
 
-625649.8
+624487.2
 
 </td>
 
 <td style="text-align:right;">
 
-179.746
+223.273
 
 </td>
 
 <td style="text-align:right;">
 
-0.010
+0.017
 
 </td>
 
 <td style="text-align:right;">
 
-17569.62
+12898.673
 
 </td>
 
 <td style="text-align:right;">
 
-331.779
+642.216
 
 </td>
 
@@ -1380,37 +1379,37 @@ S1c
 
 <td style="text-align:right;">
 
-744241.0
+74131
 
 </td>
 
 <td style="text-align:right;">
 
-12526040
+1247977
 
 </td>
 
 <td style="text-align:right;">
 
-1425468
+142147.0
 
 </td>
 
 <td style="text-align:right;">
 
-3785287
+376977
 
 </td>
 
 <td style="text-align:right;">
 
-410729.5
+40926.38
 
 </td>
 
 <td style="text-align:right;">
 
-268195
+26556.0
 
 </td>
 
@@ -1422,49 +1421,49 @@ S1c
 
 <td style="text-align:right;">
 
-0.145
+0.144
 
 </td>
 
 <td style="text-align:right;">
 
-0.215
+0.213
 
 </td>
 
 <td style="text-align:right;">
 
-0.086
+0.087
 
 </td>
 
 <td style="text-align:right;">
 
-306630.0
+30094
 
 </td>
 
 <td style="text-align:right;">
 
-57102.0
+5716
 
 </td>
 
 <td style="text-align:right;">
 
-96921.0
+9685.0
 
 </td>
 
 <td style="text-align:right;">
 
-8185
+854.0
 
 </td>
 
 <td style="text-align:right;">
 
-0.215
+0.212
 
 </td>
 
@@ -1488,85 +1487,85 @@ S1c
 
 <td style="text-align:right;">
 
-10552130
+1051104
 
 </td>
 
 <td style="text-align:right;">
 
-579912
+57768
 
 </td>
 
 <td style="text-align:right;">
 
-613803.0
+61484
 
 </td>
 
 <td style="text-align:right;">
 
-138064
+13471
 
 </td>
 
 <td style="text-align:right;">
 
-23945
+2500
 
 </td>
 
 <td style="text-align:right;">
 
-1693146274
+177946180
 
 </td>
 
 <td style="text-align:right;">
 
-2274.997
+2400.429
 
 </td>
 
 <td style="text-align:right;">
 
-9340657
+930572.9
 
 </td>
 
 <td style="text-align:right;">
 
-12.551
+12.553
 
 </td>
 
 <td style="text-align:right;">
 
-625254.0
+625253.9
 
 </td>
 
 <td style="text-align:right;">
 
-225.171
+239.926
 
 </td>
 
 <td style="text-align:right;">
 
-0.003
+0.033
 
 </td>
 
 <td style="text-align:right;">
 
-69824.54
+7275.584
 
 </td>
 
 <td style="text-align:right;">
 
-\-63.930
+1408.916
 
 </td>
 
@@ -1628,7 +1627,7 @@ FlowMeter
 
 <td style="text-align:right;">
 
-23.38
+24.33
 
 </td>
 
@@ -1878,37 +1877,37 @@ S2NoCD
 
 <td style="text-align:right;">
 
-442071
+44135
 
 </td>
 
 <td style="text-align:right;">
 
-7301813
+728915.0
 
 </td>
 
 <td style="text-align:right;">
 
-1004217
+99715.61
 
 </td>
 
 <td style="text-align:right;">
 
-2222169
+221764
 
 </td>
 
 <td style="text-align:right;">
 
-194185.5
+20025.00
 
 </td>
 
 <td style="text-align:right;">
 
-155392
+15361
 
 </td>
 
@@ -1920,61 +1919,61 @@ S2NoCD
 
 <td style="text-align:right;">
 
-0.142
+0.144
 
 </td>
 
 <td style="text-align:right;">
 
-0.160
+0.164
 
 </td>
 
 <td style="text-align:right;">
 
-0.087
+0.089
 
 </td>
 
 <td style="text-align:right;">
 
-230921
+22765
 
 </td>
 
 <td style="text-align:right;">
 
-42479
+4265
 
 </td>
 
 <td style="text-align:right;">
 
-71098
+7228
 
 </td>
 
 <td style="text-align:right;">
 
-6134
+593
 
 </td>
 
 <td style="text-align:right;">
 
-0.230
+0.228
 
 </td>
 
 <td style="text-align:right;">
 
-0.042
+0.043
 
 </td>
 
 <td style="text-align:right;">
 
-0.071
+0.072
 
 </td>
 
@@ -1986,61 +1985,61 @@ S2NoCD
 
 <td style="text-align:right;">
 
-5985813
+598020
 
 </td>
 
 <td style="text-align:right;">
 
-372679
+37344
 
 </td>
 
 <td style="text-align:right;">
 
-449840
+44329
 
 </td>
 
 <td style="text-align:right;">
 
-111511
+11018
 
 </td>
 
 <td style="text-align:right;">
 
-20882
+2171
 
 </td>
 
 <td style="text-align:right;">
 
-1119895550
+118268910
 
 </td>
 
 <td style="text-align:right;">
 
-2533.293
+2679.708
 
 </td>
 
 <td style="text-align:right;">
 
-5426607
+541787.4
 
 </td>
 
 <td style="text-align:right;">
 
-12.275
+12.276
 
 </td>
 
 <td style="text-align:right;">
 
-611237.7
+611104.6
 
 </td>
 
@@ -2080,37 +2079,37 @@ S2a
 
 <td style="text-align:right;">
 
-441660
+44437
 
 </td>
 
 <td style="text-align:right;">
 
-7298015
+733222.2
 
 </td>
 
 <td style="text-align:right;">
 
-1012943
+102733.54
 
 </td>
 
 <td style="text-align:right;">
 
-2177696
+218481
 
 </td>
 
 <td style="text-align:right;">
 
-370373.4
+37779.22
 
 </td>
 
 <td style="text-align:right;">
 
-153713
+15576
 
 </td>
 
@@ -2122,151 +2121,151 @@ S2a
 
 <td style="text-align:right;">
 
-0.157
+0.164
 
 </td>
 
 <td style="text-align:right;">
 
-0.266
+0.271
 
 </td>
 
 <td style="text-align:right;">
 
-0.097
+0.104
 
 </td>
 
 <td style="text-align:right;">
 
-223645
+22572
 
 </td>
 
 <td style="text-align:right;">
 
-41796
+4335
 
 </td>
 
 <td style="text-align:right;">
 
-70081
+7461
 
 </td>
 
 <td style="text-align:right;">
 
-6194
+679
 
 </td>
 
 <td style="text-align:right;">
 
-0.221
+0.220
 
 </td>
 
 <td style="text-align:right;">
 
-0.041
+0.042
 
 </td>
 
 <td style="text-align:right;">
 
-0.069
+0.073
 
 </td>
 
 <td style="text-align:right;">
 
-0.006
+0.007
 
 </td>
 
 <td style="text-align:right;">
 
-5973884
+599293
 
 </td>
 
 <td style="text-align:right;">
 
-378523
+38585
 
 </td>
 
 <td style="text-align:right;">
 
-452398
+45654
 
 </td>
 
 <td style="text-align:right;">
 
-111720
+11297
 
 </td>
 
 <td style="text-align:right;">
 
-20671
+2198
 
 </td>
 
 <td style="text-align:right;">
 
-1217554459
+134316567
 
 </td>
 
 <td style="text-align:right;">
 
-2756.769
+3022.629
 
 </td>
 
 <td style="text-align:right;">
 
-5427506
+545220.0
 
 </td>
 
 <td style="text-align:right;">
 
-12.289
+12.270
 
 </td>
 
 <td style="text-align:right;">
 
-611687.1
+610452.7
 
 </td>
 
 <td style="text-align:right;">
 
-223.475
+342.921
 
 </td>
 
 <td style="text-align:right;">
 
-0.013
+\-0.006
 
 </td>
 
 <td style="text-align:right;">
 
-16605.59
+\-55489.38
 
 </td>
 
 <td style="text-align:right;">
 
-449.416
+\-651.918
 
 </td>
 
@@ -2346,25 +2345,25 @@ FlowMeter\_CDQ
 
 <td style="text-align:right;">
 
-11.1
+11.56
 
 </td>
 
 <td style="text-align:right;">
 
-11.1
+11.56
 
 </td>
 
 <td style="text-align:right;">
 
-23.38
+24.33
 
 </td>
 
 <td style="text-align:right;">
 
-40.37
+42.01
 
 </td>
 
@@ -2650,37 +2649,37 @@ S3NoCD
 
 <td style="text-align:right;">
 
-345121
+34356
 
 </td>
 
 <td style="text-align:right;">
 
-5207056
+519308.4
 
 </td>
 
 <td style="text-align:right;">
 
-832780.5
+83330.61
 
 </td>
 
 <td style="text-align:right;">
 
-1603629
+159909
 
 </td>
 
 <td style="text-align:right;">
 
-155214.3
+15283.04
 
 </td>
 
 <td style="text-align:right;">
 
-115810
+11430
 
 </td>
 
@@ -2692,61 +2691,61 @@ S3NoCD
 
 <td style="text-align:right;">
 
-0.136
+0.133
 
 </td>
 
 <td style="text-align:right;">
 
-0.153
+0.150
 
 </td>
 
 <td style="text-align:right;">
 
-0.085
+0.087
 
 </td>
 
 <td style="text-align:right;">
 
-195158
+19100
 
 </td>
 
 <td style="text-align:right;">
 
-36023
+3516
 
 </td>
 
 <td style="text-align:right;">
 
-60353
+6073
 
 </td>
 
 <td style="text-align:right;">
 
-5106
+526
 
 </td>
 
 <td style="text-align:right;">
 
-0.234
+0.229
 
 </td>
 
 <td style="text-align:right;">
 
-0.043
+0.042
 
 </td>
 
 <td style="text-align:right;">
 
-0.072
+0.073
 
 </td>
 
@@ -2758,61 +2757,61 @@ S3NoCD
 
 <td style="text-align:right;">
 
-4155978
+414292
 
 </td>
 
 <td style="text-align:right;">
 
-304655
+30685
 
 </td>
 
 <td style="text-align:right;">
 
-372833
+37225
 
 </td>
 
 <td style="text-align:right;">
 
-96398
+9753
 
 </td>
 
 <td style="text-align:right;">
 
-18706
+1652
 
 </td>
 
 <td style="text-align:right;">
 
-942376053
+99403761
 
 </td>
 
 <td style="text-align:right;">
 
-2730.567
+2893.345
 
 </td>
 
 <td style="text-align:right;">
 
-3878332
+386761.5
 
 </td>
 
 <td style="text-align:right;">
 
-11.238
+11.257
 
 </td>
 
 <td style="text-align:right;">
 
-559149.4
+559979.9
 
 </td>
 
@@ -2852,37 +2851,37 @@ S3a
 
 <td style="text-align:right;">
 
-344998
+34551
 
 </td>
 
 <td style="text-align:right;">
 
-5200765
+521899.2
 
 </td>
 
 <td style="text-align:right;">
 
-838543.3
+85341.65
 
 </td>
 
 <td style="text-align:right;">
 
-1585219
+158982
 
 </td>
 
 <td style="text-align:right;">
 
-221257.8
+22400.11
 
 </td>
 
 <td style="text-align:right;">
 
-116526
+11747
 
 </td>
 
@@ -2894,13 +2893,13 @@ S3a
 
 <td style="text-align:right;">
 
-0.143
+0.144
 
 </td>
 
 <td style="text-align:right;">
 
-0.204
+0.202
 
 </td>
 
@@ -2912,233 +2911,31 @@ S3a
 
 <td style="text-align:right;">
 
-194391
+20133
 
 </td>
 
 <td style="text-align:right;">
 
-36593
+3700
 
 </td>
 
 <td style="text-align:right;">
 
-60645
+6110
 
 </td>
 
 <td style="text-align:right;">
 
-5112
+575
 
 </td>
 
 <td style="text-align:right;">
 
-0.232
-
-</td>
-
-<td style="text-align:right;">
-
-0.044
-
-</td>
-
-<td style="text-align:right;">
-
-0.072
-
-</td>
-
-<td style="text-align:right;">
-
-0.006
-
-</td>
-
-<td style="text-align:right;">
-
-4144767
-
-</td>
-
-<td style="text-align:right;">
-
-305848
-
-</td>
-
-<td style="text-align:right;">
-
-376805
-
-</td>
-
-<td style="text-align:right;">
-
-96609
-
-</td>
-
-<td style="text-align:right;">
-
-18754
-
-</td>
-
-<td style="text-align:right;">
-
-1009951347
-
-</td>
-
-<td style="text-align:right;">
-
-2927.412
-
-</td>
-
-<td style="text-align:right;">
-
-3874688
-
-</td>
-
-<td style="text-align:right;">
-
-11.231
-
-</td>
-
-<td style="text-align:right;">
-
-558624.8
-
-</td>
-
-<td style="text-align:right;">
-
-196.845
-
-</td>
-
-<td style="text-align:right;">
-
-\-0.007
-
-</td>
-
-<td style="text-align:right;">
-
-\-30023.58
-
-</td>
-
-<td style="text-align:right;">
-
-\-524.662
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-S3b
-
-</td>
-
-<td style="text-align:right;">
-
-345141
-
-</td>
-
-<td style="text-align:right;">
-
-5208656
-
-</td>
-
-<td style="text-align:right;">
-
-836580.0
-
-</td>
-
-<td style="text-align:right;">
-
-1556390
-
-</td>
-
-<td style="text-align:right;">
-
-345910.1
-
-</td>
-
-<td style="text-align:right;">
-
-116671
-
-</td>
-
-<td style="text-align:right;">
-
-0.027
-
-</td>
-
-<td style="text-align:right;">
-
-0.159
-
-</td>
-
-<td style="text-align:right;">
-
-0.295
-
-</td>
-
-<td style="text-align:right;">
-
-0.101
-
-</td>
-
-<td style="text-align:right;">
-
-191380
-
-</td>
-
-<td style="text-align:right;">
-
-36018
-
-</td>
-
-<td style="text-align:right;">
-
-60214
-
-</td>
-
-<td style="text-align:right;">
-
-5305
-
-</td>
-
-<td style="text-align:right;">
-
-0.229
+0.236
 
 </td>
 
@@ -3156,91 +2953,91 @@ S3b
 
 <td style="text-align:right;">
 
-0.006
+0.007
 
 </td>
 
 <td style="text-align:right;">
 
-4154135
+414774
 
 </td>
 
 <td style="text-align:right;">
 
-303477
+30550
 
 </td>
 
 <td style="text-align:right;">
 
-377393
+39037
 
 </td>
 
 <td style="text-align:right;">
 
-97243
+9806
 
 </td>
 
 <td style="text-align:right;">
 
-18184
+1868
 
 </td>
 
 <td style="text-align:right;">
 
-1056384348
+108843372
 
 </td>
 
 <td style="text-align:right;">
 
-3060.733
+3150.223
 
 </td>
 
 <td style="text-align:right;">
 
-3883610
+388608.7
 
 </td>
 
 <td style="text-align:right;">
 
-11.252
+11.247
 
 </td>
 
 <td style="text-align:right;">
 
-559551.3
+559219.5
 
 </td>
 
 <td style="text-align:right;">
 
-330.166
+256.878
 
 </td>
 
 <td style="text-align:right;">
 
-0.015
+\-0.010
 
 </td>
 
 <td style="text-align:right;">
 
-22551.28
+\-25508.881
 
 </td>
 
 <td style="text-align:right;">
 
-401.867
+\-760.386
 
 </td>
 
@@ -3250,97 +3047,97 @@ S3b
 
 <td style="text-align:left;">
 
-S3c
+S3b
 
 </td>
 
 <td style="text-align:right;">
 
-345874
+34563
 
 </td>
 
 <td style="text-align:right;">
 
-5214195
+520032.6
 
 </td>
 
 <td style="text-align:right;">
 
-837512.1
+83599.60
 
 </td>
 
 <td style="text-align:right;">
 
-1575141
+155285
 
 </td>
 
 <td style="text-align:right;">
 
-280292.9
+34958.90
 
 </td>
 
 <td style="text-align:right;">
 
-117110
+11675
 
 </td>
 
 <td style="text-align:right;">
 
-0.024
+0.027
 
 </td>
 
 <td style="text-align:right;">
 
-0.147
+0.155
 
 </td>
 
 <td style="text-align:right;">
 
-0.246
+0.298
 
 </td>
 
 <td style="text-align:right;">
 
-0.093
+0.100
 
 </td>
 
 <td style="text-align:right;">
 
-191211
+19124
 
 </td>
 
 <td style="text-align:right;">
 
-36018
+3583
 
 </td>
 
 <td style="text-align:right;">
 
-59550
+5953
 
 </td>
 
 <td style="text-align:right;">
 
-5099
+540
 
 </td>
 
 <td style="text-align:right;">
 
-0.228
+0.229
 
 </td>
 
@@ -3364,85 +3161,85 @@ S3c
 
 <td style="text-align:right;">
 
-4158258
+414629
 
 </td>
 
 <td style="text-align:right;">
 
-307714
+30279
 
 </td>
 
 <td style="text-align:right;">
 
-375606
+37496
 
 </td>
 
 <td style="text-align:right;">
 
-95828
+9970
 
 </td>
 
 <td style="text-align:right;">
 
-18029
+1848
 
 </td>
 
 <td style="text-align:right;">
 
-1015541527
+110988325
 
 </td>
 
 <td style="text-align:right;">
 
-2936.160
+3211.189
 
 </td>
 
 <td style="text-align:right;">
 
-3886759
+387837.9
 
 </td>
 
 <td style="text-align:right;">
 
-11.238
+11.221
 
 </td>
 
 <td style="text-align:right;">
 
-558938.9
+557848.2
 
 </td>
 
 <td style="text-align:right;">
 
-205.593
+317.844
 
 </td>
 
 <td style="text-align:right;">
 
-0.000
+\-0.036
 
 </td>
 
 <td style="text-align:right;">
 
-\-2058536.59
+\-8761.682
 
 </td>
 
 <td style="text-align:right;">
 
-\-210.587
+\-2131.674
 
 </td>
 
@@ -3452,97 +3249,97 @@ S3c
 
 <td style="text-align:left;">
 
-S3d
+S3c
 
 </td>
 
 <td style="text-align:right;">
 
-344548
+34301
 
 </td>
 
 <td style="text-align:right;">
 
-5199315
+518241.3
 
 </td>
 
 <td style="text-align:right;">
 
-838281.5
+82691.80
 
 </td>
 
 <td style="text-align:right;">
 
-1576249
+156565
 
 </td>
 
 <td style="text-align:right;">
 
-254354.4
+27796.91
 
 </td>
 
 <td style="text-align:right;">
 
-116872
+11594
 
 </td>
 
 <td style="text-align:right;">
 
-0.023
+0.024
 
 </td>
 
 <td style="text-align:right;">
 
-0.145
+0.147
 
 </td>
 
 <td style="text-align:right;">
 
-0.229
+0.243
 
 </td>
 
 <td style="text-align:right;">
 
-0.092
+0.096
 
 </td>
 
 <td style="text-align:right;">
 
-193867
+18314
 
 </td>
 
 <td style="text-align:right;">
 
-36387
+3526
 
 </td>
 
 <td style="text-align:right;">
 
-60101
+5941
 
 </td>
 
 <td style="text-align:right;">
 
-5177
+487
 
 </td>
 
 <td style="text-align:right;">
 
-0.231
+0.221
 
 </td>
 
@@ -3566,67 +3363,197 @@ S3d
 
 <td style="text-align:right;">
 
-4143537
+413822
 
 </td>
 
 <td style="text-align:right;">
 
-304775
+30937
 
 </td>
 
 <td style="text-align:right;">
 
-375816
+36729
 
 </td>
 
 <td style="text-align:right;">
 
-98563
+9235
 
 </td>
 
 <td style="text-align:right;">
 
-18531
+1761
 
 </td>
 
 <td style="text-align:right;">
 
-1030090438
+105222878
 
 </td>
 
 <td style="text-align:right;">
 
-2989.686
+3067.633
 
 </td>
 
 <td style="text-align:right;">
 
-3874067
+386391.6
 
 </td>
 
 <td style="text-align:right;">
 
-11.244
+11.265
 
 </td>
 
 <td style="text-align:right;">
 
-559205.8
+560169.0
 
 </td>
 
 <td style="text-align:right;">
 
-259.119
+174.288
+
+</td>
+
+<td style="text-align:right;">
+
+0.007
+
+</td>
+
+<td style="text-align:right;">
+
+23979.455
+
+</td>
+
+<td style="text-align:right;">
+
+189.123
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+S3d
+
+</td>
+
+<td style="text-align:right;">
+
+34659
+
+</td>
+
+<td style="text-align:right;">
+
+522111.4
+
+</td>
+
+<td style="text-align:right;">
+
+84243.01
+
+</td>
+
+<td style="text-align:right;">
+
+158157
+
+</td>
+
+<td style="text-align:right;">
+
+25864.63
+
+</td>
+
+<td style="text-align:right;">
+
+11355
+
+</td>
+
+<td style="text-align:right;">
+
+0.022
+
+</td>
+
+<td style="text-align:right;">
+
+0.152
+
+</td>
+
+<td style="text-align:right;">
+
+0.234
+
+</td>
+
+<td style="text-align:right;">
+
+0.096
+
+</td>
+
+<td style="text-align:right;">
+
+19263
+
+</td>
+
+<td style="text-align:right;">
+
+3609
+
+</td>
+
+<td style="text-align:right;">
+
+6192
+
+</td>
+
+<td style="text-align:right;">
+
+528
+
+</td>
+
+<td style="text-align:right;">
+
+0.229
+
+</td>
+
+<td style="text-align:right;">
+
+0.043
+
+</td>
+
+<td style="text-align:right;">
+
+0.074
 
 </td>
 
@@ -3638,13 +3565,85 @@ S3d
 
 <td style="text-align:right;">
 
-41061.68
+415985
 
 </td>
 
 <td style="text-align:right;">
 
-56.405
+31040
+
+</td>
+
+<td style="text-align:right;">
+
+37639
+
+</td>
+
+<td style="text-align:right;">
+
+9806
+
+</td>
+
+<td style="text-align:right;">
+
+1680
+
+</td>
+
+<td style="text-align:right;">
+
+110168857
+
+</td>
+
+<td style="text-align:right;">
+
+3178.651
+
+</td>
+
+<td style="text-align:right;">
+
+389142.1
+
+</td>
+
+<td style="text-align:right;">
+
+11.228
+
+</td>
+
+<td style="text-align:right;">
+
+558208.1
+
+</td>
+
+<td style="text-align:right;">
+
+285.306
+
+</td>
+
+<td style="text-align:right;">
+
+\-0.030
+
+</td>
+
+<td style="text-align:right;">
+
+\-9596.935
+
+</td>
+
+<td style="text-align:right;">
+
+\-1771.748
 
 </td>
 
@@ -3731,153 +3730,101 @@ IncrementalNMB
 
 <td style="text-align:left;">
 
-S2a
-
-</td>
-
-<td style="text-align:right;">
-
-441660
-
-</td>
-
-<td style="text-align:right;">
-
-1217554459
-
-</td>
-
-<td style="text-align:right;">
-
-2756.769
-
-</td>
-
-<td style="text-align:right;">
-
-5427506
-
-</td>
-
-<td style="text-align:right;">
-
-12.289
-
-</td>
-
-<td style="text-align:right;">
-
-16605.59
-
-</td>
-
-<td style="text-align:right;">
-
-449.416
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-S3b
-
-</td>
-
-<td style="text-align:right;">
-
-345141
-
-</td>
-
-<td style="text-align:right;">
-
-1056384348
-
-</td>
-
-<td style="text-align:right;">
-
-3060.733
-
-</td>
-
-<td style="text-align:right;">
-
-3883610
-
-</td>
-
-<td style="text-align:right;">
-
-11.252
-
-</td>
-
-<td style="text-align:right;">
-
-22551.28
-
-</td>
-
-<td style="text-align:right;">
-
-401.867
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
 S1a
 
 </td>
 
 <td style="text-align:right;">
 
-743564
+74371
 
 </td>
 
 <td style="text-align:right;">
 
-1723464261
+181363804
 
 </td>
 
 <td style="text-align:right;">
 
-2317.843
+2438.636
 
 </td>
 
 <td style="text-align:right;">
 
-9338959
+936417.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.560
+12.591
 
 </td>
 
 <td style="text-align:right;">
 
-21668.68
+3914.696
 
 </td>
 
 <td style="text-align:right;">
 
-350.425
+3274.290
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+S1c
+
+</td>
+
+<td style="text-align:right;">
+
+74131
+
+</td>
+
+<td style="text-align:right;">
+
+177946180
+
+</td>
+
+<td style="text-align:right;">
+
+2400.429
+
+</td>
+
+<td style="text-align:right;">
+
+930572.9
+
+</td>
+
+<td style="text-align:right;">
+
+12.553
+
+</td>
+
+<td style="text-align:right;">
+
+7275.584
+
+</td>
+
+<td style="text-align:right;">
+
+1408.916
 
 </td>
 
@@ -3893,43 +3840,43 @@ S1b
 
 <td style="text-align:right;">
 
-744031
+74640
 
 </td>
 
 <td style="text-align:right;">
 
-1658870879
+177925068
 
 </td>
 
 <td style="text-align:right;">
 
-2229.572
+2383.776
 
 </td>
 
 <td style="text-align:right;">
 
-9343234
+935793.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.558
+12.537
 
 </td>
 
 <td style="text-align:right;">
 
-17569.62
+12898.673
 
 </td>
 
 <td style="text-align:right;">
 
-331.779
+642.216
 
 </td>
 
@@ -3939,49 +3886,49 @@ S1b
 
 <td style="text-align:left;">
 
-S3d
+S3c
 
 </td>
 
 <td style="text-align:right;">
 
-344548
+34301
 
 </td>
 
 <td style="text-align:right;">
 
-1030090438
+105222878
 
 </td>
 
 <td style="text-align:right;">
 
-2989.686
+3067.633
 
 </td>
 
 <td style="text-align:right;">
 
-3874067
+386391.6
 
 </td>
 
 <td style="text-align:right;">
 
-11.244
+11.265
 
 </td>
 
 <td style="text-align:right;">
 
-41061.68
+23979.455
 
 </td>
 
 <td style="text-align:right;">
 
-56.405
+189.123
 
 </td>
 
@@ -3997,31 +3944,31 @@ S1NoCD
 
 <td style="text-align:right;">
 
-744269
+74381
 
 </td>
 
 <td style="text-align:right;">
 
-1525622239
+160700373
 
 </td>
 
 <td style="text-align:right;">
 
-2049.826
+2160.503
 
 </td>
 
 <td style="text-align:right;">
 
-9338608
+931258.3
 
 </td>
 
 <td style="text-align:right;">
 
-12.547
+12.520
 
 </td>
 
@@ -4049,31 +3996,31 @@ S2NoCD
 
 <td style="text-align:right;">
 
-442071
+44135
 
 </td>
 
 <td style="text-align:right;">
 
-1119895550
+118268910
 
 </td>
 
 <td style="text-align:right;">
 
-2533.293
+2679.708
 
 </td>
 
 <td style="text-align:right;">
 
-5426607
+541787.4
 
 </td>
 
 <td style="text-align:right;">
 
-12.275
+12.276
 
 </td>
 
@@ -4101,31 +4048,31 @@ S3NoCD
 
 <td style="text-align:right;">
 
-345121
+34356
 
 </td>
 
 <td style="text-align:right;">
 
-942376053
+99403761
 
 </td>
 
 <td style="text-align:right;">
 
-2730.567
+2893.345
 
 </td>
 
 <td style="text-align:right;">
 
-3878332
+386761.5
 
 </td>
 
 <td style="text-align:right;">
 
-11.238
+11.257
 
 </td>
 
@@ -4147,101 +4094,49 @@ NaN
 
 <td style="text-align:left;">
 
-S1c
+S2a
 
 </td>
 
 <td style="text-align:right;">
 
-744241
+44437
 
 </td>
 
 <td style="text-align:right;">
 
-1693146274
+134316567
 
 </td>
 
 <td style="text-align:right;">
 
-2274.997
+3022.629
 
 </td>
 
 <td style="text-align:right;">
 
-9340657
+545220.0
 
 </td>
 
 <td style="text-align:right;">
 
-12.551
+12.270
 
 </td>
 
 <td style="text-align:right;">
 
-69824.54
+\-55489.376
 
 </td>
 
 <td style="text-align:right;">
 
-\-63.930
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-S3c
-
-</td>
-
-<td style="text-align:right;">
-
-345874
-
-</td>
-
-<td style="text-align:right;">
-
-1015541527
-
-</td>
-
-<td style="text-align:right;">
-
-2936.160
-
-</td>
-
-<td style="text-align:right;">
-
-3886759
-
-</td>
-
-<td style="text-align:right;">
-
-11.238
-
-</td>
-
-<td style="text-align:right;">
-
-\-2058536.59
-
-</td>
-
-<td style="text-align:right;">
-
-\-210.587
+\-651.918
 
 </td>
 
@@ -4257,43 +4152,147 @@ S3a
 
 <td style="text-align:right;">
 
-344998
+34551
 
 </td>
 
 <td style="text-align:right;">
 
-1009951347
+108843372
 
 </td>
 
 <td style="text-align:right;">
 
-2927.412
+3150.223
 
 </td>
 
 <td style="text-align:right;">
 
-3874688
+388608.7
 
 </td>
 
 <td style="text-align:right;">
 
-11.231
+11.247
 
 </td>
 
 <td style="text-align:right;">
 
-\-30023.58
+\-25508.881
 
 </td>
 
 <td style="text-align:right;">
 
-\-524.662
+\-760.386
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+S3d
+
+</td>
+
+<td style="text-align:right;">
+
+34659
+
+</td>
+
+<td style="text-align:right;">
+
+110168857
+
+</td>
+
+<td style="text-align:right;">
+
+3178.651
+
+</td>
+
+<td style="text-align:right;">
+
+389142.1
+
+</td>
+
+<td style="text-align:right;">
+
+11.228
+
+</td>
+
+<td style="text-align:right;">
+
+\-9596.935
+
+</td>
+
+<td style="text-align:right;">
+
+\-1771.748
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+S3b
+
+</td>
+
+<td style="text-align:right;">
+
+34563
+
+</td>
+
+<td style="text-align:right;">
+
+110988325
+
+</td>
+
+<td style="text-align:right;">
+
+3211.189
+
+</td>
+
+<td style="text-align:right;">
+
+387837.9
+
+</td>
+
+<td style="text-align:right;">
+
+11.221
+
+</td>
+
+<td style="text-align:right;">
+
+\-8761.682
+
+</td>
+
+<td style="text-align:right;">
+
+\-2131.674
 
 </td>
 
@@ -4427,7 +4426,7 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-743943.5
+74418
 
 </td>
 
@@ -4439,13 +4438,13 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-1521120822
+161397011
 
 </td>
 
 <td style="text-align:right;">
 
-2044.673
+2168.790
 
 </td>
 
@@ -4457,19 +4456,19 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-2044.673
+2168.790
 
 </td>
 
 <td style="text-align:right;">
 
-9335658
+933095.7
 
 </td>
 
 <td style="text-align:right;">
 
-12.54888
+12.53857
 
 </td>
 
@@ -4481,7 +4480,7 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-12.54888
+12.53857
 
 </td>
 
@@ -4527,7 +4526,7 @@ S1a
 
 <td style="text-align:right;">
 
-743564.0
+74371
 
 </td>
 
@@ -4539,13 +4538,13 @@ S1a
 
 <td style="text-align:right;">
 
-1723464261
+181363804
 
 </td>
 
 <td style="text-align:right;">
 
-2317.843
+2438.636
 
 </td>
 
@@ -4557,19 +4556,19 @@ S1a
 
 <td style="text-align:right;">
 
-2317.843
+2438.636
 
 </td>
 
 <td style="text-align:right;">
 
-9338959
+936417.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.55972
+12.59116
 
 </td>
 
@@ -4581,37 +4580,37 @@ S1a
 
 <td style="text-align:right;">
 
-12.55972
+12.59116
 
 </td>
 
 <td style="text-align:right;">
 
-273.17002
+269.84612
 
 </td>
 
 <td style="text-align:right;">
 
-0.0108442
+0.0525842
 
 </td>
 
 <td style="text-align:right;">
 
-25190.40
+5131.693
 
 </td>
 
 <td style="text-align:right;">
 
-21668.68
+3914.696
 
 </td>
 
 <td style="text-align:right;">
 
-269.0406
+2359.3652
 
 </td>
 
@@ -4627,7 +4626,7 @@ S1b
 
 <td style="text-align:right;">
 
-744031.0
+74640
 
 </td>
 
@@ -4639,13 +4638,13 @@ S1b
 
 <td style="text-align:right;">
 
-1658870879
+177925068
 
 </td>
 
 <td style="text-align:right;">
 
-2229.572
+2383.776
 
 </td>
 
@@ -4657,19 +4656,19 @@ S1b
 
 <td style="text-align:right;">
 
-2229.572
+2383.776
 
 </td>
 
 <td style="text-align:right;">
 
-9343234
+935793.1
 
 </td>
 
 <td style="text-align:right;">
 
-12.55759
+12.53742
 
 </td>
 
@@ -4681,37 +4680,37 @@ S1b
 
 <td style="text-align:right;">
 
-12.55759
+12.53742
 
 </td>
 
 <td style="text-align:right;">
 
-184.89975
+214.98640
 
 </td>
 
 <td style="text-align:right;">
 
-0.0087059
+\-0.0011544
 
 </td>
 
 <td style="text-align:right;">
 
-21238.49
+\-186225.931
 
 </td>
 
 <td style="text-align:right;">
 
-17569.62
+12898.673
 
 </td>
 
 <td style="text-align:right;">
 
-250.3942
+\-272.7083
 
 </td>
 
@@ -4727,7 +4726,7 @@ S1c
 
 <td style="text-align:right;">
 
-744241.0
+74131
 
 </td>
 
@@ -4739,13 +4738,13 @@ S1c
 
 <td style="text-align:right;">
 
-1693146274
+177946180
 
 </td>
 
 <td style="text-align:right;">
 
-2274.997
+2400.429
 
 </td>
 
@@ -4757,19 +4756,19 @@ S1c
 
 <td style="text-align:right;">
 
-2274.997
+2400.429
 
 </td>
 
 <td style="text-align:right;">
 
-9340657
+930572.9
 
 </td>
 
 <td style="text-align:right;">
 
-12.55058
+12.55309
 
 </td>
 
@@ -4781,37 +4780,37 @@ S1c
 
 <td style="text-align:right;">
 
-12.55058
+12.55309
 
 </td>
 
 <td style="text-align:right;">
 
-230.32480
+231.63873
 
 </td>
 
 <td style="text-align:right;">
 
-0.0017002
+0.0145126
 
 </td>
 
 <td style="text-align:right;">
 
-135469.54
+15961.217
 
 </td>
 
 <td style="text-align:right;">
 
-69824.54
+7275.584
 
 </td>
 
 <td style="text-align:right;">
 
-\-145.3150
+493.9912
 
 </td>
 
@@ -4827,61 +4826,61 @@ S2NoCD
 
 <td style="text-align:right;">
 
-442071.0
+44135
 
 </td>
 
 <td style="text-align:right;">
 
-0.5942266
+0.5930689
 
 </td>
 
 <td style="text-align:right;">
 
-1119895550
+118268910
 
 </td>
 
 <td style="text-align:right;">
 
-2533.293
+2679.708
 
 </td>
 
 <td style="text-align:right;">
 
-1329.122
+1424.169
 
 </td>
 
 <td style="text-align:right;">
 
-2044.673
+2168.790
 
 </td>
 
 <td style="text-align:right;">
 
-5426607
+541787.4
 
 </td>
 
 <td style="text-align:right;">
 
-12.27542
+12.27569
 
 </td>
 
 <td style="text-align:right;">
 
-12.94934
+12.92171
 
 </td>
 
 <td style="text-align:right;">
 
-12.54888
+12.53857
 
 </td>
 
@@ -4927,91 +4926,91 @@ S2a
 
 <td style="text-align:right;">
 
-441660.0
+44437
 
 </td>
 
 <td style="text-align:right;">
 
-0.5936741
+0.5971270
 
 </td>
 
 <td style="text-align:right;">
 
-1217554459
+134316567
 
 </td>
 
 <td style="text-align:right;">
 
-2756.769
+3022.629
 
 </td>
 
 <td style="text-align:right;">
 
-1329.122
+1424.169
 
 </td>
 
 <td style="text-align:right;">
 
-2176.679
+2378.653
 
 </td>
 
 <td style="text-align:right;">
 
-5427506
+545220.0
 
 </td>
 
 <td style="text-align:right;">
 
-12.28888
+12.26951
 
 </td>
 
 <td style="text-align:right;">
 
-12.94934
+12.92171
 
 </td>
 
 <td style="text-align:right;">
 
-12.55724
+12.53226
 
 </td>
 
 <td style="text-align:right;">
 
-132.00623
+209.86265
 
 </td>
 
 <td style="text-align:right;">
 
-0.0083619
+\-0.0063119
 
 </td>
 
 <td style="text-align:right;">
 
-15786.66
+\-33248.758
 
 </td>
 
 <td style="text-align:right;">
 
-16605.59
+\-55489.376
 
 </td>
 
 <td style="text-align:right;">
 
-286.0881
+\-525.4574
 
 </td>
 
@@ -5027,61 +5026,61 @@ S3NoCD
 
 <td style="text-align:right;">
 
-345121.0
+34356
 
 </td>
 
 <td style="text-align:right;">
 
-0.4639075
+0.4616625
 
 </td>
 
 <td style="text-align:right;">
 
-942376053
+99403761
 
 </td>
 
 <td style="text-align:right;">
 
-2730.567
+2893.345
 
 </td>
 
 <td style="text-align:right;">
 
-1451.134
+1547.433
 
 </td>
 
 <td style="text-align:right;">
 
-2044.673
+2168.790
 
 </td>
 
 <td style="text-align:right;">
 
-3878332
+386761.5
 
 </td>
 
 <td style="text-align:right;">
 
-11.23760
+11.25746
 
 </td>
 
 <td style="text-align:right;">
 
-13.68360
+13.63722
 
 </td>
 
 <td style="text-align:right;">
 
-12.54888
+12.53857
 
 </td>
 
@@ -5127,91 +5126,91 @@ S3a
 
 <td style="text-align:right;">
 
-344998.0
+34551
 
 </td>
 
 <td style="text-align:right;">
 
-0.4637422
+0.4642828
 
 </td>
 
 <td style="text-align:right;">
 
-1009951347
+108843372
 
 </td>
 
 <td style="text-align:right;">
 
-2927.412
+3150.223
 
 </td>
 
 <td style="text-align:right;">
 
-1451.134
+1547.433
 
 </td>
 
 <td style="text-align:right;">
 
-2135.746
+2291.581
 
 </td>
 
 <td style="text-align:right;">
 
-3874688
+388608.7
 
 </td>
 
 <td style="text-align:right;">
 
-11.23104
+11.24739
 
 </td>
 
 <td style="text-align:right;">
 
-13.68360
+13.63722
 
 </td>
 
 <td style="text-align:right;">
 
-12.54624
+12.52766
 
 </td>
 
 <td style="text-align:right;">
 
-91.07383
+122.79100
 
 </td>
 
 <td style="text-align:right;">
 
-\-0.0026360
+\-0.0109111
 
 </td>
 
 <td style="text-align:right;">
 
-\-34549.40
+\-11253.719
 
 </td>
 
 <td style="text-align:right;">
 
-\-30023.58
+\-25508.881
 
 </td>
 
 <td style="text-align:right;">
 
-\-222.8761
+\-668.3485
 
 </td>
 
@@ -5227,91 +5226,91 @@ S3b
 
 <td style="text-align:right;">
 
-345141.0
+34563
 
 </td>
 
 <td style="text-align:right;">
 
-0.4639344
+0.4644441
 
 </td>
 
 <td style="text-align:right;">
 
-1056384348
+110988325
 
 </td>
 
 <td style="text-align:right;">
 
-3060.733
+3211.189
 
 </td>
 
 <td style="text-align:right;">
 
-1451.134
+1547.433
 
 </td>
 
 <td style="text-align:right;">
 
-2197.882
+2320.154
 
 </td>
 
 <td style="text-align:right;">
 
-3883610
+387837.9
 
 </td>
 
 <td style="text-align:right;">
 
-11.25224
+11.22119
 
 </td>
 
 <td style="text-align:right;">
 
-13.68360
+13.63722
 
 </td>
 
 <td style="text-align:right;">
 
-12.55561
+12.51511
 
 </td>
 
 <td style="text-align:right;">
 
-153.20958
+151.36453
 
 </td>
 
 <td style="text-align:right;">
 
-0.0067265
+\-0.0234679
 
 </td>
 
 <td style="text-align:right;">
 
-22776.85
+\-6449.844
 
 </td>
 
 <td style="text-align:right;">
 
-22551.28
+\-8761.682
 
 </td>
 
 <td style="text-align:right;">
 
-183.1179
+\-1324.7613
 
 </td>
 
@@ -5327,91 +5326,91 @@ S3c
 
 <td style="text-align:right;">
 
-345874.0
+34301
 
 </td>
 
 <td style="text-align:right;">
 
-0.4649197
+0.4609234
 
 </td>
 
 <td style="text-align:right;">
 
-1015541527
+105222878
 
 </td>
 
 <td style="text-align:right;">
 
-2936.160
+3067.633
 
 </td>
 
 <td style="text-align:right;">
 
-1451.134
+1547.433
 
 </td>
 
 <td style="text-align:right;">
 
-2141.552
+2248.129
 
 </td>
 
 <td style="text-align:right;">
 
-3886759
+386391.6
 
 </td>
 
 <td style="text-align:right;">
 
-11.23750
+11.26473
 
 </td>
 
 <td style="text-align:right;">
 
-13.68360
+13.63722
 
 </td>
 
 <td style="text-align:right;">
 
-12.54636
+12.54368
 
 </td>
 
 <td style="text-align:right;">
 
-96.87936
+79.33867
 
 </td>
 
 <td style="text-align:right;">
 
-\-0.0025222
+0.0051089
 
 </td>
 
 <td style="text-align:right;">
 
-\-38410.55
+15529.523
 
 </td>
 
 <td style="text-align:right;">
 
-\-2058536.59
+23979.455
 
 </td>
 
 <td style="text-align:right;">
 
-\-222.9897
+176.1060
 
 </td>
 
@@ -5427,91 +5426,91 @@ S3d
 
 <td style="text-align:right;">
 
-344548.0
+34659
 
 </td>
 
 <td style="text-align:right;">
 
-0.4631373
+0.4657341
 
 </td>
 
 <td style="text-align:right;">
 
-1030090438
+110168857
 
 </td>
 
 <td style="text-align:right;">
 
-2989.686
+3178.651
 
 </td>
 
 <td style="text-align:right;">
 
-1451.134
+1547.433
 
 </td>
 
 <td style="text-align:right;">
 
-2163.695
+2307.147
 
 </td>
 
 <td style="text-align:right;">
 
-3874067
+389142.1
 
 </td>
 
 <td style="text-align:right;">
 
-11.24391
+11.22774
 
 </td>
 
 <td style="text-align:right;">
 
-13.68360
+13.63722
 
 </td>
 
 <td style="text-align:right;">
 
-12.55369
+12.51504
 
 </td>
 
 <td style="text-align:right;">
 
-119.02232
+138.35662
 
 </td>
 
 <td style="text-align:right;">
 
-0.0048066
+\-0.0235351
 
 </td>
 
 <td style="text-align:right;">
 
-24762.39
+\-5878.729
 
 </td>
 
 <td style="text-align:right;">
 
-41061.68
+\-9596.935
 
 </td>
 
 <td style="text-align:right;">
 
-121.3065
+\-1315.1130
 
 </td>
 
@@ -5675,85 +5674,85 @@ S1NoCDAvg
 
 <td style="text-align:right;">
 
-0.0190243
+0.0190102
 
 </td>
 
 <td style="text-align:right;">
 
-0.1353539
+0.1365892
 
 </td>
 
 <td style="text-align:right;">
 
-0.1514913
+0.1534409
 
 </td>
 
 <td style="text-align:right;">
 
-0.0798360
+0.0819411
 
 </td>
 
 <td style="text-align:right;">
 
-0.4178886
+0.4175334
 
 </td>
 
 <td style="text-align:right;">
 
-0.0781652
+0.0777903
 
 </td>
 
 <td style="text-align:right;">
 
-0.1304582
+0.1316281
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112401
+0.0111062
 
 </td>
 
 <td style="text-align:right;">
 
-0.8422491
+0.8416227
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462381
+0.0467086
 
 </td>
 
 <td style="text-align:right;">
 
-0.0491893
+0.0491154
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110538
+0.0112178
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019365
+0.0020138
 
 </td>
 
 <td style="text-align:right;">
 
-0.1867159
+0.1890387
 
 </td>
 
@@ -5787,85 +5786,85 @@ S1a
 
 <td style="text-align:right;">
 
-0.0263592
+0.0259818
 
 </td>
 
 <td style="text-align:right;">
 
-0.1594071
+0.1583615
 
 </td>
 
 <td style="text-align:right;">
 
-0.3103710
+0.3080320
 
 </td>
 
 <td style="text-align:right;">
 
-0.0936244
+0.0926126
 
 </td>
 
 <td style="text-align:right;">
 
-0.4006864
+0.4002232
 
 </td>
 
 <td style="text-align:right;">
 
-0.0750292
+0.0747065
 
 </td>
 
 <td style="text-align:right;">
 
-0.1278330
+0.1288540
 
 </td>
 
 <td style="text-align:right;">
 
-0.0111194
+0.0101653
 
 </td>
 
 <td style="text-align:right;">
 
-0.8424144
+0.8413751
 
 </td>
 
 <td style="text-align:right;">
 
-0.0463570
+0.0473895
 
 </td>
 
 <td style="text-align:right;">
 
-0.0489813
+0.0488810
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110392
+0.0110959
 
 </td>
 
 <td style="text-align:right;">
 
-0.0018511
+0.0019607
 
 </td>
 
 <td style="text-align:right;">
 
-0.4644394
+0.4630577
 
 </td>
 
@@ -5899,85 +5898,85 @@ S1b
 
 <td style="text-align:right;">
 
-0.0215768
+0.0216880
 
 </td>
 
 <td style="text-align:right;">
 
-0.1467683
+0.1432150
 
 </td>
 
 <td style="text-align:right;">
 
-0.2385685
+0.2356416
 
 </td>
 
 <td style="text-align:right;">
 
-0.0860741
+0.0869118
 
 </td>
 
 <td style="text-align:right;">
 
-0.4032910
+0.4117363
 
 </td>
 
 <td style="text-align:right;">
 
-0.0756447
+0.0790997
 
 </td>
 
 <td style="text-align:right;">
 
-0.1277124
+0.1302519
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110721
+0.0110263
 
 </td>
 
 <td style="text-align:right;">
 
-0.8425780
+0.8406970
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462979
+0.0462288
 
 </td>
 
 <td style="text-align:right;">
 
-0.0488480
+0.0505618
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110137
+0.0110877
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019233
+0.0020765
 
 </td>
 
 <td style="text-align:right;">
 
-0.3320407
+0.3298075
 
 </td>
 
@@ -6011,85 +6010,85 @@ S1c
 
 <td style="text-align:right;">
 
-0.0202384
+0.0202337
 
 </td>
 
 <td style="text-align:right;">
 
-0.1449199
+0.1443276
 
 </td>
 
 <td style="text-align:right;">
 
-0.2151494
+0.2128990
 
 </td>
 
 <td style="text-align:right;">
 
-0.0856197
+0.0867424
 
 </td>
 
 <td style="text-align:right;">
 
-0.4120036
+0.4059570
 
 </td>
 
 <td style="text-align:right;">
 
-0.0767251
+0.0771067
 
 </td>
 
 <td style="text-align:right;">
 
-0.1302280
+0.1306471
 
 </td>
 
 <td style="text-align:right;">
 
-0.0109978
+0.0115201
 
 </td>
 
 <td style="text-align:right;">
 
-0.8424155
+0.8422463
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462965
+0.0462893
 
 </td>
 
 <td style="text-align:right;">
 
-0.0490022
+0.0492669
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110222
+0.0107943
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019116
+0.0020032
 
 </td>
 
 <td style="text-align:right;">
 
-0.2881366
+0.2879159
 
 </td>
 
@@ -6105,103 +6104,103 @@ S2NoCD
 
 <td style="text-align:right;">
 
-0.5942266
+0.5930689
 
 </td>
 
 <td style="text-align:right;">
 
-0.5830052
+0.5822713
 
 </td>
 
 <td style="text-align:right;">
 
-0.7034090
+0.6947616
 
 </td>
 
 <td style="text-align:right;">
 
-0.0190243
+0.0190102
 
 </td>
 
 <td style="text-align:right;">
 
-0.1353539
+0.1365892
 
 </td>
 
 <td style="text-align:right;">
 
-0.1514913
+0.1534409
 
 </td>
 
 <td style="text-align:right;">
 
-0.0798360
+0.0819411
 
 </td>
 
 <td style="text-align:right;">
 
-0.4178886
+0.4175334
 
 </td>
 
 <td style="text-align:right;">
 
-0.0781652
+0.0777903
 
 </td>
 
 <td style="text-align:right;">
 
-0.1304582
+0.1316281
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112401
+0.0111062
 
 </td>
 
 <td style="text-align:right;">
 
-0.8422491
+0.8416227
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462381
+0.0467086
 
 </td>
 
 <td style="text-align:right;">
 
-0.0491893
+0.0491154
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110538
+0.0112178
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019365
+0.0020138
 
 </td>
 
 <td style="text-align:right;">
 
-0.1867159
+0.1890387
 
 </td>
 
@@ -6217,103 +6216,103 @@ S2a
 
 <td style="text-align:right;">
 
-0.5936741
+0.5971270
 
 </td>
 
 <td style="text-align:right;">
 
-0.5827020
+0.5857120
 
 </td>
 
 <td style="text-align:right;">
 
-0.7095216
+0.7157888
 
 </td>
 
 <td style="text-align:right;">
 
-0.0223533
+0.0223715
 
 </td>
 
 <td style="text-align:right;">
 
-0.1457805
+0.1509734
 
 </td>
 
 <td style="text-align:right;">
 
-0.2267078
+0.2309847
 
 </td>
 
 <td style="text-align:right;">
 
-0.0872905
+0.0932007
 
 </td>
 
 <td style="text-align:right;">
 
-0.4082546
+0.4138267
 
 </td>
 
 <td style="text-align:right;">
 
-0.0772758
+0.0785267
 
 </td>
 
 <td style="text-align:right;">
 
-0.1291386
+0.1344150
 
 </td>
 
 <td style="text-align:right;">
 
-0.0113248
+0.0122305
 
 </td>
 
 <td style="text-align:right;">
 
-0.8415616
+0.8396422
 
 </td>
 
 <td style="text-align:right;">
 
-0.0467167
+0.0475609
 
 </td>
 
 <td style="text-align:right;">
 
-0.0494032
+0.0500610
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110721
+0.0114208
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019198
+0.0020331
 
 </td>
 
 <td style="text-align:right;">
 
-0.3090828
+0.3093289
 
 </td>
 
@@ -6329,103 +6328,103 @@ S3NoCD
 
 <td style="text-align:right;">
 
-0.4639075
+0.4616625
 
 </td>
 
 <td style="text-align:right;">
 
-0.4157517
+0.4148335
 
 </td>
 
 <td style="text-align:right;">
 
-0.5833255
+0.5806002
 
 </td>
 
 <td style="text-align:right;">
 
-0.0190243
+0.0190102
 
 </td>
 
 <td style="text-align:right;">
 
-0.1353539
+0.1365892
 
 </td>
 
 <td style="text-align:right;">
 
-0.1514913
+0.1534409
 
 </td>
 
 <td style="text-align:right;">
 
-0.0798360
+0.0819411
 
 </td>
 
 <td style="text-align:right;">
 
-0.4178886
+0.4175334
 
 </td>
 
 <td style="text-align:right;">
 
-0.0781652
+0.0777903
 
 </td>
 
 <td style="text-align:right;">
 
-0.1304582
+0.1316281
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112401
+0.0111062
 
 </td>
 
 <td style="text-align:right;">
 
-0.8422491
+0.8416227
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462381
+0.0467086
 
 </td>
 
 <td style="text-align:right;">
 
-0.0491893
+0.0491154
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110538
+0.0112178
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019365
+0.0020138
 
 </td>
 
 <td style="text-align:right;">
 
-0.1867159
+0.1890387
 
 </td>
 
@@ -6441,103 +6440,103 @@ S3a
 
 <td style="text-align:right;">
 
-0.4637422
+0.4642828
 
 </td>
 
 <td style="text-align:right;">
 
-0.4152493
+0.4169031
 
 </td>
 
 <td style="text-align:right;">
 
-0.5873621
+0.5946120
 
 </td>
 
 <td style="text-align:right;">
 
-0.0201864
+0.0202534
 
 </td>
 
 <td style="text-align:right;">
 
-0.1392560
+0.1429375
 
 </td>
 
 <td style="text-align:right;">
 
-0.1813725
+0.1846437
 
 </td>
 
 <td style="text-align:right;">
 
-0.0828257
+0.0838074
 
 </td>
 
 <td style="text-align:right;">
 
-0.4169056
+0.4306314
 
 </td>
 
 <td style="text-align:right;">
 
-0.0789406
+0.0801142
 
 </td>
 
 <td style="text-align:right;">
 
-0.1308659
+0.1318818
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112495
+0.0117450
 
 </td>
 
 <td style="text-align:right;">
 
-0.8417929
+0.8402016
 
 </td>
 
 <td style="text-align:right;">
 
-0.0463522
+0.0465222
 
 </td>
 
 <td style="text-align:right;">
 
-0.0495232
+0.0504943
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110736
+0.0112480
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019407
+0.0021839
 
 </td>
 
 <td style="text-align:right;">
 
-0.2322209
+0.2358683
 
 </td>
 
@@ -6553,103 +6552,103 @@ S3b
 
 <td style="text-align:right;">
 
-0.4639344
+0.4644441
 
 </td>
 
 <td style="text-align:right;">
 
-0.4158794
+0.4154120
 
 </td>
 
 <td style="text-align:right;">
 
-0.5859869
+0.5824744
 
 </td>
 
 <td style="text-align:right;">
 
-0.0227912
+0.0226421
 
 </td>
 
 <td style="text-align:right;">
 
-0.1486131
+0.1493047
 
 </td>
 
 <td style="text-align:right;">
 
-0.2350973
+0.2398231
 
 </td>
 
 <td style="text-align:right;">
 
-0.0888704
+0.0896675
 
 </td>
 
 <td style="text-align:right;">
 
-0.4128024
+0.4170247
 
 </td>
 
 <td style="text-align:right;">
 
-0.0781570
+0.0785328
 
 </td>
 
 <td style="text-align:right;">
 
-0.1302688
+0.1297571
 
 </td>
 
 <td style="text-align:right;">
 
-0.0115074
+0.0112734
 
 </td>
 
 <td style="text-align:right;">
 
-0.8419904
+0.8413870
 
 </td>
 
 <td style="text-align:right;">
 
-0.0461392
+0.0463623
 
 </td>
 
 <td style="text-align:right;">
 
-0.0495492
+0.0493127
 
 </td>
 
 <td style="text-align:right;">
 
-0.0111206
+0.0113878
 
 </td>
 
 <td style="text-align:right;">
 
-0.0018947
+0.0021697
 
 </td>
 
 <td style="text-align:right;">
 
-0.3197916
+0.3257599
 
 </td>
 
@@ -6665,103 +6664,103 @@ S3c
 
 <td style="text-align:right;">
 
-0.4649197
+0.4609234
 
 </td>
 
 <td style="text-align:right;">
 
-0.4163216
+0.4139811
 
 </td>
 
 <td style="text-align:right;">
 
-0.5866398
+0.5761494
 
 </td>
 
 <td style="text-align:right;">
 
-0.0214231
+0.0211846
 
 </td>
 
 <td style="text-align:right;">
 
-0.1420427
+0.1445871
 
 </td>
 
 <td style="text-align:right;">
 
-0.2062681
+0.2070448
 
 </td>
 
 <td style="text-align:right;">
 
-0.0843163
+0.0872712
 
 </td>
 
 <td style="text-align:right;">
 
-0.4122894
+0.4071923
 
 </td>
 
 <td style="text-align:right;">
 
-0.0781023
+0.0779666
 
 </td>
 
 <td style="text-align:right;">
 
-0.1292856
+0.1299230
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112224
+0.0105877
 
 </td>
 
 <td style="text-align:right;">
 
-0.8419332
+0.8419912
 
 </td>
 
 <td style="text-align:right;">
 
-0.0464609
+0.0469422
 
 </td>
 
 <td style="text-align:right;">
 
-0.0493918
+0.0487474
 
 </td>
 
 <td style="text-align:right;">
 
-0.0110050
+0.0108090
 
 </td>
 
 <td style="text-align:right;">
 
-0.0018820
+0.0021019
 
 </td>
 
 <td style="text-align:right;">
 
-0.2737075
+0.2771043
 
 </td>
 
@@ -6777,103 +6776,103 @@ S3d
 
 <td style="text-align:right;">
 
-0.4631373
+0.4657341
 
 </td>
 
 <td style="text-align:right;">
 
-0.4151335
+0.4170726
 
 </td>
 
 <td style="text-align:right;">
 
-0.5871788
+0.5869573
 
 </td>
 
 <td style="text-align:right;">
 
-0.0208630
+0.0204131
 
 </td>
 
 <td style="text-align:right;">
 
-0.1409138
+0.1473942
 
 </td>
 
 <td style="text-align:right;">
 
-0.1961750
+0.2030083
 
 </td>
 
 <td style="text-align:right;">
 
-0.0838123
+0.0873917
 
 </td>
 
 <td style="text-align:right;">
 
-0.4163767
+0.4185070
 
 </td>
 
 <td style="text-align:right;">
 
-0.0786972
+0.0788090
 
 </td>
 
 <td style="text-align:right;">
 
-0.1301903
+0.1328488
 
 </td>
 
 <td style="text-align:right;">
 
-0.0113418
+0.0111025
 
 </td>
 
 <td style="text-align:right;">
 
-0.8417958
+0.8410210
 
 </td>
 
 <td style="text-align:right;">
 
-0.0462708
+0.0469072
 
 </td>
 
 <td style="text-align:right;">
 
-0.0494480
+0.0493720
 
 </td>
 
 <td style="text-align:right;">
 
-0.0112302
+0.0112470
 
 </td>
 
 <td style="text-align:right;">
 
-0.0019229
+0.0020335
 
 </td>
 
 <td style="text-align:right;">
 
-0.2554379
+0.2615138
 
 </td>
 

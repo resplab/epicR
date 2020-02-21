@@ -23,13 +23,13 @@ record_mode<-c(
   
 settings <- get_default_settings()
 settings$record_mode <- record_mode["record_mode_none"]
-settings$n_base_agents <- 1e+6 # change number of agents here: 100e+6 is used in the analysis
+settings$n_base_agents <- 1e+5 # change number of agents here: 100e+6 is used in the analysis
 lambda=50000 # change WTP threshold here
   
 init_session(settings = settings)
 input <- init_input()
 
-years_btw_case_detection=3 # this script must be run again with 'years_btw_case_detection=5' for a complete analysis set 
+years_btw_case_detection=3
 medication_utility=0.0367
 medication_adherence=0.7
 smoking_adherence=0.7
@@ -42,7 +42,6 @@ other_years_btw_case_detection=5 # other time interval
   - Medication adherence is `r medication_adherence`
   - Smoking adherence is `r smoking_adherence`
   - Cost discounting: `r input$values$global_parameters$discount_cost`
-      - *The default price year for costs is 2015 CAD*
   - QALY discounting: `r input$values$global_parameters$discount_qaly`
   - Time horizon: `r input$values$global_parameters$time_horizon`
   - The WTP threshold for NMB is `r format(lambda, scientific = FALSE)`
