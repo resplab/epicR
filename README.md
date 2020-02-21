@@ -19,7 +19,7 @@ In order to simulate the cost-effectiveness of case detection strategies for COP
 ```r
 devtools::install_github('KateJohnson/epicR', ref="closed_cohort")
 ```
-Confirm that `packageVersion("epicR")` is `1.27.6`.
+Confirm that `packageVersion("epicR")` is `1.27.7`.
 
 2. In order to replicate the case detection scenario results, go [here](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection), open `Case_Detection_Results.Rmd`, click the `Raw` button and copy all the text that opens in a new page. 
 
