@@ -1,0 +1,1523 @@
+---
+title: "Case Detection Scenario Main Analysis"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: github_document
+keep.md: true
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(333) #333 is the analysis seed
+library(epicR)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+
+```{r global settings, echo=FALSE}
+record_mode<-c(
+    record_mode_none=0,
+    record_mode_agent=1,
+    record_mode_event=2,
+    record_mode_some_event=3)
+  
+settings <- get_default_settings()
+settings$record_mode <- record_mode["record_mode_none"]
+settings$n_base_agents <- 1e+5 # change number of agents here: 100e+6 is used in the analysis
+lambda=50000 # change WTP threshold here
+  
+init_session(settings = settings)
+input <- init_input()
+
+years_btw_case_detection=5
+medication_utility=0.0367
+medication_adherence=0.7
+smoking_adherence=0.7
+
+other_years_btw_case_detection=3 # other time interval
+```
+
+**Global inputs:**
+
+  - Medication adherence is `r medication_adherence`
+  - Smoking adherence is `r smoking_adherence`
+  - Cost discounting: `r input$values$global_parameters$discount_cost`
+  - QALY discounting: `r input$values$global_parameters$discount_qaly`
+  - Time horizon: `r input$values$global_parameters$time_horizon`
+  - The WTP threshold for NMB is `r format(lambda, scientific = FALSE)`
+  
+**Case detection inputs:**
+
+  - Case detection occurs at `r years_btw_case_detection` year intervals.
+  - An outpatient diagnosis costs `r input$values$cost$cost_outpatient_diagnosis`
+  - The utility gain due to symptom relief from treatment is `r medication_utility`
+
+## S1 All patients scenario
+
+All patients are eligible.  The cost of case detection is:
+
+```{r S1 CD costs, echo=FALSE}
+costs <- data.frame(t(input$values$diagnosis$case_detection_methods[3,]))
+kable(costs) 
+```
+
+#### S1NoCD2: No Case detection- Other time interval
+
+```{r Inputs s1NoCD2, echo=FALSE}
+CD_method = "None" # change inputs here
+yrs_btw_CD = other_years_btw_case_detection
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s1NoCD2, echo=FALSE}
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s1NoCD2, echo=FALSE}
+base <- data.frame(Scenario="S1NoCD2",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s1NoCD <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S1NoCD: No Case detection
+
+```{r Inputs s1NoCD, echo=FALSE}
+CD_method = "None" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s1NoCD, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s1NoCD, echo=FALSE}
+base <- data.frame(Scenario="S1NoCD",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s1NoCD2 <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S1A: CDQ ≥17 points
+
+```{r Inputs s1a, echo=FALSE}
+CD_method = "CDQ17" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s1a, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s1a, echo=FALSE}
+base <- data.frame(Scenario="S1a",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s1a <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S1B: Screening Spirometry with BD
+
+```{r Inputs s1b, echo=FALSE}
+CD_method = "FlowMeter" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s1b, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s1b, echo=FALSE}
+base <- data.frame(Scenario="S1b",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s1b <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S1C: CDQ ≥17 points and Screening Spirometry with BD
+
+```{r Inputs s1c, echo=FALSE}
+CD_method = "FlowMeter_CDQ" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s1c, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s1c, echo=FALSE}
+base <- data.frame(Scenario="S1c",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s1c <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+```{r S1, echo=FALSE}
+s1NoCDavg <- rbind(s1NoCD[-1], s1NoCD2[-1])
+
+s1NoCDavg <-  s1NoCDavg %>% 
+                  summarise_all(mean) %>% 
+                    mutate(Scenario="S1NoCDAvg", CostpAgent=sum(Cost)/sum(Agents), QALYpAgent=sum(QALY)/sum(Agents)) %>% 
+                      select(Scenario, everything())
+
+s1 <- rbind(s1NoCD, s1NoCD2, s1NoCDavg, s1a, s1b, s1c)
+s1$IncrementalCosts <- c(0, 0, 0,
+                         s1[s1$Scenario=="S1a","CostpAgent"] - s1[s1$Scenario=="S1NoCD","CostpAgent"],
+                         s1[s1$Scenario=="S1b","CostpAgent"] - s1[s1$Scenario=="S1NoCD","CostpAgent"],
+                         s1[s1$Scenario=="S1c","CostpAgent"] - s1[s1$Scenario=="S1NoCD","CostpAgent"])
+s1$IncrementalQALY<- c(0, 0, 0,
+                         s1[s1$Scenario=="S1a","QALYpAgent"] - s1[s1$Scenario=="S1NoCD","QALYpAgent"],
+                         s1[s1$Scenario=="S1b","QALYpAgent"] - s1[s1$Scenario=="S1NoCD","QALYpAgent"],
+                         s1[s1$Scenario=="S1c","QALYpAgent"] - s1[s1$Scenario=="S1NoCD","QALYpAgent"])
+
+s1$ICER <- s1$IncrementalCosts/s1$IncrementalQALY
+
+s1$IncrementalNMB <- c(0, 0, 0,
+                         s1[s1$Scenario=="S1a","NMB"] - s1[s1$Scenario=="S1NoCD","NMB"],
+                         s1[s1$Scenario=="S1b","NMB"] - s1[s1$Scenario=="S1NoCD","NMB"],
+                         s1[s1$Scenario=="S1c","NMB"] - s1[s1$Scenario=="S1NoCD","NMB"])
+
+kable(s1, digits=3) 
+```
+
+*Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
+*Exacerbations:* Total exacerbations and rate per COPD patient-year:
+*GOLD Stage:* Cumulative patient-years
+*Cost/QALY:* Total cost and QALYs
+*NMB:* Net Monetary Benefit is calculated as QALY per patient-year * Lamba - Cost per patient-year
+
+----
+
+## S2 Symptomatic patients scenario
+
+Patients with symptoms at year 1 are eligible. The cost of case detection is:
+
+```{r S2 CD costs, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+costs <- data.frame(t(input$values$diagnosis$case_detection_methods_symptomatic[3,]))
+kable(costs) 
+```
+
+
+#### S2NoCD: No Case detection
+
+```{r Inputs S2NoCD, echo=FALSE}
+CD_method = "None" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=1 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S2NoCD, echo=FALSE}
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_symptomatic[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S2NoCD, echo=FALSE}
+base <- data.frame(Scenario="S2NoCD",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+S2NoCD <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+
+#### S2a: Screening Spirometry without BD
+
+```{r Inputs S2a, echo=FALSE}
+CD_method = "FlowMeter" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 40 # change inputs here
+min_pack_years = 0 # change inputs here
+num_symptoms=1 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S2a, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_symptomatic[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_symptomatic[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S2a, echo=FALSE}
+base <- data.frame(Scenario="S2a",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- payoffs$QALYpAgent*lambda - payoffs$CostpAgent
+
+S2a <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+```{r S2, echo=FALSE}
+S2 <- rbind(S2NoCD, S2a)
+S2$IncrementalCosts <- c(0, S2[S2$Scenario=="S2a","CostpAgent"] - S2[S2$Scenario=="S2NoCD","CostpAgent"])
+S2$IncrementalQALY<- c(0, S2[S2$Scenario=="S2a","QALYpAgent"] - S2[S2$Scenario=="S2NoCD","QALYpAgent"])
+
+S2$ICER <- S2$IncrementalCosts/S2$IncrementalQALY
+
+S2$IncrementalNMB <- c(0, S2[S2$Scenario=="S2a","NMB"] - S2[S2$Scenario=="S2NoCD","NMB"])
+
+kable(S2, digits=3)
+```
+
+*Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
+*Exacerbations:* Total exacerbations and rate per COPD patient-year:
+*GOLD Stage:* Cumulative patient-years
+*Cost/QALY:* Total cost and QALYs
+*NMB:* Net Monetary Benefit is calculated as QALY per patient-year * Lamba - Cost per patient-year
+
+----
+
+
+## S3 Smoking history scenario
+
+Ever smokers ≥50 years of age are eligible. The cost of case detection is:
+
+```{r S3 CD costs, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+costs <- data.frame(t(input$values$diagnosis$case_detection_methods_eversmokers[3,]))
+kable(costs) 
+```
+
+
+#### S3NoCD: No Case detection
+
+```{r Inputs s3NoCD, echo=FALSE}
+CD_method = "None" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 50 # change inputs here
+min_pack_years = 0.001 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run s3NoCD, echo=FALSE}
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_eversmokers[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs s3NoCD, echo=FALSE}
+base <- data.frame(Scenario="S3NoCD",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+s3NoCD <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S3a: CDQ ≥19.5 points
+
+```{r Inputs S3a, echo=FALSE}
+CD_method = "CDQ195" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 50 # change inputs here
+min_pack_years = 0.001 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S3a, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_eversmokers[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S3a, echo=FALSE}
+base <- data.frame(Scenario="S3a",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+S3a <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S3b: CDQ ≥16.5 points
+
+```{r Inputs S3b, echo=FALSE}
+CD_method = "CDQ165" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 50 # change inputs here
+min_pack_years = 0.001 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S3b, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_eversmokers[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S3b, echo=FALSE}
+base <- data.frame(Scenario="S3b",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+S3b <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S3c: Screening spirometry without BD
+
+```{r Inputs S3c, echo=FALSE}
+CD_method = "FlowMeter" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 50 # change inputs here
+min_pack_years = 0.001 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S3c, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_eversmokers[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S3c, echo=FALSE}
+base <- data.frame(Scenario="S3c",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+S3c <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+#### S3d: Screening Spirometry with BD + CDQ ≥17 points
+
+```{r Inputs S3d, echo=FALSE}
+CD_method = "FlowMeter_CDQ" # change inputs here
+yrs_btw_CD = 5 # change inputs here
+min_age = 50 # change inputs here
+min_pack_years = 0.001 # change inputs here
+num_symptoms=0 # change inputs here
+med_adherence=0.7
+smoking_adherence=0.7
+time_horizon=20
+medication_utility=0.0367 
+discount_rate=0.015
+```
+
+
+```{r Run S3d, echo=FALSE}
+init_session(settings = settings)
+input <- init_input()
+
+input$values$diagnosis$years_btw_case_detection <- yrs_btw_CD
+input$values$diagnosis$min_cd_age <- min_age
+input$values$diagnosis$min_cd_pack_years <- min_pack_years
+input$values$diagnosis$min_cd_symptoms <- num_symptoms
+input$values$medication$medication_adherence <- med_adherence
+input$values$smoking$smoking_cessation_adherence <- smoking_adherence
+input$values$global_parameters$time_horizon <- time_horizon
+input$values$medication$medication_utility <-c(None=0,SABA=medication_utility, LABA=0,SABA_LABA=0, LAMA=medication_utility, LAMA_SABA=0,
+                                        LAMA_LABA=medication_utility, LAMA_LAMA_SABA=0, ICS=0, ICS_SABA=0, ICS_LABA=0, ICS_LABA_SABA=0,
+                                        ICS_LAMA=0, ICS_LAMA_SABA=0, ICS_LAMA_LABA=medication_utility, ICS_LAMA_LABA_SABA=0)
+input$values$global_parameters$discount_cost <- discount_rate
+input$values$global_parameters$discount_qaly <- discount_rate
+input$values$cost$cost_case_detection <- input$values$diagnosis$case_detection_methods_eversmokers[3,CD_method]
+  
+input$values$diagnosis$logit_p_prevalent_diagnosis_by_sex <- cbind(male=c(intercept=1.0543, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275, dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]),
+female=c(intercept=1.0543-0.1638, age=-0.0152, smoking=0.1068, fev1=-0.6146, cough=0.075, phlegm=0.283, wheeze=-0.0275,   dyspnea=0.5414, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_diagnosis_by_sex <- cbind(male=c(intercept=-2, age=-0.0324, smoking=0.3711, fev1=-0.8032,
+gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,   case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]), female=c(intercept=-2-0.4873, age=-0.0324, smoking=0.3711, fev1=-0.8032, gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[1,CD_method]))
+  
+input$values$diagnosis$logit_p_overdiagnosis_by_sex <- cbind(male=c(intercept=-5.2169, age=0.0025, smoking=0.6911, gpvisits=0.0075,
+cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]),
+female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075, cough=0.7264, phlegm=0.7956, wheeze=0.66,  dyspnea=0.8798, case_detection=input$values$diagnosis$case_detection_methods_eversmokers[2,CD_method]))
+  
+run(input = input$values)
+
+inputs <- Cget_inputs()
+output <- Cget_output()
+output_ex <- Cget_output_ex()
+
+copdPY <- output$cumul_time - output_ex$cumul_non_COPD_time
+totalPY <- output$cumul_time
+
+terminate_session()
+```
+
+
+```{r Outputs S3d, echo=FALSE}
+base <- data.frame(Scenario="S3d",
+                    Agents=output$n_cohort,
+                    PatientYears=totalPY,
+                    CopdPYs=copdPY,
+                    NCaseDetections=output_ex$n_total_case_detection,
+                    DiagnosedPYs=output$total_diagnosed_time,
+                    OverdiagnosedPYs=sum(output_ex$n_Overdiagnosed_by_ctime_sex))
+
+meds <- output_ex$medication_time_by_class[-5]
+meds <- c(meds[1]/totalPY, meds[-1]/copdPY)
+names(meds) <- c("SABA","LAMA","LAMALABA","ICSLAMALABA")
+meds <- data.frame(t(meds))
+
+exac <- output$total_exac
+names(exac) <- c("Mild","Moderate","Severe","VerySevere")
+exac <- data.frame(t(exac))
+
+exacPY <- output$total_exac/copdPY
+names(exacPY) <- c("MildPY","ModeratePY","SeverePY","VerySeverePY")
+exacPY <- data.frame(t(exacPY))
+
+gold<- colSums(output_ex$n_COPD_by_ctime_severity)
+names(gold) <- c("NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
+gold <- data.frame(t(gold))
+
+payoffs <- data.frame(Cost=output$total_cost, CostpAgent=output$total_cost/output$n_cohort,
+                      QALY=output$total_qaly, QALYpAgent=output$total_qaly/output$n_cohort)
+payoffs$NMB <- (payoffs$QALYpAgent)*lambda - (payoffs$CostpAgent)
+
+S3d <- cbind(base, meds, exac, exacPY, gold, payoffs)
+```
+
+
+```{r S3, echo=FALSE}
+s3 <- rbind(s3NoCD, S3a, S3b, S3c, S3d)
+s3$IncrementalCosts <- c(0, 
+                         s3[s3$Scenario=="S3a","CostpAgent"] - s3[s3$Scenario=="S3NoCD","CostpAgent"],
+                         s3[s3$Scenario=="S3b","CostpAgent"] - s3[s3$Scenario=="S3NoCD","CostpAgent"],
+                         s3[s3$Scenario=="S3c","CostpAgent"] - s3[s3$Scenario=="S3NoCD","CostpAgent"],
+                         s3[s3$Scenario=="S3d","CostpAgent"] - s3[s3$Scenario=="S3NoCD","CostpAgent"])
+s3$IncrementalQALY<- c(0, 
+                         s3[s3$Scenario=="S3a","QALYpAgent"] - s3[s3$Scenario=="S3NoCD","QALYpAgent"],
+                         s3[s3$Scenario=="S3b","QALYpAgent"] - s3[s3$Scenario=="S3NoCD","QALYpAgent"],
+                         s3[s3$Scenario=="S3c","QALYpAgent"] - s3[s3$Scenario=="S3NoCD","QALYpAgent"],
+                         s3[s3$Scenario=="S3d","QALYpAgent"] - s3[s3$Scenario=="S3NoCD","QALYpAgent"])
+
+s3$ICER <- s3$IncrementalCosts/s3$IncrementalQALY
+
+s3$IncrementalNMB <- c(0, 
+                         s3[s3$Scenario=="S3a","NMB"] - s3[s3$Scenario=="S3NoCD","NMB"],
+                         s3[s3$Scenario=="S3b","NMB"] - s3[s3$Scenario=="S3NoCD","NMB"],
+                         s3[s3$Scenario=="S3c","NMB"] - s3[s3$Scenario=="S3NoCD","NMB"],
+                         s3[s3$Scenario=="S3d","NMB"] - s3[s3$Scenario=="S3NoCD","NMB"])
+
+kable(s3, digits=3) 
+```
+
+*Treatment rate:* SABA is expressed per all patient-years, LAMA, LAMA/LABA, ICS/LAMA/LABA are per COPD patient-years
+*Exacerbations:* Total exacerbations and rate per COPD patient-year
+*GOLD Stage:* Cumulative patient-years
+*Cost/QALY:* Total cost and QALYs
+*NMB:* Net Monetary Benefit is calculated as QALY per patient-year * Lamba - Cost per patient-year
+
+---
+
+## All Scenarios
+
+*Ordered by descending Net Monetary Benefit*
+
+```{r All, echo=FALSE}
+sall <- rbind(s1, S2, s3)
+sall.tab <- sall %>%  
+              filter(!(Scenario=="S1NoCD2" | Scenario=="S1NoCDAvg")) %>% 
+                select(Scenario, Agents, Cost, CostpAgent, QALY, QALYpAgent, ICER, IncrementalNMB) %>%
+                  arrange(desc(IncrementalNMB))
+
+kable(sall.tab, digits=3) 
+```
+
+---
+
+## Cost Effectiveness Plane
+
+Adjusted to the total population
+
+```{r CEplane, echo=FALSE}
+ceplane <- sall %>% 
+        filter(!(Scenario=="S1NoCD" | Scenario=="S1NoCD2")) %>% 
+          arrange(Scenario) %>% 
+            mutate(PropAgents = ifelse(Scenario=="S2a" | Scenario=="S2NoCD" | Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" | Scenario=="S3d", Agents/sall[sall$Scenario=="S1NoCDAvg","Agents"], 1),
+                 CostpAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", (sall[sall$Scenario=="S1NoCDAvg","Cost"]- sall[sall$Scenario=="S2NoCD","Cost"]) / (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", (sall[sall$Scenario=="S1NoCDAvg","Cost"]- sall[sall$Scenario=="S3NoCD","Cost"]) / (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 CostpAgentAll = PropAgents*CostpAgent + (1-PropAgents)*CostpAgentExcluded,
+                 QALYpAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", (sall[sall$Scenario=="S1NoCDAvg","QALY"]- sall[sall$Scenario=="S2NoCD","QALY"]) / (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", (sall[sall$Scenario=="S1NoCDAvg","QALY"]- sall[sall$Scenario=="S3NoCD","QALY"]) / (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 QALYpAgentAll = PropAgents*QALYpAgent + (1-PropAgents)*QALYpAgentExcluded) %>% 
+                  select(Scenario, Agents, PropAgents, Cost, CostpAgent, CostpAgentExcluded, CostpAgentAll, QALY, QALYpAgent, QALYpAgentExcluded, QALYpAgentAll, ICER)
+
+ceplane$IncrementalCosts <- c(0,
+                         ceplane[ceplane$Scenario=="S1a","CostpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","CostpAgentAll"],
+                         ceplane[ceplane$Scenario=="S1b","CostpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","CostpAgentAll"],
+                         ceplane[ceplane$Scenario=="S1c","CostpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","CostpAgentAll"],
+                         0,
+                         ceplane[ceplane$Scenario=="S2a","CostpAgentAll"] - ceplane[ceplane$Scenario=="S2NoCD","CostpAgentAll"],
+                         0,
+                         ceplane[ceplane$Scenario=="S3a","CostpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","CostpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3b","CostpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","CostpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3c","CostpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","CostpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3d","CostpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","CostpAgentAll"])
+
+ceplane$IncrementalQALY<- c(0, 
+                         ceplane[ceplane$Scenario=="S1a","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","QALYpAgentAll"],
+                         ceplane[ceplane$Scenario=="S1b","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","QALYpAgentAll"],
+                         ceplane[ceplane$Scenario=="S1c","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S1NoCDAvg","QALYpAgentAll"],
+                         0,
+                         ceplane[ceplane$Scenario=="S2a","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S2NoCD","QALYpAgentAll"],
+                         0,
+                         ceplane[ceplane$Scenario=="S3a","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","QALYpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3b","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","QALYpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3c","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","QALYpAgentAll"],
+                         ceplane[ceplane$Scenario=="S3d","QALYpAgentAll"] - ceplane[ceplane$Scenario=="S3NoCD","QALYpAgentAll"])
+
+ceplane$ICERAdj <- ceplane$IncrementalCosts/ceplane$IncrementalQALY
+
+ceplane$NMB <- ceplane$QALYpAgentAll*lambda - ceplane$CostpAgentAll
+
+ceplane$INMB <- ceplane$NMB - ceplane[ceplane$Scenario=="S1NoCDAvg","NMB"]
+
+ceplane <- select(ceplane, Scenario, Agents, PropAgents, Cost, CostpAgent, CostpAgentExcluded, CostpAgentAll, QALY, QALYpAgent, QALYpAgentExcluded, QALYpAgentAll, IncrementalCosts, IncrementalQALY, ICERAdj, ICER, INMB)
+
+kable(ceplane) 
+```
+
+
+```{r CEplot, echo=FALSE}
+ceplane$Scenario <- as.character(ceplane$Scenario)
+
+ceplane.plot <- ceplane %>% 
+                  mutate(Scenario= ifelse(ceplane$Scenario=="S1NoCDAvg" | ceplane$Scenario=="S2NoCD" | ceplane$Scenario=="S3NoCD", "NoCD", ceplane$Scenario))
+                    
+ggplot(data=ceplane.plot, aes(x=IncrementalQALY, y=IncrementalCosts)) + 
+          geom_point() +
+          geom_text(aes(label=Scenario),vjust=-0.5, size=3) + 
+          geom_abline(intercept=0, slope=50000, colour="grey", linetype="dashed") +
+          theme_bw() + labs(x="Incremental QALYs", y="Incremental Costs") +
+          theme(legend.position="none") 
+```
+
+
+## Clinical Results for all scenarios
+
+Adjusted to the total population
+
+
+```{r ClinicalResults, echo=FALSE}
+sall$SABATotal <- sall$SABA * sall$PatientYears
+sall$LAMATotal <- sall$LAMA * sall$CopdPYs
+sall$LAMALABATotal <- sall$LAMALABA * sall$CopdPYs
+sall$ICSLAMALABATotal <- sall$ICSLAMALABA * sall$CopdPYs
+
+clinical.results <- 
+  sall %>% 
+    filter(!(Scenario=="S1NoCD" | Scenario=="S1NoCD2")) %>% 
+      arrange(Scenario) %>% 
+          mutate(PropAgents = ifelse(Scenario=="S2a" | Scenario=="S2NoCD" | Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" |
+                                       Scenario=="S3c" | Scenario=="S3d", Agents/sall[sall$Scenario=="S1NoCDAvg","Agents"], 1),
+                 ProppCopdPYs = ifelse(Scenario=="S2a" | Scenario=="S2NoCD" | Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" |
+                                       Scenario=="S3c" | Scenario=="S3d", CopdPYs/sall[sall$Scenario=="S1NoCDAvg","CopdPYs"], 1),
+                 ProppPatientYears = ifelse(Scenario=="S2a" | Scenario=="S2NoCD" | Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" |
+                                       Scenario=="S3c" | Scenario=="S3d", PatientYears/sall[sall$Scenario=="S1NoCDAvg","PatientYears"], 1),
+                 # SABA
+                SABAExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","SABATotal"]- sall[sall$Scenario=="S2NoCD","SABATotal"])/
+                                                 (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                          ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" | Scenario=="S3d", 
+                                                  (sall[sall$Scenario=="S1NoCDAvg","SABATotal"]- sall[sall$Scenario=="S3NoCD","SABATotal"])/                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),999))),
+                 SABAAll = ProppPatientYears*SABA + (1-ProppPatientYears)*SABAExcluded,
+                # LAMA
+                LAMAExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","LAMATotal"]- sall[sall$Scenario=="S2NoCD","LAMATotal"])/
+                                                 (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S2NoCD","CopdPYs"]),
+                                          ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" | Scenario=="S3d", 
+                                                  (sall[sall$Scenario=="S1NoCDAvg","LAMATotal"]- sall[sall$Scenario=="S3NoCD","LAMATotal"])/                                                   (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S3NoCD","CopdPYs"]),999))),
+                 LAMAAll = ProppCopdPYs*LAMA + (1-ProppCopdPYs)*LAMAExcluded,
+                # LAMA/LABA
+                 LAMALABAExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","LAMALABATotal"]- sall[sall$Scenario=="S2NoCD","LAMALABATotal"])/
+                                                 (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S2NoCD","CopdPYs"]),
+                                          ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" | Scenario=="S3d", 
+                                                  (sall[sall$Scenario=="S1NoCDAvg","LAMALABATotal"]- sall[sall$Scenario=="S3NoCD","LAMALABATotal"])/                                                   (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S3NoCD","CopdPYs"]),999))),
+                 LAMALABAAll = ProppCopdPYs*LAMALABA + (1-ProppCopdPYs)*LAMALABAExcluded,
+                # ICS/LAMA/LABA
+                 ICSLAMALABAExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","ICSLAMALABATotal"]-
+                                                    sall[sall$Scenario=="S2NoCD","ICSLAMALABATotal"])/
+                                                 (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S2NoCD","CopdPYs"]),
+                                          ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" | Scenario=="S3d", 
+                                                  (sall[sall$Scenario=="S1NoCDAvg","ICSLAMALABATotal"]-
+                                                     sall[sall$Scenario=="S3NoCD","ICSLAMALABATotal"])/                                                   (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S3NoCD","CopdPYs"]),999))),
+                ICSLAMALABAAll = ProppCopdPYs*ICSLAMALABA + (1-ProppCopdPYs)*ICSLAMALABAExcluded,
+                # MILD
+                 MildpAgent= Mild/Agents,
+                 MildpAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","Mild"]- sall[sall$Scenario=="S2NoCD","Mild"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Mild"]- sall[sall$Scenario=="S3NoCD","Mild"]) /
+                                                     (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 MildpAgentAll = PropAgents*MildpAgent + (1-PropAgents)*MildpAgentExcluded,
+                # MODERATE
+                 ModeratepAgent= Moderate/Agents,
+                 ModeratepAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","Moderate"]- sall[sall$Scenario=="S2NoCD","Moderate"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Moderate"]- sall[sall$Scenario=="S3NoCD","Moderate"]) /
+                                                     (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 ModeratepAgentAll = PropAgents*ModeratepAgent + (1-PropAgents)*ModeratepAgentExcluded,
+                # SEVERE
+                 SeverepAgent= Severe/Agents,
+                 SeverepAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","Severe"]- sall[sall$Scenario=="S2NoCD","Severe"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Severe"]- sall[sall$Scenario=="S3NoCD","Severe"]) /
+                                                     (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 SeverepAgentAll = PropAgents*SeverepAgent + (1-PropAgents)*SeverepAgentExcluded,
+                # VERY SEVERE
+                 VerySeverepAgent= VerySevere/Agents,
+                 VerySeverepAgentExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","VerySevere"]- sall[sall$Scenario=="S2NoCD","VerySevere"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S2NoCD","Agents"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","VerySevere"]- sall[sall$Scenario=="S3NoCD","VerySevere"]) /
+                                                     (sall[sall$Scenario=="S1NoCDAvg","Agents"]- sall[sall$Scenario=="S3NoCD","Agents"]), 999))),
+                 VerySeverepAgentAll = PropAgents*VerySeverepAgent + (1-PropAgents)*VerySeverepAgentExcluded,
+                # No COPD
+                 NoCOPDpPY= NoCOPD/PatientYears,
+                 NoCOPDpPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","NoCOPD"]- sall[sall$Scenario=="S2NoCD","NoCOPD"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","NoCOPD"]- sall[sall$Scenario=="S3NoCD","NoCOPD"]) /                                                          (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),
+                                                   999))),
+                 NoCOPDpPYAll = ProppPatientYears*NoCOPDpPY + (1-ProppPatientYears)*NoCOPDpPYExcluded,
+                # GOLD 1
+                 GOLD1pPY= GOLD1/PatientYears,
+                 GOLD1pPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","GOLD1"]- sall[sall$Scenario=="S2NoCD","GOLD1"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","GOLD1"]- sall[sall$Scenario=="S3NoCD","GOLD1"]) /                                                                  (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),
+                                                   999))),
+                 GOLD1pPYAll = ProppPatientYears*GOLD1pPY + (1-ProppPatientYears)*GOLD1pPYExcluded,
+                 # GOLD 2
+                 GOLD2pPY= GOLD2/PatientYears,
+                 GOLD2pPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","GOLD2"]- sall[sall$Scenario=="S2NoCD","GOLD2"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","GOLD2"]- sall[sall$Scenario=="S3NoCD","GOLD2"]) /                                                                  (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),
+                                                   999))),
+                 GOLD2pPYAll = ProppPatientYears*GOLD2pPY + (1-ProppPatientYears)*GOLD2pPYExcluded,
+                # GOLD 3
+                 GOLD3pPY= GOLD3/PatientYears,
+                 GOLD3pPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","GOLD3"]- sall[sall$Scenario=="S2NoCD","GOLD3"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","GOLD3"]- sall[sall$Scenario=="S3NoCD","GOLD3"]) /                                                                  (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),
+                                                   999))),
+                 GOLD3pPYAll = ProppPatientYears*GOLD3pPY + (1-ProppPatientYears)*GOLD3pPYExcluded,
+                 # GOLD 4
+                 GOLD4pPY= GOLD4/PatientYears,
+                 GOLD4pPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","GOLD4"]- sall[sall$Scenario=="S2NoCD","GOLD4"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S2NoCD","PatientYears"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","GOLD4"]- sall[sall$Scenario=="S3NoCD","GOLD4"]) /                                                                  (sall[sall$Scenario=="S1NoCDAvg","PatientYears"]- sall[sall$Scenario=="S3NoCD","PatientYears"]),
+                                                   999))),
+                 GOLD4pPYAll = ProppPatientYears*GOLD4pPY + (1-ProppPatientYears)*GOLD4pPYExcluded,
+                # DIAGNOSED
+                DiagnosedpPY= DiagnosedPYs/CopdPYs,
+                DiagnosedpPYExcluded = ifelse(Scenario=="S1NoCDAvg" | Scenario=="S1a" | Scenario=="S1b" | Scenario=="S1c", 0,
+                                          ifelse(Scenario=="S2a" | Scenario=="S2NoCD", 
+                                                 (sall[sall$Scenario=="S1NoCDAvg","DiagnosedPYs"]- sall[sall$Scenario=="S2NoCD","DiagnosedPYs"]) /
+                                                   (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S2NoCD","CopdPYs"]),
+                                            ifelse(Scenario=="S3NoCD" | Scenario=="S3a" | Scenario=="S3b" | Scenario=="S3c" |
+                                                   Scenario=="S3d", 
+                                                   (sall[sall$Scenario=="S1NoCDAvg","DiagnosedPYs"]- sall[sall$Scenario=="S3NoCD","DiagnosedPYs"]) /                                                     (sall[sall$Scenario=="S1NoCDAvg","CopdPYs"]- sall[sall$Scenario=="S3NoCD","CopdPYs"]),
+                                                   999))),
+                 DiagnosedpPYAll = ProppCopdPYs*DiagnosedpPY + (1-ProppCopdPYs)*DiagnosedpPYExcluded)
+
+
+clinical.results.tab <- select(clinical.results, Scenario, PropAgents, ProppPatientYears, ProppCopdPYs, SABAAll, LAMAAll, LAMALABAAll, ICSLAMALABAAll, MildpAgentAll, ModeratepAgentAll, SeverepAgentAll, VerySeverepAgentAll, NoCOPDpPYAll, GOLD1pPYAll, GOLD2pPYAll, GOLD3pPYAll, GOLD4pPYAll, DiagnosedpPYAll)
+
+kable(clinical.results.tab) 
+```
+
+
