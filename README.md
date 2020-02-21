@@ -21,17 +21,17 @@ devtools::install_github('KateJohnson/epicR', ref="closed_cohort")
 ```
 Confirm that `packageVersion("epicR")` is `1.27.6`.
 
-2. In order to replicate the [case detection scenario results](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection), go to `Case_Detection_Results.Rmd`, click the `Raw` button and copy all the text that opens in a new page. 
+2. In order to replicate the case detection scenario results, go [here](https://github.com/KateJohnson/epicR/tree/closed_cohort/casedetection), open `Case_Detection_Results.Rmd`, click the `Raw` button and copy all the text that opens in a new page. 
 
 3. Locally, start a new R Studio project, create a new R Markdown file (deleting the default text), and paste the copied text.
 
 4. Click knit and that's it!
 
+5. To get a full set of analysis results with case detection at 5 year intervals, repeat steps 2-4 using `Case_Detection_Results_5yrs.Rmd`
 
-Alternatively, you can clone this repo to get a local copy of `Case_Detection_Results.Rmd`.
+Alternatively, you can clone this repo to get a local copies of the markdown files.
 
-
-Keep in mind that the analysis version of these results simulates 100 million agents with 3 and 5 year intervals between case detection. In order to do this, you'll have to run the markdown script twice, once with `yrs_btw_CD = 3`, and once with `yrs_btw_CD = 5`. Make sure to change the values for all `Inputs [scenario name]` code chunks. Each time the markdown script will take ~8 hours to run.
+The analysis version of these results simulates 100 million agents, which will take ~16 hours to run for each script. The published analysis was conducted using R Version 3.5.3
 
 Refer to the forthcoming publication for more information:
 
