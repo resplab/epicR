@@ -31,7 +31,7 @@ Confirm that `packageVersion("epicR")` is `1.27.7`.
 
 Alternatively, you can clone this repo to get a local copies of the markdown files.
 
-The analysis version of these results simulates 100 million agents, which will take ~16 hours to run for each script. The published analysis was conducted using R Version 3.5.3
+*Note: The analysis version of these results simulates 100 million agents, which will take ~16 hours to run for each script. The published analysis was conducted using R Version 3.5.3*
 
 Refer to the forthcoming publication for more information:
 
