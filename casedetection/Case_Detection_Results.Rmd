@@ -23,7 +23,7 @@ record_mode<-c(
   
 settings <- get_default_settings()
 settings$record_mode <- record_mode["record_mode_none"]
-settings$n_base_agents <- 1e+6 # change number of agents here: 100e+6 is used in the analysis
+settings$n_base_agents <- 50e+6 # change number of agents here: 100e+6 is used in the analysis
 lambda=50000 # change WTP threshold here
   
 init_session(settings = settings)
