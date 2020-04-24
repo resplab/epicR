@@ -114,7 +114,7 @@ devtools::install_github('resplab/epicR')
 
 # PRISM: EPIC on the Cloud
 
-The [PRISM platform](https://prism.resp.core.ubc.ca) allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, please refer to the [PRISM model repository](http://resp.core.ubc.ca/ipress/prism)
+The [PRISM platform](http://prism.resp.core.ubc.ca) allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, please refer to the [PRISM model repository](http://resp.core.ubc.ca/ipress/prism)
 
 ## Citation
 
