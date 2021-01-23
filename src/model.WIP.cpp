@@ -58,7 +58,6 @@ errors<-c(
 */
 
 
-
 enum record_mode
 {
 record_mode_none=0,

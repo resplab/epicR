@@ -876,6 +876,17 @@ validate_exacerbation <- function(base_agents=1e4) {
 #' @export
 validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 
+  if (!requireNamespace("survival", quietly = TRUE)) {
+    stop("Package \"survival\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if (!requireNamespace("survminer", quietly = TRUE)) {
+    stop("Package \"survminer\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   #settings$agent_stack_size <- 0
@@ -897,10 +908,10 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
   cohort$age <- (cohort$age_at_creation+cohort$local_time)
 
   #fit <- survfit(Surv(age, death) ~ copd, data=cohort)
-  fit <- survfit(Surv(age, death) ~ copd, data=cohort)
+  fit <- survival::survfit(Surv(age, death) ~ copd, data=cohort)
 
   # Customized survival curves
-  surv_plot <- ggsurvplot(fit, data = cohort, censor.shape="", censor.size = 1,
+  surv_plot <- survminer::ggsurvplot(fit, data = cohort, censor.shape="", censor.size = 1,
                           surv.median.line = "hv", # Add medians survival
 
                           # Change legends: title & labels

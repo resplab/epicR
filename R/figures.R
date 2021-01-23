@@ -4,6 +4,11 @@
 #' @export
 export_figures <- function(nPatients = 1e4) {
 
+  if (!requireNamespace("openxlsx", quietly = TRUE)) {
+    stop("Package \"openxlsx\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   settings$agent_stack_size <- 0
@@ -543,7 +548,7 @@ export_figures <- function(nPatients = 1e4) {
   plot_Cumul_cost_by_GOLD <- ggplot2::ggplot(Cumul_dfm, aes(x = Year, y = value, color = variable)) +  theme_tufte(base_size=14, ticks=F) +
     geom_point () + geom_line() + labs(title = "Cost per GOLD stage") + ylab ("Canadian dollars")  +
     scale_colour_manual(values = c("#56B4E9", "#66CC99", "gold2" , "#CC6666")) +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 12), label=scales::dollar_format(suffix = "M")) + labs(caption = "Cumulative cost for Canada")
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 12), labels=scales::dollar_format(suffix = "M")) + labs(caption = "Cumulative cost for Canada")
 
   plot(plot_Cumul_cost_by_GOLD) #plot needs to be showing
   openxlsx::insertPlot(wb, "Cost_by_GOLD",  xy = c("I", 35), width = 20, height = 13.2 , fileType = "png", units = "cm")
