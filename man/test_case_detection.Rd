@@ -4,8 +4,14 @@
 \alias{test_case_detection}
 \title{Returns results of Case Detection strategies}
 \usage{
-test_case_detection(n_sim = 10000, p_of_CD = 0.1, min_age = 40,
-  min_pack_years = 0, only_smokers = 0, OR_of_CD = 1.82)
+test_case_detection(
+  n_sim = 10000,
+  p_of_CD = 0.1,
+  min_age = 40,
+  min_pack_years = 0,
+  only_smokers = 0,
+  CD_method = "CDQ195"
+)
 }
 \arguments{
 \item{n_sim}{number of agents}
@@ -18,7 +24,7 @@ test_case_detection(n_sim = 10000, p_of_CD = 0.1, min_age = 40,
 
 \item{only_smokers}{set to 1 if only smokers should recieve case detection}
 
-\item{OR_of_CD}{odds ratio for the impact of recieving case detection on the odds of being diagnosed}
+\item{CD_method}{Choose one case detection method: CDQ195", "CDQ165", "FlowMeter", "FlowMeter_CDQ"}
 }
 \value{
 results of case detection strategy compared to no case detection

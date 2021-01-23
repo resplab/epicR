@@ -4,8 +4,14 @@
 \alias{validate_mortality}
 \title{Returns results of validation tests for mortality rate}
 \usage{
-validate_mortality(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1,
-  exacerbation = 1, comorbidity = 1)
+validate_mortality(
+  n_sim = 5e+05,
+  bgd = 1,
+  bgd_h = 1,
+  manual = 1,
+  exacerbation = 1,
+  comorbidity = 1
+)
 }
 \arguments{
 \item{n_sim}{number of simulated agents}

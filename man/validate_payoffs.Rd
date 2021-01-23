@@ -4,8 +4,11 @@
 \alias{validate_payoffs}
 \title{Returns results of validation tests for payoffs, costs and QALYs}
 \usage{
-validate_payoffs(nPatient = 1e+06, disableDiscounting = TRUE,
-  disableExacMortality = TRUE)
+validate_payoffs(
+  nPatient = 1e+06,
+  disableDiscounting = TRUE,
+  disableExacMortality = TRUE
+)
 }
 \arguments{
 \item{nPatient}{number of simulated patients. Default is 1e6.}

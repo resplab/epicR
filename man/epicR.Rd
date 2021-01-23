@@ -3,7 +3,6 @@
 \docType{package}
 \name{epicR}
 \alias{epicR}
-\alias{epicR-package}
 \title{\code{epicR} package}
 \description{
 Evaluation Platform in COPD (EPIC) R Package

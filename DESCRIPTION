@@ -12,17 +12,16 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    Rcpp (>= 1.0.0),
-    RcppArmadillo(>= 0.9.2),
+    Rcpp,
+    RcppArmadillo (>= 0.9.2),
     graphics,
     stats,
-    ggplot2(>= 3.1.0),
+    ggplot2 (>= 3.1.0),
     ggthemes,
     sqldf,
     gsubfn,
     proto,
     RSQLite,
-    tcltk,
     DBI,
     chron,
     readr,
@@ -37,6 +36,6 @@ Imports:
     jsonlite,
     rredis
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Suggests:
     testthat

@@ -1,7 +1,9 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
-#include <RcppArmadillo.h>
+#include "RcppArmadillo.h"
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp11)]]
+
 using namespace Rcpp;
 
 /*
