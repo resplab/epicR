@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/resplab/epicR.svg?branch=master)](https://travis-ci.org/resplab/epicR)
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/resplab/epicR/workflows/R-CMD-check/badge.svg)](https://github.com/resplab/epicR/actions)
+<!-- badges: end -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 
