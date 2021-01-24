@@ -59,8 +59,10 @@ sudo rm /private/var/db/receipts/com.rbinaries.clang4.plist
 # Remove the Makevars file
 rm ~/.R/Makevars
 ```
-4. Install the latest version of `clang` from [http://mirror.its.sfu.ca/mirror/CRAN/](http://mirror.its.sfu.ca/mirror/CRAN/)
-5. Install the latest version of `gfortran` using the dmg file found at [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases) 
+4. Install the latest version of `clang` by installing Xcode command tools: 
+`xcode-select --install
+
+5. Install the appropriate version of `gfortran` based on your Mac OS version using the dmg file found at [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases) 
 
 6. Using either an R session in Terminal or in R Studio, install the packages `remotes` and `usethis`:
 
