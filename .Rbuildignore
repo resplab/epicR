@@ -3,4 +3,4 @@
 ^data-raw$
 ^\.travis\.yml$
 ^\.github$
-^\docs$
+^docs$

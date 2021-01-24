@@ -1,5 +1,3 @@
-#Rcpp::sourceCpp("./src/model.WIP.cpp")
-
 session_env<-new.env()
 session_env$global_error_code_chain<-NULL
 session_env$global_error_message_chain<-NULL

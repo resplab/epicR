@@ -20,6 +20,7 @@ Imports:
     ggthemes,
     sqldf,
     jsonlite,
+    RSQLite,
     DBI,
     readr,
     reshape2,

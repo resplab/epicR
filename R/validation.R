@@ -27,7 +27,7 @@ sanity_check <- function() {
     message("Test failed!") else message("Test passed!")
 
 
-  cat("test 2: zero all utilities\n")
+  message("test 2: zero all utilities\n")
   input <- model_input$values
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0
   res <- run(input = input)
@@ -35,7 +35,7 @@ sanity_check <- function() {
     message("Test failed!") else message("Test passed!")
 
 
-  cat("test 3: one all utilities ad get one QALY without discount\n")
+  message("test 3: one all utilities ad get one QALY without discount\n")
   input <- model_input$values
   input$global_parameters$discount_qaly <- 0
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0 + 1
@@ -45,14 +45,14 @@ sanity_check <- function() {
     message("Test failed!") else message("Test passed!")
 
 
-  cat("test 4: zero mortality (both bg and exac)\n")
+  message("test 4: zero mortality (both bg and exac)\n")
   input <- model_input$values
   input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(input = input)
   if (Cget_output()$n_deaths != 0) {
-    cat (Cget_output()$n_deaths)
+    message (Cget_output()$n_deaths)
     stop("Test failed!")
   } else message("Test passed!")
   terminate_session()
@@ -71,7 +71,7 @@ sanity_check <- function() {
 #' @return validation test results
 #' @export
 validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0) {
-  cat("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
+  message("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
   petoc()
 
   settings <- default_settings
@@ -82,10 +82,9 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   init_session(settings = settings)
   input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
 
-  cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
+  message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   petoc()
 
-  cat(getwd())
   # CanSim.052.0005<-read.csv(system.file ('extdata', 'CanSim.052.0005.csv', package = 'epicR'), header = T); #package ready
   # reading
   x <- aggregate(CanSim.052.0005[, "value"], by = list(CanSim.052.0005[, "year"]), FUN = sum)
@@ -93,7 +92,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   x <- x[1:input$global_parameters$time_horizon, ]
   plot(x, type = "l", ylim = c(0.5, max(x[, 2] * 1.5)), xlab = "Year", ylab = "Relative population size")
   title(cex.main = 0.5, "Relative populaton size")
-  cat("The plot I just drew is the expected (well, StatCan's predictions) relative population growth from 2015\n")
+  message("The plot I just drew is the expected (well, StatCan's predictions) relative population growth from 2015\n")
   petoc()
 
   if (remove_COPD) {
@@ -103,7 +102,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 
   input$agent$l_inc_betas[1] <- input$agent$l_inc_betas[1] + log(incidence_k)
 
-  cat("working...\n")
+  message("working...\n")
   res <- run(input = input)
   if (res < 0) {
     stop("Something went awry; bye!")
@@ -113,10 +112,10 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   n_y1_agents <- sum(Cget_output_ex()$n_alive_by_ctime_sex[1, ])
   legend("topright", c("Predicted", "Simulated"), lty = c(1, 1), col = c("black", "red"))
 
-  cat("And the black one is the observed (simulated) growth\n")
+  message("And the black one is the observed (simulated) growth\n")
    ######## pretty population growth curve
 
-  CanSim <- tibble::as.tibble(CanSim.052.0005)
+  CanSim <- tibble::as_tibble(CanSim.052.0005)
   CanSim <- tidyr::spread(CanSim, key = year, value = value)
   CanSim <- CanSim[, 3:51]
   CanSim <- colSums (CanSim)
@@ -139,17 +138,16 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(Cget_output_ex()$n_alive_by_ctime_age[1, ]) -
                       input$global_parameters$age0)
 
-  for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +
-                                                                                                                                       1, -(1:input$global_parameters$age0)]
+  for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +1, -(1:input$global_parameters$age0)]
 
 
-  cat("Also, the ratio of the expected to observed population in years 10 and 20 are ", sum(Cget_output_ex()$n_alive_by_ctime_sex[10,
+  message("Also, the ratio of the expected to observed population in years 10 and 20 are ", sum(Cget_output_ex()$n_alive_by_ctime_sex[10,
                                                                                                                                   ])/x[10, 2], " and ", sum(Cget_output_ex()$n_alive_by_ctime_sex[20, ])/x[20, 2])
   petoc()
 
-  cat("Now evaluating the population pyramid\n")
+  message("Now evaluating the population pyramid\n")
   for (year in c(2015, 2025, 2034)) {
-    cat("The observed population pyramid in", year, "is just drawn\n")
+    message("The observed population pyramid in", year, "is just drawn\n")
     x <- CanSim.052.0005[which(CanSim.052.0005[, "year"] == year & CanSim.052.0005[, "sex"] == "both"), "value"]
     #x <- c(x, rep(0, 111 - length(x) - 40))
     #barplot(x,  names.arg=40:110, xlab = "Age")
@@ -181,9 +179,6 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
     plot(p)
 
   }
-
-
-  message("This task is over... terminating")
   terminate_session()
 }
 
@@ -197,7 +192,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 #' @return validation test results
 #' @export
 validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
-  cat("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
+  message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
   petoc()
 
   settings <- default_settings
@@ -209,7 +204,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   init_session(settings = settings)
   input <- model_input$values
 
-  cat("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
+  message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
     input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * -10000 # TODO why was this zero? Amin
   }
@@ -219,22 +214,22 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
   petoc()
 
-  cat("There are two validation targets: 1) the prevalence of current smokers (by sex) in 2015, and 2) the projected decline in smoking rate.\n")
-  cat("Starting validation target 1: baseline prevalence of smokers.\n")
+  message("There are two validation targets: 1) the prevalence of current smokers (by sex) in 2015, and 2) the projected decline in smoking rate.\n")
+  message("Starting validation target 1: baseline prevalence of smokers.\n")
   petoc()
 
   # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=T) Included in the package as internal data
   tab1 <- rbind(CanSim.105.0501[1:3, "value"], CanSim.105.0501[4:6, "value"])/100
-  cat("This is the observed percentage of current smokers in 2014 (m,f)\n")
+  message("This is the observed percentage of current smokers in 2014 (m,f)\n")
   barplot(tab1, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalenc of smoking",
           col = c("black", "grey"))
   title(cex.main = 0.5, "Prevalence of current smoker by sex and age group (observed)")
   legend("topright", c("Male", "Female"), fill = c("black", "grey"))
   petoc()
 
-  cat("Now I will run the model using the default smoking parameters")
+  message("Now I will run the model using the default smoking parameters")
   petoc()
-  cat("running the model\n")
+  message("running the model\n")
 
   run(input = input)
   dataS <- Cget_all_events_matrix()
@@ -244,20 +239,20 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   for (i in 0:1) for (j in 1:length(age_list)) tab2[i + 1, j] <- mean(dataS[which(dataS[, "female"] == i & dataS[, "age_at_creation"] >
                                                                                     age_list[[j]][1] & dataS[, "age_at_creation"] <= age_list[[j]][2]), "smoking_status"])
 
-  cat("This is the model generated bar plot")
+  message("This is the model generated bar plot")
   petoc()
   barplot(tab2, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
           col = c("black", "grey"))
   title(cex.main = 0.5, "Prevalence of current smoking at creation (simulated)")
   legend("topright", c("Male", "Female"), fill = c("black", "grey"))
 
-  cat("This step is over; press enter to continue to step 2")
+  message("This step is over; press enter to continue to step 2")
   petoc()
 
-  cat("Now we will validate the model on smoking trends")
+  message("Now we will validate the model on smoking trends")
   petoc()
 
-  cat("According to Table 2.1 of this report (see the extracted data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
+  message("According to Table 2.1 of this report (see the extracted data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
   petoc()
 
   op_ex <- Cget_output_ex()
@@ -276,7 +271,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
   z <- log(rowSums(smoker_prev))
-  cat("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
+  message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
   petoc()
 
   #plotting overall distribution of smoking stats over time
@@ -351,12 +346,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
 
-
-
-
-
-
-
 #' Basic COPD test.
 #' @return validation test results
 #' @export
@@ -370,69 +359,65 @@ sanity_COPD <- function() {
 
   init_session(settings = settings)
 
-  cat("Welcome! I am going to check EPIC's sanity with regard to modeling COPD\n ")
+  message("Welcome! I am going to check EPIC's sanity with regard to modeling COPD\n ")
   petoc()
 
-  cat("COPD incidence and prevalenceparameters are as follows\n")
+  message("COPD incidence and prevalenceparameters are as follows\n")
 
-  cat("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
+  message("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
   print(model_input$values$COPD$logit_p_COPD_betas_by_sex)
   petoc()
-  cat("model_input$values$COPD$p_prevalent_COPD_stage:\n")
+  message("model_input$values$COPD$p_prevalent_COPD_stage:\n")
   print(model_input$values$COPD$p_prevalent_COPD_stage)
   petoc()
-  cat("model_input$values$COPD$ln_h_COPD_betas_by_sex:\n")
+  message("model_input$values$COPD$ln_h_COPD_betas_by_sex:\n")
   print(model_input$values$COPD$ln_h_COPD_betas_by_sex)
   petoc()
 
-  cat("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
+  message("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
   petoc()
   input <- model_input$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
-  cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
-  cat("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
-  cat("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
+  message("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
   petoc()
   init_input()
   input <- model_input$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
-  cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
-  cat("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
-  cat("Now I am going to switch off prevalence and create COPD patients only through incidence\n")
+  message("Now I am going to switch off prevalence and create COPD patients only through incidence\n")
   petoc()
   init_input()
   input <- model_input$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
 
   run(input = input)
-  cat("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
-  cat("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
-  cat("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
 
   terminate_session()
 }
-
-
-
-
 
 
 
@@ -456,7 +441,7 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
   if (incident_COPD_k == 0)
     input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100 else input$COPD$ln_h_COPD_betas_by_sex[1, ] <- model_input$values$COPD$ln_h_COPD_betas_by_sex[1, ] + log(incident_COPD_k)
 
-  cat("working...\n")
+  message("working...\n")
   run(input = input)
   op <- Cget_output()
   opx <- Cget_output_ex()
@@ -499,32 +484,6 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
   dataF[, "gold3p"] <- (dataF[, "gold"] > 2) * 1
   dataF[, "year"] <- dataF[, "local_time"] + dataF[, "time_at_creation"]
 
-  if (exists('rxGlm')) {
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_copd_reg_coeffs_male <- coefficients(res)
-    if (return_CI) {out$conf_prev_copd_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
-
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_copd_reg_coeffs_female <- coefficients(res)
-    if (return_CI) {out$conf_prev_copd_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
-
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_gold2p_reg_coeffs_male <- coefficients(res)
-    if (return_CI) {out$conf_prev_gold2p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
-
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold2p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_gold2p_reg_coeffs_female <- coefficients(res)
-    if (return_CI) {out$conf_prev_gold2p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
-
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 0), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_gold3p_reg_coeffs_male <- coefficients(res)
-    if (return_CI) {out$conf_prev_gold3p_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
-
-    res <- rxGlm(data = dataF[which(dataF[, "female"] == 1), ], formula = gold3p ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
-    out$calib_prev_gold3p_reg_coeffs_female <- coefficients(res)
-    if (return_CI) {out$conf_prev_gold3p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
-  }
-  else {
     res <- glm(data = dataF[which(dataF[, "female"] == 0), ], formula = copd ~ age + pack_years + smoking_status + year, family = binomial(link = logit))
     out$calib_prev_copd_reg_coeffs_male <- coefficients(res)
     if (return_CI) {out$conf_prev_copd_reg_coeffs_male <- stats::confint(res, "year", level = 0.95)}
@@ -549,7 +508,6 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
     out$calib_prev_gold3p_reg_coeffs_female <- coefficients(res)
     if (return_CI) {out$conf_prev_gold3p_reg_coeffs_female <- stats::confint(res, "year", level = 0.95)}
 
-  }
 
   terminate_session()
 
@@ -634,7 +592,7 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' @return validation test results
 #' @export
 validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1, comorbidity = 1) {
-  cat("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
+  message("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
   petoc()
 
   settings <- default_settings
@@ -662,10 +620,10 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
     input$agent$ln_h_bgd_betas[, c("b_mi", "n_mi", "b_stroke", "n_stroke", "hf")] <- 0
   }
 
-  cat("working...\n")
+  message("working...\n")
   res <- run(input = input)
 
-  cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
+  message("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
 
 
   if (Cget_output()$n_death > 0) {
@@ -697,7 +655,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 #' @return validation test results
 #' @export
 validate_comorbidity <- function(n_sim = 1e+05) {
-  cat("Hello from EPIC! I am going to validate comorbidities for ya\n")
+  message("Hello from EPIC! I am going to validate comorbidities for ya\n")
   petoc()
 
   settings <- default_settings
@@ -716,12 +674,12 @@ validate_comorbidity <- function(n_sim = 1e+05) {
   output <- Cget_output()
   output_ex <- Cget_output_ex()
 
-  cat("The prevalence of having MI at baseline was ", (output_ex$n_mi - output_ex$n_incident_mi)/output$n_agent, "\n")
-  cat("The incidence of MI during follow-up was ", output_ex$n_incident_mi/output$cumul_time, "/PY\n")
-  cat("The prevalence of having stroke at baseline was ", (output_ex$n_stroke - output_ex$n_incident_stroke)/output$n_agent, "\n")
-  cat("The incidence of stroke during follow-up was ", output_ex$n_incident_stroke/output$cumul_time, "/PY\n")
-  cat("The prevalence of having hf at baseline was ", (output_ex$n_stroke - output_ex$n_hf)/output$n_agent, "\n")
-  cat("The incidence of hf during follow-up was ", output_ex$n_incident_hf/output$cumul_time, "/PY\n")
+  message("The prevalence of having MI at baseline was ", (output_ex$n_mi - output_ex$n_incident_mi)/output$n_agent, "\n")
+  message("The incidence of MI during follow-up was ", output_ex$n_incident_mi/output$cumul_time, "/PY\n")
+  message("The prevalence of having stroke at baseline was ", (output_ex$n_stroke - output_ex$n_incident_stroke)/output$n_agent, "\n")
+  message("The incidence of stroke during follow-up was ", output_ex$n_incident_stroke/output$cumul_time, "/PY\n")
+  message("The prevalence of having hf at baseline was ", (output_ex$n_stroke - output_ex$n_hf)/output$n_agent, "\n")
+  message("The incidence of hf during follow-up was ", output_ex$n_incident_hf/output$cumul_time, "/PY\n")
   terminate_session()
 
   settings$record_mode <- record_mode["record_mode_some_event"]
@@ -761,7 +719,7 @@ validate_comorbidity <- function(n_sim = 1e+05) {
 #' @return validation test results
 #' @export
 validate_lung_function <- function() {
-  cat("This function examines FEV1 values\n")
+  message("This function examines FEV1 values\n")
   petoc()
 
   settings <- default_settings
@@ -958,7 +916,7 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 #' @return validation test results
 #' @export
 validate_diagnosis <- function(n_sim = 1e+04) {
-  cat("Let's take a look at diagnosis\n")
+  message("Let's take a look at diagnosis\n")
   petoc()
 
   settings <- default_settings
@@ -977,7 +935,7 @@ validate_diagnosis <- function(n_sim = 1e+04) {
   inputs <- Cget_inputs()
   output_ex <- Cget_output_ex()
 
-  cat("Here are the proportion of COPD patients diagnosed over model time: \n")
+  message("Here are the proportion of COPD patients diagnosed over model time: \n")
 
   diag <- data.frame(Year=1:inputs$global_parameters$time_horizon,
                      COPD=rowSums(output_ex$n_COPD_by_ctime_sex),
@@ -987,7 +945,7 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 
   print(diag)
 
-  cat("The average proportion diagnosed from year", round(length(diag$Proportion)/2,0), "to", length(diag$Proportion), "is",
+  message("The average proportion diagnosed from year", round(length(diag$Proportion)/2,0), "to", length(diag$Proportion), "is",
       mean(diag$Proportion[(round(length(diag$Proportion)/2,0)):(length(diag$Proportion))]),"\n")
 
   diag.plot <- tidyr::gather(data=diag, key="Variable", value="Number", c(COPD,Diagnosed))
@@ -998,8 +956,8 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 
   plot(diag.plotted)
 
-  cat("\n")
-  cat("Now let's look at the proportion diagnosed by COPD severity.\n")
+  message("\n")
+  message("Now let's look at the proportion diagnosed by COPD severity.\n")
 
   prop <- data.frame(Year=1:inputs$global_parameters$time_horizon,
                      output_ex$n_Diagnosed_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)[,c(1,3,4,5,6)]
@@ -1008,7 +966,7 @@ validate_diagnosis <- function(n_sim = 1e+04) {
   prop <- prop[-1,]
   print(prop)
 
-  cat("The average proportion of GOLD 1 and 2 that are diagnosed from year", round(nrow(prop)/2,0), "to", max(prop$Year), "is",
+  message("The average proportion of GOLD 1 and 2 that are diagnosed from year", round(nrow(prop)/2,0), "to", max(prop$Year), "is",
       (mean(prop$GOLD1[round((nrow(prop)/2),0):nrow(prop)]) + mean(prop$GOLD2[round((nrow(prop)/2),0):nrow(prop)]))/2,"\n")
 
   prop.plot <- tidyr::gather(data=prop, key="GOLD", value="Proportion", c(GOLD1:GOLD4))
@@ -1027,7 +985,7 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 #' @return validation test results
 #' @export
 validate_gpvisits <- function(n_sim = 1e+04) {
-  cat("Let's take a look at GP visits\n")
+  message("Let's take a look at GP visits\n")
   petoc()
 
   settings <- default_settings
@@ -1046,8 +1004,8 @@ validate_gpvisits <- function(n_sim = 1e+04) {
   inputs <- Cget_inputs()
   output_ex <- Cget_output_ex()
 
-  cat("\n")
-  cat("Here is the Average number of GP visits by sex:\n")
+  message("\n")
+  message("Here is the Average number of GP visits by sex:\n")
 
   GPSex <- data.frame(1:inputs$global_parameters$time_horizon,
              output_ex$n_GPvisits_by_ctime_sex/output_ex$n_alive_by_ctime_sex)
@@ -1066,9 +1024,9 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 
   plot(GPSex.plotted)
 
-  cat("\n")
+  message("\n")
 
-  cat("Here is the Average number of GP visits by COPD severity:\n")
+  message("Here is the Average number of GP visits by COPD severity:\n")
 
   GPCOPD <- data.frame(1:inputs$global_parameters$time_horizon,
                       output_ex$n_GPvisits_by_ctime_severity/output_ex$cumul_time_by_ctime_GOLD)
@@ -1088,9 +1046,9 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 
   plot(GPCOPD.plotted)
 
-  cat("\n")
+  message("\n")
 
-  cat("Here is the Average number of GP visits by COPD diagnosis status:\n")
+  message("Here is the Average number of GP visits by COPD diagnosis status:\n")
 
   Diagnosed <- rowSums(output_ex$n_Diagnosed_by_ctime_sex)
   Undiagnosed <- rowSums(output_ex$cumul_time_by_ctime_GOLD[,2:5]) - Diagnosed
@@ -1111,7 +1069,7 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 
   plot(GPDiag.plotted)
 
-  cat("\n")
+  message("\n")
 
   terminate_session()
 }
@@ -1121,7 +1079,7 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 #' @return validation test results
 #' @export
 validate_symptoms <- function(n_sim = 1e+04) {
-  cat("Let's take a look at symptoms\n")
+  message("Let's take a look at symptoms\n")
   petoc()
 
   settings <- default_settings
@@ -1141,11 +1099,11 @@ validate_symptoms <- function(n_sim = 1e+04) {
   output_ex <- Cget_output_ex()
 
   # COUGH
-  cat("\n")
-  cat("I'm going to plot the prevalence of each symptom over time and by GOLD stage\n")
-  cat("\n")
-  cat("Cough:\n")
-  cat("\n")
+  message("\n")
+  message("I'm going to plot the prevalence of each symptom over time and by GOLD stage\n")
+  message("\n")
+  message("Cough:\n")
+  message("\n")
 
   cough <- data.frame(1:inputs$global_parameters$time_horizon,
                       output_ex$n_cough_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
@@ -1164,11 +1122,11 @@ validate_symptoms <- function(n_sim = 1e+04) {
 
   #plot(cough.plotted)
 
-  cat("\n")
+  message("\n")
 
   # PHLEGM
-  cat("Phlegm:\n")
-  cat("\n")
+  message("Phlegm:\n")
+  message("\n")
 
   phlegm <- data.frame(1:inputs$global_parameters$time_horizon,
                       output_ex$n_phlegm_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
@@ -1187,11 +1145,11 @@ validate_symptoms <- function(n_sim = 1e+04) {
 
   #plot(phlegm.plotted)
 
-  cat("\n")
+  message("\n")
 
   # WHEEZE
-  cat("Wheeze:\n")
-  cat("\n")
+  message("Wheeze:\n")
+  message("\n")
 
   wheeze <- data.frame(1:inputs$global_parameters$time_horizon,
                        output_ex$n_wheeze_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
@@ -1210,11 +1168,11 @@ validate_symptoms <- function(n_sim = 1e+04) {
 
   #plot(wheeze.plotted)
 
-  cat("\n")
+  message("\n")
 
   # DYSPNEA
-  cat("Dyspnea:\n")
-  cat("\n")
+  message("Dyspnea:\n")
+  message("\n")
 
   dyspnea <- data.frame(1:inputs$global_parameters$time_horizon,
                        output_ex$n_dyspnea_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
@@ -1233,8 +1191,8 @@ validate_symptoms <- function(n_sim = 1e+04) {
 
   #plot(dyspnea.plotted)
 
-  cat("\n")
-  cat("All symptoms plotted together:\n")
+  message("\n")
+  message("All symptoms plotted together:\n")
 
   all.plot <- rbind(cough.plot, phlegm.plot, wheeze.plot, dyspnea.plot)
 
@@ -1252,7 +1210,7 @@ validate_symptoms <- function(n_sim = 1e+04) {
 #' @return validation test results
 #' @export
 validate_treatment<- function(n_sim = 1e+04) {
-  cat("Let's make sure that treatment (which is initiated at diagnosis) is affecting the exacerbation rate.\n")
+  message("Let's make sure that treatment (which is initiated at diagnosis) is affecting the exacerbation rate.\n")
   petoc()
 
   settings <- default_settings
@@ -1271,9 +1229,9 @@ validate_treatment<- function(n_sim = 1e+04) {
   inputs <- Cget_inputs()
   output_ex <- Cget_output_ex()
 
-  cat("\n")
-  cat("Exacerbation rate for undiagnosed COPD patients.\n")
-  cat("\n")
+  message("\n")
+  message("Exacerbation rate for undiagnosed COPD patients.\n")
+  message("\n")
 
   undiagnosed <- data.frame(cbind(1:inputs$global_parameters$time_horizon, output_ex$n_exac_by_ctime_severity_undiagnosed/
                                     (rowSums(output_ex$n_COPD_by_ctime_severity[,-1]) - rowSums(output_ex$n_Diagnosed_by_ctime_sex))))
@@ -1282,9 +1240,9 @@ validate_treatment<- function(n_sim = 1e+04) {
   print(undiagnosed)
   undiagnosed$Diagnosis <- "undiagnosed"
 
-  cat("\n")
-  cat("Exacerbation rate for diagnosed COPD patients.\n")
-  cat("\n")
+  message("\n")
+  message("Exacerbation rate for diagnosed COPD patients.\n")
+  message("\n")
 
   diagnosed <- data.frame(cbind(1:inputs$global_parameters$time_horizon,
                                 output_ex$n_exac_by_ctime_severity_diagnosed/rowSums(output_ex$n_Diagnosed_by_ctime_sex)))
@@ -1304,13 +1262,13 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   plot(exac.plotted)
 
-  cat("\n")
+  message("\n")
   terminate_session()
 
   ###
-  cat("\n")
-  cat("Now, set the treatment effects to 0 and make sure the number of exacerbations increased among diagnosed patients.\n")
-  cat("\n")
+  message("\n")
+  message("Now, set the treatment effects to 0 and make sure the number of exacerbations increased among diagnosed patients.\n")
+  message("\n")
 
   init_session(settings = settings)
 
@@ -1330,16 +1288,16 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   names(exac.diff) <- c("Year","Mild","Moderate","Severe","VerySevere")
 
-  cat("Without treatment, there was an average of:\n")
-  cat(mean(exac.diff$Mild),"more mild exacerbations,\n")
-  cat(mean(exac.diff$Moderate),"more moderate exacerbations,\n")
-  cat(mean(exac.diff$Severe),"more severe exacerbations, and\n")
-  cat(mean(exac.diff$VerySevere),"more very severe exacerbations per year.\n")
+  message("Without treatment, there was an average of:\n")
+  message(mean(exac.diff$Mild),"more mild exacerbations,\n")
+  message(mean(exac.diff$Moderate),"more moderate exacerbations,\n")
+  message(mean(exac.diff$Severe),"more severe exacerbations, and\n")
+  message(mean(exac.diff$VerySevere),"more very severe exacerbations per year.\n")
 
   ###
-  cat("\n")
-  cat("Now, set all COPD patients to diagnosed, then undiagnosed, and compare the exacerbation rates.\n")
-  cat("\n")
+  message("\n")
+  message("Now, set all COPD patients to diagnosed, then undiagnosed, and compare the exacerbation rates.\n")
+  message("\n")
 
   init_session(settings = settings)
 
@@ -1411,8 +1369,8 @@ validate_treatment<- function(n_sim = 1e+04) {
   exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
 
   ##
-  cat("Annual exacerbation rate (this is also plotted):\n")
-  cat("\n")
+  message("Annual exacerbation rate (this is also plotted):\n")
+  message("\n")
 
   trt_effect<- data.frame(Year=1:inputs_d$global_parameters$time_horizon,
                           Diagnosed = exac_rate_diag,
@@ -1422,8 +1380,8 @@ validate_treatment<- function(n_sim = 1e+04) {
 
   print(trt_effect)
 
-  cat("\n")
-  cat("Treatment reduces the rate of exacerbations by a mean of:", mean(trt_effect$Delta),"\n")
+  message("\n")
+  message("Treatment reduces the rate of exacerbations by a mean of:", mean(trt_effect$Delta),"\n")
 
   # plot
   trt.plot <- tidyr::gather(data=trt_effect, key="Diagnosis", value="Rate", Diagnosed:Undiagnosed)
@@ -1447,7 +1405,7 @@ validate_treatment<- function(n_sim = 1e+04) {
 #' @return results of case detection strategy compared to no case detection
 #' @export
 test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack_years=0, only_smokers=0, CD_method="CDQ195") {
-  cat("Comparing a case detection strategy to no case detection.\n")
+  message("Comparing a case detection strategy to no case detection.\n")
   petoc()
 
   settings <- default_settings
@@ -1484,9 +1442,9 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
                                                         female=c(intercept=-5.2169+0.2597, age=0.0025, smoking=0.6911, gpvisits=0.0075,
                                                                  cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
                                                                  case_detection=input$diagnosis$case_detection_methods[2,CD_method]))
-  cat("\n")
-  cat("Here are your inputs for the case detection strategy:\n")
-  cat("\n")
+  message("\n")
+  message("Here are your inputs for the case detection strategy:\n")
+  message("\n")
   print(input$diagnosis)
 
   res <- run(input = input)
@@ -1529,9 +1487,9 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
   input_nocd$diagnosis$p_case_detection <- 0
 
-  cat("\n")
-  cat("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
-  cat("\n")
+  message("\n")
+  message("Now setting the probability of case detection to", input_nocd$diagnosis$p_case_detection, "and re-running the model\n")
+  message("\n")
 
   res <- run(input = input_nocd)
   if (res < 0)
@@ -1568,18 +1526,18 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   exac.diff <- data.frame(cbind(CD=exac, NOCD=exac_nocd))
   exac.diff$Delta <- exac.diff$CD - exac.diff$NOCD
 
-  cat("Here are total number of exacerbations by severity:\n")
-  cat("\n")
+  message("Here are total number of exacerbations by severity:\n")
+  message("\n")
   print(exac.diff)
 
-  cat("\n")
-  cat("The annual rate of exacerbations with case detection is:\n")
+  message("\n")
+  message("The annual rate of exacerbations with case detection is:\n")
   print(exac_rate[,1:4])
-  cat("\n")
-  cat("The annual rate of exacerbations without case detection is:\n")
+  message("\n")
+  message("The annual rate of exacerbations without case detection is:\n")
   print(exac_rate_nocd[,1:4])
-  cat("\n")
-  cat("This data is also plotted.\n")
+  message("\n")
+  message("This data is also plotted.\n")
 
   #plot
   exac.plot <- tidyr::gather(rbind(exac_rate, exac_rate_nocd), key="Exacerbation", value="Rate", Mild:VerySevere)
@@ -1597,8 +1555,8 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
   # GOLD
   # plot
-  cat("\n")
-  cat("The average proportion of agents in each gold stage is also plotted.\n")
+  message("\n")
+  message("The average proportion of agents in each gold stage is also plotted.\n")
 
   gold.plot <- rbind(gold, gold_nocd)
 
@@ -1613,7 +1571,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
   plot(gold.plotted)
 
-  cat("\n")
+  message("\n")
 
   terminate_session()
 }
@@ -1624,7 +1582,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 #' @return validation test results
 #' @export
 validate_overdiagnosis <- function(n_sim = 1e+04) {
-  cat("Let's take a look at overdiagnosis\n")
+  message("Let's take a look at overdiagnosis\n")
   petoc()
 
   settings <- default_settings
@@ -1643,7 +1601,7 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
   inputs <- Cget_inputs()
   output_ex <- Cget_output_ex()
 
-  cat("Here are the proportion of non-COPD subjects overdiagnosed over model time: \n")
+  message("Here are the proportion of non-COPD subjects overdiagnosed over model time: \n")
 
   overdiag <- data.frame(Year=1:inputs$global_parameters$time_horizon,
                      NonCOPD=output_ex$n_COPD_by_ctime_severity[,1],
@@ -1653,7 +1611,7 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 
   print(overdiag)
 
-  cat("The average proportion overdiagnosed from year", round(length(overdiag$Proportion)/2,0), "to", length(overdiag$Proportion), "is",
+  message("The average proportion overdiagnosed from year", round(length(overdiag$Proportion)/2,0), "to", length(overdiag$Proportion), "is",
       mean(overdiag$Proportion[(round(length(overdiag$Proportion)/2,0)):(length(overdiag$Proportion))]),"\n")
 
   overdiag.plot <- tidyr::gather(data=overdiag, key="Variable", value="Number", c(NonCOPD, Overdiagnosed))
@@ -1664,7 +1622,7 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 
   plot(overdiag.plotted)
 
-  cat("\n")
+  message("\n")
 
   terminate_session()
 
@@ -1677,9 +1635,9 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 #' @export
 
 validate_medication <- function(n_sim = 5e+04) {
-  cat("\n")
-  cat("Plotting medication usage over time:")
-  cat("\n")
+  message("\n")
+  message("Plotting medimessageion usage over time:")
+  message("\n")
   petoc()
 
   settings <- default_settings
