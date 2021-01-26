@@ -116,9 +116,9 @@ install.packages ('devtools')
 devtools::install_github('resplab/epicR')
 ```
 
-# PRISM: EPIC on the Cloud
+# Peer Models Network: EPIC on the Cloud
 
-The [PRISM platform](http://prism.resp.core.ubc.ca) allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, please refer to the [PRISM model repository](http://resp.core.ubc.ca/ipress/prism)
+The [Peer Models Network](https://www.peermodelsnetwork.com/) provides educational material abour the model. It also allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, or to access EPIC using APIs please refer to the [PMN model repository](https://models.peermodelsnetwork.com/#/)
 
 ## Citation
 
