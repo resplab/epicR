@@ -56,6 +56,7 @@ sanity_check <- function() {
     stop("Test failed!")
   } else message("Test passed!")
   terminate_session()
+  return(0)
 }
 
 
