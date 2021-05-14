@@ -6,7 +6,7 @@ test_that("Testing if zeroing all costs, all utilities, and mortalities leads to
   run()
   terminate_session()
 
-  expect_equal(sanitycheck(), 0)
+  expect_equal(sanity_check(), 0)
 
 
 })
