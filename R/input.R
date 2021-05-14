@@ -504,20 +504,21 @@ init_input <- function() {
 
   # medication log-hazard regression matrix for rate reduction in exacerbations
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
-  input$medication$medication_ln_hr_exac<-c(None=0, SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
+  input$medication$medication_ln_hr_exac<-c(input$medication$medication_ln_hr_exac<-c(None=0,
+                                            SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
                                             SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
                                             LAMA=log((1-0.22)^input$medication$medication_adherence),
                                             LAMA_SABA=log((1-0.22)^input$medication$medication_adherence),
                                             LAMA_LABA=log((1-0.23)^input$medication$medication_adherence),
-                                            LAMA_LAMA_SABA=log((1-0.23)^input$medication$medication_adherence),
+                                            LAMA_LABA_SABA=log((1-0.23)^input$medication$medication_adherence),
                                             ICS=log((1-0.19)^input$medication$medication_adherence),
                                             ICS_SABA=log((1-0.19)^input$medication$medication_adherence),
                                             ICS_LABA=log((1-0.25)^input$medication$medication_adherence),
                                             ICS_LABA_SABA=log((1-0.25)^input$medication$medication_adherence),
-                                            ICS_LAMA=log(1^input$medication$medication_adherence),
-                                            ICS_LAMA_SABA=log(1^input$medication$medication_adherence),
+                                            ICS_LAMA=log((1-0.25)^input$medication$medication_adherence),
+                                            ICS_LAMA_SABA=log((1-0.25)^input$medication$medication_adherence),
                                             ICS_LAMA_LABA=log((1-0.34)^input$medication$medication_adherence),
-                                            ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence))
+                                            ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence)))
   input_ref$medication$medication_ln_hr_exac <- "LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
 
   # cost of medications
