@@ -22,35 +22,42 @@ sanity_check <- function() {
   cat("test 1: zero all costs\n")
   input <- model_input$values
   for (el in get_list_elements(input$cost)) input$cost[[el]] <- input$cost[[el]] * 0
-  res <- run(1, input = input)
+  res <- run(100, input = input)
   if (Cget_output()$total_cost != 0)
     message("Test failed!") else message("Test passed!")
+  terminate_session()
 
 
   message("test 2: zero all utilities\n")
+  init_session()
   input <- model_input$values
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0
-  res <- run(input = input)
-  if (Cget_output()$total_qaly != 0)
-    message("Test failed!") else message("Test passed!")
-
+  input$medication$medication_utility <- input$medication$medication_utility*0
+  input$global_parameters$discount_qaly <- input$global_parameters$discount_qaly*0
+  res <- run(100, input = input)
+  if (Cget_output()$total_qaly != 0) {
+    message("Test failed!")
+    message(Cget_output()$total_qaly)} else message("Test passed!")
+  terminate_session()
 
   message("test 3: one all utilities ad get one QALY without discount\n")
+  init_session()
   input <- model_input$values
   input$global_parameters$discount_qaly <- 0
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0 + 1
   input$utility$exac_dutil = input$utility$exac_dutil * 0
-  res <- run(input = input)
+  res <- run(100, input = input)
   if (Cget_output()$total_qaly/Cget_output()$cumul_time != 1)
     message("Test failed!") else message("Test passed!")
-
+  terminate_session()
 
   message("test 4: zero mortality (both bg and exac)\n")
+  init_session()
   input <- model_input$values
   input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
-  res <- run(input = input)
+  res <- run(100, input = input)
   if (Cget_output()$n_deaths != 0) {
     message (Cget_output()$n_deaths)
     stop("Test failed!")
