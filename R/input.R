@@ -422,7 +422,7 @@ init_input <- function() {
   input$diagnosis$p_case_detection <- 0
   input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
 
-  input$smoking$ln_h_ces_betas$diagnosis <-  input$smoking$ln_h_ces_betas$diagnosis * input$diagnosis$p_case_detection
+  input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
   # Turns off and on the effect of diagnosis on smoking cessation
 
   input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
