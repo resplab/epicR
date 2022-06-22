@@ -203,7 +203,7 @@ init_input <- function() {
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
   input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.71))
-  input_ref$smoking$ln_h_ces_betas <- "Odds ratio for diagnosis from Kate's paper"
+  input_ref$smoking$ln_h_ces_betas <- "Odds ratio for diagnosis from Kate's paper. Turns on and off based on case detection flag. See that section for more info."
 
 
   ## COPD
@@ -419,8 +419,11 @@ init_input <- function() {
   ## Case detection;
 
   input_help$diagnosis$p_case_detection <- "Probability of recieving case detection given they meet the selection criteria"
-  input$diagnosis$p_case_detection <- 1
-  input_ref$diagnosis$p_case_detection <- ""
+  input$diagnosis$p_case_detection <- 0
+  input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
+
+  input$smoking$ln_h_ces_betas$diagnosis <-  input$smoking$ln_h_ces_betas$diagnosis * input$diagnosis$p_case_detection
+  # Turns off and on the effect of diagnosis on smoking cessation
 
   input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
   input$diagnosis$years_btw_case_detection <- 5
