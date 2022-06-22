@@ -4,7 +4,6 @@ test_that("In untreated patients:
            (3) The rate of all exacerbations and severe exacerbations increases by GOLD stage", {
 
 
-  library(epicR)
   library(dplyr)
   init_session()
   input <- init_input()

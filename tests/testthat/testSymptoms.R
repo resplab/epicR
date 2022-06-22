@@ -1,5 +1,4 @@
 test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD stage", {
-  library(epicR)
   library(dplyr)
   init_session()
   run()
@@ -25,7 +24,6 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
                         output_ex$n_dyspnea_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
 
   names(dyspnea) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
-
 
   # Average prevalence of each symptom increased by GOLD stage for all years years:
 

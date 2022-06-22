@@ -1,6 +1,5 @@
 test_that("The mean GP visits (1) increases by GOLD stage, and (2) is higher in diagnosed than undiagnosed patients", {
 
-  library(epicR)
   library(dplyr)
   init_session()
   run()
