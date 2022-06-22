@@ -19,9 +19,10 @@ petoc <- function() {
 sanity_check <- function() {
   init_session()
 
-  cat("test 1: zero all costs\n")
+  message("test 1: zero all costs\n")
   input <- model_input$values
   for (el in get_list_elements(input$cost)) input$cost[[el]] <- input$cost[[el]] * 0
+  input$medication$medication_costs <- 0 * input$medication$medication_costs
   res <- run(100, input = input)
   if (Cget_output()$total_cost != 0)
     message("Test failed!") else message("Test passed!")
@@ -44,6 +45,7 @@ sanity_check <- function() {
   init_session()
   input <- model_input$values
   input$global_parameters$discount_qaly <- 0
+  input$medication$medication_utility <- input$medication$medication_utility*0
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0 + 1
   input$utility$exac_dutil = input$utility$exac_dutil * 0
   res <- run(100, input = input)
