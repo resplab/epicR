@@ -1,13 +1,8 @@
-library(testthat)
-library(epicR)
-library(dplyr)
-
-context("Diagnosis tests")
-
 test_that("(1) The average proportion diagnosed in GOLD 1 and 2 is < 40%,
            (2) The proportion diagnosed increases by GOLD stage, and
            (3) The overdiagnosis rate is always < 5%", {
-
+  library(epicR)
+  library(dplyr)
   init_session()
   run()
   inputs <- Cget_inputs()

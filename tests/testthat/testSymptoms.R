@@ -1,11 +1,6 @@
-library(testthat)
-library(epicR)
-library(dplyr)
-
-context("Symptoms tests")
-
 test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD stage", {
-
+  library(epicR)
+  library(dplyr)
   init_session()
   run()
   inputs <- Cget_inputs()

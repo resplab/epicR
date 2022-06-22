@@ -1,8 +1,8 @@
-library(epicR)
-context("COPD Incidence")
-
 test_that("COPD incidence is set so that prevalence is independent of calendar year within GOLD and gender stratas", {
-  init_session()
+  library(epicR)
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_event"]
+  init_session(settings = settings)
   run()
   data <- as.data.frame(Cget_all_events_matrix())
   terminate_session()

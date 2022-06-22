@@ -1,14 +1,11 @@
-library(testthat)
-library(epicR)
-library(dplyr)
-
-context("Exacerbation tests")
-
 test_that("In untreated patients:
            (1) The number of severe exacerbations per year is close to 100,000 (CIHI data),
            (2) The annual rate of all exacerbations is higher in diagnosed than undiagnosed patients, and
            (3) The rate of all exacerbations and severe exacerbations increases by GOLD stage", {
 
+
+  library(epicR)
+  library(dplyr)
   init_session()
   input <- init_input()
   input$values$medication$medication_ln_hr_exac <- rep(0, length(input$values$medication$medication_ln_hr_exac))
