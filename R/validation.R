@@ -362,17 +362,17 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 sanity_COPD <- function() {
   settings <- default_settings
 
-  settings$record_mode <- record_mode["record_mode_agent"]
+  settings$record_mode <- session_env$record_mode["record_mode_agent"]
   # settings$agent_stack_size<-0
-  settings$n_base_agents <- 10000
-  settings$event_stack_size <- settings$n_base_agents * 10
+  # settings$n_base_agents <- 10000
+  # settings$event_stack_size <- settings$n_base_agents * 10
 
   init_session(settings = settings)
 
   message("Welcome! I am going to check EPIC's sanity with regard to modeling COPD\n ")
   petoc()
 
-  message("COPD incidence and prevalenceparameters are as follows\n")
+  message("COPD incidence and prevalence parameters are as follows\n")
 
   message("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
   print(model_input$values$COPD$logit_p_COPD_betas_by_sex)
@@ -390,7 +390,7 @@ sanity_COPD <- function() {
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs: ", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, " agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
