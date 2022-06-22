@@ -1779,6 +1779,7 @@ void exacerbation_LPT(agent *ag)
 void payoffs_LPT(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
   (*ag).payoffs_LPT=(*ag).local_time;
