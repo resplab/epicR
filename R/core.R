@@ -23,7 +23,7 @@ session_env$agent_creation_mode<-c(
 }
 
 
-default_settings <- list(record_mode = session_env$record_mode["record_mode_none"],
+default_settings <- list(record_mode = record_mode["record_mode_event"],
                          events_to_record = c(0),
                          agent_creation_mode = session_env$agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
