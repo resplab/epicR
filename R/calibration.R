@@ -189,7 +189,7 @@ calibrate_smoking <- function() {
 #' @return regression co-efficients as files
 #' @export
 
-calibrate_COPD_inc<-function(nIterations=500,
+calibrate_COPD_inc<-function(nIterations=100,
                            nPatients=100000,
                            time_horizon=20)
 {
@@ -237,14 +237,9 @@ calibrate_COPD_inc<-function(nIterations=500,
     dataF[,'gold3p']<-(dataF[,'gold']>2)*1
     dataF[,'year']<-dataF[,'local_time']+dataF[,'time_at_creation']
 
-    if (exists('rxGlm')) {
-      res_male<-rxGlm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years,family=binomial(link=logit))
-      res_female<-rxGlm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years,family=binomial(link=logit))
-    }
-    else {
-      res_male<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years,family=binomial(link=logit))
-      res_female<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years,family=binomial(link=logit))
-    }
+    res_male<-glm(data=dataF[which(dataF[,'female']==0),],formula=copd~age+pack_years,family=binomial(link=logit))
+    res_female<-glm(data=dataF[which(dataF[,'female']==1),],formula=copd~age+pack_years,family=binomial(link=logit))
+
 
     coefficients(res_male)
     coefficients(res_female)
@@ -290,20 +285,15 @@ calibrate_COPD_inc<-function(nIterations=500,
   plot(ggplot2::qplot(iteration, resid_age_coeff_men, data=iteration_resid, size=I(1), main = "Residue for Age Coefficient - Men"))
   plot(ggplot2::qplot(iteration, resid_age_coeff_women, data=iteration_resid, size=I(1), main = "Residue for Age Coefficient - Women"))
 
-  plot( ggplot2::qplot(iteration, resid_packyears_coeff_men, data=iteration_resid, size=I(1),  main = "Residue for Cigarette Smoking (packyears) Coefficient - Men"))
-  plot( ggplot2::qplot(iteration, resid_packyears_coeff_women, data=iteration_resid, size=I(1),  main = "Residue for Cigarette Smoking (packyears) Coefficient - Women"))
+  plot(ggplot2::qplot(iteration, resid_packyears_coeff_men, data=iteration_resid, size=I(1),  main = "Residue for Cigarette Smoking (packyears) Coefficient - Men"))
+  plot(ggplot2::qplot(iteration, resid_packyears_coeff_women, data=iteration_resid, size=I(1),  main = "Residue for Cigarette Smoking (packyears) Coefficient - Women"))
 
-  plot( ggplot2::qplot(iteration, resid_intercept_men, data=iteration_resid, size=I(1),  main = "Residue for logit intercept - Men"))
-  plot( ggplot2::qplot(iteration, resid_intercept_women, data=iteration_resid, size=I(1),  main = "Residue for logit intercept - Women"))
+  plot(ggplot2::qplot(iteration, resid_intercept_men, data=iteration_resid, size=I(1),  main = "Residue for logit intercept - Men"))
+  plot(ggplot2::qplot(iteration, resid_intercept_women, data=iteration_resid, size=I(1),  main = "Residue for logit intercept - Women"))
 
-  if (exists('rxGlm')) {
-    res_male<-rxGlm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years+year,family=binomial(link=logit))
-    res_female<-rxGlm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years+year,family=binomial(link=logit))
-  }
-  else {
-    res_male<-glm(data=dataF[which(dataF[,'sex']==0),],formula=copd~age+pack_years+year,family=binomial(link=logit))
-    res_female<-glm(data=dataF[which(dataF[,'sex']==1),],formula=copd~age+pack_years+year,family=binomial(link=logit))
-  }
+  res_male<-glm(data=dataF[which(dataF[,'female']==0),],formula=copd~age+pack_years+year,family=binomial(link=logit))
+  res_female<-glm(data=dataF[which(dataF[,'female']==1),],formula=copd~age+pack_years+year,family=binomial(link=logit))
+
   message(coefficients(res_male))
   message(coefficients(res_female))
 

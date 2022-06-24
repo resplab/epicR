@@ -202,8 +202,8 @@ init_input <- function() {
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = 0.16)
-  input_ref$smoking$ln_h_ces_betas <- ""
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.71))
+  input_ref$smoking$ln_h_ces_betas <- "Odds ratio for diagnosis from Kate's paper. Turns on and off based on case detection flag. See that section for more info."
 
 
   ## COPD
@@ -216,11 +216,11 @@ init_input <- function() {
 
 
   input_help$COPD$ln_h_COPD_betas_by_sex <- "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)"
-  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept = -7.86555434, age = 0.03261784, age2 = 0, pack_years =  0.03076498,
+  input$COPD$ln_h_COPD_betas_by_sex <- cbind(male = c(Intercept =  -7.97107937, age = 0.03245063, age2 = 0, pack_years =  0.03578899,
                                                       smoking_status = 0, year = 0, asthma = 0),
-                                             female = c(Intercept = -7.75884176, age = 0.02793072, age2 = 0, pack_years = 0.04184035,
+                                             female = c(Intercept = -7.78520064, age = 0.02975571, age2 = 0, pack_years = 0.04087865,
                                                         smoking_status =  0, year = 0, asthma = 0))
-  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2018-02-10 (0.18.0)"
+  input_ref$COPD$ln_h_COPD_betas_by_sex <- "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)"
 
 
   ## Lung function
@@ -419,8 +419,11 @@ init_input <- function() {
   ## Case detection;
 
   input_help$diagnosis$p_case_detection <- "Probability of recieving case detection given they meet the selection criteria"
-  input$diagnosis$p_case_detection <- 1
-  input_ref$diagnosis$p_case_detection <- ""
+  input$diagnosis$p_case_detection <- 0
+  input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
+
+  input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
+  # Turns off and on the effect of diagnosis on smoking cessation
 
   input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
   input$diagnosis$years_btw_case_detection <- 5
@@ -504,20 +507,21 @@ init_input <- function() {
 
   # medication log-hazard regression matrix for rate reduction in exacerbations
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
-  input$medication$medication_ln_hr_exac<-c(None=0, SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
+  input$medication$medication_ln_hr_exac<-c(input$medication$medication_ln_hr_exac<-c(None=0,
+                                            SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
                                             SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
                                             LAMA=log((1-0.22)^input$medication$medication_adherence),
                                             LAMA_SABA=log((1-0.22)^input$medication$medication_adherence),
                                             LAMA_LABA=log((1-0.23)^input$medication$medication_adherence),
-                                            LAMA_LAMA_SABA=log((1-0.23)^input$medication$medication_adherence),
+                                            LAMA_LABA_SABA=log((1-0.23)^input$medication$medication_adherence),
                                             ICS=log((1-0.19)^input$medication$medication_adherence),
                                             ICS_SABA=log((1-0.19)^input$medication$medication_adherence),
                                             ICS_LABA=log((1-0.25)^input$medication$medication_adherence),
                                             ICS_LABA_SABA=log((1-0.25)^input$medication$medication_adherence),
-                                            ICS_LAMA=log(1^input$medication$medication_adherence),
-                                            ICS_LAMA_SABA=log(1^input$medication$medication_adherence),
+                                            ICS_LAMA=log((1-0.25)^input$medication$medication_adherence),
+                                            ICS_LAMA_SABA=log((1-0.25)^input$medication$medication_adherence),
                                             ICS_LAMA_LABA=log((1-0.34)^input$medication$medication_adherence),
-                                            ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence))
+                                            ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence)))
   input_ref$medication$medication_ln_hr_exac <- "LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
 
   # cost of medications

@@ -1,10 +1,21 @@
-Rcpp::sourceCpp("./src/model.WIP.cpp")
-
 session_env<-new.env()
 session_env$global_error_code_chain<-NULL
 session_env$global_error_message_chain<-NULL
 
 
+session_env$record_mode<-c(
+  record_mode_none=0,
+  record_mode_agent=1,
+  record_mode_event=2,
+  record_mode_some_event=3
+)
+
+
+session_env$agent_creation_mode<-c(
+  agent_creation_mode_one=0,
+  agent_creation_mode_all=1,
+  agent_creation_mode_pre=2
+)
 
 # Cleaning up when package unloads
 .onUnload <- function(libpath) {
@@ -14,7 +25,7 @@ session_env$global_error_message_chain<-NULL
 
 default_settings <- list(record_mode = record_mode["record_mode_event"],
                          events_to_record = c(0),
-                         agent_creation_mode = agent_creation_mode["agent_creation_mode_one"],
+                         agent_creation_mode = session_env$agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
                          n_base_agents = 6e4,
                          runif_buffer_size = 5e4,

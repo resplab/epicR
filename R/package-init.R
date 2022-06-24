@@ -1,4 +1,5 @@
 #' @useDynLib epicR, .registration=TRUE
+#' @importFrom stats lm time
 #' @importFrom Rcpp sourceCpp
 #' @importFrom Rcpp evalCpp
 #' @importFrom graphics barplot legend lines pie plot title
@@ -9,8 +10,6 @@
 #' @import ggthemes
 #' @import dplyr
 #' @importFrom scales pretty_breaks
-#' @importFrom survival survfit
-#' @importFrom survminer ggsurvplot
 #' @import jsonlite
 NULL
 
