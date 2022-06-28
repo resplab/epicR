@@ -4,7 +4,7 @@
 \alias{init_input}
 \title{Returns a list of default model input values}
 \usage{
-init_input()
+init_input(closed_cohort = 0)
 }
 \description{
 Returns a list of default model input values

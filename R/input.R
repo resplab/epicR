@@ -1,5 +1,5 @@
 # The following declarations are already defined in mode.WIP.cpp
-# they are replicated here to make it compatible with epicR as a pakcage. Amin
+# they are replicated here to make it compatible with epicR as a package. Amin
 
 record_mode<-c(
   record_mode_none=0,
