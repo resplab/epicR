@@ -11,5 +11,5 @@ test_that("Closed-cohort option creates at least 20% fewer patients", {
   terminate_session()
 
   expect_lt(nClosedCohort, nOpenPopulation*0.8)
-  expect_lt(get_input()$values$agent$l_inc_betas[1], -90)
+  expect_lt(Cget_inputs()$agent$l_inc_betas[1], -100)
 })
