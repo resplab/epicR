@@ -5,11 +5,11 @@ test_that("Closed-cohort option creates at least 20% fewer patients", {
   terminate_session()
 
   init_session()
-  input <- init_input(closed_cohort = 1)$values
+  input <- get_input(closed_cohort = 1)$values
   run(input=input)
   nClosedCohort <- Cget_output()$n_agents
   terminate_session()
 
   expect_lt(nClosedCohort, nOpenPopulation*0.8)
-  expect_lt(init_input()$values$agent$l_inc_betas[1], -100)
+  expect_lt(get_input()$values$agent$l_inc_betas[1], -100)
 })

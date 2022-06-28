@@ -6,7 +6,7 @@ test_that("In untreated patients:
 
   library(dplyr)
   init_session()
-  input <- init_input()
+  input <- get_input()
   input$values$medication$medication_ln_hr_exac <- rep(0, length(input$values$medication$medication_ln_hr_exac))
   run(input = input$values)
 

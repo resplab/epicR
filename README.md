@@ -21,13 +21,13 @@ epicR provides an interface to to interact with the Evaluation Platform in COPD 
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
 ```r
-  install.packages ('devtools')
+  install.packages('remotes')
 ```
 
 5. Install epicR from GitHub:
 
 ```r
-devtools::install_github('aminadibi/epicR')
+remotes::install_github('resplab/epicR')
 ```
 
 
@@ -107,13 +107,34 @@ If the installation is successful, you should be able to start R:
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
 ```r
-install.packages ('devtools')
+install.packages ('remotes')
 ```
   
 5. Install epicR from GitHub:
 
 ```r
-devtools::install_github('resplab/epicR')
+remotes::install_github('resplab/epicR')
+```
+
+# Quick Guide
+
+```
+library(epicR)
+run()
+Cget_output()
+terminate_session()
+```
+
+## Closed-cohort analysis
+
+Closed-cohort analysis can be specified by changing the appropriate input parameters. 
+
+```
+library(epicR)
+input <- get_input(closed_cohort = 1)$values
+run(input=input)
+Cget_output()
+terminate_session()
 ```
 
 # Peer Models Network: EPIC on the Cloud
