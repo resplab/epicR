@@ -70,7 +70,9 @@ init_input <- function() {
   input_ref <- list()
 
 
-  input$global_parameters <- list(age0 = 40, time_horizon = 20, discount_cost = 0.03, discount_qaly = 0.03)
+  input$global_parameters <- list(age0 = 40, time_horizon = 20,
+                                  discount_cost = 0.03, discount_qaly = 0.03,
+                                  closed_cohort = 0)
   input_help$global_parameters <- list(age0 = "Starting age in the model", time_horizon = "Model time horizon", discount_cost = "Discount value for cost outcomes",
                                        discount_qaly = "Discount value for QALY outcomes")
 
@@ -142,8 +144,8 @@ init_input <- function() {
 
 
   input_help$agent$l_inc_betas <- "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
-  input_ref$agent$l_inc_betas <- ""
+  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55-input$global_parameters$closed_cohort*100, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
+  input_ref$agent$l_inc_betas <- "If closed cohort is enabled, incidence population will be turned off."
 
 
   input_help$agent$ln_h_bgd_betas <- "Increased Longevity Over time and effect of other variables"
