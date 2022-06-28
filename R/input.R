@@ -64,7 +64,7 @@ errors<-c(
 
 #' Returns a list of default model input values
 #' @export
-init_input <- function() {
+init_input <- function(closed_cohort=0) {
   input <- list()
   input_help <- list()
   input_ref <- list()
@@ -72,7 +72,7 @@ init_input <- function() {
 
   input$global_parameters <- list(age0 = 40, time_horizon = 20,
                                   discount_cost = 0.03, discount_qaly = 0.03,
-                                  closed_cohort = 0)
+                                  closed_cohort = closed_cohort)
   input_help$global_parameters <- list(age0 = "Starting age in the model", time_horizon = "Model time horizon", discount_cost = "Discount value for cost outcomes",
                                        discount_qaly = "Discount value for QALY outcomes")
 

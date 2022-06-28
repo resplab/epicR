@@ -482,6 +482,7 @@ struct input
     double age0;  //age to start
     double discount_cost;
     double discount_qaly;
+    int closed_cohort; //whether or not the model should run as closed-cohort
   } global_parameters;
 
   struct
@@ -672,7 +673,8 @@ List Cget_inputs()
       Rcpp::Named("time_horizon")=input.global_parameters.time_horizon,
       Rcpp::Named("y0")=input.global_parameters.y0,
       Rcpp::Named("discount_cost")=input.global_parameters.discount_cost,
-      Rcpp::Named("discount_qaly")=input.global_parameters.discount_qaly
+      Rcpp::Named("discount_qaly")=input.global_parameters.discount_qaly,
+      Rcpp::Named("closed_cohort")=input.global_parameters.closed_cohort
     ),
     Rcpp::Named("agent")=Rcpp::List::create(
       Rcpp::Named("p_female")=input.agent.p_female,
@@ -825,6 +827,8 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="global_parameters$time_horizon")  {input.global_parameters.time_horizon=value[0]; return(0);}
   if(name=="global_parameters$discount_cost") {input.global_parameters.discount_cost=value[0]; return(0);}
   if(name=="global_parameters$discount_qaly") {input.global_parameters.discount_qaly=value[0]; return(0);}
+  if(name=="global_parameters$closed_cohort") {input.global_parameters.closed_cohort=value[0]; return(0);}
+
 
   if(name=="agent$p_female") {input.agent.p_female=value[0]; return(0);}
   if(name=="agent$p_prevalence_age") READ_R_VECTOR(value,input.agent.p_prevalence_age);
