@@ -399,7 +399,7 @@ sanity_COPD <- function() {
 
   message("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
   petoc()
-  init_input()
+  get_input()
   input <- model_input$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
@@ -413,7 +413,7 @@ sanity_COPD <- function() {
 
   message("Now I am going to switch off prevalence and create COPD patients only through incidence\n")
   petoc()
-  init_input()
+  get_input()
   input <- model_input$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
 

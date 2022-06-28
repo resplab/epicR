@@ -59,22 +59,33 @@ errors<-c(
 # End of declarations
 
 
-
-
-
 #' Returns a list of default model input values
+#' @param age0 Starting age in the model
+#' @param time_horizon Model time horizon
+#' @param discount_cost Discounting for cost outcomes
+#' @param discount_qaly Discounting for QALY outcomes
+#' @param closed_cohort Whether the model should run as closed_cohort, open-population by default.
 #' @export
-init_input <- function(closed_cohort=0) {
+get_input <- function(age0 = 40,
+                       time_horizon = 20,
+                       discount_cost = 0,
+                       discount_qaly = 0.03,
+                       closed_cohort=0) {
   input <- list()
   input_help <- list()
   input_ref <- list()
 
 
-  input$global_parameters <- list(age0 = 40, time_horizon = 20,
-                                  discount_cost = 0.03, discount_qaly = 0.03,
+  input$global_parameters <- list(age0 = age0,
+                                  time_horizon = time_horizon,
+                                  discount_cost = discount_cost,
+                                  discount_qaly = discount_qaly,
                                   closed_cohort = closed_cohort)
-  input_help$global_parameters <- list(age0 = "Starting age in the model", time_horizon = "Model time horizon", discount_cost = "Discount value for cost outcomes",
-                                       discount_qaly = "Discount value for QALY outcomes")
+  input_help$global_parameters <- list(age0 = "Starting age in the model",
+                                       time_horizon = "Model time horizon",
+                                       discount_cost = "Discounting for cost outcomes",
+                                       discount_qaly = "Discounting for QALY outcomes",
+                                       closed_cohort = "Whether the model should run as closed_cohort, open-population by default")
 
 
 
@@ -645,4 +656,4 @@ init_input <- function(closed_cohort=0) {
   return (model_input)
 }
 
-model_input <- init_input()
+model_input <- get_input()

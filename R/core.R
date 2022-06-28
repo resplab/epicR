@@ -56,7 +56,7 @@ init_session <- function(settings = get_default_settings()) {
     Cdeallocate_resources()
   if (!is.null(settings))
     apply_settings(settings)
-  init_input()
+  get_input()
   Cinit_session()
   return(Callocate_resources())
 }
@@ -209,7 +209,7 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
   reset_errors()
 
-  default_input<-init_input()$values
+  default_input<-get_input()$values
   res<-set_Cmodel_inputs(process_input(default_input))
 
   if (!is.null(input) || length(input)==0)
