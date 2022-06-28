@@ -2573,18 +2573,8 @@ agent *event_end_process(agent *ag)
 
 
 
-
-
-
-
-
-
 agent *event_stack;
 int event_stack_pointer;
-
-
-
-
 
 
 int push_event(agent *ag)
@@ -2690,8 +2680,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,30);
-  CharacterVector eventMatrixColNames(30);
+  NumericMatrix outm(event_stack_pointer,31);
+  CharacterVector eventMatrixColNames(31);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2726,6 +2716,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(27) = "case_detection";
   eventMatrixColNames(28) = "cumul_cost";
   eventMatrixColNames(29) = "cumul_qaly";
+  eventMatrixColNames(30) = "time_at_diagnosis";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2762,11 +2753,11 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,27)=(*ag).case_detection;
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
+    outm(i,30)=(*ag).time_at_diagnosis;
   }
 
   return(outm);
 }
-
 
 
 
