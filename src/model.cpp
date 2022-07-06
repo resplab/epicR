@@ -1022,6 +1022,8 @@ struct agent
   double exac_history_time_first, exac_history_time_second;
   int exac_history_severity_first, exac_history_severity_second;
 
+  int exac_history_n_moderate, exac_history_n_severe_plus; //number of moderate and severe/very severe exacerbations.
+
   double symptom_score;
 
   double last_doctor_visit_time;
@@ -1163,6 +1165,9 @@ List get_agent(agent *ag)
   out["phlegm"] = (*ag).phlegm;
   out["dyspnea"] = (*ag).dyspnea;
   out["wheeze"] = (*ag).wheeze;
+
+  out["exac_history_n_moderate"]  = (*ag).exac_history_n_moderate;
+  out["exac_history_n_severe_plus"] = (*ag).exac_history_n_severe_plus;
 
   out["re_cough"] = (*ag).re_cough;
   out["re_phlegm"] = (*ag).re_phlegm;
@@ -2213,6 +2218,10 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   (*ag).exac_history_time_first=0;
   (*ag).exac_history_time_second=0;
 
+  (*ag).exac_history_n_moderate=0;
+  (*ag).exac_history_n_severe_plus=0;
+
+
   //COPD;
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
                          +input.COPD.logit_p_COPD_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation
@@ -2680,8 +2689,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,31);
-  CharacterVector eventMatrixColNames(31);
+  NumericMatrix outm(event_stack_pointer,33);
+  CharacterVector eventMatrixColNames(33);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2717,6 +2726,8 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(28) = "cumul_cost";
   eventMatrixColNames(29) = "cumul_qaly";
   eventMatrixColNames(30) = "time_at_diagnosis";
+  eventMatrixColNames(31) = "exac_history_n_moderate";
+  eventMatrixColNames(32) = "exac_history_n_severe_plus";
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2754,6 +2765,9 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,28)=(*ag).cumul_cost;
     outm(i,29)=(*ag).cumul_qaly;
     outm(i,30)=(*ag).time_at_diagnosis;
+    outm(i,31)=(*ag).exac_history_n_moderate;
+    outm(i,32)=(*ag).exac_history_n_severe_plus;
+
   }
 
   return(outm);
@@ -3035,6 +3049,10 @@ void event_exacerbation_process(agent *ag)
 
 
   //Update exacerbation history
+  if ((*ag).exac_status==2) (*ag).exac_history_n_moderate++;
+  if ((*ag).exac_status>2) (*ag).exac_history_n_severe_plus++;
+
+
   (*ag).exac_history_time_second=(*ag).exac_history_time_first;
   (*ag).exac_history_severity_second=(*ag).exac_history_severity_first;
   (*ag).exac_history_time_first=(*ag).local_time;
