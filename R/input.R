@@ -521,7 +521,8 @@ get_input <- function(age0 = 40,
   # medication log-hazard regression matrix for rate reduction in exacerbations
   input_help$medication$medication_ln_hr_exac <- "Rate reduction in exacerbations due to treatment"
   input$medication$medication_ln_hr_exac<-c(input$medication$medication_ln_hr_exac<-c(None=0,
-                                            SABA=0, LABA=log((1-0.20)^input$medication$medication_adherence),
+                                            SABA=0,
+                                            LABA=log((1-0.20)^input$medication$medication_adherence),
                                             SABA_LABA=log((1-0.20)^input$medication$medication_adherence),
                                             LAMA=log((1-0.22)^input$medication$medication_adherence),
                                             LAMA_SABA=log((1-0.22)^input$medication$medication_adherence),
@@ -535,7 +536,10 @@ get_input <- function(age0 = 40,
                                             ICS_LAMA_SABA=log((1-0.25)^input$medication$medication_adherence),
                                             ICS_LAMA_LABA=log((1-0.34)^input$medication$medication_adherence),
                                             ICS_LAMA_LABA_SABA=log((1-0.34)^input$medication$medication_adherence)))
-  input_ref$medication$medication_ln_hr_exac <- "LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
+  input_ref$medication$medication_ln_hr_exac <- "ICS/LABA: Annual Rate Ratio of Comibation Therapy (Salmeterol and Fluticasone Propionate) vs. Placebo from TORCH (doi: 10.1056/NEJMoa063070),
+                                                 ICS: Annual Rate Ratio between Fluticasone vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2),
+                                                 LABA: Annual Rate Ratio between Salmeterol vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2),
+                                                 LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
 
   # cost of medications
   input_help$medication$medication_costs <- "Costs of treatment"
