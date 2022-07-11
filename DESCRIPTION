@@ -1,5 +1,5 @@
-Package: epicR
-Title: R Package for Evaluation Platform in COPD
+Package: epicTripleTx
+Title: TripleTx version of R Package for Evaluation Platform in COPD
 Version: 0.30.1
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),

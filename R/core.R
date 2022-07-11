@@ -19,7 +19,7 @@ session_env$agent_creation_mode<-c(
 
 # Cleaning up when package unloads
 .onUnload <- function(libpath) {
-  library.dynam.unload("epicR", libpath)
+  library.dynam.unload("epicTripleTx", libpath)
 }
 
 
