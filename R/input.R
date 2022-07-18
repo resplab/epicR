@@ -307,8 +307,8 @@ get_input <- function(age0 = 40,
   ## Exacerbation;
 
   input_help$exacerbation$ln_rate_betas = "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)"
-  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -2.5, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
-                                                   gold2 = 1.1, gold3 = 1.9, gold4 = 2.4)))
+  input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -3.4, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0,
+                                                   gold1 = 1.4 , gold2 = 2.0 , gold3 = 2.4 , gold4 = 2.8 , diagnosis_effect = 0.9)))
   input_ref$exacerbation$ln_rate_betas = "Rates from DOI: 10.2147/COPD.S13826, adjusted to account for diganosis bias. Adjusted on 2018-10-02 to match manuscript"
 
   input_help$exacerbation$ln_rate_intercept_sd = "SD of the random intercept for log-hazard of exacerbation"
@@ -317,8 +317,8 @@ get_input <- function(age0 = 40,
 
 
   input_help$exacerbation$logit_severity_betas = "Regression coefficients for the proportional odds model of exacerbation severity"
-  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = 1.091, intercept2 = 1.902, intercept3 = 5.208, female = -0.764,
-                                                          age = -0.007, fev1 = -0.003, smoking_status = 0.348, pack_years = -0.001 , BMI = 0.018)))
+  input$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -3.609, intercept2 = 2.202, intercept3 = 5.208, female = -0.764,
+                                                          age = -0.007, fev1 = 0.98, smoking_status = 0.348, pack_years = -0.001 , BMI = 0.018)))
   input_ref$exacerbation$logit_severity_betas = "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on manuscript submission"
 
 
@@ -496,7 +496,7 @@ get_input <- function(age0 = 40,
                                                              gpvisits=0.0087, cough=0.208, phlegm=0.4088, wheeze=0.0321, dyspnea=0.722,
                                                              case_detection=input$diagnosis$case_detection_methods[1,"None"]))
   input_ref$diagnosis$logit_p_diagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-05-29"
-  input$diagnosis$p_hosp_diagnosis <- 0.5
+  input$diagnosis$p_hosp_diagnosis <- 1
 
   # Overdiagnosis
 
