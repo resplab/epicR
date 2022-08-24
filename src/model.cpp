@@ -181,11 +181,6 @@ NumericMatrix array_to_Rmatrix(std::vector<int> x, int nCol)
 
 
 
-
-
-
-
-
 #define AS_VECTOR_DOUBLE(src) std::vector<double>(&src[0],&src[0]+sizeof(src)/sizeof(double))
 #define AS_VECTOR_DOUBLE_SIZE(src,size) std::vector<double>(&src[0],&src[0]+size)
 
@@ -1073,6 +1068,7 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
+  int eligible=0; // 0 not eligible, 1 eligible, 2 control group, 3 treatment
 
 };
 
@@ -1181,6 +1177,8 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+
+  out["eligible"] = (*ag).eligible;
 
   return out;
 }
@@ -2689,8 +2687,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,33);
-  CharacterVector eventMatrixColNames(33);
+  NumericMatrix outm(event_stack_pointer,34);
+  CharacterVector eventMatrixColNames(34);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2728,6 +2726,8 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(30) = "time_at_diagnosis";
   eventMatrixColNames(31) = "exac_history_n_moderate";
   eventMatrixColNames(32) = "exac_history_n_severe_plus";
+  eventMatrixColNames(33) = "eligible";
+
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2767,6 +2767,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,30)=(*ag).time_at_diagnosis;
     outm(i,31)=(*ag).exac_history_n_moderate;
     outm(i,32)=(*ag).exac_history_n_severe_plus;
+    outm(i,33)=(*ag).eligible;
 
   }
 
