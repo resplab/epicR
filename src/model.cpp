@@ -3535,12 +3535,14 @@ agent *event_fixed_process(agent *ag)
       (*ag).eligible=1;
     } else {(*ag).eligible=0;}
 
-    if (rand_unif() < 0.5) {
-      (*ag).tx=2;
-      (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA; //TODO check with Kate
-    } else {
-      (*ag).tx=3;
-      (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+    if ((*ag).eligible==1) {
+      if (rand_unif() < 0.5) {
+        (*ag).tx=2;
+        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA; //TODO check with Kate
+      } else {
+        (*ag).tx=3;
+        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+      }
     }
 
   }
