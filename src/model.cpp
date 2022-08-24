@@ -2077,6 +2077,8 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).id=id;
 (*ag).alive=1;
 (*ag).local_time=0;
+(*ag).eligible=0;
+(*ag).tx=0;
 (*ag).age_baseline = 0;
 (*ag).fev1_slope = 0;
 (*ag).fev1_slope_t = 0;//resetting the value for new agent
@@ -3532,18 +3534,17 @@ agent *event_fixed_process(agent *ag)
 
     if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).medication_status!=1) && ((*ag).medication_status!=2) && ((*ag).medication_status!=4)  && ((*ag).medication_status!=8) &&  ((*ag).gold>=1) &&
         (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
-      (*ag).eligible=1;
-    } else {(*ag).eligible=0;}
+           (*ag).eligible=1;
+    } //else {(*ag).eligible=0;}
 
-    if ((*ag).eligible==1) {
-      if (rand_unif() < 0.5) {
+      if (((*ag).eligible==1) && (rand_unif()) < 0.5) {
         (*ag).tx=2;
         (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA; //TODO check with Kate
-      } else {
+      } else if ((*ag).eligible==1) {
         (*ag).tx=3;
         (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
       }
-    }
+
 
   }
 
