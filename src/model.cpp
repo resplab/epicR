@@ -1068,7 +1068,8 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
-  int eligible=0; // 0 not eligible, 1 eligible, 2 control group, 3 treatment
+  bool eligible=FALSE;
+  int tx=0;// randomized treatment allocation. 0 not assigned, 2 ICS/LABA; 3 trileTx ICS/LAMA/LABA
 
 };
 
@@ -1179,6 +1180,7 @@ List get_agent(agent *ag)
   out["cumul_qaly"] = (*ag).cumul_qaly;
 
   out["eligible"] = (*ag).eligible;
+  out["tx"] = (*ag).tx;
 
   return out;
 }
@@ -2687,8 +2689,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,34);
-  CharacterVector eventMatrixColNames(34);
+  NumericMatrix outm(event_stack_pointer,35);
+  CharacterVector eventMatrixColNames(35);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2727,6 +2729,7 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(31) = "exac_history_n_moderate";
   eventMatrixColNames(32) = "exac_history_n_severe_plus";
   eventMatrixColNames(33) = "eligible";
+  eventMatrixColNames(34) = "tx";
 
 
 
@@ -2768,6 +2771,7 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,31)=(*ag).exac_history_n_moderate;
     outm(i,32)=(*ag).exac_history_n_severe_plus;
     outm(i,33)=(*ag).eligible;
+    outm(i,34)=(*ag).tx;
 
   }
 
@@ -3524,12 +3528,16 @@ agent *event_fixed_process(agent *ag)
   (*ag).p_COPD=COPD_odds/(1+COPD_odds);
 
   //tripletx study code begins
-  if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).gold>=1) &&
-      (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
-    (*ag).eligible=1;
-  } else {(*ag).eligible=0;}
-
   if ((*ag).local_time == 5) {
+
+    if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).gold>=1) &&
+        (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
+      (*ag).eligible=1;
+    } else {(*ag).eligible=0;}
+
+    if (rand_unif() < 0.5) {
+      (*ag).tx=2;
+    } else (*ag).tx=3;
 
   }
 
