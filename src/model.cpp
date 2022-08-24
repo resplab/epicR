@@ -1935,7 +1935,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
             medication_LPT(ag);
           }
     }
@@ -1944,7 +1944,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
             medication_LPT(ag);
           }
     }
@@ -1993,7 +1993,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
         if (rand_unif() < input.medication.medication_adherence)
           {
-               (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+               if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
                medication_LPT(ag);
           }
       }
@@ -2002,7 +2002,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
             medication_LPT(ag);
           }
       }
@@ -2055,7 +2055,7 @@ double update_prevalent_diagnosis(agent *ag)
               {
                   if (rand_unif() < input.medication.medication_adherence)
                     {
-                      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+                      if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
                       medication_LPT(ag);
                     }
               }
@@ -3061,7 +3061,7 @@ void event_exacerbation_process(agent *ag)
   {
     if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+        if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -3070,7 +3070,7 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+        if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -3081,7 +3081,7 @@ void event_exacerbation_process(agent *ag)
   {
         if (rand_unif() < input.medication.medication_adherence)
         {
-          (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
+          if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
           medication_LPT(ag);
         }
   }
@@ -3092,7 +3092,7 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-          (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+          if ((*ag).tx==0) (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
           medication_LPT(ag);
         }
   }
@@ -3537,7 +3537,11 @@ agent *event_fixed_process(agent *ag)
 
     if (rand_unif() < 0.5) {
       (*ag).tx=2;
-    } else (*ag).tx=3;
+      (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA; //TODO check with Kate
+    } else {
+      (*ag).tx=3;
+      (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+    }
 
   }
 
