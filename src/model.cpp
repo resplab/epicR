@@ -3527,6 +3527,10 @@ agent *event_fixed_process(agent *ag)
   if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).gold>=1) &&
       (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
     (*ag).eligible=1;
+  } else {(*ag).eligible=0;}
+
+  if ((*ag).local_time == 5) {
+
   }
 
   return(ag);
