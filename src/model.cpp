@@ -3530,7 +3530,7 @@ agent *event_fixed_process(agent *ag)
   (*ag).p_COPD=COPD_odds/(1+COPD_odds);
 
   //tripletx study code begins
-  if ((*ag).local_time == 5) {
+  if ((*ag).local_time == 2) {
 
     if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).medication_status!=1) && ((*ag).medication_status!=2) && ((*ag).medication_status!=4)  && ((*ag).medication_status!=8) &&  ((*ag).gold>=1) &&
         (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
@@ -3545,6 +3545,9 @@ agent *event_fixed_process(agent *ag)
         (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
       }
 
+      if ((*ag).eligible==0) {
+        (*ag).alive=false;// removing all non-eligible patients
+    }
 
   }
 

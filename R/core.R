@@ -23,8 +23,8 @@ session_env$agent_creation_mode<-c(
 }
 
 
-default_settings <- list(record_mode = session_env$record_mode["record_mode_event"],
-                         events_to_record = c(0),
+default_settings <- list(record_mode = session_env$record_mode["record_mode_some"],
+                         events_to_record = c(1),
                          agent_creation_mode = session_env$agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
                          n_base_agents = 6e4,
