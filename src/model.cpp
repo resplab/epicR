@@ -3537,14 +3537,20 @@ agent *event_fixed_process(agent *ag)
            (*ag).eligible=1;
     } //else {(*ag).eligible=0;}
 
-      if (((*ag).eligible==1) && (rand_unif()) < 0.5) {
+    double draw=rand_unif();
+
+    if ((*ag).eligible) {
+      if (draw < 0.3) {
         (*ag).tx=2;
-        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA; //TODO check with Kate
-      } else if ((*ag).eligible==1) {
+        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA;
+      } else if (draw < 0.6) {
         (*ag).tx=3;
         (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+      } else {
+        (*ag).tx=1;
+        (*ag).medication_status=MED_CLASS_LAMA | MED_CLASS_LABA;
       }
-
+    }
       if ((*ag).eligible==0) {
         (*ag).alive=false;// removing all non-eligible patients
     }
