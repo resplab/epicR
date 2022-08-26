@@ -1,4 +1,4 @@
-#' \code{epicR} package
+#' \code{epicTripleTx} package
 #'
 #' Evaluation Platform in COPD (EPIC) R Package
 #'
@@ -6,7 +6,7 @@
 #' \href{https://github.com/aminadibi/epicR#readme}{GitHub}
 #'
 #' @docType package
-#' @name epicR
+#' @name epicTripleTx
 NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
