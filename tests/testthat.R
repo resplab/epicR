@@ -1,4 +1,4 @@
 library(testthat)
-library(epicTripleTx)
+library(epicR)
 
-test_check("epicTripleTx")
+test_check("epicR")

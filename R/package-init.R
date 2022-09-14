@@ -1,4 +1,4 @@
-#' @useDynLib epicTripleTx, .registration=TRUE
+#' @useDynLib epicR, .registration=TRUE
 #' @importFrom stats lm time
 #' @importFrom Rcpp sourceCpp
 #' @importFrom Rcpp evalCpp
@@ -14,6 +14,6 @@
 NULL
 
 .onUnload <- function (libpath) {
-  library.dynam.unload("epicTripleTx", libpath)
+  library.dynam.unload("epicR", libpath)
 }
 

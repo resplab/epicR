@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // mvrnormArma
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma);
-RcppExport SEXP _epicTripleTx_mvrnormArma(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+RcppExport SEXP _epicR_mvrnormArma(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,7 +26,7 @@ END_RCPP
 }
 // Cset_settings_var
 int Cset_settings_var(std::string name, NumericVector value);
-RcppExport SEXP _epicTripleTx_Cset_settings_var(SEXP nameSEXP, SEXP valueSEXP) {
+RcppExport SEXP _epicR_Cset_settings_var(SEXP nameSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // Cget_settings
 List Cget_settings();
-RcppExport SEXP _epicTripleTx_Cget_settings() {
+RcppExport SEXP _epicR_Cget_settings() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -48,7 +48,7 @@ END_RCPP
 }
 // Cget_runtime_stats
 List Cget_runtime_stats();
-RcppExport SEXP _epicTripleTx_Cget_runtime_stats() {
+RcppExport SEXP _epicR_Cget_runtime_stats() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -58,7 +58,7 @@ END_RCPP
 }
 // Xrexp
 NumericVector Xrexp(int n, double rate);
-RcppExport SEXP _epicTripleTx_Xrexp(SEXP nSEXP, SEXP rateSEXP) {
+RcppExport SEXP _epicR_Xrexp(SEXP nSEXP, SEXP rateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,7 +70,7 @@ END_RCPP
 }
 // Cget_inputs
 List Cget_inputs();
-RcppExport SEXP _epicTripleTx_Cget_inputs() {
+RcppExport SEXP _epicR_Cget_inputs() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -80,7 +80,7 @@ END_RCPP
 }
 // Cset_input_var
 int Cset_input_var(std::string name, NumericVector value);
-RcppExport SEXP _epicTripleTx_Cset_input_var(SEXP nameSEXP, SEXP valueSEXP) {
+RcppExport SEXP _epicR_Cset_input_var(SEXP nameSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -92,7 +92,7 @@ END_RCPP
 }
 // get_sample_output
 double get_sample_output(int year, int sex);
-RcppExport SEXP _epicTripleTx_get_sample_output(SEXP yearSEXP, SEXP sexSEXP) {
+RcppExport SEXP _epicR_get_sample_output(SEXP yearSEXP, SEXP sexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -104,7 +104,7 @@ END_RCPP
 }
 // Cget_agent
 List Cget_agent(long id);
-RcppExport SEXP _epicTripleTx_Cget_agent(SEXP idSEXP) {
+RcppExport SEXP _epicR_Cget_agent(SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -115,7 +115,7 @@ END_RCPP
 }
 // Cget_smith
 List Cget_smith();
-RcppExport SEXP _epicTripleTx_Cget_smith() {
+RcppExport SEXP _epicR_Cget_smith() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -125,7 +125,7 @@ END_RCPP
 }
 // Cget_output
 List Cget_output();
-RcppExport SEXP _epicTripleTx_Cget_output() {
+RcppExport SEXP _epicR_Cget_output() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -135,7 +135,7 @@ END_RCPP
 }
 // Cget_output_ex
 List Cget_output_ex();
-RcppExport SEXP _epicTripleTx_Cget_output_ex() {
+RcppExport SEXP _epicR_Cget_output_ex() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -145,7 +145,7 @@ END_RCPP
 }
 // Ccreate_agents
 int Ccreate_agents();
-RcppExport SEXP _epicTripleTx_Ccreate_agents() {
+RcppExport SEXP _epicR_Ccreate_agents() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -155,7 +155,7 @@ END_RCPP
 }
 // Cget_event
 List Cget_event(int i);
-RcppExport SEXP _epicTripleTx_Cget_event(SEXP iSEXP) {
+RcppExport SEXP _epicR_Cget_event(SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -166,7 +166,7 @@ END_RCPP
 }
 // Cget_n_events
 int Cget_n_events();
-RcppExport SEXP _epicTripleTx_Cget_n_events() {
+RcppExport SEXP _epicR_Cget_n_events() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -176,7 +176,7 @@ END_RCPP
 }
 // Cget_agent_events
 DataFrame Cget_agent_events(int id);
-RcppExport SEXP _epicTripleTx_Cget_agent_events(SEXP idSEXP) {
+RcppExport SEXP _epicR_Cget_agent_events(SEXP idSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -187,7 +187,7 @@ END_RCPP
 }
 // Cget_events_by_type
 DataFrame Cget_events_by_type(int event_type);
-RcppExport SEXP _epicTripleTx_Cget_events_by_type(SEXP event_typeSEXP) {
+RcppExport SEXP _epicR_Cget_events_by_type(SEXP event_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -198,7 +198,7 @@ END_RCPP
 }
 // Cget_all_events
 DataFrame Cget_all_events();
-RcppExport SEXP _epicTripleTx_Cget_all_events() {
+RcppExport SEXP _epicR_Cget_all_events() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -208,7 +208,7 @@ END_RCPP
 }
 // Cget_all_events_matrix
 NumericMatrix Cget_all_events_matrix();
-RcppExport SEXP _epicTripleTx_Cget_all_events_matrix() {
+RcppExport SEXP _epicR_Cget_all_events_matrix() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -218,7 +218,7 @@ END_RCPP
 }
 // Callocate_resources
 int Callocate_resources();
-RcppExport SEXP _epicTripleTx_Callocate_resources() {
+RcppExport SEXP _epicR_Callocate_resources() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -228,7 +228,7 @@ END_RCPP
 }
 // Cget_pointers
 List Cget_pointers();
-RcppExport SEXP _epicTripleTx_Cget_pointers() {
+RcppExport SEXP _epicR_Cget_pointers() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -238,7 +238,7 @@ END_RCPP
 }
 // Cdeallocate_resources
 int Cdeallocate_resources();
-RcppExport SEXP _epicTripleTx_Cdeallocate_resources() {
+RcppExport SEXP _epicR_Cdeallocate_resources() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -248,7 +248,7 @@ END_RCPP
 }
 // Cdeallocate_resources2
 int Cdeallocate_resources2();
-RcppExport SEXP _epicTripleTx_Cdeallocate_resources2() {
+RcppExport SEXP _epicR_Cdeallocate_resources2() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -258,7 +258,7 @@ END_RCPP
 }
 // Cinit_session
 int Cinit_session();
-RcppExport SEXP _epicTripleTx_Cinit_session() {
+RcppExport SEXP _epicR_Cinit_session() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -268,7 +268,7 @@ END_RCPP
 }
 // Cmodel
 int Cmodel(int max_n_agents);
-RcppExport SEXP _epicTripleTx_Cmodel(SEXP max_n_agentsSEXP) {
+RcppExport SEXP _epicR_Cmodel(SEXP max_n_agentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

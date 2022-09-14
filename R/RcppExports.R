@@ -8,7 +8,7 @@
 #' @return the multivariate normal sample
 #' @export
 mvrnormArma <- function(n, mu, sigma) {
-    .Call(`_epicTripleTx_mvrnormArma`, n, mu, sigma)
+    .Call(`_epicR_mvrnormArma`, n, mu, sigma)
 }
 
 #' Sets model settings.
@@ -17,32 +17,32 @@ mvrnormArma <- function(n, mu, sigma) {
 #' @return 0 if successful.
 #' @export
 Cset_settings_var <- function(name, value) {
-    .Call(`_epicTripleTx_Cset_settings_var`, name, value)
+    .Call(`_epicR_Cset_settings_var`, name, value)
 }
 
 #' Returns current settings.
 #' @return current settings.
 #' @export
 Cget_settings <- function() {
-    .Call(`_epicTripleTx_Cget_settings`)
+    .Call(`_epicR_Cget_settings`)
 }
 
 #' Returns run time stats.
 #' @return agent size as well as memory and random variable fill stats.
 #' @export
 Cget_runtime_stats <- function() {
-    .Call(`_epicTripleTx_Cget_runtime_stats`)
+    .Call(`_epicR_Cget_runtime_stats`)
 }
 
 Xrexp <- function(n, rate) {
-    .Call(`_epicTripleTx_Xrexp`, n, rate)
+    .Call(`_epicR_Xrexp`, n, rate)
 }
 
 #' Returns inputs
 #' @return all inputs
 #' @export
 Cget_inputs <- function() {
-    .Call(`_epicTripleTx_Cget_inputs`)
+    .Call(`_epicR_Cget_inputs`)
 }
 
 #' Sets input variables.
@@ -51,7 +51,7 @@ Cget_inputs <- function() {
 #' @return 0 if successful
 #' @export
 Cset_input_var <- function(name, value) {
-    .Call(`_epicTripleTx_Cset_input_var`, name, value)
+    .Call(`_epicR_Cset_input_var`, name, value)
 }
 
 #' Returns a sample output for a given year and gender.
@@ -60,36 +60,36 @@ Cset_input_var <- function(name, value) {
 #' @return that specific output
 #' @export
 get_sample_output <- function(year, sex) {
-    .Call(`_epicTripleTx_get_sample_output`, year, sex)
+    .Call(`_epicR_get_sample_output`, year, sex)
 }
 
 Cget_agent <- function(id) {
-    .Call(`_epicTripleTx_Cget_agent`, id)
+    .Call(`_epicR_Cget_agent`, id)
 }
 
 #' Returns agent Smith.
 #' @return agent smith.
 #' @export
 Cget_smith <- function() {
-    .Call(`_epicTripleTx_Cget_smith`)
+    .Call(`_epicR_Cget_smith`)
 }
 
 #' Main outputs of the current run.
 #' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 #' @export
 Cget_output <- function() {
-    .Call(`_epicTripleTx_Cget_output`)
+    .Call(`_epicR_Cget_output`)
 }
 
 #' Extra outputs from the model
 #' @return Extra outputs from the model.
 #' @export
 Cget_output_ex <- function() {
-    .Call(`_epicTripleTx_Cget_output_ex`)
+    .Call(`_epicR_Cget_output_ex`)
 }
 
 Ccreate_agents <- function() {
-    .Call(`_epicTripleTx_Ccreate_agents`)
+    .Call(`_epicR_Ccreate_agents`)
 }
 
 #' Returns the events stack.
@@ -97,14 +97,14 @@ Ccreate_agents <- function() {
 #' @return events
 #' @export
 Cget_event <- function(i) {
-    .Call(`_epicTripleTx_Cget_event`, i)
+    .Call(`_epicR_Cget_event`, i)
 }
 
 #' Returns total number of events.
 #' @return number of events
 #' @export
 Cget_n_events <- function() {
-    .Call(`_epicTripleTx_Cget_n_events`)
+    .Call(`_epicR_Cget_n_events`)
 }
 
 #' Returns all events of an agent.
@@ -112,7 +112,7 @@ Cget_n_events <- function() {
 #' @return all events of agent \code{id}
 #' @export
 Cget_agent_events <- function(id) {
-    .Call(`_epicTripleTx_Cget_agent_events`, id)
+    .Call(`_epicR_Cget_agent_events`, id)
 }
 
 #' Returns all events of a certain type.
@@ -120,44 +120,44 @@ Cget_agent_events <- function(id) {
 #' @return all events of the type \code{event_type}
 #' @export
 Cget_events_by_type <- function(event_type) {
-    .Call(`_epicTripleTx_Cget_events_by_type`, event_type)
+    .Call(`_epicR_Cget_events_by_type`, event_type)
 }
 
 #' Returns all events.
 #' @return all events
 #' @export
 Cget_all_events <- function() {
-    .Call(`_epicTripleTx_Cget_all_events`)
+    .Call(`_epicR_Cget_all_events`)
 }
 
 #' Returns a matrix containing all events
 #' @return a matrix containing all events
 #' @export
 Cget_all_events_matrix <- function() {
-    .Call(`_epicTripleTx_Cget_all_events_matrix`)
+    .Call(`_epicR_Cget_all_events_matrix`)
 }
 
 Callocate_resources <- function() {
-    .Call(`_epicTripleTx_Callocate_resources`)
+    .Call(`_epicR_Callocate_resources`)
 }
 
 Cget_pointers <- function() {
-    .Call(`_epicTripleTx_Cget_pointers`)
+    .Call(`_epicR_Cget_pointers`)
 }
 
 Cdeallocate_resources <- function() {
-    .Call(`_epicTripleTx_Cdeallocate_resources`)
+    .Call(`_epicR_Cdeallocate_resources`)
 }
 
 Cdeallocate_resources2 <- function() {
-    .Call(`_epicTripleTx_Cdeallocate_resources2`)
+    .Call(`_epicR_Cdeallocate_resources2`)
 }
 
 Cinit_session <- function() {
-    .Call(`_epicTripleTx_Cinit_session`)
+    .Call(`_epicR_Cinit_session`)
 }
 
 Cmodel <- function(max_n_agents) {
-    .Call(`_epicTripleTx_Cmodel`, max_n_agents)
+    .Call(`_epicR_Cmodel`, max_n_agents)
 }
 

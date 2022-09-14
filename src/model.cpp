@@ -181,6 +181,11 @@ NumericMatrix array_to_Rmatrix(std::vector<int> x, int nCol)
 
 
 
+
+
+
+
+
 #define AS_VECTOR_DOUBLE(src) std::vector<double>(&src[0],&src[0]+sizeof(src)/sizeof(double))
 #define AS_VECTOR_DOUBLE_SIZE(src,size) std::vector<double>(&src[0],&src[0]+size)
 
@@ -1068,8 +1073,6 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
-  bool eligible=FALSE;
-  int tx=0;// randomized treatment allocation. 0 not assigned, 2 ICS/LABA; 3 trileTx ICS/LAMA/LABA
 
 };
 
@@ -1178,9 +1181,6 @@ List get_agent(agent *ag)
 
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_qaly"] = (*ag).cumul_qaly;
-
-  out["eligible"] = (*ag).eligible;
-  out["tx"] = (*ag).tx;
 
   return out;
 }
@@ -1935,7 +1935,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+            (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
             medication_LPT(ag);
           }
     }
@@ -1944,7 +1944,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
             medication_LPT(ag);
           }
     }
@@ -1993,7 +1993,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
         if (rand_unif() < input.medication.medication_adherence)
           {
-               if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+               (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
                medication_LPT(ag);
           }
       }
@@ -2002,7 +2002,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+            (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
             medication_LPT(ag);
           }
       }
@@ -2055,7 +2055,7 @@ double update_prevalent_diagnosis(agent *ag)
               {
                   if (rand_unif() < input.medication.medication_adherence)
                     {
-                      if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+                      (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
                       medication_LPT(ag);
                     }
               }
@@ -2077,8 +2077,6 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).id=id;
 (*ag).alive=1;
 (*ag).local_time=0;
-(*ag).eligible=0;
-(*ag).tx=0;
 (*ag).age_baseline = 0;
 (*ag).fev1_slope = 0;
 (*ag).fev1_slope_t = 0;//resetting the value for new agent
@@ -2691,8 +2689,8 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix Cget_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,35);
-  CharacterVector eventMatrixColNames(35);
+  NumericMatrix outm(event_stack_pointer,33);
+  CharacterVector eventMatrixColNames(33);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
@@ -2730,9 +2728,6 @@ NumericMatrix Cget_all_events_matrix()
   eventMatrixColNames(30) = "time_at_diagnosis";
   eventMatrixColNames(31) = "exac_history_n_moderate";
   eventMatrixColNames(32) = "exac_history_n_severe_plus";
-  eventMatrixColNames(33) = "eligible";
-  eventMatrixColNames(34) = "tx";
-
 
 
   colnames(outm) = eventMatrixColNames;
@@ -2772,8 +2767,6 @@ NumericMatrix Cget_all_events_matrix()
     outm(i,30)=(*ag).time_at_diagnosis;
     outm(i,31)=(*ag).exac_history_n_moderate;
     outm(i,32)=(*ag).exac_history_n_severe_plus;
-    outm(i,33)=(*ag).eligible;
-    outm(i,34)=(*ag).tx;
 
   }
 
@@ -3065,7 +3058,7 @@ void event_exacerbation_process(agent *ag)
   {
     if (rand_unif() < input.medication.medication_adherence)
         {
-        if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -3074,7 +3067,7 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-        if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -3085,7 +3078,7 @@ void event_exacerbation_process(agent *ag)
   {
         if (rand_unif() < input.medication.medication_adherence)
         {
-          if ((*ag).tx==0) (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
+          (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
           medication_LPT(ag);
         }
   }
@@ -3096,7 +3089,7 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-          if ((*ag).tx==0) (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
+          (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
           medication_LPT(ag);
         }
   }
@@ -3530,34 +3523,6 @@ agent *event_fixed_process(agent *ag)
                          ;
 
   (*ag).p_COPD=COPD_odds/(1+COPD_odds);
-
-  //tripletx study code begins
-  if ((*ag).local_time == 2) {
-
-    if (((*ag).age_baseline + (*ag).local_time<=80) && ((*ag).fev1/(*ag)._pred_fev1>=0.25) && ((*ag).fev1/(*ag)._pred_fev1<=0.65) && ((*ag).cough + (*ag).phlegm + (*ag).wheeze + (*ag).dyspnea>=1) && ((*ag).pack_years>=10) && ((*ag).medication_status!=1) && ((*ag).medication_status!=2) && ((*ag).medication_status!=4)  && ((*ag).medication_status!=8) &&  ((*ag).gold>=1) &&
-        (((*ag).fev1/(*ag)._pred_fev1<0.5 && ((*ag).exac_history_n_moderate+(*ag).exac_history_n_severe_plus)>=1) || ((*ag).fev1/(*ag)._pred_fev1>=0.5 && ((*ag).exac_history_n_moderate>=2 || (*ag).exac_history_n_severe_plus>=1) ) ) ){
-           (*ag).eligible=1;
-    } //else {(*ag).eligible=0;}
-
-    double draw=rand_unif();
-
-    if ((*ag).eligible) {
-      if (draw < 0.3) {
-        (*ag).tx=2;
-        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LABA;
-      } else if (draw < 0.6) {
-        (*ag).tx=3;
-        (*ag).medication_status=MED_CLASS_ICS | MED_CLASS_LAMA | MED_CLASS_LABA;
-      } else {
-        (*ag).tx=1;
-        (*ag).medication_status=MED_CLASS_LAMA | MED_CLASS_LABA;
-      }
-    }
-      if ((*ag).eligible==0) {
-        (*ag).alive=false;// removing all non-eligible patients
-    }
-
-  }
 
   return(ag);
 }
