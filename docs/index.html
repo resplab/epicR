@@ -170,11 +170,88 @@
 <div class="section level1">
 <h1 id="quick-guide">Quick Guide<a class="anchor" aria-label="anchor" href="#quick-guide"></a>
 </h1>
+<p>To run EPIC with default inputs and settings, use the code snippet below.</p>
 <pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<p>Default inputs can be retrieved with <code><a href="reference/get_input.html">get_input()</a></code>, changed as needed, and resubmitted as a parameter to the run function:</p>
+<pre><code><span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">resultsExra</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<p>For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by setting <code>record_mode</code> as a <code>setting</code>.</p>
+<pre><code><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span></span>
+<span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span>settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<p>Note that you might need a large amount of memory available, if you want to collect event history for a large number of patients.</p>
+<p>In the events data frame, each type of event has a code corresponding to the table below:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Event</th>
+<th>No.</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>start</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>annual</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>birthday</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>smoking change</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>COPD incidence</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>Exacerbation</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td>Exacerbation end</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>Death by Exacerbation</td>
+<td>7</td>
+</tr>
+<tr class="odd">
+<td>Doctor visit</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>Medication change</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<td>Background death</td>
+<td>13</td>
+</tr>
+<tr class="even">
+<td>End</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
 <div class="section level2">
 <h2 id="closed-cohort-analysis">Closed-cohort analysis<a class="anchor" aria-label="anchor" href="#closed-cohort-analysis"></a>
 </h2>
