@@ -120,6 +120,7 @@ remotes::install_github('resplab/epicR')
 
 ```
 library(epicR)
+init_session()
 run()
 Cget_output()
 terminate_session()
@@ -132,6 +133,7 @@ Closed-cohort analysis can be specified by changing the appropriate input parame
 ```
 library(epicR)
 input <- get_input(closed_cohort = 1)$values
+init_session()
 run(input=input)
 Cget_output()
 terminate_session()
