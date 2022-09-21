@@ -6,3 +6,6 @@
 *.md
 *.Rmd
 *.tiff
+inst/doc
+/doc/
+/Meta/

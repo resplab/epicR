@@ -34,5 +34,8 @@ Suggests:
     testthat (>= 3.0.0),
     openxlsx,
     survival,
-    survminer
+    survminer,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
+VignetteBuilder: knitr
