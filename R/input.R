@@ -516,7 +516,7 @@ get_input <- function(age0 = 40,
                                                              cough=0.7264, phlegm=0.7956, wheeze=0.66, dyspnea=0.8798,
                                                              case_detection=input$diagnosis$case_detection_methods[2,"None"]))
   input_ref$diagnosis$logit_p_overdiagnosis_by_sex <- "Kate's regression on CanCOLD, provided on 2019-07-16"
-  input$diagnosis$p_correct_overdiagnosis <- 0.9
+  input$diagnosis$p_correct_overdiagnosis <- 0.5
 
 
   ## Medication;
