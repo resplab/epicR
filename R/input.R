@@ -215,8 +215,16 @@ get_input <- function(age0 = 40,
 
 
   input_help$smoking$ln_h_ces_betas <- "Log-hazard of smoking cessation"
-  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.71))
-  input_ref$smoking$ln_h_ces_betas <- "Odds ratio for diagnosis from Kate's paper. Turns on and off based on case detection flag. See that section for more info."
+  input$smoking$ln_h_ces_betas <- c(intercept = -3.7,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.38))
+  input_ref$smoking$ln_h_ces_betas <- "Diagnosis coefficient from Wu et al. BMC Public Health 2006"
+
+  input_help$smoking$smoking_ces_coefficient <- "Coefficient for the decay rate of smoking cessaton treatment, default is 100"
+  input$smoking$smoking_ces_coefficient <- 100
+  input_ref$smoking$smoking_ces_coefficient <- ""
+
+  input_help$smoking$smoking_cessation_adherence <- "Proportion adherent to smoking cessation treatment"
+  input$smoking$smoking_cessation_adherence <- 0.7
+  input_ref$smoking$smoking_cessation_adherence <- ""
 
 
   ## COPD
@@ -435,7 +443,7 @@ get_input <- function(age0 = 40,
   input$diagnosis$p_case_detection <- 0
   input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
 
-  input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
+  # input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
   # Turns off and on the effect of diagnosis on smoking cessation
 
   input_help$diagnosis$years_btw_case_detection <- "Number of years between case detection"
@@ -613,6 +621,10 @@ get_input <- function(age0 = 40,
 
   input$cost$cost_outpatient_diagnosis <- 98.89
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
+
+  input$cost$cost_smoking_cessation <- 368.76
+  input_help$cost$cost_smoking_cessation <- "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014"
+
 
   #input$cost$doctor_visit_by_type<-t(as.matrix(c(50,150)))
 
