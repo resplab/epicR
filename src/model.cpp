@@ -597,6 +597,7 @@ struct input
     double exac_dcost[4];
     double cost_case_detection;
     double cost_outpatient_diagnosis;
+    double cost_gp_visit;
     double cost_smoking_cessation;
 
     double doctor_visit_by_type[2];
@@ -793,6 +794,7 @@ List Cget_inputs()
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
       Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
       Rcpp::Named("cost_outpatient_diagnosis")=input.cost.cost_outpatient_diagnosis,
+      cpp::Named("cost_gp_visit")=input.cost.cost_gp_visit,
       Rcpp::Named("cost_smoking_cessation")=input.cost.cost_smoking_cessation,
 
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
@@ -926,6 +928,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
   if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
   if(name=="cost$cost_outpatient_diagnosis") {input.cost.cost_outpatient_diagnosis=value[0]; return(0);};
+  if(name=="cost$cost_gp_visit") {input.cost.cost_gp_visit=value[0]; return(0);};
   if(name=="cost$cost_smoking_cessation") {input.cost.cost_smoking_cessation=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
@@ -2005,6 +2008,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
         (*ag).diagnosis = 1;
         (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+        (*ag).cumul_cost+=input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
         (*ag).time_at_diagnosis=(*ag).local_time;
         (*ag).smoking_at_diagnosis=(*ag).smoking_status;
       }
@@ -2043,6 +2047,7 @@ double update_prevalent_diagnosis(agent *ag)
 
         (*ag).diagnosis = 0;
         (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+        (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
         (*ag).medication_status=0;
         medication_LPT(ag);
         (*ag).time_at_diagnosis=0;
@@ -2081,12 +2086,16 @@ double update_prevalent_diagnosis(agent *ag)
         if ((*ag).diagnosis == 1 && (*ag).case_detection==1)
         {
           (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
+          (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
           (*ag).diagnosis = 0;
           (*ag).time_at_diagnosis=0;
           (*ag).smoking_at_diagnosis=0;
         }
 
         if((*ag).diagnosis == 1 && (*ag).gold==0)
+
+              (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
+
               {
                   if (rand_unif() < input.medication.medication_adherence)
                     {
