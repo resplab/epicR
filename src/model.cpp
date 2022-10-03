@@ -1479,7 +1479,7 @@ struct output_ex
   int n_Diagnosed_by_ctime_sex[1000][2];
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
-  int n_total_case_detection;
+  int n_case_detection_by_ctime[1000][1];
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1592,7 +1592,7 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
-    out["n_total_case_detection"]=output_ex.n_total_case_detection,
+    out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -1703,7 +1703,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      output_ex.n_total_case_detection+=((*ag).case_detection>0)*1;;
+      output_ex.n_case_detection_by_ctime[time][0]+=((*ag).case_detection>0)*1;;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
