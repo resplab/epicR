@@ -622,6 +622,9 @@ get_input <- function(age0 = 40,
   input$cost$cost_outpatient_diagnosis <- 61.18
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
+  input$cost$cost_gp_visit <- 34.23
+  input_help$cost$cost_gp_visit <- "Cost of GP visit"
+
   input$cost$cost_smoking_cessation <- 368.76
   input_help$cost$cost_smoking_cessation <- "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014"
 
