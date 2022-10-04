@@ -1479,7 +1479,7 @@ struct output_ex
   int n_Diagnosed_by_ctime_sex[1000][2];
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
-  int n_case_detection_by_ctime[1000];
+  int n_case_detection_by_ctime[1000][2];
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1592,7 +1592,7 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
-    out["n_case_detection_by_ctime"]=AS_VECTOR_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
+    out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -1703,7 +1703,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      output_ex.n_case_detection_by_ctime[time]+=((*ag).case_detection>0)*1;;
+      if((*ag).case_detection>0) output_ex.n_case_detection_by_ctime[time][(*ag).case_detection - 1]+=1;;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
@@ -1943,7 +1943,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      //(*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time); // shouldn't be a cost associated with baseline diagnosis?
       (*ag).time_at_diagnosis=(*ag).local_time;
       (*ag).smoking_at_diagnosis=(*ag).smoking_status;
     }
@@ -2011,6 +2011,8 @@ double update_prevalent_diagnosis(agent *ag)
         (*ag).cumul_cost+=input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
         (*ag).time_at_diagnosis=(*ag).local_time;
         (*ag).smoking_at_diagnosis=(*ag).smoking_status;
+        if((*ag).case_detection==1) {(*ag).case_detection=2)};
+
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -2078,6 +2080,8 @@ double update_prevalent_diagnosis(agent *ag)
             (*ag).diagnosis = 1;
             (*ag).time_at_diagnosis=(*ag).local_time;
             (*ag).smoking_at_diagnosis=(*ag).smoking_status;
+            (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
+
 
         } else {
             (*ag).diagnosis = 0;
@@ -2086,15 +2090,13 @@ double update_prevalent_diagnosis(agent *ag)
         if ((*ag).diagnosis == 1 && (*ag).case_detection==1)
         {
           (*ag).cumul_cost+=(input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
-          (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
           (*ag).diagnosis = 0;
           (*ag).time_at_diagnosis=0;
           (*ag).smoking_at_diagnosis=0;
+          (*ag).case_detection=2;
         }
 
         if((*ag).diagnosis == 1 && (*ag).gold==0)
-
-              (*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
 
               {
                   if (rand_unif() < input.medication.medication_adherence)
