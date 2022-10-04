@@ -439,8 +439,8 @@ get_input <- function(age0 = 40,
 
   ## Case detection;
 
-  input_help$diagnosis$p_case_detection <- "Probability of recieving case detection given they meet the selection criteria"
-  input$diagnosis$p_case_detection <- 0
+  input_help$diagnosis$p_case_detection <- "Probability of recieving case detection in each year given they meet the selection criteria"
+  input$diagnosis$p_case_detection <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
   input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
 
   # input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection

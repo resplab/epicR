@@ -581,7 +581,7 @@ struct input
     double p_hosp_diagnosis;
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
-    double p_case_detection;
+    double p_case_detection[20];
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
@@ -767,7 +767,7 @@ List Cget_inputs()
     Rcpp::Named("p_hosp_diagnosis")=input.diagnosis.p_hosp_diagnosis,
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
     Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
-    Rcpp::Named("p_case_detection")=input.diagnosis.p_case_detection,
+    Rcpp::Named("p_case_detection")=AS_VECTOR_DOUBLE(input.diagnosis.p_case_detection),
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
@@ -908,7 +908,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$p_hosp_diagnosis") {input.diagnosis.p_hosp_diagnosis=value[0]; return(0);};
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
   if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
-  if(name=="diagnosis$p_case_detection") {input.diagnosis.p_case_detection=value[0]; return(0);};
+  if(name=="diagnosis$p_case_detection") READ_R_VECTOR(value,input.diagnosis.p_case_detection);
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
@@ -1072,7 +1072,7 @@ struct agent
   double p_correct_overdiagnosis;
   int case_detection;
   int last_case_detection;
-  double p_case_detection;
+  double p_case_detection[20];
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
@@ -1890,13 +1890,13 @@ double apply_case_detection(agent *ag)
         {
       if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
           {
-          p_detection = input.diagnosis.p_case_detection;
+          p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
           }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
-            p_detection = input.diagnosis.p_case_detection;
+            p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
           }
 
   if (rand_unif() < p_detection) {
