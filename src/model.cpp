@@ -1045,6 +1045,7 @@ struct agent
   double medication_LPT;
 
   double cumul_cost;
+  double cumul_cost_prev_yr;
   double cumul_qaly;
 
   double payoffs_LPT;
@@ -1196,6 +1197,7 @@ List get_agent(agent *ag)
   out["case_detection"] = (*ag).case_detection;
 
   out["cumul_cost"] = (*ag).cumul_cost;
+  out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
 
   return out;
@@ -1452,7 +1454,7 @@ struct output_ex
   int n_smoking_status_by_ctime[1000][3];
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
-  //double cumul_cost_ctime[1000];
+  double annual_cost_ctime[1000];
   //double cumul_cost_gold_ctime[1000][5];
   //double cumul_qaly_ctime[1000];
   //double cumul_qaly_gold_ctime[1000][5];
@@ -1562,7 +1564,7 @@ List Cget_output_ex()
     Rcpp::Named("n_alive_by_ctime_age")=AS_MATRIX_INT_SIZE(output_ex.n_alive_by_ctime_age,input.global_parameters.time_horizon),
     Rcpp::Named("n_smoking_status_by_ctime")=AS_MATRIX_INT_SIZE(output_ex.n_smoking_status_by_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("n_current_smoker_by_ctime_sex")=AS_MATRIX_INT_SIZE(output_ex.n_current_smoker_by_ctime_sex,input.global_parameters.time_horizon),
-    //Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("annual_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.annual_cost_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
@@ -1656,6 +1658,10 @@ void update_output_ex(agent *ag)
   int time=floor((*ag).local_time+(*ag).time_at_creation);
   int local_time=floor((*ag).local_time);
 
+  if(time>0){
+    output_ex.annual_cost_ctime[time-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  }
+
   //if(time>=(*ag).time_at_creation)
   {
     int age=floor((*ag).age_at_creation+(*ag).local_time);
@@ -1672,6 +1678,7 @@ void update_output_ex(agent *ag)
         output_ex.n_smoking_status_by_ctime[time][2]+=1;
       else
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
+
 
       //output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
       //output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
@@ -2449,6 +2456,7 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
   //payoffs;
   (*ag).cumul_cost=0;
+  (*ag).cumul_cost_prev_yr=0;
   (*ag).cumul_qaly=0;
 
   (*ag).payoffs_LPT=0;
@@ -2577,6 +2585,7 @@ agent *event_end_process(agent *ag)
   output.total_qaly+=(*ag).cumul_qaly;
   if((*ag).diagnosis>0 && (*ag).gold>0) output.total_diagnosed_time+=(*ag).local_time-(*ag).time_at_diagnosis;
 
+  output_ex.annual_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
 
 
 #ifdef OUTPUT_EX
@@ -2584,6 +2593,7 @@ agent *event_end_process(agent *ag)
   //If it falls after that still we ignore as it is a partially observed year.
 #endif
 #if OUTPUT_EX>1
+  //output_ex.annual_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
   //  output_ex.cumul_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost; // accounting for residual last year, for consistency with output.total_qaly and   output.total_cost
   //  output_ex.cumul_cost_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_cost;
   //  output_ex.cumul_qaly_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_qaly;
@@ -3574,6 +3584,7 @@ agent *event_fixed_process(agent *ag)
 #endif
 
   //resetting annual cost and qaly
+  (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
     //(*ag).annual_cost=0;
     //(*ag).annual_qaly=0;
 
