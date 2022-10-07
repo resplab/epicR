@@ -582,6 +582,7 @@ struct input
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
     double p_case_detection[20];
+    int case_detection_start_yr;
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
@@ -769,6 +770,7 @@ List Cget_inputs()
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
     Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
     Rcpp::Named("p_case_detection")=AS_VECTOR_DOUBLE(input.diagnosis.p_case_detection),
+    Rcpp::Named("case_detection_start_yr")=input.diagnosis.case_detection_start_yr,
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
@@ -911,6 +913,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
   if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
   if(name=="diagnosis$p_case_detection") READ_R_VECTOR(value,input.diagnosis.p_case_detection);
+  if(name=="diagnosis$case_detection_start_yr") {input.diagnosis.case_detection_start_yr=value[0]; return(0);};
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
@@ -1077,6 +1080,7 @@ struct agent
   int case_detection;
   int last_case_detection;
   double p_case_detection[20];
+  int case_detection_start_yr;
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
@@ -1535,6 +1539,7 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   double medication_time_by_class[N_MED_CLASS];
+  double medication_time_by_ctime_class[1000][N_MED_CLASS];
   double n_exac_by_medication_class[N_MED_CLASS][3];
 #endif
 
@@ -1643,6 +1648,7 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION)>0
       out["medication_time_by_class"]=AS_VECTOR_DOUBLE(output_ex.medication_time_by_class);
+      out["medication_time_by_ctime_class"]=AS_MATRIX_DOUBLE_SIZE(output_ex.medication_time_by_ctime_class,input.global_parameters.time_horizon);
       out["n_exac_by_medication_class"]=AS_MATRIX_DOUBLE(output_ex.n_exac_by_medication_class);
 #endif
 
@@ -1658,9 +1664,8 @@ void update_output_ex(agent *ag)
   int time=floor((*ag).local_time+(*ag).time_at_creation);
   int local_time=floor((*ag).local_time);
 
-  if(time>0){
-    output_ex.annual_cost_ctime[time-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
-  }
+    output_ex.annual_cost_ctime[time]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+
 
   //if(time>=(*ag).time_at_creation)
   {
@@ -1697,6 +1702,7 @@ void update_output_ex(agent *ag)
       output_ex.sum_p_COPD_by_ctime_sex[time][(*ag).sex]+=odds/(1+odds);
       output_ex.sum_pack_years_by_ctime_sex[time][(*ag).sex]+=(*ag).pack_years;
       output_ex.sum_age_by_ctime_sex[time][(*ag).sex]+=(*ag).age_at_creation+(*ag).local_time;
+
 
 #if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS)>0
       output_ex.sum_weight_by_ctime_sex[time][(*ag).sex]+=(*ag).weight;
@@ -1821,10 +1827,17 @@ void payoffs_LPT(agent *ag)
 void medication_LPT(agent *ag)
 {
   #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+  int time=floor((*ag).local_time+(*ag).time_at_creation);
     for(int i=0;i<N_MED_CLASS;i++)
       if(((*ag).medication_status >> i) & 1)
       {
         output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+        if(time==0){
+          output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
+        }
+        else{
+          output_ex.medication_time_by_ctime_class[time-1][i]+=((*ag).local_time-(*ag).medication_LPT);
+        }
       }
   #endif
     // costs
@@ -1900,13 +1913,13 @@ double apply_case_detection(agent *ag)
         {
       if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
           {
-          p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
+          p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
           }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
-            p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
+            p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
           }
 
   if (rand_unif() < p_detection) {
@@ -1990,7 +2003,9 @@ double update_prevalent_diagnosis(agent *ag)
 
   double p_diagnosis = 0;
 
-   apply_case_detection(ag);
+   if((*ag).local_time+calendar_time>(*ag).case_detection_start_yr){
+     apply_case_detection(ag);
+   }
 
   if ((*ag).gpvisits!=0) {
 
@@ -3216,10 +3231,11 @@ double event_exacerbation_end_tte(agent *ag)
 void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time-1));
+  output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
   (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time-1));
   (*ag).exac_status=0;
 }
-
 
 
 
@@ -3731,7 +3747,7 @@ int Callocate_resources2()
   //runif_buffer=(double *)malloc(runif_buffer_size*sizeof(double));
   runif_buffer=new double[settings.runif_buffer_size];
   if(runif_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  runif_buffer_pointer=settings.runif_buffer_size; //invoikes fill next time;
+  runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
 
   rnorm_buffer=new double[settings.rnorm_buffer_size];
   if(rnorm_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
@@ -3781,8 +3797,14 @@ int Cmodel(int max_n_agents)
     max_n_agents--;
     //calendar_time=0; NO! calendar_time is set to zero at init_session. Cmodel should be resumable;
 
+    srand(last_id+1);
+    runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
+    rnorm_buffer_pointer=settings.rnorm_buffer_size;
+    rexp_buffer_pointer=settings.rexp_buffer_size;
+
     switch(settings.agent_creation_mode)
     {
+
     case agent_creation_mode_one:
       ag=create_agent(&smith,last_id);
       break;
@@ -3811,6 +3833,8 @@ int Cmodel(int max_n_agents)
 
     while(calendar_time+(*ag).local_time<input.global_parameters.time_horizon && (*ag).alive && (*ag).age_at_creation+(*ag).local_time<MAX_AGE)
     {
+
+
       double tte=input.global_parameters.time_horizon-calendar_time-(*ag).local_time;;
       int winner=-1;
       double temp;
