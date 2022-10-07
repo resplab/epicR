@@ -1535,6 +1535,7 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   double medication_time_by_class[N_MED_CLASS];
+  double medication_time_by_ctime_class[1000][N_MED_CLASS];
   double n_exac_by_medication_class[N_MED_CLASS][3];
 #endif
 
@@ -1643,6 +1644,7 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION)>0
       out["medication_time_by_class"]=AS_VECTOR_DOUBLE(output_ex.medication_time_by_class);
+      out["medication_time_by_ctime_class"]=AS_MATRIX_DOUBLE_SIZE(output_ex.medication_time_by_ctime_class,input.global_parameters.time_horizon);
       out["n_exac_by_medication_class"]=AS_MATRIX_DOUBLE(output_ex.n_exac_by_medication_class);
 #endif
 
@@ -1658,9 +1660,8 @@ void update_output_ex(agent *ag)
   int time=floor((*ag).local_time+(*ag).time_at_creation);
   int local_time=floor((*ag).local_time);
 
-  if(time>0){
-    output_ex.annual_cost_ctime[time-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
-  }
+    output_ex.annual_cost_ctime[time]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+
 
   //if(time>=(*ag).time_at_creation)
   {
@@ -1697,6 +1698,7 @@ void update_output_ex(agent *ag)
       output_ex.sum_p_COPD_by_ctime_sex[time][(*ag).sex]+=odds/(1+odds);
       output_ex.sum_pack_years_by_ctime_sex[time][(*ag).sex]+=(*ag).pack_years;
       output_ex.sum_age_by_ctime_sex[time][(*ag).sex]+=(*ag).age_at_creation+(*ag).local_time;
+
 
 #if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS)>0
       output_ex.sum_weight_by_ctime_sex[time][(*ag).sex]+=(*ag).weight;
@@ -1821,10 +1823,17 @@ void payoffs_LPT(agent *ag)
 void medication_LPT(agent *ag)
 {
   #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+  int time=floor((*ag).local_time+(*ag).time_at_creation);
     for(int i=0;i<N_MED_CLASS;i++)
       if(((*ag).medication_status >> i) & 1)
       {
         output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+        if(time==0){
+          output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
+        }
+        else{
+          output_ex.medication_time_by_ctime_class[time-1][i]+=((*ag).local_time-(*ag).medication_LPT);
+        }
       }
   #endif
     // costs
@@ -3216,10 +3225,11 @@ double event_exacerbation_end_tte(agent *ag)
 void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time-1));
+  output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
   (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time-1));
   (*ag).exac_status=0;
 }
-
 
 
 
