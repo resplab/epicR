@@ -1176,6 +1176,7 @@ struct agent
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
+  int case_detection_eligible;
   int last_case_detection;
   double p_case_detection[20];
   int case_detection_start_yr;
@@ -1584,6 +1585,7 @@ struct output_ex
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
   int n_case_detection_by_ctime[1000][2];
+  int n_case_detection_eligible;
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1698,6 +1700,7 @@ List Cget_output_ex()
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
+    out["n_case_detection_eligible"]=output_ex.n_case_detection_eligible,
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -2008,6 +2011,7 @@ double apply_case_detection(agent *ag)
       if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
           {
           p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
+          (*ag).case_detection_eligible=1;
           }
         }
 
@@ -2272,6 +2276,7 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).smoking_at_diagnosis = 0;
 (*ag).smoking_cessation = 0;
 (*ag).case_detection = 0;
+(*ag).case_detection_eligible = 0;
 (*ag).last_case_detection = 0;
 
 (*ag).tmp_exac_rate = 0;
@@ -2703,7 +2708,6 @@ agent *event_end_process(agent *ag)
   //If it falls after that still we ignore as it is a partially observed year.
 #endif
 #if OUTPUT_EX>1
-  //output_ex.annual_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
   //  output_ex.cumul_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost; // accounting for residual last year, for consistency with output.total_qaly and   output.total_cost
   //  output_ex.cumul_cost_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_cost;
   //  output_ex.cumul_qaly_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_qaly;
@@ -2713,6 +2717,8 @@ agent *event_end_process(agent *ag)
   //Rprintf("age at death=%f\n",age);
   if((*ag).gold==0) output_ex.cumul_non_COPD_time+=(*ag).local_time;
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
+
+  if((*ag).case_detection_eligible==1) output_ex.n_case_detection_eligible+=1;
 
   double time=(*ag).time_at_creation+(*ag).local_time;
   while(time>(*ag).time_at_creation)
