@@ -884,8 +884,8 @@ validate_exacerbation <- function(base_agents=1e4) {
 
 
   df <- as.data.frame(Exac_per_GOLD)
-  dfm <- reshape2::melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
-  plot_Exac_per_GOLD <- ggplot2::ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) + scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +  theme_tufte(base_size=14, ticks=F)  +
+  dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
+  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) + scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +  theme_tufte(base_size=14, ticks=F)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge")   + ylab ("Rate") + labs(caption = "Total rate of exacerbations per year for all patients") + scale_fill_manual(values = c("#123456", "#FBB917"))
   plot(plot_Exac_per_GOLD)
 }
