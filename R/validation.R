@@ -795,6 +795,8 @@ validate_lung_function <- function() {
 #' @export
 validate_exacerbation <- function(base_agents=1e4) {
 
+
+  #old exacerbation validation
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   #settings$agent_stack_size <- 0
@@ -825,15 +827,17 @@ validate_exacerbation <- function(base_agents=1e4) {
   }
   terminate_session()
 
+  message("Exacerbation Rates per GOLD stages:")
+
   GOLD_I <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1])
-
   GOLD_II <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2])
-
   GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3])
-
   GOLD_IV<- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4])
 
-  return(list(exacRateGOLDI = GOLD_I, exacRateGOLDII = GOLD_II, exacRateGOLDIII = GOLD_III, exacRateGOLDIV = GOLD_IV))
+  message(paste0("exacRateGOLDI   = ", round(GOLD_I  , 2)))
+  message(paste0("exacRateGOLDII  = ", round(GOLD_II , 2)))
+  message(paste0("exacRateGOLDIII = ", round(GOLD_III, 2)))
+  message(paste0("exacRateGOLDIV  = ", round(GOLD_IV , 2)))
 }
 
 
