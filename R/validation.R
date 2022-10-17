@@ -876,17 +876,22 @@ validate_exacerbation <- function(base_agents=1e4) {
   #----------------------------All ------------------------------------
   #-------------------------------------------------------------------------
 
-  Exac_per_GOLD <- matrix (NA, nrow = 4, ncol =3)
-  colnames(Exac_per_GOLD) <- c("GOLD", "EPIC", "Hoogendoorn")
+  Exac_per_GOLD <- matrix (NA, nrow = 4, ncol =4)
+  colnames(Exac_per_GOLD) <- c("GOLD", "EPIC", "Hoogendoorn", "ACCEPT")
+  # ACCEPT data is rates from a join of ECLIPSE, MACRO, OPTIMAL and STATCOPE.
   Exac_per_GOLD[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
   Exac_per_GOLD[1:4, 2] <- round(x=as.data.frame(table(exac_events[, "gold"]))[, 2]/Follow_up_Gold, digit = 2)
   Exac_per_GOLD[1:4, 3] <- c(0.82, 1.17, 1.61, 2.10)
-
+  Exac_per_GOLD[1:4, 4] <- c(0.58, 0.91, 1.41, 1.69)
 
   df <- as.data.frame(Exac_per_GOLD)
-  dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
-  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) + scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +  theme_tufte(base_size=14, ticks=F)  +
-    geom_bar(aes(fill = variable), stat = "identity", position = "dodge")   + ylab ("Rate") + labs(caption = "Total rate of exacerbations per year for all patients") + scale_fill_manual(values = c("#123456", "#FBB917"))
+  dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn", "ACCEPT")],id.vars = 1)
+  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+    scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+    theme_tufte(base_size=14, ticks=F)  +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+    ylab ("Rate") +
+    labs(caption = "Total rate of exacerbations per year for all patients")
   plot(plot_Exac_per_GOLD)
 
   message("Total rate of exacerbation in all patients (1.5 per year in Hoogendoorn): ", round(nrow(exac_events)/sum(Follow_up_Gold), 2))
@@ -902,6 +907,8 @@ validate_exacerbation <- function(base_agents=1e4) {
   rate2017_sevExac <-(output_ex$n_exac_by_ctime_severity[3,3]+output_ex$n_exac_by_ctime_severity[3,4])*(100000/sum(output_ex$n_alive_by_ctime_sex[3,]))
   rate2017_sevExac <- round(rate2017_sevExac, 2)
   message(paste0("Rate in 2017: ", rate2017_sevExac))
+
+
 
 }
 
