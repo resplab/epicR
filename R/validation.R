@@ -889,8 +889,19 @@ validate_exacerbation <- function(base_agents=1e4) {
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge")   + ylab ("Rate") + labs(caption = "Total rate of exacerbations per year for all patients") + scale_fill_manual(values = c("#123456", "#FBB917"))
   plot(plot_Exac_per_GOLD)
 
-  message("Total rate of exacerbation in all patients (1.5 per year in Hoogendoorn):")
-  message(round(nrow(exac_events)/sum(Follow_up_Gold), 2))
+  message("Total rate of exacerbation in all patients (1.5 per year in Hoogendoorn): ", round(nrow(exac_events)/sum(Follow_up_Gold), 2))
+
+  #--------------------------- total number of severe exacerbations:
+
+  message("Is the rate of severe and very severe exacerbations around 477 per CIHI?")
+  n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (output_ex$n_exac_by_ctime_severity[,3]+output_ex$n_exac_by_ctime_severity[,4])* (100000/rowSums(output_ex$n_alive_by_ctime_sex)))
+  avgRate_sevExac <- mean(n_exac$Severe_Exacerbations[round(nrow(n_exac)/2,0):nrow(n_exac)])
+  avgRate_sevExac <- round(avgRate_sevExac, 2)
+  message(paste0("Average rate during 20 years: ", avgRate_sevExac))
+
+  rate2017_sevExac <-(output_ex$n_exac_by_ctime_severity[3,3]+output_ex$n_exac_by_ctime_severity[3,4])*(100000/sum(output_ex$n_alive_by_ctime_sex[3,]))
+  rate2017_sevExac <- round(rate2017_sevExac, 2)
+  message(paste0("Rate in 2017: ", rate2017_sevExac))
 
 }
 
