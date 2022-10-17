@@ -807,6 +807,9 @@ validate_exacerbation <- function(base_agents=1e4) {
 
   run(input = input)
   op <- Cget_output()
+  output_ex <- Cget_output_ex()
+
+
   all_events <- as.data.frame(Cget_all_events_matrix())
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
@@ -825,9 +828,39 @@ validate_exacerbation <- function(base_agents=1e4) {
       Follow_up_Gold[all_events[i, "gold"]] = Follow_up_Gold[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
         last_GOLD_transition_time
   }
+
+
+  #----------------------------DIAGNOSED ------------------------------------
+  #-------------------------------------------------------------------------
+
+  all_events_diagnosed          <- subset(all_events, diagnosis > 0 & gold > 0 )
+  exac_events_diagnosed         <- subset(all_events_diagnosed, event == 5 )
+  sev_exac_events__diagnosed    <- subset(all_events_diagnosed, event == 5 & (exac_status == 3 | exac_status == 4) )
+  mod_sev_exac_events_diagnosed <- subset(all_events_diagnosed, event == 5 & (exac_status == 3 | exac_status == 4 | exac_status == 2) )
+  exit_events__diagnosed        <- subset(all_events_diagnosed, event == 14)
+
+  Follow_up_Gold_diagnosed <- c(0, 0, 0, 0)
+  last_GOLD_transition_time_diagnosed <- 0
+  for (i in 2:dim(all_events_diagnosed)[1]) {
+    if ((all_events_diagnosed[i, "id"] != all_events_diagnosed[i - 1, "id"]))
+      last_GOLD_transition_time_diagnosed <- 0
+    if ((all_events_diagnosed[i, "id"] == all_events_diagnosed[i - 1, "id"]) & (all_events_diagnosed[i, "gold"] != all_events_diagnosed[i - 1, "gold"])) {
+      Follow_up_Gold_diagnosed[all_events_diagnosed[i - 1, "gold"]] = Follow_up_Gold_diagnosed[all_events_diagnosed[i - 1, "gold"]] + (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"]) -
+        last_GOLD_transition_time_diagnosed
+      last_GOLD_transition_time_diagnosed <- (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"])
+    }
+    if (all_events_diagnosed[i, "event"] == 14)
+      Follow_up_Gold_diagnosed[all_events_diagnosed[i, "gold"]] = Follow_up_Gold_diagnosed[all_events_diagnosed[i, "gold"]] + (all_events_diagnosed[i, "local_time"]-all_events_diagnosed[i, "time_at_diagnosis"]) -
+        last_GOLD_transition_time_diagnosed
+  }
+
+
   terminate_session()
 
-  message("Exacerbation Rates per GOLD stages:")
+  #----------------------------All ------------------------------------
+  #-------------------------------------------------------------------------
+
+  message("Exacerbation Rates per GOLD stages for all patients:")
 
   GOLD_I <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1])
   GOLD_II <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2])
@@ -838,6 +871,23 @@ validate_exacerbation <- function(base_agents=1e4) {
   message(paste0("exacRateGOLDII  = ", round(GOLD_II , 2)))
   message(paste0("exacRateGOLDIII = ", round(GOLD_III, 2)))
   message(paste0("exacRateGOLDIV  = ", round(GOLD_IV , 2)))
+
+
+  #----------------------------All ------------------------------------
+  #-------------------------------------------------------------------------
+
+  Exac_per_GOLD <- matrix (NA, nrow = 4, ncol =3)
+  colnames(Exac_per_GOLD) <- c("GOLD", "EPIC", "Hoogendoorn")
+  Exac_per_GOLD[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
+  Exac_per_GOLD[1:4, 2] <- round(x=as.data.frame(table(exac_events[, "gold"]))[, 2]/Follow_up_Gold, digit = 2)
+  Exac_per_GOLD[1:4, 3] <- c(0.82, 1.17, 1.61, 2.10)
+
+
+  df <- as.data.frame(Exac_per_GOLD)
+  dfm <- reshape2::melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
+  plot_Exac_per_GOLD <- ggplot2::ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) + scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +  theme_tufte(base_size=14, ticks=F)  +
+    geom_bar(aes(fill = variable), stat = "identity", position = "dodge")   + ylab ("Rate") + labs(caption = "Total rate of exacerbations per year for all patients") + scale_fill_manual(values = c("#123456", "#FBB917"))
+  plot(plot_Exac_per_GOLD)
 }
 
 
