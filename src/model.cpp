@@ -1586,6 +1586,7 @@ struct output_ex
   int n_Diagnosed_by_ctime_severity[1000][5];
   int n_case_detection_by_ctime[1000][2];
   int n_case_detection_eligible;
+  int n_diagnosed_true_total;
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1701,6 +1702,7 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
     out["n_case_detection_eligible"]=output_ex.n_case_detection_eligible,
+    out["n_diagnosed_true_total"]=output_ex.n_diagnosed_true_total,
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -2719,6 +2721,7 @@ agent *event_end_process(agent *ag)
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
 
   if((*ag).case_detection_eligible==1) output_ex.n_case_detection_eligible+=1;
+  if((*ag).diagnosis>0 && (*ag).gold>0) output_ex.n_diagnosed_true_total+=1;
 
   double time=(*ag).time_at_creation+(*ag).local_time;
   while(time>(*ag).time_at_creation)
