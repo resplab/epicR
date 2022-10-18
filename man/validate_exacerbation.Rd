@@ -4,7 +4,7 @@
 \alias{validate_exacerbation}
 \title{Returns results of validation tests for exacerbation rates}
 \usage{
-validate_exacerbation(base_agents = 10000)
+validate_exacerbation(base_agents = 10000, inputs = NULL)
 }
 \arguments{
 \item{base_agents}{Number of agents in the simulation. Default is 1e4.}

@@ -791,7 +791,7 @@ validate_lung_function <- function() {
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
 #' @return validation test results
 #' @export
-validate_exacerbation <- function(base_agents=1e4) {
+validate_exacerbation <- function(base_agents=1e4, input=NULL) {
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
@@ -799,7 +799,7 @@ validate_exacerbation <- function(base_agents=1e4) {
   settings$n_base_agents <- base_agents
   #settings$event_stack_size <- 1
   init_session(settings = settings)
-  input <- model_input$values
+  if (is.null(input)) {input <- model_input$values}
 
   run(input = input)
   op <- Cget_output()
