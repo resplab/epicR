@@ -31,7 +31,7 @@ test_that("In untreated patients:
 
   expect_lt(undiag_exacrate, diag_exacrate)
 
-  # (3a) The overall rate of exacerbations increases by Gold stage
+  # (3a) The overall rate of exacerbations increases by GOLD stage
   diag_exacrate_gold <- rowSums(output_ex$n_exac_by_gold_severity_diagnosed)/
                             colSums(output_ex$n_Diagnosed_by_ctime_severity[,2:5])
 

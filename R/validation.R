@@ -658,8 +658,6 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
 
 
-
-
 #' Returns results of validation tests for comorbidities
 #' @param n_sim number of agents
 #' @return validation test results
@@ -795,8 +793,6 @@ validate_lung_function <- function() {
 #' @export
 validate_exacerbation <- function(base_agents=1e4) {
 
-
-  #old exacerbation validation
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   #settings$agent_stack_size <- 0
@@ -915,13 +911,12 @@ validate_exacerbation <- function(base_agents=1e4) {
 
   df <- as.data.frame(Exac_per_GOLD)
   dfm <- melt(df[,c("GOLD", "EPIC", "CanCOLD")],id.vars = 1)
-  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+  ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
     theme_tufte(base_size=14, ticks=F)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for all patients")
-  plot(plot_Exac_per_GOLD)
 
   message("Total rate of exacerbation in all patients (0.39 per year in CanCOLD): ", total_rate)
 
@@ -951,13 +946,13 @@ validate_exacerbation <- function(base_agents=1e4) {
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
   dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn", "ACCEPT")],id.vars = 1)
-  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+  ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
     theme_tufte(base_size=14, ticks=F)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for diagnosed patients")
-  plot(plot_Exac_per_GOLD)
+
 
   message("Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): ", round(nrow(exac_events_diagnosed)/sum(Follow_up_GOLD_diagnosed), 2))
 
@@ -981,13 +976,13 @@ validate_exacerbation <- function(base_agents=1e4) {
 
   df <- as.data.frame(Exac_per_GOLD_undiagnosed)
   dfm <- melt(df[,c("GOLD", "EPIC", "CanCOLD")],id.vars = 1)
-  plot_Exac_per_GOLD <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+ ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
     theme_tufte(base_size=14, ticks=F)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for undiagnosed patients")
-  plot(plot_Exac_per_GOLD)
+
 
   message("Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): ",
           total_rate_undiagnosed)
