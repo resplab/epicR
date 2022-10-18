@@ -789,6 +789,7 @@ validate_lung_function <- function() {
 
 #' Returns results of validation tests for exacerbation rates
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @param input EPIC inputs
 #' @return validation test results
 #' @export
 validate_exacerbation <- function(base_agents=1e4, input=NULL) {
