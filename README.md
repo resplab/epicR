@@ -118,13 +118,60 @@ remotes::install_github('resplab/epicR')
 
 # Quick Guide
 
+To run EPIC with default inputs and settings, use the code snippet below. 
 ```
 library(epicR)
+init_session()
 run()
 Cget_output()
 terminate_session()
 ```
+Default inputs can be retrieved with `get_input()`, changed as needed, and resubmitted as a parameter to the run function:
+```
+init_session()
+input <- get_input()
+input$values$global_parameters$time_horizon <- 5
+run(input=input$values)
+results <- Cget_output()
+resultsExra <- Cget_output_ex()
+terminate_session()
 
+```
+
+For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by setting  `record_mode` as a `setting`. 
+
+```
+settings <- get_default_settings()
+settings$record_mode <- 2
+settings$n_base_agents <- 1e4
+init_session(settings = settings)
+run()
+results <- Cget_output()
+events <- as.data.frame(Cget_all_events_matrix())
+head(events)
+terminate_session()
+
+```
+Note that you might need a large amount of memory available, if you want to collect event history for a large number of patients. 
+
+In the events data frame, each type of event has a code corresponding to the table below:
+
+|Event|No.|
+|-----|---|
+|start |0 |
+|annual|1 |
+|birthday| 2 |
+|smoking change | 3|
+|COPD incidence | 4|
+|Exacerbation | 5 |
+|Exacerbation end| 6|
+|Death by Exacerbation | 7|
+|Doctor visit | 8|
+|Medication change | 9|
+|Background death | 13|
+|End | 14|
+
+  
 ## Closed-cohort analysis
 
 Closed-cohort analysis can be specified by changing the appropriate input parameters. 
@@ -132,6 +179,7 @@ Closed-cohort analysis can be specified by changing the appropriate input parame
 ```
 library(epicR)
 input <- get_input(closed_cohort = 1)$values
+init_session()
 run(input=input)
 Cget_output()
 terminate_session()

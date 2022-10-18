@@ -1,6 +1,7 @@
 session_env<-new.env()
 session_env$global_error_code_chain<-NULL
 session_env$global_error_message_chain<-NULL
+session_env$initialized <- FALSE
 
 
 session_env$record_mode<-c(
@@ -58,6 +59,7 @@ init_session <- function(settings = get_default_settings()) {
     apply_settings(settings)
   get_input()
   Cinit_session()
+  session_env$initialized  <- TRUE
   return(Callocate_resources())
 }
 
@@ -66,6 +68,7 @@ init_session <- function(settings = get_default_settings()) {
 #' @export
 terminate_session <- function() {
   message("Terminating the session")
+  session_env$initialized <- FALSE
   return(Cdeallocate_resources())
 }
 
@@ -206,7 +209,9 @@ run <- function(max_n_agents = NULL, input = NULL) {
 
   #Cinit_session()
   #In the updated version (2019.02.21) user can submit partial input. So better first set the input with default values so that partial inputs are incremental.
-
+  if (!(session_env$initialized)) {
+    stop("Session not initialized. Please use init_session() to start a new session")
+  }
   reset_errors()
 
   default_input<-get_input()$values

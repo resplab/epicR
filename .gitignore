@@ -4,5 +4,8 @@
 *.csv
 *.xlsx
 *.md
-*.Rmd
+./*.Rmd
 *.tiff
+inst/doc
+/doc/
+/Meta/

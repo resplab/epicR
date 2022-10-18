@@ -1,0 +1,122 @@
+---
+title: "Getting Started with EPIC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with EPIC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+This document is a guide to basics of running a simulation with the Evaluation Platform in COPD (EPIC) using epicR. 
+
+EPIC is a discrete-event simulation model for COPD, and models the entire pathway of care, from disease incidence, to diagnosis, treatment, and outcomes. 
+
+EPIC simulates random Canadians, known in the model as agents. Agents have demographic and biological/medical characteristics, including symptoms. 
+
+The operations of the model is controlled with inputs and settings. The function `get_input()` returns the default set of inputs, while `get_default_settings()` does the same for settings. 
+
+When running the model, the user has the option of changing inputs and settings.
+
+Let's go over an example. 
+
+First, we need to load the model: 
+```{r setup}
+library(epicR)
+```
+
+EPIC is a session-based model, which means at beginning and end of our run, we need to open and terminate a session. When a session is initialized, required memory resources are allocated to the model. 
+
+Let's initialize a session and run the model with default parameters: 
+
+```{r initialize}
+init_session()
+run()
+```
+
+Both the `init_session` and the `run` functions are supposed to return 0 if they encounter no error. 
+
+Once we ran the model, we probably want to see the results of that run. The most basic set of results can be retrieved with `Cget_output()`:
+```{r basicOutput}
+results <- Cget_output()
+
+```
+
+These are high-level outcomes of the simulation. We can get more detailed results with the `Cget_output_ex()` function, which includes many tables that give results over time horizon of the model. Note that we should always have to terminate a session after we are done with it. 
+```{r}
+results_ex<-Cget_output_ex() 
+names(results_ex)
+terminate_session()
+```
+
+Here, we managed to run the model with its default inputs and settings. But what were those inputs? We can explore them using `get_input()`:
+
+```{r}
+inputs <- get_input()
+names(inputs)
+names(inputs$values)
+names(inputs$values$global_parameters)
+inputs$values$global_parameters$time_horizon
+
+```
+
+As you can see the example above, input is a list, with values, help, and references. To change any input, we need to change its value. Help and references are there to tell us what each input parameter is, and where did it come from. By changing inputs, we can change parameters such as time horizon, proportion of female patients, costs and utilities, as well as many regression equations that are used in the model.
+
+Similarly, we can retrieve default settings and change them if necessary. The most useful setting is record_mode, which specifies whether the model should record outputs as aggregates or at the individual patient level. If we set record_mode to 2, we can collect individual patient level data from the model. 
+
+In the example below, we call the model with modified inputs and settings:
+
+```{r}
+settings <- get_default_settings()
+settings$record_mode <- 2
+settings$n_base_agents <- 1e4
+init_session(settings = settings)
+
+input <- get_input()
+input$values$global_parameters$time_horizon <- 5
+run(input=input$values)
+
+results <- Cget_output()
+events <- as.data.frame(Cget_all_events_matrix())
+head(events)
+terminate_session()
+```
+
+Note that you might need a large amount of memory available, if you want to collect event history for a large number of patients. 
+
+In the events data frame, each type of event has a code corresponding to the table below:
+
+|Event|No.|
+|-----|---|
+|start |0 |
+|annual|1 |
+|birthday| 2 |
+|smoking change | 3|
+|COPD incidence | 4|
+|Exacerbation | 5 |
+|Exacerbation end| 6|
+|Death by Exacerbation | 7|
+|Doctor visit | 8|
+|Medication change | 9|
+|Background death | 13|
+|End | 14|
+
+
+By default, EPIC is an open population model that captures population trends such as growth, immigration, and emigration. We can change inputs to run a closed-cohort analysis, if need be: 
+```{r}
+library(epicR)
+input <- get_input(closed_cohort = 1)$values
+init_session()
+run(input=input)
+Cget_output()
+terminate_session()
+```
+
+These are the basics of running a simulation in EPIC. There are many other useful functions in the package, including validation functions that allow the user to check model validation.
+
+

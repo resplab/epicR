@@ -10,6 +10,7 @@
 #' @import ggthemes
 #' @import dplyr
 #' @importFrom scales pretty_breaks
+#' @importFrom reshape2 melt
 #' @import jsonlite
 NULL
 

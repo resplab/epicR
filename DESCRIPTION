@@ -1,6 +1,6 @@
 Package: epicR
 Title: R Package for Evaluation Platform in COPD
-Version: 0.30.1
+Version: 0.31.4
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")),
@@ -27,12 +27,16 @@ Imports:
     scales,
     tidyr,
     tibble,
-    dplyr
+    dplyr,
+    reshape2
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests:
     testthat (>= 3.0.0),
     openxlsx,
     survival,
-    survminer
+    survminer,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
+VignetteBuilder: knitr
