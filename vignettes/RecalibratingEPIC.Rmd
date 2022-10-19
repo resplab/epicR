@@ -51,3 +51,10 @@ inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, 
 validate_exacerbation(5e4, inputs)
 ```
 
+Let's lower GOLD2 dramatically: 
+
+```{r validationNewEquation4}
+inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = -0.5 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
+validate_exacerbation(5e4, inputs)
+```
+
