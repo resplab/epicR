@@ -25,7 +25,7 @@ inputs <- get_input()$values
 validate_exacerbation(5e4, inputs)
 ```
 
-The current input equation for exacerbations include a term for diagnosis: `r input$exacerbation$ln_rate_betas `
+The current input equation for exacerbations include a term for diagnosis: `r inputs$exacerbation$ln_rate_betas`
 
 As a result, whether a person is diagnosed or not will affect the exacerbation rates, which does not have causal face validity, and is particularly undesirable for case detection studies that assess diagnosis. 
 
