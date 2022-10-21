@@ -42,7 +42,7 @@ validate_exacerbation(5e4, inputs)
 
 Let's try to improve that by lowering GOLD coefficients:
 
-```{r validationNewEquation2}
+```{r validationNewEquation1}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0, gold1 = 0.3 , gold2 = 0.1 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
@@ -51,7 +51,7 @@ validate_exacerbation(5e4, inputs)
 
 We can now lower GOLD2 coefficient even more and perhaps increase smoking coefficient to compensate for the loss in the diagnosed patients.
 
-```{r validationNewEquation3}
+```{r validationNewEquation2}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = 0.05 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
@@ -60,7 +60,7 @@ validate_exacerbation(5e4, inputs)
 
 Let's lower GOLD2 dramatically:
 
-```{r validationNewEquation4}
+```{r validationNewEquation3}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = -0.5 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
@@ -69,7 +69,16 @@ validate_exacerbation(5e4, inputs)
 
 Bring GOLD2 up a bit:
 
-```{r validationNewEquation5}
+```{r validationNewEquation4}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = -0.2 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
+validate_exacerbation(5e4, inputs)
+```
+
+### Recalibration 5: 
+
+GOLD2 back a bit again.
+
+```{r validationNewEquation5}
+inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = -0.3 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
