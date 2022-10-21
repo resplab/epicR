@@ -1001,7 +1001,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_diagnosed[1:4, 4] <- c(0.10, 0.14, 0.32, 0.42)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
-  dfm <- melt(df[,c("GOLD", "EPIC", "ACCEPT")],id.vars = 1)
+  dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn", "ACCEPT")],id.vars = 1)
   plot <-
     ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
