@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 library(epicR)
 ```
 
+### Current Calibration
+
 Assessing calibration of exacerbations with current EPIC's equations:
 
 ```{r validation}
@@ -27,34 +29,38 @@ validate_exacerbation(5e4, inputs)
 
 The current input equation for exacerbations include a term for diagnosis: `r inputs$exacerbation$ln_rate_betas`
 
-As a result, whether a person is diagnosed or not will affect the exacerbation rates, which does not have causal face validity, and is particularly undesirable for case detection studies that assess diagnosis. 
+As a result, whether a person is diagnosed or not will affect the exacerbation rates, which does not have causal face validity, and is particularly undesirable for case detection studies that assess diagnosis.
 
-If we remove the diagnosis term, the calibration will look like this:
+If we remove the diagnosis term and go back to the previous calibration, it will look like this:
 
 ```{r validationNewEquation}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0, gold1 = 0.6 , gold2 = 0.35 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
 
-Let's try to improve that by lowering GOLD coefficients:
+### Recalibration 1: 
 
+Let's try to improve that by lowering GOLD coefficients:
 
 ```{r validationNewEquation2}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0, gold1 = 0.3 , gold2 = 0.1 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
 
-We can now lower GOLD2 coefficient even more and perhaps increase smoking coefficient to compensate for the loss in the diagnosed patients. 
+### Recalibration 2:
+
+We can now lower GOLD2 coefficient even more and perhaps increase smoking coefficient to compensate for the loss in the diagnosed patients.
 
 ```{r validationNewEquation3}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = 0.05 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
 
-Let's lower GOLD2 dramatically: 
+### Recalibration 3: 
+
+Let's lower GOLD2 dramatically:
 
 ```{r validationNewEquation4}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.5, gold1 = 0.3 , gold2 = -0.5 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
-
