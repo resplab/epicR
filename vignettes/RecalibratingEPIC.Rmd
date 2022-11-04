@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(epicR)
 ```
 
-### Current Calibration
+### Previous Calibration
 
 Assessing calibration of exacerbations with current EPIC's equations:
 
