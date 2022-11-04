@@ -20,16 +20,15 @@ library(epicR)
 
 ### Previous Calibration
 
-Assessing calibration of exacerbations with current EPIC's equations:
+Assessing calibration of exacerbations with previous EPIC's (v0.31.3) equations:
 
 ```{r validation}
 inputs <- get_input()$values
+input$exacerbation$ln_rate_betas = t(as.matrix(c(intercept = -3.4, female = 0, age = 0.04082 * 0.1, fev1 = -0, smoking_status = 0, gold1 = 1.4 , gold2 = 2.0 , gold3 = 2.4 , gold4 = 2.8 , diagnosis_effect = 0.9)))
 validate_exacerbation(5e4, inputs)
 ```
 
-The current input equation for exacerbations include a term for diagnosis: `r inputs$exacerbation$ln_rate_betas`
-
-As a result, whether a person is diagnosed or not will affect the exacerbation rates, which does not have causal face validity, and is particularly undesirable for case detection studies that assess diagnosis.
+This equation for exacerbations included a term for diagnosis. As a result, whether a person was diagnosed or not would affect the exacerbation rates, which does not have causal face validity, and is particularly undesirable for case detection studies that assess diagnosis.
 
 If we remove the diagnosis term and go back to the previous calibration, it will look like this:
 
@@ -37,6 +36,8 @@ If we remove the diagnosis term and go back to the previous calibration, it will
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0, gold1 = 0.6 , gold2 = 0.35 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
 validate_exacerbation(5e4, inputs)
 ```
+
+The following recalibrations were assesses and Recalibration 5 was implemented in `epicR v0.35.0`
 
 ### Recalibration 1:
 
