@@ -900,7 +900,8 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   colnames(Exac_per_GOLD) <- c("GOLD", "EPIC", "CanCOLD")
   # CanCOLD only available for GOLD 1 and 2. See doi: 10.1164/rccm.201509-1795OC
 
-  Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], sum(Follow_up_GOLD[2:4]))
+  Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], Follow_up_GOLD[2]) # Because CanCOLD is mostly GOLD2, here we compare EPIC's GOLD2 only instead of GOLD2+
+#  Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], sum(Follow_up_GOLD[2:4]))
   GOLD_counts_all       <- as.data.frame(table(exac_events[, "gold"]))[, 2]
   GOLD_counts_all       <- c(GOLD_counts_all[1], sum(GOLD_counts_all[2:4]))
 
@@ -1020,7 +1021,8 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_undiagnosed[1:3, 1] <- c("total", "gold1", "gold2+")
 
   Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1],
-                                         sum(Follow_up_GOLD_undiagnosed[2:4]))
+                                         Follow_up_GOLD_undiagnosed[2]) #Because CANCold is mostly GOLD2, we comprare to GOLD2 EPIC
+  #Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1], sum(Follow_up_GOLD_undiagnosed[2:4]))
   GOLD_counts_undiagnosed   <- as.data.frame(table(exac_events_undiagnosed[, "gold"]))[, 2]
   GOLD_counts_undiagnosed   <- c(GOLD_counts_undiagnosed[1],
                                  GOLD_counts_undiagnosed[2])

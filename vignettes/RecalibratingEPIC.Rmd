@@ -38,7 +38,7 @@ inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, 
 validate_exacerbation(5e4, inputs)
 ```
 
-### Recalibration 1: 
+### Recalibration 1:
 
 Let's try to improve that by lowering GOLD coefficients:
 
@@ -56,7 +56,7 @@ inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, 
 validate_exacerbation(5e4, inputs)
 ```
 
-### Recalibration 3: 
+### Recalibration 3:
 
 Let's lower GOLD2 dramatically:
 
@@ -65,7 +65,7 @@ inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, 
 validate_exacerbation(5e4, inputs)
 ```
 
-### Recalibration 4: 
+### Recalibration 4:
 
 Bring GOLD2 up a bit:
 
@@ -74,7 +74,7 @@ inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.7, female = 0, 
 validate_exacerbation(5e4, inputs)
 ```
 
-### Recalibration 5: 
+### Recalibration 5:
 
 GOLD2 back a bit again.
 
@@ -85,7 +85,7 @@ validate_exacerbation(5e4, inputs)
 
 ### Recalibration 6:
 
-Reducing intercept and adding to smoking term.
+Reducing intercept and adding to the smoking term.
 
 ```{r validationNewEquation6}
 inputs$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.4, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.7, gold1 = 0.3 , gold2 = -0.3 , gold3 = 0.08 , gold4 = -0.35 , diagnosis_effect = 0)))
