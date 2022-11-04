@@ -81,28 +81,47 @@
 
     
     
-<p>This document is a guide to basics of running a simulation with the Evaluation Platform in COPD (EPIC) using epicR.</p>
-<p>EPIC is a discrete-event simulation model for COPD, and models the entire pathway of care, from disease incidence, to diagnosis, treatment, and outcomes.</p>
-<p>EPIC simulates random Canadians, known in the model as agents. Agents have demographic and biological/medical characteristics, including symptoms.</p>
-<p>The operations of the model is controlled with inputs and settings. The function <code><a href="../reference/get_input.html">get_input()</a></code> returns the default set of inputs, while <code><a href="../reference/get_default_settings.html">get_default_settings()</a></code> does the same for settings.</p>
-<p>When running the model, the user has the option of changing inputs and settings.</p>
+<p>This document is a guide to basics of running a simulation with the
+Evaluation Platform in COPD (EPIC) using epicR.</p>
+<p>EPIC is a discrete-event simulation model for COPD, and models the
+entire pathway of care, from disease incidence, to diagnosis, treatment,
+and outcomes.</p>
+<p>EPIC simulates random Canadians, known in the model as agents. Agents
+have demographic and biological/medical characteristics, including
+symptoms.</p>
+<p>The operations of the model is controlled with inputs and settings.
+The function <code><a href="../reference/get_input.html">get_input()</a></code> returns the default set of inputs,
+while <code><a href="../reference/get_default_settings.html">get_default_settings()</a></code> does the same for
+settings.</p>
+<p>When running the model, the user has the option of changing inputs
+and settings.</p>
 <p>Let’s go over an example.</p>
 <p>First, we need to load the model:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span></code></pre></div>
-<p>EPIC is a session-based model, which means at beginning and end of our run, we need to open and terminate a session. When a session is initialized, required memory resources are allocated to the model.</p>
-<p>Let’s initialize a session and run the model with default parameters:</p>
+<p>EPIC is a session-based model, which means at beginning and end of
+our run, we need to open and terminate a session. When a session is
+initialized, required memory resources are allocated to the model.</p>
+<p>Let’s initialize a session and run the model with default
+parameters:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
 <span><span class="co">#&gt; [1] 0</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
-<p>Both the <code>init_session</code> and the <code>run</code> functions are supposed to return 0 if they encounter no error.</p>
-<p>Once we ran the model, we probably want to see the results of that run. The most basic set of results can be retrieved with <code><a href="../reference/Cget_output.html">Cget_output()</a></code>:</p>
+<p>Both the <code>init_session</code> and the <code>run</code> functions
+are supposed to return 0 if they encounter no error.</p>
+<p>Once we ran the model, we probably want to see the results of that
+run. The most basic set of results can be retrieved with
+<code><a href="../reference/Cget_output.html">Cget_output()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>These are high-level outcomes of the simulation. We can get more detailed results with the <code><a href="../reference/Cget_output_ex.html">Cget_output_ex()</a></code> function, which includes many tables that give results over time horizon of the model. Note that we should always have to terminate a session after we are done with it.</p>
+<p>These are high-level outcomes of the simulation. We can get more
+detailed results with the <code><a href="../reference/Cget_output_ex.html">Cget_output_ex()</a></code> function, which
+includes many tables that give results over time horizon of the model.
+Note that we should always have to terminate a session after we are done
+with it.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results_ex</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results_ex</span><span class="op">)</span></span>
@@ -168,7 +187,9 @@
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
-<p>Here, we managed to run the model with its default inputs and settings. But what were those inputs? We can explore them using <code><a href="../reference/get_input.html">get_input()</a></code>:</p>
+<p>Here, we managed to run the model with its default inputs and
+settings. But what were those inputs? We can explore them using
+<code><a href="../reference/get_input.html">get_input()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span></span>
@@ -184,9 +205,20 @@
 <span><span class="co">#&gt; [5] "closed_cohort"</span></span>
 <span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span></span>
 <span><span class="co">#&gt; [1] 20</span></span></code></pre></div>
-<p>As you can see the example above, input is a list, with values, help, and references. To change any input, we need to change its value. Help and references are there to tell us what each input parameter is, and where did it come from. By changing inputs, we can change parameters such as time horizon, proportion of female patients, costs and utilities, as well as many regression equations that are used in the model.</p>
-<p>Similarly, we can retrieve default settings and change them if necessary. The most useful setting is record_mode, which specifies whether the model should record outputs as aggregates or at the individual patient level. If we set record_mode to 2, we can collect individual patient level data from the model.</p>
-<p>In the example below, we call the model with modified inputs and settings:</p>
+<p>As you can see the example above, input is a list, with values, help,
+and references. To change any input, we need to change its value. Help
+and references are there to tell us what each input parameter is, and
+where did it come from. By changing inputs, we can change parameters
+such as time horizon, proportion of female patients, costs and
+utilities, as well as many regression equations that are used in the
+model.</p>
+<p>Similarly, we can retrieve default settings and change them if
+necessary. The most useful setting is record_mode, which specifies
+whether the model should record outputs as aggregates or at the
+individual patient level. If we set record_mode to 2, we can collect
+individual patient level data from the model.</p>
+<p>In the example below, we call the model with modified inputs and
+settings:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -204,12 +236,12 @@
 <span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   id local_time female time_at_creation age_at_creation pack_years gold event</span></span>
-<span><span class="co">#&gt; 1  0          0      1                0        40.45144          0    0     0</span></span>
-<span><span class="co">#&gt; 2  0          1      1                0        40.45144          0    0     1</span></span>
-<span><span class="co">#&gt; 3  0          2      1                0        40.45144          0    0     1</span></span>
-<span><span class="co">#&gt; 4  0          3      1                0        40.45144          0    0     1</span></span>
-<span><span class="co">#&gt; 5  0          4      1                0        40.45144          0    0     1</span></span>
-<span><span class="co">#&gt; 6  0          5      1                0        40.45144          0    0    14</span></span>
+<span><span class="co">#&gt; 1  0          0      0                0        55.12248          0    0     0</span></span>
+<span><span class="co">#&gt; 2  0          1      0                0        55.12248          0    0     1</span></span>
+<span><span class="co">#&gt; 3  0          2      0                0        55.12248          0    0     1</span></span>
+<span><span class="co">#&gt; 4  0          3      0                0        55.12248          0    0     1</span></span>
+<span><span class="co">#&gt; 5  0          4      0                0        55.12248          0    0     1</span></span>
+<span><span class="co">#&gt; 6  0          5      0                0        55.12248          0    0    14</span></span>
 <span><span class="co">#&gt;   FEV1 FEV1_slope FEV1_acceleration pred_FEV1 smoking_status localtime_at_COPD</span></span>
 <span><span class="co">#&gt; 1    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt; 2    0          0                 0         0              0                 0</span></span>
@@ -218,19 +250,19 @@
 <span><span class="co">#&gt; 5    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt; 6    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt;   age_at_COPD weight_at_COPD   height followup_after_COPD FEV1_baseline</span></span>
-<span><span class="co">#&gt; 1           0              0 1.636354                   0      3.327697</span></span>
-<span><span class="co">#&gt; 2           0              0 1.636354                   0      3.327697</span></span>
-<span><span class="co">#&gt; 3           0              0 1.636354                   0      3.327697</span></span>
-<span><span class="co">#&gt; 4           0              0 1.636354                   0      3.327697</span></span>
-<span><span class="co">#&gt; 5           0              0 1.636354                   0      3.327697</span></span>
-<span><span class="co">#&gt; 6           0              0 1.636354                   0      3.327697</span></span>
+<span><span class="co">#&gt; 1           0              0 1.816577                   0      2.107177</span></span>
+<span><span class="co">#&gt; 2           0              0 1.816577                   0      2.107177</span></span>
+<span><span class="co">#&gt; 3           0              0 1.816577                   0      2.107177</span></span>
+<span><span class="co">#&gt; 4           0              0 1.816577                   0      2.107177</span></span>
+<span><span class="co">#&gt; 5           0              0 1.816577                   0      2.107177</span></span>
+<span><span class="co">#&gt; 6           0              0 1.816577                   0      2.107177</span></span>
 <span><span class="co">#&gt;   exac_status cough phlegm wheeze dyspnea gpvisits diagnosis medication_status</span></span>
-<span><span class="co">#&gt; 1           0     0      0      0       0        0         0                 0</span></span>
-<span><span class="co">#&gt; 2           0     0      0      1       1        4         0                 0</span></span>
-<span><span class="co">#&gt; 3           0     0      1      0       0        4         0                 0</span></span>
-<span><span class="co">#&gt; 4           0     0      0      0       0        1         0                 0</span></span>
-<span><span class="co">#&gt; 5           0     0      0      0       1        0         0                 0</span></span>
-<span><span class="co">#&gt; 6           0     0      0      0       1        0         0                 0</span></span>
+<span><span class="co">#&gt; 1           0     1      1      1       0        0         0                 0</span></span>
+<span><span class="co">#&gt; 2           0     0      0      0       0        1         0                 0</span></span>
+<span><span class="co">#&gt; 3           0     0      0      0       0        0         0                 0</span></span>
+<span><span class="co">#&gt; 4           0     0      0      1       0        3         0                 0</span></span>
+<span><span class="co">#&gt; 5           0     0      0      0       0        4         0                 0</span></span>
+<span><span class="co">#&gt; 6           0     0      0      0       0        4         0                 0</span></span>
 <span><span class="co">#&gt;   case_detection cumul_cost cumul_qaly time_at_diagnosis</span></span>
 <span><span class="co">#&gt; 1              0          0  0.0000000                 0</span></span>
 <span><span class="co">#&gt; 2              0          0  0.8349515                 0</span></span>
@@ -248,8 +280,10 @@
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
-<p>Note that you might need a large amount of memory available, if you want to collect event history for a large number of patients.</p>
-<p>In the events data frame, each type of event has a code corresponding to the table below:</p>
+<p>Note that you might need a large amount of memory available, if you
+want to collect event history for a large number of patients.</p>
+<p>In the events data frame, each type of event has a code corresponding
+to the table below:</p>
 <table class="table">
 <thead><tr class="header">
 <th>Event</th>
@@ -306,7 +340,9 @@
 </tr>
 </tbody>
 </table>
-<p>By default, EPIC is an open population model that captures population trends such as growth, immigration, and emigration. We can change inputs to run a closed-cohort analysis, if need be:</p>
+<p>By default, EPIC is an open population model that captures population
+trends such as growth, immigration, and emigration. We can change inputs
+to run a closed-cohort analysis, if need be:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
@@ -320,38 +356,40 @@
 <span><span class="co">#&gt; [1] 60001</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $cumul_time</span></span>
-<span><span class="co">#&gt; [1] 999459.1</span></span>
+<span><span class="co">#&gt; [1] 1000670</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $n_deaths</span></span>
-<span><span class="co">#&gt; [1] 20080</span></span>
+<span><span class="co">#&gt; [1] 20106</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $n_COPD</span></span>
-<span><span class="co">#&gt; [1] 11754</span></span>
+<span><span class="co">#&gt; [1] 11850</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_exac</span></span>
-<span><span class="co">#&gt; [1] 11054 51492  4803   383</span></span>
+<span><span class="co">#&gt; [1] 11797 53236  4865   370</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_exac_time</span></span>
-<span><span class="co">#&gt; [1]  1.887089 10.273333 10.558843  1.363328</span></span>
+<span><span class="co">#&gt; [1]  2.118915 10.287948  9.471113  1.364924</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_pack_years</span></span>
-<span><span class="co">#&gt; [1] 851816.6</span></span>
+<span><span class="co">#&gt; [1] 850208.7</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_doctor_visit</span></span>
 <span><span class="co">#&gt; [1] 0 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_cost</span></span>
-<span><span class="co">#&gt; [1] 176483507</span></span>
+<span><span class="co">#&gt; [1] 180292868</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_qaly</span></span>
-<span><span class="co">#&gt; [1] 639710.4</span></span>
+<span><span class="co">#&gt; [1] 640266.8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_diagnosed_time</span></span>
-<span><span class="co">#&gt; [1] 41605.03</span></span>
+<span><span class="co">#&gt; [1] 41922.58</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
-<p>These are the basics of running a simulation in EPIC. There are many other useful functions in the package, including validation functions that allow the user to check model validation.</p>
+<p>These are the basics of running a simulation in EPIC. There are many
+other useful functions in the package, including validation functions
+that allow the user to check model validation.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
