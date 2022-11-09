@@ -514,7 +514,7 @@ int rand_NegBin(double rate, double dispersion)
     double size=1/dispersion;
     double p=size/(size+rate);
     double alpha=size;
-    double beta=p/(1-p);
+    double beta=(1-p)/p;
 
     arma::vec lambda_arma = rand_gamma(1,alpha,beta);
     double lambda = lambda_arma(0);
