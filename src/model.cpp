@@ -1945,19 +1945,22 @@ void medication_LPT(agent *ag)
       {
         output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
         output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
-        output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
-        (*ag).smoking_cessation_count=0;
       }
   #endif
     // costs
     //(*ag).cumul_cost+=1;
-          (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
       if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
           (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
+
+    // smoking cessation count
+      output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
+      (*ag).smoking_cessation_count=0;
+
 
     (*ag).medication_LPT=(*ag).local_time;
 }
@@ -2100,7 +2103,6 @@ double update_prevalent_diagnosis(agent *ag)
       (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
       (*ag).smoking_cessation=1;
       (*ag).smoking_cessation_count=1;
-      medication_LPT(ag);
     }
 
   }
@@ -2174,7 +2176,6 @@ double update_prevalent_diagnosis(agent *ag)
       (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
       (*ag).smoking_cessation=1;
       (*ag).smoking_cessation_count=1;
-      medication_LPT(ag);
     }
 
   } else if ((*ag).gold==0) {
@@ -2248,7 +2249,6 @@ double update_prevalent_diagnosis(agent *ag)
               (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
               (*ag).smoking_cessation=1;
               (*ag).smoking_cessation_count=1;
-              medication_LPT(ag);
             }
 
       }
@@ -3263,7 +3263,6 @@ void event_exacerbation_process(agent *ag)
         (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
         (*ag).smoking_cessation=1;
         (*ag).smoking_cessation_count=1;
-        medication_LPT(ag);
       }
     }
   }
