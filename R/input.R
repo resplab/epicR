@@ -447,7 +447,7 @@ get_input <- function(age0 = 40,
 
   input_help$diagnosis$case_detection_start_yr <- "Year in which case detection programme is to begin."
   input$diagnosis$case_detection_start_yr <- 100
-  input_ref$diagnosis$case_detection_start_yr <- "Acts as on on/off switch for case detection. Default is 100 i.e. case detection is off. To apply case detection, start year must be less than the time horizon"
+  input_ref$diagnosis$case_detection_start_yr <- "Acts as on on/off switch for case detection. Default is 100 i.e. case detection is off. To apply case detection, start year must be less than the time horizon. If case detection is to be administered for entire time horizon then start year would be zero."
 
   # input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
   # Turns off and on the effect of diagnosis on smoking cessation
