@@ -470,22 +470,22 @@ get_input <- function(age0 = 40,
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods in the total population"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
-                                                  CDQ17= c(4.1013, 4.394, 11.56),
-                                                  FlowMeter= c(3.174, 1.6025, 30.46),
-                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 42.01))
+                                                  CDQ17= c(4.1013, 4.394, 11.91),
+                                                  FlowMeter= c(3.174, 1.6025, 30.81),
+                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 42.72))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Sichletidis et al 2011"
 
   input_help$diagnosis$case_detection_methods_eversmokers <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_eversmokers <- cbind(None=c(0, 0, 0),
-                                                              CDQ195= c(2.3848, 3.7262, 11.56),
-                                                              CDQ165= c(3.7336, 4.8098, 11.56),
-                                                              FlowMeter= c(3.1677, 2.6657, 24.33),
-                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 42.01))
+                                                              CDQ195= c(2.3848, 3.7262, 11.91),
+                                                              CDQ165= c(3.7336, 4.8098, 11.91),
+                                                              FlowMeter= c(3.1677, 2.6657, 24.68),
+                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 42.72))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Haroon et al. BMJ Open 2015"
 
   input_help$diagnosis$case_detection_methods_symptomatic <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_symptomatic <- cbind(None=c(0, 0, 0),
-                                                              FlowMeter= c(3.2705, 2.2735, 24.33))
+                                                              FlowMeter= c(3.2705, 2.2735, 24.68))
   input_ref$diagnosis$case_detection_methods_symptomatic <- "CanCOLD analysed on Sept 9, 2019"
 
 
@@ -630,7 +630,7 @@ get_input <- function(age0 = 40,
   input$cost$cost_outpatient_diagnosis <- 61.18
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
 
-  input$cost$cost_gp_visit <- 34.23
+  input$cost$cost_gp_visit <- 35.27
   input_help$cost$cost_gp_visit <- "Cost of GP visit"
 
   input$cost$cost_smoking_cessation <- 368.76
