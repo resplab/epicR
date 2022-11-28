@@ -521,7 +521,7 @@ int rand_NegBin_COPD(double rate, double dispersion)
 
     // arma::vec lambda_arma = rand_gamma(1,alpha,beta);
     // double lambda = lambda_arma(0);
-    double lambda = rand_gamma_COPD()*beta; // NOTE: THIS IS TECHINICALLY WRONG BUT IT'S CONSISTENT WITH ERROR IN MASTER BRANCH - SHOULD BE /BETA
+    double lambda = rand_gamma_COPD()*beta;
 
     int x=rand_Poisson(lambda);
     return(x);
@@ -547,7 +547,7 @@ int rand_NegBin_NCOPD(double rate, double dispersion)
 
     // arma::vec lambda_arma = rand_gamma(alpha,beta);
     // double lambda = lambda_arma(0);
-    double lambda = rand_gamma_NCOPD()*beta; // NOTE: THIS IS TECHINICALLY WRONG BUT IT'S CONSISTENT WITH ERROR IN MASTER BRANCH - SHOULD BE /BETA
+    double lambda = rand_gamma_NCOPD()*beta;
 
     int x=rand_Poisson(lambda);
     return(x);
@@ -1986,8 +1986,12 @@ void medication_LPT(agent *ag)
         }
 
     // smoking cessation count
+
+    if((*ag).smoking_cessation_count==1)
+    {
       output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
       (*ag).smoking_cessation_count=0;
+    }
 
 
     (*ag).medication_LPT=(*ag).local_time;
