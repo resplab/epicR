@@ -141,17 +141,17 @@ int last_id;
 //' @return the multivariate normal sample
 //' @export
 // [[Rcpp::export]]
-arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-  int ncols = sigma.n_cols;
-  arma::mat Y = arma::randn(n, ncols);
-  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
-}
+// arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
+//   int ncols = sigma.n_cols;
+//   arma::mat Y = arma::randn(n, ncols);
+//   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+// }
 
 
-arma::vec rand_gamma(int n, double alpha, double beta) {
-  arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
-  return lambda;
-}
+// arma::vec rand_gamma(int n, double alpha, double beta) {
+//   arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+//   return lambda;
+// }
 
 
 NumericMatrix array_to_Rmatrix(std::vector<double> x, int nCol)
@@ -220,15 +220,18 @@ struct settings
 
   int update_continuous_outcomes_mode;    //0:update only on fixed and end events; 1: update before any event;
 
+  int random_number_agent_refill;    //0: random numbers generated in bulk and refilled when emptied; 1: random numbers refilled before each agent creation
+
   int n_base_agents;
 
   int runif_buffer_size;
   int rnorm_buffer_size;
   int rexp_buffer_size;
-  // int rgamma_buffer_size;
+  int rgamma_buffer_size;
 
   int agent_stack_size;
   int event_stack_size;
+
 } settings;
 
 
@@ -253,11 +256,12 @@ int Cset_settings_var(std::string name,NumericVector value)
   }
   if(name=="agent_creation_mode") {settings.agent_creation_mode=value[0]; return(0);}
   if(name=="update_continuous_outcomes_mode") {settings.update_continuous_outcomes_mode=value[0]; return(0);}
+  if(name=="random_number_agent_refill") {settings.random_number_agent_refill=value[0]; return(0);}
   if(name=="n_base_agents") {settings.n_base_agents=value[0]; return(0);}
   if(name=="runif_buffer_size") {settings.runif_buffer_size=value[0]; return(0);}
   if(name=="rnorm_buffer_size") {settings.rnorm_buffer_size=value[0]; return(0);}
   if(name=="rexp_buffer_size") {settings.rexp_buffer_size=value[0]; return(0);}
-  // if(name=="rgamma_buffer_size") {settings.rgamma_buffer_size=value[0]; return(0);}
+  if(name=="rgamma_buffer_size") {settings.rgamma_buffer_size=value[0]; return(0);}
   if(name=="agent_stack_size") {settings.agent_stack_size=value[0]; return(0);}
   if(name=="event_stack_size") {settings.event_stack_size=value[0]; return(0);}
   return(ERR_INCORRECT_SETTING_VARIABLE);
@@ -274,11 +278,12 @@ List Cget_settings()
     Rcpp::Named("events_to_record")=AS_VECTOR_DOUBLE_SIZE(settings.events_to_record,settings.n_events_to_record),
     Rcpp::Named("agent_creation_mode")=settings.agent_creation_mode,
     Rcpp::Named("update_continuous_outcomes_mode")=settings.update_continuous_outcomes_mode,
+    Rcpp::Named("random_number_agent_refill")=settings.random_number_agent_refill,
     Rcpp::Named("n_base_agents")=settings.n_base_agents,
     Rcpp::Named("runif_buffer_size")=settings.runif_buffer_size,
     Rcpp::Named("rnorm_buffer_size")=settings.rnorm_buffer_size,
     Rcpp::Named("rexp_buffer_size")=settings.rexp_buffer_size,
-    // Rcpp::Named("rgamma_buffer_size")=settings.rgamma_buffer_size,
+    Rcpp::Named("rgamma_buffer_size")=settings.rgamma_buffer_size,
     Rcpp::Named("agent_stack_size")=settings.agent_stack_size,
     Rcpp::Named("event_stack_size")=settings.event_stack_size
   );
@@ -291,8 +296,8 @@ struct runtime_stats
   int n_runif_fills;
   int n_rnorm_fills;
   int n_rexp_fills;
-  // int n_rgamma_fills_COPD;
-  // int n_rgamma_fills_NCOPD;
+  int n_rgamma_fills_COPD;
+  int n_rgamma_fills_NCOPD;
 } runtime_stats;
 
 
@@ -313,7 +318,9 @@ List Cget_runtime_stats()
     Rcpp::Named("agent_size")=runtime_stats.agent_size,
     Rcpp::Named("n_runif_fills")=runtime_stats.n_runif_fills,
     Rcpp::Named("n_rnorm_fills")=runtime_stats.n_rnorm_fills,
-    Rcpp::Named("n_rexp_fills")=runtime_stats.n_rexp_fills
+    Rcpp::Named("n_rexp_fills")=runtime_stats.n_rexp_fills,
+    Rcpp::Named("n_rgamma_fills_COPD")=runtime_stats.n_rgamma_fills_COPD,
+    Rcpp::Named("n_rgamma_fills_NCOPD")=runtime_stats.n_rgamma_fills_NCOPD
   );
 }
 
@@ -332,11 +339,11 @@ long rnorm_buffer_pointer;
 double *rexp_buffer;
 long rexp_buffer_pointer;
 
-// double *rgamma_buffer_COPD;
-// long rgamma_buffer_pointer_COPD;
-//
-// double *rgamma_buffer_NCOPD;
-// long rgamma_buffer_pointer_NCOPD;
+double *rgamma_buffer_COPD;
+long rgamma_buffer_pointer_COPD;
+
+double *rgamma_buffer_NCOPD;
+long rgamma_buffer_pointer_NCOPD;
 
 
 
@@ -408,16 +415,14 @@ void rbvnorm(double rho, double x[2])
 
 
 
-// arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-//   int ncols = sigma.n_cols;
-//   arma::mat Y(n,ncols);
-//   for(int i = 0; i < n; i++){
-//     Y(i,i) = rand_norm();
-//   }
-//   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
-// }
-
-
+arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
+  int ncols = sigma.n_cols;
+  arma::mat Y(n,ncols);
+  for(int i = 0; i < ncols; i++){
+    Y(0,i) = rand_norm();
+  }
+  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+}
 
 
 
@@ -460,54 +465,52 @@ int rand_Poisson(double rate)
 }
 
 
-// double* R_rgamma(int n, double alpha, double beta)
-// {
-//   arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
-//   return(&lambda(0));
-// }
-// double* R_rgamma(int n, double alpha, double beta, double * address)
-// {
-//   arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
-//   std::copy(lambda.begin(),lambda.end(),address);
-//   return(address);
-// }
-// int rgamma_fill_COPD()
-// {
-//   R_rgamma(settings.rgamma_buffer_size, 1/0.431, 1, rgamma_buffer_COPD);
-//   rgamma_buffer_pointer_COPD=0;
-//   ++runtime_stats.n_rgamma_fills_COPD;
-//   return(0);
-// }
-// double rand_gamma_COPD()
-// {
-//   if(rgamma_buffer_pointer_COPD==settings.rgamma_buffer_size) {rgamma_fill_COPD();}
-//   double temp=rgamma_buffer_COPD[rgamma_buffer_pointer_COPD];
-//   rgamma_buffer_pointer_COPD++;
-//   return(temp);
-// }
-// int rgamma_fill_NCOPD()
-// {
-//   R_rgamma(settings.rgamma_buffer_size, 1/0.4093, 1, rgamma_buffer_NCOPD);
-//   rgamma_buffer_pointer_NCOPD=0;
-//   ++runtime_stats.n_rgamma_fills_NCOPD;
-//   return(0);
-// }
-// double rand_gamma_NCOPD()
-// {
-//   if(rgamma_buffer_pointer_NCOPD==settings.rgamma_buffer_size) {rgamma_fill_NCOPD();}
-//   double temp=rgamma_buffer_NCOPD[rgamma_buffer_pointer_NCOPD];
-//   rgamma_buffer_pointer_NCOPD++;
-//   return(temp);
-// }
+double* R_rgamma(int n, double alpha, double beta)
+{
+  arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+  return(&lambda(0));
+}
+double* R_rgamma(int n, double alpha, double beta, double * address)
+{
+  arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+  std::copy(lambda.begin(),lambda.end(),address);
+  return(address);
+}
+int rgamma_fill_COPD()
+{
+  R_rgamma(settings.rgamma_buffer_size, 1/0.431, 1, rgamma_buffer_COPD);
+  rgamma_buffer_pointer_COPD=0;
+  ++runtime_stats.n_rgamma_fills_COPD;
+  return(0);
+}
+double rand_gamma_COPD()
+{
+  if(rgamma_buffer_pointer_COPD==settings.rgamma_buffer_size) {rgamma_fill_COPD();}
+  double temp=rgamma_buffer_COPD[rgamma_buffer_pointer_COPD];
+  rgamma_buffer_pointer_COPD++;
+  return(temp);
+}
+int rgamma_fill_NCOPD()
+{
+  R_rgamma(settings.rgamma_buffer_size, 1/0.4093, 1, rgamma_buffer_NCOPD);
+  rgamma_buffer_pointer_NCOPD=0;
+  ++runtime_stats.n_rgamma_fills_NCOPD;
+  return(0);
+}
+double rand_gamma_NCOPD()
+{
+  if(rgamma_buffer_pointer_NCOPD==settings.rgamma_buffer_size) {rgamma_fill_NCOPD();}
+  double temp=rgamma_buffer_NCOPD[rgamma_buffer_pointer_NCOPD];
+  rgamma_buffer_pointer_NCOPD++;
+  return(temp);
+}
 
 
 
 
 
 
-
-
-int rand_NegBin(double rate, double dispersion)
+int rand_NegBin_COPD(double rate, double dispersion)
 {
   if (dispersion != 1)
   {
@@ -516,9 +519,9 @@ int rand_NegBin(double rate, double dispersion)
     double alpha=size;
     double beta=(1-p)/p;
 
-    arma::vec lambda_arma = rand_gamma(1,alpha,beta);
-    double lambda = lambda_arma(0);
-    //double lambda = rand_gamma_COPD()*beta;
+    // arma::vec lambda_arma = rand_gamma(1,alpha,beta);
+    // double lambda = lambda_arma(0);
+    double lambda = rand_gamma_COPD()*beta; // NOTE: THIS IS TECHINICALLY WRONG BUT IT'S CONSISTENT WITH ERROR IN MASTER BRANCH - SHOULD BE /BETA
 
     int x=rand_Poisson(lambda);
     return(x);
@@ -533,31 +536,31 @@ int rand_NegBin(double rate, double dispersion)
   return(0);
 }
 
-// int rand_NegBin_NCOPD(double rate, double dispersion)
-// {
-//   if (dispersion != 1)
-//   {
-//     double size=1/dispersion;
-//     double p=size/(size+rate);
-//     //double alpha=size;
-//     double beta=p/(1-p);
-//
-//     //arma::vec lambda_arma = rand_gamma(alpha,beta);
-//     //double lambda = lambda_arma(0);
-//     double lambda = rand_gamma_NCOPD()/beta;
-//
-//     int x=rand_Poisson(lambda);
-//     return(x);
-//   }
-//
-//   if (dispersion == 1)
-//   {
-//     int x=rand_Poisson(rate);
-//     return(x);
-//   }
-//
-//   return(0);
-// }
+int rand_NegBin_NCOPD(double rate, double dispersion)
+{
+  if (dispersion != 1)
+  {
+    double size=1/dispersion;
+    double p=size/(size+rate);
+    double alpha=size;
+    double beta=(1-p)/p;
+
+    // arma::vec lambda_arma = rand_gamma(alpha,beta);
+    // double lambda = lambda_arma(0);
+    double lambda = rand_gamma_NCOPD()*beta; // NOTE: THIS IS TECHINICALLY WRONG BUT IT'S CONSISTENT WITH ERROR IN MASTER BRANCH - SHOULD BE /BETA
+
+    int x=rand_Poisson(lambda);
+    return(x);
+  }
+
+  if (dispersion == 1)
+  {
+    int x=rand_Poisson(rate);
+    return(x);
+  }
+
+  return(0);
+}
 
 
 
@@ -1192,6 +1195,18 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
+  // int norm_refill;
+  // int exp_refill;
+  // int unif_refill;
+  // int gamma_COPD_refill;
+  // int gamma_NCOPD_refill;
+  // int norm_count;
+  // int exp_count;
+  // int unif_count;
+  // int gamma_COPD_count;
+  // int gamma_NCOPD_count;
+
+
 
 };
 
@@ -1303,6 +1318,20 @@ List get_agent(agent *ag)
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+
+
+
+  // out["norm_refill"] = (*ag).norm_refill;
+  // out["unif_refill"] = (*ag).unif_refill;
+  // out["exp_refill"] = (*ag).exp_refill;
+  // out["gamma_COPD_refill"] = (*ag).gamma_COPD_refill;
+  // out["gamma_NCOPD_refill"] = (*ag).gamma_NCOPD_refill;
+  // out["norm_count"]=(*ag).norm_count;
+  // out["unif_count"]=(*ag).unif_count;
+  // out["exp_count"]=(*ag).exp_count;
+  // out["gamma_COPD_count"]=(*ag).gamma_COPD_count;
+  // out["gamma_NCOPD_count"]=(*ag).gamma_NCOPD_count;
+
 
   return out;
 }
@@ -1502,7 +1531,6 @@ struct output
   double total_qaly;  //END because agent records
   double total_diagnosed_time;
 
-  int n_agents_post_CD;
 
 } output;
 
@@ -1985,8 +2013,10 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      double gpvisits=rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
       (*ag).gpvisits = gpvisits;
+
+      rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD); // needed for random number maintenance
 
   } else {
 
@@ -1999,8 +2029,10 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      double gpvisits=rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
       (*ag).gpvisits = gpvisits;
+
+      rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD); // needed for random number maintenance
 
     }
 
@@ -2019,21 +2051,26 @@ double apply_case_detection(agent *ag)
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
       ((*ag).gpvisits!=0) &&
-      ((*ag).diagnosis==0))  {
+      ((*ag).diagnosis==0) &&
+      ((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea >= input.diagnosis.min_cd_symptoms)) {
+
 
     if ((*ag).last_case_detection == 0)
         {
-      if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
-          {
+      // if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
+          // {
           p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
           (*ag).case_detection_eligible=1;
-          }
+          // }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
             p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
           }
+
+
+
 
   if (rand_unif() < p_detection) {
 
@@ -2303,6 +2340,19 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).time_at_creation=calendar_time;
 (*ag).sex=rand_unif()<input.agent.p_female;
 (*ag).fev1_tail = sqrt(0.1845) * rand_norm() + 0.827;
+
+
+// (*ag).norm_refill = 0;
+// (*ag).exp_refill = 0;
+// (*ag).unif_refill = 0;
+// (*ag).gamma_COPD_refill = 0;
+// (*ag).gamma_NCOPD_refill = 0;
+// (*ag).norm_count = 0;
+// (*ag).exp_count = 0;
+// (*ag).unif_count = 0;
+// (*ag).gamma_COPD_count = 0;
+// (*ag).gamma_NCOPD_count = 0;
+
 
 double r=rand_unif();
 double cum_p=0;
@@ -2685,6 +2735,20 @@ agent *event_start_process(agent *ag)
 
 agent *event_end_process(agent *ag)
 {
+
+  // (*ag).norm_refill = runtime_stats.n_rnorm_fills;
+  // (*ag).exp_refill = runtime_stats.n_rexp_fills;
+  // (*ag).unif_refill = runtime_stats.n_runif_fills;
+  // (*ag).gamma_COPD_refill = runtime_stats.n_rgamma_fills_COPD;
+  // (*ag).gamma_NCOPD_refill = runtime_stats.n_rgamma_fills_NCOPD;
+  // (*ag).norm_count = rnorm_buffer_pointer;
+  // (*ag).exp_count = rexp_buffer_pointer;
+  // (*ag).unif_count = runif_buffer_pointer;
+  // (*ag).gamma_COPD_count = rgamma_buffer_pointer_COPD;
+  // (*ag).gamma_NCOPD_count = rgamma_buffer_pointer_NCOPD;
+
+
+
   if((*ag).exac_status>0)
   {
     //NOTE: exacerbation timing is an LPT process and is treated separately.
@@ -2783,6 +2847,8 @@ agent *event_end_process(agent *ag)
   output_ex.n_stroke+=(*ag).n_stroke;
   output_ex.n_hf+=((*ag).hf_status>0);
 #endif
+
+
 
   return(ag);
 }
@@ -3798,19 +3864,19 @@ int Callocate_resources()
   if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rexp_buffer_pointer=settings.rexp_buffer_size;
 
-  // if(rgamma_buffer_COPD==NULL)
-  //   rgamma_buffer_COPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
-  // else
-  //   realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
-  // if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  // rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
-  //
-  // if(rgamma_buffer_NCOPD==NULL)
-  //   rgamma_buffer_NCOPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
-  // else
-  //   realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
-  // if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  // rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+  if(rgamma_buffer_COPD==NULL)
+    rgamma_buffer_COPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
+  else
+    realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
+  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+
+  if(rgamma_buffer_NCOPD==NULL)
+    rgamma_buffer_NCOPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
+  else
+    realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
+  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
 
   if(agent_stack==NULL)
     agent_stack=(agent *)malloc(settings.agent_stack_size*sizeof(agent));
@@ -3852,8 +3918,8 @@ int Cdeallocate_resources()
     if(runif_buffer!=NULL) {free(runif_buffer); runif_buffer=NULL;}
     if(rnorm_buffer!=NULL) {free(rnorm_buffer); rnorm_buffer=NULL;}
     if(rexp_buffer!=NULL) {free(rexp_buffer); rexp_buffer=NULL;}
-    // if(rgamma_buffer_COPD!=NULL) {free(rgamma_buffer_COPD); rgamma_buffer_COPD=NULL;}
-    // if(rgamma_buffer_NCOPD!=NULL) {free(rgamma_buffer_NCOPD); rgamma_buffer_NCOPD=NULL;}
+    if(rgamma_buffer_COPD!=NULL) {free(rgamma_buffer_COPD); rgamma_buffer_COPD=NULL;}
+    if(rgamma_buffer_NCOPD!=NULL) {free(rgamma_buffer_NCOPD); rgamma_buffer_NCOPD=NULL;}
     if(agent_stack!=NULL) {free(agent_stack); agent_stack=NULL;}
     if(event_stack!=NULL) {free(event_stack); event_stack=NULL;}
   }catch(const std::exception& e){};
@@ -3871,8 +3937,8 @@ int Cdeallocate_resources2()
     delete[] runif_buffer;
     delete[] rnorm_buffer;
     delete[] rexp_buffer;
-    // delete[] rgamma_buffer_COPD;
-    // delete[] rgamma_buffer_NCOPD;
+    delete[] rgamma_buffer_COPD;
+    delete[] rgamma_buffer_NCOPD;
     delete[] agent_stack;
     delete[] event_stack;
   }catch(const std::exception& e){};
@@ -3898,13 +3964,13 @@ int Callocate_resources2()
   if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rexp_buffer_pointer=settings.rexp_buffer_size;
 
-  // rgamma_buffer_COPD=new double[settings.rgamma_buffer_size];
-  // if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  // rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
-  //
-  // rgamma_buffer_NCOPD=new double[settings.rgamma_buffer_size];
-  // if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  // rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+  rgamma_buffer_COPD=new double[settings.rgamma_buffer_size];
+  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+
+  rgamma_buffer_NCOPD=new double[settings.rgamma_buffer_size];
+  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
 
   agent_stack=new agent[settings.agent_stack_size];
   if(agent_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
@@ -3946,11 +4012,15 @@ int Cmodel(int max_n_agents)
     max_n_agents--;
     //calendar_time=0; NO! calendar_time is set to zero at init_session. Cmodel should be resumable;
 
-    // runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
-    // rnorm_buffer_pointer=settings.rnorm_buffer_size;
-    // rexp_buffer_pointer=settings.rexp_buffer_size;
-    // rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
-    // rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+
+    if(settings.random_number_agent_refill==1)
+    {
+      runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
+      rnorm_buffer_pointer=settings.rnorm_buffer_size;
+      rexp_buffer_pointer=settings.rexp_buffer_size;
+      rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+      rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+    }
 
     switch(settings.agent_creation_mode)
     {
