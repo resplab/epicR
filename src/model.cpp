@@ -683,7 +683,7 @@ struct input
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
     double p_case_detection[20];
-    int case_detection_start_yr;
+    double case_detection_start_end_yrs[2];
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
@@ -871,7 +871,7 @@ List Cget_inputs()
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
     Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
     Rcpp::Named("p_case_detection")=AS_VECTOR_DOUBLE(input.diagnosis.p_case_detection),
-    Rcpp::Named("case_detection_start_yr")=input.diagnosis.case_detection_start_yr,
+    Rcpp::Named("case_detection_start_end_yrs")=AS_VECTOR_DOUBLE(input.diagnosis.case_detection_start_end_yrs),
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
@@ -1014,7 +1014,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
   if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
   if(name=="diagnosis$p_case_detection") READ_R_VECTOR(value,input.diagnosis.p_case_detection);
-  if(name=="diagnosis$case_detection_start_yr") {input.diagnosis.case_detection_start_yr=value[0]; return(0);};
+  if(name=="diagnosis$case_detection_start_end_yrs") READ_R_VECTOR(value,input.diagnosis.case_detection_start_end_yrs);
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
@@ -1183,7 +1183,7 @@ struct agent
   int case_detection_eligible;
   int last_case_detection;
   double p_case_detection[20];
-  int case_detection_start_yr;
+  double case_detection_start_end_yrs[2];
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
@@ -1856,7 +1856,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      if((*ag).case_detection>0) output_ex.n_case_detection_by_ctime[time][(*ag).case_detection-1]+=1;
+      if((*ag).case_detection>0 && floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).local_time+(*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_case_detection_by_ctime[time][(*ag).case_detection-1]+=1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
@@ -2059,14 +2059,14 @@ double apply_case_detection(agent *ag)
         {
       // if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
           // {
-          p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
+          p_detection = input.diagnosis.p_case_detection[(int)floor((*ag).local_time+calendar_time)];
           (*ag).case_detection_eligible=1;
           // }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
-            p_detection = input.diagnosis.p_case_detection[int((*ag).local_time+calendar_time)];
+            p_detection = input.diagnosis.p_case_detection[(int)floor((*ag).local_time+calendar_time)];
           }
 
 
@@ -2154,7 +2154,7 @@ double update_prevalent_diagnosis(agent *ag)
 
   double p_diagnosis = 0;
 
-   if((*ag).local_time+(*ag).time_at_creation>=input.diagnosis.case_detection_start_yr){
+   if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).local_time+(*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]){
      apply_case_detection(ag);
    }
 
@@ -2758,7 +2758,7 @@ agent *event_end_process(agent *ag)
   }
 
   ++output.n_agents;
-  if((*ag).local_time+(*ag).time_at_creation>=input.diagnosis.case_detection_start_yr) ++output_ex.n_agents_post_CD;
+  if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) ++output_ex.n_agents_post_CD;
   output.n_COPD+=((*ag).gold>0)*1;
   output.cumul_time+=(*ag).local_time;
   output.n_deaths+=!(*ag).alive;
@@ -2803,7 +2803,7 @@ agent *event_end_process(agent *ag)
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
 
   if((*ag).case_detection_eligible==1) output_ex.n_case_detection_eligible+=1;
-  if((*ag).diagnosis>0 && (*ag).gold>0 && (*ag).local_time+(*ag).time_at_creation>=input.diagnosis.case_detection_start_yr) output_ex.n_diagnosed_true_post_CD+=1;
+  if((*ag).diagnosis>0 && (*ag).gold>0 && floor((*ag).time_at_diagnosis)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_diagnosis)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_diagnosed_true_post_CD+=1;
 
 
 
