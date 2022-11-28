@@ -24,14 +24,21 @@ session_env$agent_creation_mode<-c(
 }
 
 
+
+
+
+
+
 default_settings <- list(record_mode = session_env$record_mode["record_mode_none"],
                          events_to_record = c(0),
                          agent_creation_mode = session_env$agent_creation_mode["agent_creation_mode_one"],
                          update_continuous_outcomes_mode = 0,
+                         random_number_agent_refill=0,
                          n_base_agents = 6e4,
                          runif_buffer_size = 5e4,
                          rnorm_buffer_size = 5e4,
                          rexp_buffer_size = 5e4,
+                         rgamma_buffer_size = 5e4,
                          agent_stack_size = 0,
                          event_stack_size = 5e4 * 1.7 * 30)
 
