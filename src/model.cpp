@@ -1618,8 +1618,8 @@ struct output_ex
   int n_Diagnosed_by_ctime_severity[1000][5];
   int n_case_detection_by_ctime[1000][3]; // negative test, false positive tests, true positive tests
   int n_case_detection_eligible;
-  int n_diagnosed_true_post_CD;
-  int n_agents_post_CD;
+  int n_diagnosed_true_CD;
+  int n_agents_CD;
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1736,8 +1736,8 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
     out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
     out["n_case_detection_eligible"]=output_ex.n_case_detection_eligible,
-    out["n_diagnosed_true_post_CD"]=output_ex.n_diagnosed_true_post_CD,
-    out["n_agents_post_CD"]=output_ex.n_agents_post_CD,
+    out["n_diagnosed_true_CD"]=output_ex.n_diagnosed_true_CD,
+    out["n_agents_CD"]=output_ex.n_agents_CD,
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -2762,7 +2762,7 @@ agent *event_end_process(agent *ag)
   }
 
   ++output.n_agents;
-  if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) ++output_ex.n_agents_post_CD;
+  if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) ++output_ex.n_agents_CD;
   output.n_COPD+=((*ag).gold>0)*1;
   output.cumul_time+=(*ag).local_time;
   output.n_deaths+=!(*ag).alive;
@@ -2807,7 +2807,7 @@ agent *event_end_process(agent *ag)
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
 
   if((*ag).case_detection_eligible==1) output_ex.n_case_detection_eligible+=1;
-  if((*ag).diagnosis>0 && (*ag).gold>0 && floor((*ag).time_at_diagnosis)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_diagnosis)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_diagnosed_true_post_CD+=1;
+  if((*ag).diagnosis>0 && (*ag).gold>0 && floor((*ag).time_at_diagnosis)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_diagnosis)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_diagnosed_true_CD+=1;
 
 
 
