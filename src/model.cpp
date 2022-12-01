@@ -141,6 +141,9 @@ int last_id;
 //' @return the multivariate normal sample
 //' @export
 // [[Rcpp::export]]
+
+// FUNCTIONS BELOW HAVE BEEN EDITED AND MOVED FURTHER DOWN WITH OTHER DISTRIBUTIONS
+
 // arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
 //   int ncols = sigma.n_cols;
 //   arma::mat Y = arma::randn(n, ncols);
@@ -414,7 +417,6 @@ void rbvnorm(double rho, double x[2])
 }
 
 
-
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
   int ncols = sigma.n_cols;
   arma::mat Y(n,ncols);
@@ -423,6 +425,7 @@ arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
   }
   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
 }
+
 
 
 
@@ -463,6 +466,10 @@ int rand_Poisson(double rate)
   }
   return(out-1);
 }
+
+
+
+
 
 
 double* R_rgamma(int n, double alpha, double beta)
@@ -2739,19 +2746,6 @@ agent *event_start_process(agent *ag)
 
 agent *event_end_process(agent *ag)
 {
-
-  // (*ag).norm_refill = runtime_stats.n_rnorm_fills;
-  // (*ag).exp_refill = runtime_stats.n_rexp_fills;
-  // (*ag).unif_refill = runtime_stats.n_runif_fills;
-  // (*ag).gamma_COPD_refill = runtime_stats.n_rgamma_fills_COPD;
-  // (*ag).gamma_NCOPD_refill = runtime_stats.n_rgamma_fills_NCOPD;
-  // (*ag).norm_count = rnorm_buffer_pointer;
-  // (*ag).exp_count = rexp_buffer_pointer;
-  // (*ag).unif_count = runif_buffer_pointer;
-  // (*ag).gamma_COPD_count = rgamma_buffer_pointer_COPD;
-  // (*ag).gamma_NCOPD_count = rgamma_buffer_pointer_NCOPD;
-
-
 
   if((*ag).exac_status>0)
   {
