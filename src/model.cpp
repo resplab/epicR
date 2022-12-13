@@ -417,6 +417,7 @@ void rbvnorm(double rho, double x[2])
 }
 
 
+
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
   int ncols = sigma.n_cols;
   arma::mat Y(n,ncols);
@@ -2027,7 +2028,6 @@ double update_gpvisits(agent *ag)
       double gpvisits=rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
       (*ag).gpvisits = gpvisits;
 
-      rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD); // needed for random number maintenance
 
   } else {
 
@@ -2042,8 +2042,6 @@ double update_gpvisits(agent *ag)
 
       double gpvisits=rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
       (*ag).gpvisits = gpvisits;
-
-      rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD); // needed for random number maintenance
 
     }
 
@@ -2846,6 +2844,9 @@ agent *event_end_process(agent *ag)
   output_ex.n_hf+=((*ag).hf_status>0);
 #endif
 
+  // needed for random number maintenance
+  rand_NegBin_COPD(1, 1.1);
+  rand_NegBin_NCOPD(1, 1.1);
 
 
   return(ag);
