@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epicR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.31.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.31.4</span>
       </span>
     </div>
 
@@ -51,6 +51,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/GettingStarted.html">Getting Started with EPIC</a>
+    </li>
+    <li>
+      <a href="../articles/RecalibratingEPIC.html">RecalibratingEPIC</a>
     </li>
   </ul>
 </li>
@@ -79,7 +82,7 @@
     
     
 <p>This document is a guide to basics of running a simulation with the
-Evaluation Platform in COPD (EPIC).</p>
+Evaluation Platform in COPD (EPIC) using epicR.</p>
 <p>EPIC is a discrete-event simulation model for COPD, and models the
 entire pathway of care, from disease incidence, to diagnosis, treatment,
 and outcomes.</p>
@@ -233,12 +236,12 @@ settings:</p>
 <span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   id local_time female time_at_creation age_at_creation pack_years gold event</span></span>
-<span><span class="co">#&gt; 1  0          0      0                0        48.90107          0    0     0</span></span>
-<span><span class="co">#&gt; 2  0          1      0                0        48.90107          0    0     1</span></span>
-<span><span class="co">#&gt; 3  0          2      0                0        48.90107          0    0     1</span></span>
-<span><span class="co">#&gt; 4  0          3      0                0        48.90107          0    0     1</span></span>
-<span><span class="co">#&gt; 5  0          4      0                0        48.90107          0    0     1</span></span>
-<span><span class="co">#&gt; 6  0          5      0                0        48.90107          0    0    14</span></span>
+<span><span class="co">#&gt; 1  0          0      1                0        51.60514          0    0     0</span></span>
+<span><span class="co">#&gt; 2  0          1      1                0        51.60514          0    0     1</span></span>
+<span><span class="co">#&gt; 3  0          2      1                0        51.60514          0    0     1</span></span>
+<span><span class="co">#&gt; 4  0          3      1                0        51.60514          0    0     1</span></span>
+<span><span class="co">#&gt; 5  0          4      1                0        51.60514          0    0     1</span></span>
+<span><span class="co">#&gt; 6  0          5      1                0        51.60514          0    0    14</span></span>
 <span><span class="co">#&gt;   FEV1 FEV1_slope FEV1_acceleration pred_FEV1 smoking_status localtime_at_COPD</span></span>
 <span><span class="co">#&gt; 1    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt; 2    0          0                 0         0              0                 0</span></span>
@@ -247,26 +250,26 @@ settings:</p>
 <span><span class="co">#&gt; 5    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt; 6    0          0                 0         0              0                 0</span></span>
 <span><span class="co">#&gt;   age_at_COPD weight_at_COPD   height followup_after_COPD FEV1_baseline</span></span>
-<span><span class="co">#&gt; 1           0              0 1.797153                   0      2.731514</span></span>
-<span><span class="co">#&gt; 2           0              0 1.797153                   0      2.731514</span></span>
-<span><span class="co">#&gt; 3           0              0 1.797153                   0      2.731514</span></span>
-<span><span class="co">#&gt; 4           0              0 1.797153                   0      2.731514</span></span>
-<span><span class="co">#&gt; 5           0              0 1.797153                   0      2.731514</span></span>
-<span><span class="co">#&gt; 6           0              0 1.797153                   0      2.731514</span></span>
+<span><span class="co">#&gt; 1           0              0 1.537146                   0      2.444444</span></span>
+<span><span class="co">#&gt; 2           0              0 1.537146                   0      2.444444</span></span>
+<span><span class="co">#&gt; 3           0              0 1.537146                   0      2.444444</span></span>
+<span><span class="co">#&gt; 4           0              0 1.537146                   0      2.444444</span></span>
+<span><span class="co">#&gt; 5           0              0 1.537146                   0      2.444444</span></span>
+<span><span class="co">#&gt; 6           0              0 1.537146                   0      2.444444</span></span>
 <span><span class="co">#&gt;   exac_status cough phlegm wheeze dyspnea gpvisits diagnosis medication_status</span></span>
-<span><span class="co">#&gt; 1           0     1      1      0       0        0         0                 0</span></span>
-<span><span class="co">#&gt; 2           0     0      1      1       1        5         0                 0</span></span>
-<span><span class="co">#&gt; 3           0     1      1      0       1        0         0                 0</span></span>
-<span><span class="co">#&gt; 4           0     0      0      0       0        3         0                 0</span></span>
-<span><span class="co">#&gt; 5           0     0      0      1       0        3         0                 0</span></span>
-<span><span class="co">#&gt; 6           0     0      0      1       0        3         0                 0</span></span>
+<span><span class="co">#&gt; 1           0     0      0      0       0        0         0                 0</span></span>
+<span><span class="co">#&gt; 2           0     0      1      1       0        0         0                 0</span></span>
+<span><span class="co">#&gt; 3           0     0      0      1       0        1         0                 0</span></span>
+<span><span class="co">#&gt; 4           0     0      1      0       0        1         0                 0</span></span>
+<span><span class="co">#&gt; 5           0     0      1      0       0        1         1                 1</span></span>
+<span><span class="co">#&gt; 6           0     0      1      0       0        1         1                 1</span></span>
 <span><span class="co">#&gt;   case_detection cumul_cost cumul_qaly time_at_diagnosis</span></span>
-<span><span class="co">#&gt; 1              0          0  0.0000000                 0</span></span>
-<span><span class="co">#&gt; 2              0          0  0.8349515                 0</span></span>
-<span><span class="co">#&gt; 3              0          0  1.6455839                 0</span></span>
-<span><span class="co">#&gt; 4              0          0  2.4326058                 0</span></span>
-<span><span class="co">#&gt; 5              0          0  3.1967046                 0</span></span>
-<span><span class="co">#&gt; 6              0          0  3.9385482                 0</span></span>
+<span><span class="co">#&gt; 1              0      0.000  0.0000000                 0</span></span>
+<span><span class="co">#&gt; 2              0      0.000  0.8349515                 0</span></span>
+<span><span class="co">#&gt; 3              0      0.000  1.6455839                 0</span></span>
+<span><span class="co">#&gt; 4              0      0.000  2.4326058                 0</span></span>
+<span><span class="co">#&gt; 5              0     53.172  3.1967046                 4</span></span>
+<span><span class="co">#&gt; 6              0    106.344  3.9385482                 4</span></span>
 <span><span class="co">#&gt;   exac_history_n_moderate exac_history_n_severe_plus</span></span>
 <span><span class="co">#&gt; 1                       0                          0</span></span>
 <span><span class="co">#&gt; 2                       0                          0</span></span>
@@ -353,34 +356,34 @@ to run a closed-cohort analysis, if need be:</p>
 <span><span class="co">#&gt; [1] 60001</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $cumul_time</span></span>
-<span><span class="co">#&gt; [1] 1001220</span></span>
+<span><span class="co">#&gt; [1] 1000065</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $n_deaths</span></span>
-<span><span class="co">#&gt; [1] 20030</span></span>
+<span><span class="co">#&gt; [1] 20079</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $n_COPD</span></span>
-<span><span class="co">#&gt; [1] 11723</span></span>
+<span><span class="co">#&gt; [1] 11837</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_exac</span></span>
-<span><span class="co">#&gt; [1] 11422 52367  4978   389</span></span>
+<span><span class="co">#&gt; [1] 11493 53224  4936   385</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_exac_time</span></span>
-<span><span class="co">#&gt; [1]  2.212809  9.442206 10.255148  1.087981</span></span>
+<span><span class="co">#&gt; [1]  1.709963  9.239828 10.008570  1.285190</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_pack_years</span></span>
-<span><span class="co">#&gt; [1] 844142.7</span></span>
+<span><span class="co">#&gt; [1] 851052.3</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_doctor_visit</span></span>
 <span><span class="co">#&gt; [1] 0 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_cost</span></span>
-<span><span class="co">#&gt; [1] 172284982</span></span>
+<span><span class="co">#&gt; [1] 181351063</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_qaly</span></span>
-<span><span class="co">#&gt; [1] 640108</span></span>
+<span><span class="co">#&gt; [1] 639862.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $total_diagnosed_time</span></span>
-<span><span class="co">#&gt; [1] 40923.64</span></span>
+<span><span class="co">#&gt; [1] 41756.52</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
