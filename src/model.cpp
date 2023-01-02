@@ -141,17 +141,20 @@ int last_id;
 //' @return the multivariate normal sample
 //' @export
 // [[Rcpp::export]]
-arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-  int ncols = sigma.n_cols;
-  arma::mat Y = arma::randn(n, ncols);
-  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
-}
+
+// FUNCTIONS BELOW HAVE BEEN EDITED AND MOVED FURTHER DOWN WITH OTHER DISTRIBUTIONS
+
+// arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
+//   int ncols = sigma.n_cols;
+//   arma::mat Y = arma::randn(n, ncols);
+//   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+// }
 
 
-arma::vec rand_gamma(double alpha, double beta) {
-  arma::vec lambda = arma::randg<arma::vec>(1, arma::distr_param(alpha, beta));
-  return lambda;
-}
+// arma::vec rand_gamma(int n, double alpha, double beta) {
+//   arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+//   return lambda;
+// }
 
 
 NumericMatrix array_to_Rmatrix(std::vector<double> x, int nCol)
@@ -220,14 +223,18 @@ struct settings
 
   int update_continuous_outcomes_mode;    //0:update only on fixed and end events; 1: update before any event;
 
+  int random_number_agent_refill;    //0: random numbers generated in bulk and refilled when emptied; 1: random numbers refilled before each agent creation
+
   int n_base_agents;
 
   int runif_buffer_size;
   int rnorm_buffer_size;
   int rexp_buffer_size;
+  int rgamma_buffer_size;
 
   int agent_stack_size;
   int event_stack_size;
+
 } settings;
 
 
@@ -252,10 +259,12 @@ int Cset_settings_var(std::string name,NumericVector value)
   }
   if(name=="agent_creation_mode") {settings.agent_creation_mode=value[0]; return(0);}
   if(name=="update_continuous_outcomes_mode") {settings.update_continuous_outcomes_mode=value[0]; return(0);}
+  if(name=="random_number_agent_refill") {settings.random_number_agent_refill=value[0]; return(0);}
   if(name=="n_base_agents") {settings.n_base_agents=value[0]; return(0);}
   if(name=="runif_buffer_size") {settings.runif_buffer_size=value[0]; return(0);}
   if(name=="rnorm_buffer_size") {settings.rnorm_buffer_size=value[0]; return(0);}
   if(name=="rexp_buffer_size") {settings.rexp_buffer_size=value[0]; return(0);}
+  if(name=="rgamma_buffer_size") {settings.rgamma_buffer_size=value[0]; return(0);}
   if(name=="agent_stack_size") {settings.agent_stack_size=value[0]; return(0);}
   if(name=="event_stack_size") {settings.event_stack_size=value[0]; return(0);}
   return(ERR_INCORRECT_SETTING_VARIABLE);
@@ -272,10 +281,12 @@ List Cget_settings()
     Rcpp::Named("events_to_record")=AS_VECTOR_DOUBLE_SIZE(settings.events_to_record,settings.n_events_to_record),
     Rcpp::Named("agent_creation_mode")=settings.agent_creation_mode,
     Rcpp::Named("update_continuous_outcomes_mode")=settings.update_continuous_outcomes_mode,
+    Rcpp::Named("random_number_agent_refill")=settings.random_number_agent_refill,
     Rcpp::Named("n_base_agents")=settings.n_base_agents,
     Rcpp::Named("runif_buffer_size")=settings.runif_buffer_size,
     Rcpp::Named("rnorm_buffer_size")=settings.rnorm_buffer_size,
     Rcpp::Named("rexp_buffer_size")=settings.rexp_buffer_size,
+    Rcpp::Named("rgamma_buffer_size")=settings.rgamma_buffer_size,
     Rcpp::Named("agent_stack_size")=settings.agent_stack_size,
     Rcpp::Named("event_stack_size")=settings.event_stack_size
   );
@@ -288,6 +299,8 @@ struct runtime_stats
   int n_runif_fills;
   int n_rnorm_fills;
   int n_rexp_fills;
+  int n_rgamma_fills_COPD;
+  int n_rgamma_fills_NCOPD;
 } runtime_stats;
 
 
@@ -308,7 +321,9 @@ List Cget_runtime_stats()
     Rcpp::Named("agent_size")=runtime_stats.agent_size,
     Rcpp::Named("n_runif_fills")=runtime_stats.n_runif_fills,
     Rcpp::Named("n_rnorm_fills")=runtime_stats.n_rnorm_fills,
-    Rcpp::Named("n_rexp_fills")=runtime_stats.n_rexp_fills
+    Rcpp::Named("n_rexp_fills")=runtime_stats.n_rexp_fills,
+    Rcpp::Named("n_rgamma_fills_COPD")=runtime_stats.n_rgamma_fills_COPD,
+    Rcpp::Named("n_rgamma_fills_NCOPD")=runtime_stats.n_rgamma_fills_NCOPD
   );
 }
 
@@ -326,6 +341,12 @@ long rnorm_buffer_pointer;
 
 double *rexp_buffer;
 long rexp_buffer_pointer;
+
+double *rgamma_buffer_COPD;
+long rgamma_buffer_pointer_COPD;
+
+double *rgamma_buffer_NCOPD;
+long rgamma_buffer_pointer_NCOPD;
 
 
 
@@ -397,6 +418,18 @@ void rbvnorm(double rho, double x[2])
 
 
 
+arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
+  int ncols = sigma.n_cols;
+  arma::mat Y(n,ncols);
+  for(int i = 0; i < ncols; i++){
+    Y(0,i) = rand_norm();
+  }
+  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+}
+
+
+
+
 double* R_rexp(int n)
 {
   NumericVector temp(rexp(n,1));
@@ -436,7 +469,56 @@ int rand_Poisson(double rate)
 }
 
 
-int rand_NegBin(double rate, double dispersion)
+
+
+
+
+double* R_rgamma(int n, double alpha, double beta)
+{
+  arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+  return(&lambda(0));
+}
+double* R_rgamma(int n, double alpha, double beta, double * address)
+{
+  arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
+  std::copy(lambda.begin(),lambda.end(),address);
+  return(address);
+}
+int rgamma_fill_COPD()
+{
+  R_rgamma(settings.rgamma_buffer_size, 1/0.431, 1, rgamma_buffer_COPD);
+  rgamma_buffer_pointer_COPD=0;
+  ++runtime_stats.n_rgamma_fills_COPD;
+  return(0);
+}
+double rand_gamma_COPD()
+{
+  if(rgamma_buffer_pointer_COPD==settings.rgamma_buffer_size) {rgamma_fill_COPD();}
+  double temp=rgamma_buffer_COPD[rgamma_buffer_pointer_COPD];
+  rgamma_buffer_pointer_COPD++;
+  return(temp);
+}
+int rgamma_fill_NCOPD()
+{
+  R_rgamma(settings.rgamma_buffer_size, 1/0.4093, 1, rgamma_buffer_NCOPD);
+  rgamma_buffer_pointer_NCOPD=0;
+  ++runtime_stats.n_rgamma_fills_NCOPD;
+  return(0);
+}
+double rand_gamma_NCOPD()
+{
+  if(rgamma_buffer_pointer_NCOPD==settings.rgamma_buffer_size) {rgamma_fill_NCOPD();}
+  double temp=rgamma_buffer_NCOPD[rgamma_buffer_pointer_NCOPD];
+  rgamma_buffer_pointer_NCOPD++;
+  return(temp);
+}
+
+
+
+
+
+
+int rand_NegBin_COPD(double rate, double dispersion)
 {
   if (dispersion != 1)
   {
@@ -445,8 +527,9 @@ int rand_NegBin(double rate, double dispersion)
     double alpha=size;
     double beta=(1-p)/p;
 
-    arma::vec lambda_arma = rand_gamma(alpha,beta);
-    double lambda = lambda_arma(0);
+    // arma::vec lambda_arma = rand_gamma(1,alpha,beta);
+    // double lambda = lambda_arma(0);
+    double lambda = rand_gamma_COPD()*beta;
 
     int x=rand_Poisson(lambda);
     return(x);
@@ -457,6 +540,32 @@ int rand_NegBin(double rate, double dispersion)
     int x=rand_Poisson(rate);
     return(x);
     }
+
+  return(0);
+}
+
+int rand_NegBin_NCOPD(double rate, double dispersion)
+{
+  if (dispersion != 1)
+  {
+    double size=1/dispersion;
+    double p=size/(size+rate);
+    double alpha=size;
+    double beta=(1-p)/p;
+
+    // arma::vec lambda_arma = rand_gamma(alpha,beta);
+    // double lambda = lambda_arma(0);
+    double lambda = rand_gamma_NCOPD()*beta;
+
+    int x=rand_Poisson(lambda);
+    return(x);
+  }
+
+  if (dispersion == 1)
+  {
+    int x=rand_Poisson(rate);
+    return(x);
+  }
 
   return(0);
 }
@@ -582,6 +691,7 @@ struct input
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
     double p_case_detection[20];
+    double case_detection_start_end_yrs[2];
     int years_btw_case_detection;
     double min_cd_age;
     double min_cd_pack_years;
@@ -597,6 +707,7 @@ struct input
     double exac_dcost[4];
     double cost_case_detection;
     double cost_outpatient_diagnosis;
+    double cost_gp_visit;
     double cost_smoking_cessation;
 
     double doctor_visit_by_type[2];
@@ -768,6 +879,7 @@ List Cget_inputs()
     Rcpp::Named("logit_p_overdiagnosis_by_sex")=AS_MATRIX_DOUBLE(input.diagnosis.logit_p_overdiagnosis_by_sex),
     Rcpp::Named("p_correct_overdiagnosis")=input.diagnosis.p_correct_overdiagnosis,
     Rcpp::Named("p_case_detection")=AS_VECTOR_DOUBLE(input.diagnosis.p_case_detection),
+    Rcpp::Named("case_detection_start_end_yrs")=AS_VECTOR_DOUBLE(input.diagnosis.case_detection_start_end_yrs),
     Rcpp::Named("years_btw_case_detection")=input.diagnosis.years_btw_case_detection,
     Rcpp::Named("min_cd_age")=input.diagnosis.min_cd_age,
     Rcpp::Named("min_cd_pack_years")=input.diagnosis.min_cd_pack_years,
@@ -793,6 +905,7 @@ List Cget_inputs()
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
       Rcpp::Named("cost_case_detection")=input.cost.cost_case_detection,
       Rcpp::Named("cost_outpatient_diagnosis")=input.cost.cost_outpatient_diagnosis,
+      Rcpp::Named("cost_gp_visit")=input.cost.cost_gp_visit,
       Rcpp::Named("cost_smoking_cessation")=input.cost.cost_smoking_cessation,
 
       Rcpp::Named("doctor_visit_by_type")=AS_VECTOR_DOUBLE(input.cost.doctor_visit_by_type)
@@ -909,6 +1022,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="diagnosis$logit_p_overdiagnosis_by_sex") READ_R_MATRIX(value,input.diagnosis.logit_p_overdiagnosis_by_sex);
   if(name=="diagnosis$p_correct_overdiagnosis") {input.diagnosis.p_correct_overdiagnosis=value[0]; return(0);};
   if(name=="diagnosis$p_case_detection") READ_R_VECTOR(value,input.diagnosis.p_case_detection);
+  if(name=="diagnosis$case_detection_start_end_yrs") READ_R_VECTOR(value,input.diagnosis.case_detection_start_end_yrs);
   if(name=="diagnosis$years_btw_case_detection") {input.diagnosis.years_btw_case_detection=value[0]; return(0);};
   if(name=="diagnosis$min_cd_age") {input.diagnosis.min_cd_age=value[0]; return(0);};
   if(name=="diagnosis$min_cd_pack_years") {input.diagnosis.min_cd_pack_years=value[0]; return(0);};
@@ -926,6 +1040,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="cost$bg_cost_by_stage") READ_R_VECTOR(value,input.cost.bg_cost_by_stage);
   if(name=="cost$cost_case_detection") {input.cost.cost_case_detection=value[0]; return(0);};
   if(name=="cost$cost_outpatient_diagnosis") {input.cost.cost_outpatient_diagnosis=value[0]; return(0);};
+  if(name=="cost$cost_gp_visit") {input.cost.cost_gp_visit=value[0]; return(0);};
   if(name=="cost$cost_smoking_cessation") {input.cost.cost_smoking_cessation=value[0]; return(0);};
 
   if(name=="medication$medication_ln_hr_exac") READ_R_VECTOR(value,input.medication.medication_ln_hr_exac);
@@ -1042,6 +1157,7 @@ struct agent
   double medication_LPT;
 
   double cumul_cost;
+  double cumul_cost_prev_yr;
   double cumul_qaly;
 
   double payoffs_LPT;
@@ -1068,11 +1184,14 @@ struct agent
   double time_at_diagnosis;
   int smoking_at_diagnosis;
   bool smoking_cessation;
+  int smoking_cessation_count;
   double p_hosp_diagnosis;
   double p_correct_overdiagnosis;
   int case_detection;
+  int case_detection_eligible;
   int last_case_detection;
   double p_case_detection[20];
+  double case_detection_start_end_yrs[2];
   int years_btw_case_detection;
   double min_cd_age;
   double min_cd_pack_years;
@@ -1084,6 +1203,18 @@ struct agent
   double re_wheeze;
 
   //Define your project-specific variables here;
+  // int norm_refill;
+  // int exp_refill;
+  // int unif_refill;
+  // int gamma_COPD_refill;
+  // int gamma_NCOPD_refill;
+  // int norm_count;
+  // int exp_count;
+  // int unif_count;
+  // int gamma_COPD_count;
+  // int gamma_NCOPD_count;
+
+
 
 };
 
@@ -1193,7 +1324,22 @@ List get_agent(agent *ag)
   out["case_detection"] = (*ag).case_detection;
 
   out["cumul_cost"] = (*ag).cumul_cost;
+  out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
+
+
+
+  // out["norm_refill"] = (*ag).norm_refill;
+  // out["unif_refill"] = (*ag).unif_refill;
+  // out["exp_refill"] = (*ag).exp_refill;
+  // out["gamma_COPD_refill"] = (*ag).gamma_COPD_refill;
+  // out["gamma_NCOPD_refill"] = (*ag).gamma_NCOPD_refill;
+  // out["norm_count"]=(*ag).norm_count;
+  // out["unif_count"]=(*ag).unif_count;
+  // out["exp_count"]=(*ag).exp_count;
+  // out["gamma_COPD_count"]=(*ag).gamma_COPD_count;
+  // out["gamma_NCOPD_count"]=(*ag).gamma_NCOPD_count;
+
 
   return out;
 }
@@ -1392,6 +1538,8 @@ struct output
   double total_cost;    //END because agent records
   double total_qaly;  //END because agent records
   double total_diagnosed_time;
+
+
 } output;
 
 
@@ -1449,7 +1597,7 @@ struct output_ex
   int n_smoking_status_by_ctime[1000][3];
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
-  //double cumul_cost_ctime[1000];
+  double annual_cost_ctime[1000];
   //double cumul_cost_gold_ctime[1000][5];
   //double cumul_qaly_ctime[1000];
   //double cumul_qaly_gold_ctime[1000][5];
@@ -1476,7 +1624,10 @@ struct output_ex
   int n_Diagnosed_by_ctime_sex[1000][2];
   int n_Overdiagnosed_by_ctime_sex[1000][2];
   int n_Diagnosed_by_ctime_severity[1000][5];
-  int n_total_case_detection;
+  int n_case_detection_by_ctime[1000][3]; // negative test, false positive tests, true positive tests
+  int n_case_detection_eligible;
+  int n_diagnosed_true_CD;
+  int n_agents_CD;
   int cumul_time_by_ctime_GOLD[100][5];
 #endif
 
@@ -1530,7 +1681,9 @@ struct output_ex
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   double medication_time_by_class[N_MED_CLASS];
+  double medication_time_by_ctime_class[1000][N_MED_CLASS];
   double n_exac_by_medication_class[N_MED_CLASS][3];
+  int n_smoking_cessation_by_ctime[1000];
 #endif
 
 } output_ex;
@@ -1559,7 +1712,7 @@ List Cget_output_ex()
     Rcpp::Named("n_alive_by_ctime_age")=AS_MATRIX_INT_SIZE(output_ex.n_alive_by_ctime_age,input.global_parameters.time_horizon),
     Rcpp::Named("n_smoking_status_by_ctime")=AS_MATRIX_INT_SIZE(output_ex.n_smoking_status_by_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("n_current_smoker_by_ctime_sex")=AS_MATRIX_INT_SIZE(output_ex.n_current_smoker_by_ctime_sex,input.global_parameters.time_horizon),
-    //Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("annual_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.annual_cost_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
     //Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
@@ -1589,7 +1742,10 @@ List Cget_output_ex()
     out["n_Diagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Overdiagnosed_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_Overdiagnosed_by_ctime_sex,input.global_parameters.time_horizon),
     out["n_Diagnosed_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_Diagnosed_by_ctime_severity,input.global_parameters.time_horizon),
-    out["n_total_case_detection"]=output_ex.n_total_case_detection,
+    out["n_case_detection_by_ctime"]=AS_MATRIX_INT_SIZE(output_ex.n_case_detection_by_ctime,input.global_parameters.time_horizon),
+    out["n_case_detection_eligible"]=output_ex.n_case_detection_eligible,
+    out["n_diagnosed_true_CD"]=output_ex.n_diagnosed_true_CD,
+    out["n_agents_CD"]=output_ex.n_agents_CD,
     out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
@@ -1638,6 +1794,8 @@ List Cget_output_ex()
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION)>0
       out["medication_time_by_class"]=AS_VECTOR_DOUBLE(output_ex.medication_time_by_class);
+      out["medication_time_by_ctime_class"]=AS_MATRIX_DOUBLE_SIZE(output_ex.medication_time_by_ctime_class,input.global_parameters.time_horizon);
+      out["n_smoking_cessation_by_ctime"]=AS_VECTOR_DOUBLE_SIZE(output_ex.n_smoking_cessation_by_ctime,input.global_parameters.time_horizon);
       out["n_exac_by_medication_class"]=AS_MATRIX_DOUBLE(output_ex.n_exac_by_medication_class);
 #endif
 
@@ -1652,6 +1810,10 @@ void update_output_ex(agent *ag)
 #ifdef OUTPUT_EX
   int time=floor((*ag).local_time+(*ag).time_at_creation);
   int local_time=floor((*ag).local_time);
+
+    output_ex.annual_cost_ctime[time]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+    (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
+
 
   //if(time>=(*ag).time_at_creation)
   {
@@ -1669,6 +1831,7 @@ void update_output_ex(agent *ag)
         output_ex.n_smoking_status_by_ctime[time][2]+=1;
       else
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
+
 
       //output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
       //output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
@@ -1688,6 +1851,7 @@ void update_output_ex(agent *ag)
       output_ex.sum_pack_years_by_ctime_sex[time][(*ag).sex]+=(*ag).pack_years;
       output_ex.sum_age_by_ctime_sex[time][(*ag).sex]+=(*ag).age_at_creation+(*ag).local_time;
 
+
 #if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS)>0
       output_ex.sum_weight_by_ctime_sex[time][(*ag).sex]+=(*ag).weight;
 #endif
@@ -1700,7 +1864,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
-      output_ex.n_total_case_detection+=((*ag).case_detection>0)*1;;
+      if((*ag).case_detection>0 && floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).local_time+(*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_case_detection_by_ctime[time][(*ag).case_detection-1]+=1;
       if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
@@ -1811,21 +1975,32 @@ void payoffs_LPT(agent *ag)
 void medication_LPT(agent *ag)
 {
   #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+  int time=floor((*ag).local_time+(*ag).time_at_creation);
     for(int i=0;i<N_MED_CLASS;i++)
       if(((*ag).medication_status >> i) & 1)
       {
         output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+        output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
       }
   #endif
     // costs
     //(*ag).cumul_cost+=1;
-          (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
     // qaly
       if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
           (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
         }
+
+    // smoking cessation count
+
+    if((*ag).smoking_cessation_count==1)
+    {
+      output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
+      (*ag).smoking_cessation_count=0;
+    }
+
 
     (*ag).medication_LPT=(*ag).local_time;
 }
@@ -1850,8 +2025,9 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      double gpvisits=rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
       (*ag).gpvisits = gpvisits;
+
 
   } else {
 
@@ -1864,7 +2040,7 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      double gpvisits=rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
       (*ag).gpvisits = gpvisits;
 
     }
@@ -1884,20 +2060,26 @@ double apply_case_detection(agent *ag)
   if ((((*ag).age_at_creation+(*ag).local_time) >= input.diagnosis.min_cd_age) &&
       ((*ag).pack_years >= input.diagnosis.min_cd_pack_years) &&
       ((*ag).gpvisits!=0) &&
-      ((*ag).diagnosis==0))  {
+      ((*ag).diagnosis==0) &&
+      ((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea >= input.diagnosis.min_cd_symptoms)) {
+
 
     if ((*ag).last_case_detection == 0)
         {
-      if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
-          {
-          p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
-          }
+      // if(((*ag).cough+(*ag).phlegm+(*ag).wheeze+(*ag).dyspnea) >= input.diagnosis.min_cd_symptoms)
+          // {
+          p_detection = input.diagnosis.p_case_detection[(int)floor((*ag).local_time+calendar_time)];
+          (*ag).case_detection_eligible=1;
+          // }
         }
 
       else if (((*ag).local_time - (*ag).last_case_detection) >= input.diagnosis.years_btw_case_detection)
           {
-            p_detection = input.diagnosis.p_case_detection[int((*ag).local_time)];
+            p_detection = input.diagnosis.p_case_detection[(int)floor((*ag).local_time+calendar_time)];
           }
+
+
+
 
   if (rand_unif() < p_detection) {
 
@@ -1940,7 +2122,7 @@ double update_prevalent_diagnosis(agent *ag)
     if (rand_unif() < p_prev_diagnosis)
     {
       (*ag).diagnosis = 1;
-      (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      //(*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time); // shouldn't be a cost associated with baseline diagnosis?
       (*ag).time_at_diagnosis=(*ag).local_time;
       (*ag).smoking_at_diagnosis=(*ag).smoking_status;
     }
@@ -1966,6 +2148,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
       (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
       (*ag).smoking_cessation=1;
+      (*ag).smoking_cessation_count=1;
     }
 
   }
@@ -1980,7 +2163,9 @@ double update_prevalent_diagnosis(agent *ag)
 
   double p_diagnosis = 0;
 
-   apply_case_detection(ag);
+   if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).local_time+(*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]){
+     apply_case_detection(ag);
+   }
 
   if ((*ag).gpvisits!=0) {
 
@@ -2007,6 +2192,11 @@ double update_prevalent_diagnosis(agent *ag)
         (*ag).cumul_cost+=input.cost.cost_outpatient_diagnosis/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
         (*ag).time_at_diagnosis=(*ag).local_time;
         (*ag).smoking_at_diagnosis=(*ag).smoking_status;
+        if((*ag).case_detection==1)
+          {
+          (*ag).case_detection=3; // increase to 3 for true positive
+          }
+
       }
 
     if ((*ag).diagnosis == 1 && (*ag).dyspnea==0)
@@ -2031,6 +2221,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
       (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
       (*ag).smoking_cessation=1;
+      (*ag).smoking_cessation_count=1;
     }
 
   } else if ((*ag).gold==0) {
@@ -2073,6 +2264,8 @@ double update_prevalent_diagnosis(agent *ag)
             (*ag).diagnosis = 1;
             (*ag).time_at_diagnosis=(*ag).local_time;
             (*ag).smoking_at_diagnosis=(*ag).smoking_status;
+            //(*ag).cumul_cost+=(input.cost.cost_gp_visit/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
+
 
         } else {
             (*ag).diagnosis = 0;
@@ -2084,9 +2277,11 @@ double update_prevalent_diagnosis(agent *ag)
           (*ag).diagnosis = 0;
           (*ag).time_at_diagnosis=0;
           (*ag).smoking_at_diagnosis=0;
+          (*ag).case_detection=2; // increase to 2 for false positive
         }
 
         if((*ag).diagnosis == 1 && (*ag).gold==0)
+
               {
                   if (rand_unif() < input.medication.medication_adherence)
                     {
@@ -2099,6 +2294,7 @@ double update_prevalent_diagnosis(agent *ag)
             {
               (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
               (*ag).smoking_cessation=1;
+              (*ag).smoking_cessation_count=1;
             }
 
       }
@@ -2143,7 +2339,9 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).time_at_diagnosis = 0;
 (*ag).smoking_at_diagnosis = 0;
 (*ag).smoking_cessation = 0;
+(*ag).smoking_cessation_count = 0;
 (*ag).case_detection = 0;
+(*ag).case_detection_eligible = 0;
 (*ag).last_case_detection = 0;
 
 (*ag).tmp_exac_rate = 0;
@@ -2151,6 +2349,19 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 (*ag).time_at_creation=calendar_time;
 (*ag).sex=rand_unif()<input.agent.p_female;
 (*ag).fev1_tail = sqrt(0.1845) * rand_norm() + 0.827;
+
+
+// (*ag).norm_refill = 0;
+// (*ag).exp_refill = 0;
+// (*ag).unif_refill = 0;
+// (*ag).gamma_COPD_refill = 0;
+// (*ag).gamma_NCOPD_refill = 0;
+// (*ag).norm_count = 0;
+// (*ag).exp_count = 0;
+// (*ag).unif_count = 0;
+// (*ag).gamma_COPD_count = 0;
+// (*ag).gamma_NCOPD_count = 0;
+
 
 double r=rand_unif();
 double cum_p=0;
@@ -2261,6 +2472,9 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
   (*ag).exac_history_time_first=0;
   (*ag).exac_history_time_second=0;
+
+  (*ag).exac_history_severity_first=0;
+  (*ag).exac_history_severity_second=0;
 
   (*ag).exac_history_n_moderate=0;
   (*ag).exac_history_n_severe_plus=0;
@@ -2435,6 +2649,7 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
   //payoffs;
   (*ag).cumul_cost=0;
+  (*ag).cumul_cost_prev_yr=0;
   (*ag).cumul_qaly=0;
 
   (*ag).payoffs_LPT=0;
@@ -2529,6 +2744,7 @@ agent *event_start_process(agent *ag)
 
 agent *event_end_process(agent *ag)
 {
+
   if((*ag).exac_status>0)
   {
     //NOTE: exacerbation timing is an LPT process and is treated separately.
@@ -2538,6 +2754,7 @@ agent *event_end_process(agent *ag)
   }
 
   ++output.n_agents;
+  if(floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) ++output_ex.n_agents_CD;
   output.n_COPD+=((*ag).gold>0)*1;
   output.cumul_time+=(*ag).local_time;
   output.n_deaths+=!(*ag).alive;
@@ -2563,6 +2780,7 @@ agent *event_end_process(agent *ag)
   output.total_qaly+=(*ag).cumul_qaly;
   if((*ag).diagnosis>0 && (*ag).gold>0) output.total_diagnosed_time+=(*ag).local_time-(*ag).time_at_diagnosis;
 
+  // output_ex.annual_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
 
 
 #ifdef OUTPUT_EX
@@ -2579,6 +2797,11 @@ agent *event_end_process(agent *ag)
   //Rprintf("age at death=%f\n",age);
   if((*ag).gold==0) output_ex.cumul_non_COPD_time+=(*ag).local_time;
   if((*ag).alive==false)  output_ex.n_death_by_age_sex[age-1][(*ag).sex]+=1;
+
+  if((*ag).case_detection_eligible==1) output_ex.n_case_detection_eligible+=1;
+  if((*ag).diagnosis>0 && (*ag).gold>0 && floor((*ag).time_at_diagnosis)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).time_at_diagnosis)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_diagnosed_true_CD+=1;
+
+
 
   double time=(*ag).time_at_creation+(*ag).local_time;
   while(time>(*ag).time_at_creation)
@@ -2620,6 +2843,11 @@ agent *event_end_process(agent *ag)
   output_ex.n_stroke+=(*ag).n_stroke;
   output_ex.n_hf+=((*ag).hf_status>0);
 #endif
+
+  // needed for random number maintenance
+  rand_NegBin_COPD(1, 1.1);
+  rand_NegBin_NCOPD(1, 1.1);
+
 
   return(ag);
 }
@@ -3011,8 +3239,7 @@ double event_exacerbation_tte(agent *ag)
                     +input.exacerbation.ln_rate_betas[6]*((*ag).gold==2)
                     +input.exacerbation.ln_rate_betas[7]*((*ag).gold==3)
                     +input.exacerbation.ln_rate_betas[8]*((*ag).gold==4)
-                    +input.exacerbation.ln_rate_betas[9]*((*ag).diagnosis)
-
+                    //+input.exacerbation.ln_rate_betas[9]*((*ag).diagnosis)
                     +input.medication.medication_ln_hr_exac[(*ag).medication_status] );
 
   (*ag).tmp_exac_rate= rate;
@@ -3100,6 +3327,7 @@ void event_exacerbation_process(agent *ag)
       {
         (*ag).cumul_cost+=(input.cost.cost_smoking_cessation/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time-1));
         (*ag).smoking_cessation=1;
+        (*ag).smoking_cessation_count=1;
       }
     }
   }
@@ -3192,10 +3420,11 @@ double event_exacerbation_end_tte(agent *ag)
 void event_exacerbation_end_process(agent *ag)
 {
   (*ag).cumul_cost+=(input.cost.exac_dcost[(*ag).exac_status-1]/pow(1+input.global_parameters.discount_cost,(*ag).time_at_creation+(*ag).local_time-1));
+  output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
   (*ag).cumul_qaly+=(input.utility.exac_dutil[(*ag).exac_status-1][(*ag).gold-1]/pow(1+input.global_parameters.discount_qaly,(*ag).time_at_creation+(*ag).local_time-1));
   (*ag).exac_status=0;
 }
-
 
 
 
@@ -3634,6 +3863,20 @@ int Callocate_resources()
   if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rexp_buffer_pointer=settings.rexp_buffer_size;
 
+  if(rgamma_buffer_COPD==NULL)
+    rgamma_buffer_COPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
+  else
+    realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
+  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+
+  if(rgamma_buffer_NCOPD==NULL)
+    rgamma_buffer_NCOPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
+  else
+    realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
+  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+
   if(agent_stack==NULL)
     agent_stack=(agent *)malloc(settings.agent_stack_size*sizeof(agent));
   else
@@ -3674,6 +3917,8 @@ int Cdeallocate_resources()
     if(runif_buffer!=NULL) {free(runif_buffer); runif_buffer=NULL;}
     if(rnorm_buffer!=NULL) {free(rnorm_buffer); rnorm_buffer=NULL;}
     if(rexp_buffer!=NULL) {free(rexp_buffer); rexp_buffer=NULL;}
+    if(rgamma_buffer_COPD!=NULL) {free(rgamma_buffer_COPD); rgamma_buffer_COPD=NULL;}
+    if(rgamma_buffer_NCOPD!=NULL) {free(rgamma_buffer_NCOPD); rgamma_buffer_NCOPD=NULL;}
     if(agent_stack!=NULL) {free(agent_stack); agent_stack=NULL;}
     if(event_stack!=NULL) {free(event_stack); event_stack=NULL;}
   }catch(const std::exception& e){};
@@ -3691,6 +3936,8 @@ int Cdeallocate_resources2()
     delete[] runif_buffer;
     delete[] rnorm_buffer;
     delete[] rexp_buffer;
+    delete[] rgamma_buffer_COPD;
+    delete[] rgamma_buffer_NCOPD;
     delete[] agent_stack;
     delete[] event_stack;
   }catch(const std::exception& e){};
@@ -3706,7 +3953,7 @@ int Callocate_resources2()
   //runif_buffer=(double *)malloc(runif_buffer_size*sizeof(double));
   runif_buffer=new double[settings.runif_buffer_size];
   if(runif_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  runif_buffer_pointer=settings.runif_buffer_size; //invoikes fill next time;
+  runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
 
   rnorm_buffer=new double[settings.rnorm_buffer_size];
   if(rnorm_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
@@ -3715,6 +3962,14 @@ int Callocate_resources2()
   rexp_buffer=new double[settings.rexp_buffer_size];
   if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rexp_buffer_pointer=settings.rexp_buffer_size;
+
+  rgamma_buffer_COPD=new double[settings.rgamma_buffer_size];
+  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+
+  rgamma_buffer_NCOPD=new double[settings.rgamma_buffer_size];
+  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
 
   agent_stack=new agent[settings.agent_stack_size];
   if(agent_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
@@ -3756,8 +4011,19 @@ int Cmodel(int max_n_agents)
     max_n_agents--;
     //calendar_time=0; NO! calendar_time is set to zero at init_session. Cmodel should be resumable;
 
+
+    if(settings.random_number_agent_refill==1)
+    {
+      runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
+      rnorm_buffer_pointer=settings.rnorm_buffer_size;
+      rexp_buffer_pointer=settings.rexp_buffer_size;
+      rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+      rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+    }
+
     switch(settings.agent_creation_mode)
     {
+
     case agent_creation_mode_one:
       ag=create_agent(&smith,last_id);
       break;
@@ -3786,6 +4052,8 @@ int Cmodel(int max_n_agents)
 
     while(calendar_time+(*ag).local_time<input.global_parameters.time_horizon && (*ag).alive && (*ag).age_at_creation+(*ag).local_time<MAX_AGE)
     {
+
+
       double tte=input.global_parameters.time_horizon-calendar_time-(*ag).local_time;;
       int winner=-1;
       double temp;

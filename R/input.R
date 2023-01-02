@@ -440,7 +440,11 @@ get_input <- function(age0 = 40,
 
   input_help$diagnosis$p_case_detection <- "Probability of recieving case detection in each year given they meet the selection criteria"
   input$diagnosis$p_case_detection <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-  input_ref$diagnosis$p_case_detection <- "Should be either 1 or 0; swtiches case detection on or off."
+  input_ref$diagnosis$p_case_detection <- "Only applies if case_detection_start_year less than time_horizon."
+
+  input_help$diagnosis$case_detection_start_end_yrs <- "Years in which case detection programme is to begin and end, respectively."
+  input$diagnosis$case_detection_start_end_yrs <- c(100,100)
+  input_ref$diagnosis$case_detection_start_end_yrs <- "Acts as on on/off switch for case detection. Default is 100 i.e. case detection is off. To apply case detection, start year must be less than the time horizon. If case detection is to be administered for entire time horizon then start year would be zero and end year >= time horizon."
 
   # input$smoking$ln_h_ces_betas[["diagnosis"]] <-  input$smoking$ln_h_ces_betas[["diagnosis"]] * input$diagnosis$p_case_detection
   # Turns off and on the effect of diagnosis on smoking cessation
@@ -463,23 +467,25 @@ get_input <- function(age0 = 40,
 
   input_help$diagnosis$case_detection_methods <- "Sensitivity, specificity, and cost of case detection methods in the total population"
   input$diagnosis$case_detection_methods <- cbind(None=c(0, 0, 0),
-                                                  CDQ17= c(4.1013, 4.394, 11.56),
-                                                  FlowMeter= c(3.174, 1.6025, 30.46),
-                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 42.01))
+                                                  CDQ17= c(4.1013, 4.394, 11.91),
+                                                  FlowMeter= c(3.174, 1.6025, 30.81),
+                                                  FlowMeter_CDQ= c(2.7321, 0.8779, 42.72))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Sichletidis et al 2011"
 
   input_help$diagnosis$case_detection_methods_eversmokers <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_eversmokers <- cbind(None=c(0, 0, 0),
-                                                              CDQ195= c(2.3848, 3.7262, 11.56),
-                                                              CDQ165= c(3.7336, 4.8098, 11.56),
-                                                              FlowMeter= c(3.1677, 2.6657, 24.33),
-                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 42.01))
+                                                              CDQ195= c(2.3848, 3.7262, 11.91),
+                                                              CDQ165= c(3.7336, 4.8098, 11.91),
+                                                              FlowMeter= c(3.1677, 2.6657, 24.68),
+                                                              FlowMeter_CDQ= c(2.8545, 0.8779, 42.72))
   input_ref$diagnosis$case_detection_methods_eversmokers <- "Haroon et al. BMJ Open 2015"
 
   input_help$diagnosis$case_detection_methods_symptomatic <- "Sensitivity, specificity, and cost of case detection methods among ever smokers"
   input$diagnosis$case_detection_methods_symptomatic <- cbind(None=c(0, 0, 0),
-                                                              FlowMeter= c(3.2705, 2.2735, 24.33))
+                                                              FlowMeter= c(3.2705, 2.2735, 24.68))
   input_ref$diagnosis$case_detection_methods_symptomatic <- "CanCOLD analysed on Sept 9, 2019"
+
+
 
 
   ## Diagnosis;
@@ -620,6 +626,9 @@ get_input <- function(age0 = 40,
 
   input$cost$cost_outpatient_diagnosis <- 61.18
   input_help$cost$cost_outpatient_diagnosis <- "Cost of diagnostic spirometry"
+
+  input$cost$cost_gp_visit <- 35.27
+  input_help$cost$cost_gp_visit <- "Cost of GP visit"
 
   input$cost$cost_smoking_cessation <- 368.76
   input_help$cost$cost_smoking_cessation <- "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014"
