@@ -11,19 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// mvrnormArma
-arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma);
-RcppExport SEXP _epicR_mvrnormArma(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(mvrnormArma(n, mu, sigma));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Cset_settings_var
 int Cset_settings_var(std::string name, NumericVector value);
 RcppExport SEXP _epicR_Cset_settings_var(SEXP nameSEXP, SEXP valueSEXP) {
@@ -53,6 +40,19 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     rcpp_result_gen = Rcpp::wrap(Cget_runtime_stats());
+    return rcpp_result_gen;
+END_RCPP
+}
+// mvrnormArma
+arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma);
+RcppExport SEXP _epicR_mvrnormArma(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(mvrnormArma(n, mu, sigma));
     return rcpp_result_gen;
 END_RCPP
 }
