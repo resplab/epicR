@@ -1628,7 +1628,7 @@ struct output_ex
   int n_case_detection_eligible;
   int n_diagnosed_true_CD;
   int n_agents_CD;
-  int cumul_time_by_ctime_GOLD[100][5];
+  double cumul_time_by_ctime_GOLD[100][5];
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
@@ -1746,7 +1746,7 @@ List Cget_output_ex()
     out["n_case_detection_eligible"]=output_ex.n_case_detection_eligible,
     out["n_diagnosed_true_CD"]=output_ex.n_diagnosed_true_CD,
     out["n_agents_CD"]=output_ex.n_agents_CD,
-    out("cumul_time_by_ctime_GOLD")=AS_MATRIX_INT_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
+    out("cumul_time_by_ctime_GOLD")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_time_by_ctime_GOLD,input.global_parameters.time_horizon);
 #endif
 
 
@@ -1865,7 +1865,7 @@ void update_output_ex(agent *ag)
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
       if((*ag).case_detection>0 && floor((*ag).local_time+(*ag).time_at_creation)>=input.diagnosis.case_detection_start_end_yrs[0] && floor((*ag).local_time+(*ag).time_at_creation)<=input.diagnosis.case_detection_start_end_yrs[1]) output_ex.n_case_detection_by_ctime[time][(*ag).case_detection-1]+=1;
-      if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
+      //if((*ag).local_time>0) output_ex.cumul_time_by_ctime_GOLD[time][((*ag).gold)]+=1;
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
@@ -1965,6 +1965,11 @@ void exacerbation_LPT(agent *ag)
 void payoffs_LPT(agent *ag)
 {
   (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+
+  output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
+
+  output_ex.cumul_time_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
 
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
