@@ -78,7 +78,7 @@ install.packages (c('remotes', 'usethis'))
 remotes::install_github('resplab/epicR')
 ```
 
-### Ubuntu 16.04 and Later
+### Ubuntu 22.04 and Later
 1. Install R by executing the following commands in Terminal:
 
 ```bash
@@ -102,7 +102,7 @@ If the installation is successful, you should be able to start R:
 3. Install `libcurl` from Terminal: 
 
 ```bash
-  sudo apt-get install libcurl4-openssl-dev libssl-dev
+  sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
 ```
 
 4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
