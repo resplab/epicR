@@ -1,9 +1,8 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/resplab/epicR/workflows/R-CMD-check/badge.svg)](https://github.com/resplab/epicR/actions)
 [![Codecov test coverage](https://codecov.io/gh/resplab/epicR/graph/badge.svg)](https://app.codecov.io/gh/resplab/epicR)
-<!-- badges: end -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-
+<!-- badges: end -->
 
 # epicR
 R package for Evaluation Platform in COPD (EPIC). Please refer to the published papers for more information: 
