@@ -30,5 +30,6 @@ validate_mortality(
 validation test results
 }
 \description{
-Returns results of validation tests for mortality rate
+This function returns a table and a plot of the difference between simulated and expected
+(life table) mortality, by sex and age.
 }

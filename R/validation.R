@@ -13,7 +13,7 @@ petoc <- function() {
 }
 
 
-#' Basic tests of model functionalty. Serious issues if the test does not pass.
+#' Basic tests of model functionality. Serious issues if the test does not pass.
 #' @return tests results
 #' @export
 sanity_check <- function() {
@@ -74,11 +74,11 @@ sanity_check <- function() {
 
 
 
-#' Returns results of validation tests for population module
+#' Returns simulated vs. predicted population table and a plot
 #' @param incidence_k a number (default=1) by which the incidence rate of population will be multiplied.
 #' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
 #' @param savePlots 0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
-#' @return validation test results
+#' @return returns a table showing predicted (StatsCan) and simulated population values
 #' @export
 validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0) {
   message("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
@@ -197,6 +197,9 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 
 
 #' Returns results of validation tests for smoking module.
+#'
+#' It compares simulated smoking prevalence and trends against observed data to
+#' assess the model's accuracy.
 #' @param intercept_k a number
 #' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
@@ -432,6 +435,14 @@ sanity_COPD <- function() {
 
 
 #' Returns results of validation tests for COPD
+#'
+#' This function runs validation tests for COPD model outputs. It estimates the baseline
+#' prevalence and incidence of COPD, along with sex-specific baseline COPD prevalence.
+#' Additionally, it calculates the baseline prevalence of COPD by age groups and
+#' smoking pack-years. It also estimates the coefficients for the relationships between
+#' age, pack-years, smoking status, and the prevalence of COPD.
+#'
+#'
 #' @param incident_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
 #' @param return_CI if TRUE, returns 95 percent confidence intervals for the "Year" coefficient
 #' @return validation test results
@@ -593,6 +604,9 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 
 
 #' Returns results of validation tests for mortality rate
+#'
+#' This function returns a table and a plot of the difference between simulated and expected
+#' (life table) mortality, by sex and age.
 #' @param n_sim number of simulated agents
 #' @param bgd a number
 #' @param bgd_h a number
@@ -659,6 +673,8 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
 
 #' Returns results of validation tests for comorbidities
+#'
+#' This function does not exist at the moment
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -724,6 +740,9 @@ validate_comorbidity <- function(n_sim = 1e+05) {
 
 
 #' Returns results of validation tests for lung function
+#'
+#' This function evaluates FEV1 (Forced Expiratory Volume in 1 second) values
+#' and GOLD stage distributions to assess lung function in simulated patients.
 #' @return validation test results
 #' @export
 validate_lung_function <- function() {
@@ -788,6 +807,12 @@ validate_lung_function <- function() {
 
 
 #' Returns results of validation tests for exacerbation rates
+#'
+#' This function runs validation tests for COPD exacerbation rates by GOLD stage
+#' and compares them with reference values from studies such as CanCOLD, CIHI,
+#' and Hoogendoorn. It simulates exacerbation events, and returns key metrics,
+#' including overall exacerbation rates, rates by GOLD stage, and rates in
+#' diagnosed vs. undiagnosed patients.
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
 #' @param input EPIC inputs
 #' @return validation test results
@@ -1134,6 +1159,12 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 
 
 #' Returns results of validation tests for diagnosis
+#'
+#' This function returns a table showing the proportion of COPD patients diagnosed
+#' over the model's runtime. It also provides a second table that breaks down the proportion
+#' of diagnosed patients by COPD severity. Additionally, the function generates a plot
+#' to visualize the distribution of diagnoses over time.
+#'
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -1203,6 +1234,9 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 }
 
 #' Returns results of validation tests for GP visits
+#'
+#' This function returns Average number of GP visits by sex, COPD severity and
+#' COPD diagnosis status along with their plots.
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -1297,6 +1331,9 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 }
 
 #' Returns results of validation tests for Symptoms
+#'
+#' This function plots the prevalence of cough, dyspnea, phlegm and wheeze
+#' over time and by GOLD stage.
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -1428,6 +1465,10 @@ validate_symptoms <- function(n_sim = 1e+04) {
 }
 
 #' Returns results of validation tests for Treatment
+#'
+#' This function runs validation tests to examine how treatment initiated at diagnosis
+#' influences exacerbation rates in COPD patients. It compares exacerbation rates between
+#' diagnosed and undiagnosed patients and assesses the impact of treatment.
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -1800,6 +1841,9 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
 
 #' Returns results of validation tests for overdiagnosis
+#'
+#' This function returns the proportion of non-COPD subjects overdiagnosed
+#' over model time.
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
@@ -1852,13 +1896,15 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 
 
 #' Returns results of validation tests for medication module.
+#'
+#' This function returns plots showing medication usage over time
 #' @param n_sim number of agents
 #' @return validation test results for medication
 #' @export
 
 validate_medication <- function(n_sim = 5e+04) {
   message("\n")
-  message("Plotting medimessageion usage over time:")
+  message("Plotting medication usage over time:")
   message("\n")
   petoc()
 

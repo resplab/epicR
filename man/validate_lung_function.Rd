@@ -10,5 +10,6 @@ validate_lung_function()
 validation test results
 }
 \description{
-Returns results of validation tests for lung function
+This function evaluates FEV1 (Forced Expiratory Volume in 1 second) values
+and GOLD stage distributions to assess lung function in simulated patients.
 }

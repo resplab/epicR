@@ -5,7 +5,7 @@
 #' See the README on
 #' \href{https://github.com/aminadibi/epicR#readme}{GitHub}
 #'
-#' @docType package
+#' @docType _PACKAGE
 #' @name epicR
 NULL
 
