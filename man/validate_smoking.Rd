@@ -15,5 +15,6 @@ validate_smoking(remove_COPD = 1, intercept_k = NULL)
 validation test results
 }
 \description{
-Returns results of validation tests for smoking module.
+It compares simulated smoking prevalence and trends against observed data to
+assess the model's accuracy.
 }

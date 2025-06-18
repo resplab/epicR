@@ -2,7 +2,7 @@
 % Please edit documentation in R/validation.R
 \name{sanity_check}
 \alias{sanity_check}
-\title{Basic tests of model functionalty. Serious issues if the test does not pass.}
+\title{Basic tests of model functionality. Serious issues if the test does not pass.}
 \usage{
 sanity_check()
 }
@@ -10,5 +10,5 @@ sanity_check()
 tests results
 }
 \description{
-Basic tests of model functionalty. Serious issues if the test does not pass.
+Basic tests of model functionality. Serious issues if the test does not pass.
 }

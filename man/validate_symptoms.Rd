@@ -13,5 +13,6 @@ validate_symptoms(n_sim = 10000)
 validation test results
 }
 \description{
-Returns results of validation tests for Symptoms
+This function plots the prevalence of cough, dyspnea, phlegm and wheeze
+over time and by GOLD stage.
 }

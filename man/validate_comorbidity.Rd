@@ -13,5 +13,5 @@ validate_comorbidity(n_sim = 1e+05)
 validation test results
 }
 \description{
-Returns results of validation tests for comorbidities
+This function does not exist at the moment
 }

@@ -15,5 +15,9 @@ validate_COPD(incident_COPD_k = 1, return_CI = FALSE)
 validation test results
 }
 \description{
-Returns results of validation tests for COPD
+This function runs validation tests for COPD model outputs. It estimates the baseline
+prevalence and incidence of COPD, along with sex-specific baseline COPD prevalence.
+Additionally, it calculates the baseline prevalence of COPD by age groups and
+smoking pack-years. It also estimates the coefficients for the relationships between
+age, pack-years, smoking status, and the prevalence of COPD.
 }

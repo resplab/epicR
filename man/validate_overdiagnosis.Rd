@@ -13,5 +13,6 @@ validate_overdiagnosis(n_sim = 10000)
 validation test results
 }
 \description{
-Returns results of validation tests for overdiagnosis
+This function returns the proportion of non-COPD subjects overdiagnosed
+over model time.
 }

@@ -13,5 +13,5 @@ validate_medication(n_sim = 50000)
 validation test results for medication
 }
 \description{
-Returns results of validation tests for medication module.
+This function returns plots showing medication usage over time
 }

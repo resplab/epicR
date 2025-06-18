@@ -2,7 +2,7 @@
 % Please edit documentation in R/validation.R
 \name{validate_population}
 \alias{validate_population}
-\title{Returns results of validation tests for population module}
+\title{Returns simulated vs. predicted population table and a plot}
 \usage{
 validate_population(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 }
@@ -14,8 +14,8 @@ validate_population(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 \item{savePlots}{0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}
 }
 \value{
-validation test results
+returns a table showing predicted (StatsCan) and simulated population values
 }
 \description{
-Returns results of validation tests for population module
+Returns simulated vs. predicted population table and a plot
 }

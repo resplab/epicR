@@ -15,5 +15,9 @@ validate_exacerbation(base_agents = 10000, input = NULL)
 validation test results
 }
 \description{
-Returns results of validation tests for exacerbation rates
+This function runs validation tests for COPD exacerbation rates by GOLD stage
+and compares them with reference values from studies such as CanCOLD, CIHI,
+and Hoogendoorn. It simulates exacerbation events, and returns key metrics,
+including overall exacerbation rates, rates by GOLD stage, and rates in
+diagnosed vs. undiagnosed patients.
 }
