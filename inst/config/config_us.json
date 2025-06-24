@@ -1,0 +1,227 @@
+{
+  "jurisdiction": "us",
+  "global_parameters": {
+    "age0": 40,
+    "time_horizon": 20,
+    "discount_cost": "PLACEHOLDER_US_DISCOUNT_COST",
+    "discount_qaly": "PLACEHOLDER_US_DISCOUNT_QALY",
+    "closed_cohort": 0
+  },
+  "agent": {
+    "p_female": "PLACEHOLDER_US_P_FEMALE",
+    "height_0_betas": "PLACEHOLDER_US_HEIGHT_BETAS",
+    "height_0_sd": "PLACEHOLDER_US_HEIGHT_SD",
+    "weight_0_betas": "PLACEHOLDER_US_WEIGHT_BETAS",
+    "weight_0_sd": "PLACEHOLDER_US_WEIGHT_SD",
+    "height_weight_rho": "PLACEHOLDER_US_HEIGHT_WEIGHT_RHO",
+    "p_prevalence_age": "PLACEHOLDER_US_AGE_PYRAMID",
+    "p_incidence_age": "calculated",
+    "p_bgd_by_sex": {
+      "male": "PLACEHOLDER_US_MORTALITY_MALE",
+      "female": "PLACEHOLDER_US_MORTALITY_FEMALE"
+    },
+    "l_inc_betas": "PLACEHOLDER_US_INCIDENCE_BETAS",
+    "ln_h_bgd_betas": "PLACEHOLDER_US_BGD_HAZARD_BETAS"
+  },
+  "smoking": {
+    "logit_p_current_smoker_0_betas": "PLACEHOLDER_US_SMOKING_CURRENT_BETAS",
+    "logit_p_never_smoker_con_not_current_0_betas": "PLACEHOLDER_US_SMOKING_NEVER_BETAS",
+    "minimum_smoking_prevalence": "PLACEHOLDER_US_MIN_SMOKING_PREV",
+    "mortality_factor_current": "PLACEHOLDER_US_SMOKING_MORTALITY_CURRENT",
+    "mortality_factor_former": "PLACEHOLDER_US_SMOKING_MORTALITY_FORMER",
+    "pack_years_0_betas": "PLACEHOLDER_US_PACK_YEARS_BETAS",
+    "pack_years_0_sd": "PLACEHOLDER_US_PACK_YEARS_SD",
+    "ln_h_inc_betas": "PLACEHOLDER_US_SMOKING_INC_BETAS",
+    "ln_h_ces_betas": "PLACEHOLDER_US_SMOKING_CES_BETAS",
+    "smoking_ces_coefficient": "PLACEHOLDER_US_SMOKING_CES_COEFF",
+    "smoking_cessation_adherence": "PLACEHOLDER_US_SMOKING_CES_ADHERENCE"
+  },
+  "COPD": {
+    "logit_p_COPD_betas_by_sex": {
+      "male": "PLACEHOLDER_US_COPD_PREV_MALE",
+      "female": "PLACEHOLDER_US_COPD_PREV_FEMALE"
+    },
+    "ln_h_COPD_betas_by_sex": {
+      "male": "PLACEHOLDER_US_COPD_INC_MALE",
+      "female": "PLACEHOLDER_US_COPD_INC_FEMALE"
+    }
+  },
+  "lung_function": {
+    "fev1_0_prev_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_PREV_MALE",
+      "female": "PLACEHOLDER_US_FEV1_PREV_FEMALE"
+    },
+    "fev1_0_prev_sd_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_PREV_SD_MALE",
+      "female": "PLACEHOLDER_US_FEV1_PREV_SD_FEMALE"
+    },
+    "fev1_0_inc_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_INC_MALE",
+      "female": "PLACEHOLDER_US_FEV1_INC_FEMALE"
+    },
+    "fev1_0_inc_sd_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_INC_SD_MALE",
+      "female": "PLACEHOLDER_US_FEV1_INC_SD_FEMALE"
+    },
+    "fev1_0_ZafarCMAJ_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_ZAFAR_MALE",
+      "female": "PLACEHOLDER_US_FEV1_ZAFAR_FEMALE"
+    },
+    "pred_fev1_betas_by_sex": {
+      "male": "PLACEHOLDER_US_PRED_FEV1_MALE",
+      "female": "PLACEHOLDER_US_PRED_FEV1_FEMALE"
+    },
+    "fev1_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_DECLINE_MALE",
+      "female": "PLACEHOLDER_US_FEV1_DECLINE_FEMALE"
+    },
+    "dfev1_sigmas": "PLACEHOLDER_US_FEV1_SIGMAS",
+    "dfev1_re_rho": "PLACEHOLDER_US_FEV1_RHO"
+  },
+  "exacerbation": {
+    "ln_rate_betas": "PLACEHOLDER_US_EXAC_RATE_BETAS",
+    "ln_rate_intercept_sd": "PLACEHOLDER_US_EXAC_RATE_SD",
+    "logit_severity_betas": "PLACEHOLDER_US_EXAC_SEVERITY_BETAS",
+    "logit_severity_intercept_sd": "PLACEHOLDER_US_EXAC_SEVERITY_SD",
+    "rate_severity_intercept_rho": "PLACEHOLDER_US_EXAC_RHO",
+    "exac_end_rate": "PLACEHOLDER_US_EXAC_END_RATE",
+    "logit_p_death_by_sex": {
+      "male": "PLACEHOLDER_US_EXAC_DEATH_MALE",
+      "female": "PLACEHOLDER_US_EXAC_DEATH_FEMALE"
+    }
+  },
+  "symptoms": {
+    "logit_p_cough_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_COUGH_COPD_MALE",
+      "female": "PLACEHOLDER_US_COUGH_COPD_FEMALE"
+    },
+    "logit_p_cough_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_COUGH_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_COUGH_NONCOPD_FEMALE"
+    },
+    "logit_p_phlegm_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_PHLEGM_COPD_MALE",
+      "female": "PLACEHOLDER_US_PHLEGM_COPD_FEMALE"
+    },
+    "logit_p_phlegm_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_PHLEGM_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_PHLEGM_NONCOPD_FEMALE"
+    },
+    "logit_p_dyspnea_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_DYSPNEA_COPD_MALE",
+      "female": "PLACEHOLDER_US_DYSPNEA_COPD_FEMALE"
+    },
+    "logit_p_dyspnea_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_DYSPNEA_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_DYSPNEA_NONCOPD_FEMALE"
+    },
+    "logit_p_wheeze_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_WHEEZE_COPD_MALE",
+      "female": "PLACEHOLDER_US_WHEEZE_COPD_FEMALE"
+    },
+    "logit_p_wheeze_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_WHEEZE_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_WHEEZE_NONCOPD_FEMALE"
+    },
+    "covariance_COPD": "PLACEHOLDER_US_SYMPTOMS_COV_COPD",
+    "covariance_nonCOPD": "PLACEHOLDER_US_SYMPTOMS_COV_NONCOPD"
+  },
+  "outpatient": {
+    "ln_rate_gpvisits_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_GP_COPD_MALE",
+      "female": "PLACEHOLDER_US_GP_COPD_FEMALE"
+    },
+    "dispersion_gpvisits_COPD": "PLACEHOLDER_US_GP_COPD_DISPERSION",
+    "ln_rate_gpvisits_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_GP_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_GP_NONCOPD_FEMALE"
+    },
+    "dispersion_gpvisits_nonCOPD": "PLACEHOLDER_US_GP_NONCOPD_DISPERSION",
+    "rate_doctor_visit": "PLACEHOLDER_US_DOCTOR_VISIT_RATE",
+    "p_specialist": "PLACEHOLDER_US_SPECIALIST_PROB"
+  },
+  "diagnosis": {
+    "p_case_detection": "PLACEHOLDER_US_CASE_DETECTION_PROB",
+    "case_detection_start_end_yrs": "PLACEHOLDER_US_CASE_DETECTION_YEARS",
+    "years_btw_case_detection": "PLACEHOLDER_US_CASE_DETECTION_INTERVAL",
+    "min_cd_age": "PLACEHOLDER_US_MIN_CD_AGE",
+    "min_cd_pack_years": "PLACEHOLDER_US_MIN_CD_PACK_YEARS",
+    "min_cd_symptoms": "PLACEHOLDER_US_MIN_CD_SYMPTOMS",
+    "case_detection_methods": "PLACEHOLDER_US_CASE_DETECTION_METHODS",
+    "case_detection_methods_eversmokers": "PLACEHOLDER_US_CASE_DETECTION_EVERSMOKERS",
+    "case_detection_methods_symptomatic": "PLACEHOLDER_US_CASE_DETECTION_SYMPTOMATIC",
+    "logit_p_prevalent_diagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_PREV_DIAG_MALE",
+      "female": "PLACEHOLDER_US_PREV_DIAG_FEMALE"
+    },
+    "logit_p_diagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_DIAG_MALE",
+      "female": "PLACEHOLDER_US_DIAG_FEMALE"
+    },
+    "p_hosp_diagnosis": "PLACEHOLDER_US_HOSP_DIAG",
+    "logit_p_overdiagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_OVERDIAG_MALE",
+      "female": "PLACEHOLDER_US_OVERDIAG_FEMALE"
+    },
+    "p_correct_overdiagnosis": "PLACEHOLDER_US_CORRECT_OVERDIAG"
+  },
+  "medication": {
+    "medication_adherence": "PLACEHOLDER_US_MED_ADHERENCE",
+    "medication_ln_hr_exac": "PLACEHOLDER_US_MED_EXAC_EFFECTS",
+    "medication_costs": "PLACEHOLDER_US_MED_COSTS",
+    "medication_utility": "PLACEHOLDER_US_MED_UTILITY"
+  },
+  "comorbidity": {
+    "logit_p_mi_betas_by_sex": {
+      "male": "PLACEHOLDER_US_MI_PREV_MALE",
+      "female": "PLACEHOLDER_US_MI_PREV_FEMALE"
+    },
+    "ln_h_mi_betas_by_sex": {
+      "male": "PLACEHOLDER_US_MI_INC_MALE",
+      "female": "PLACEHOLDER_US_MI_INC_FEMALE"
+    },
+    "p_mi_death": "PLACEHOLDER_US_MI_DEATH",
+    "logit_p_stroke_betas_by_sex": {
+      "male": "PLACEHOLDER_US_STROKE_PREV_MALE",
+      "female": "PLACEHOLDER_US_STROKE_PREV_FEMALE"
+    },
+    "ln_h_stroke_betas_by_sex": {
+      "male": "PLACEHOLDER_US_STROKE_INC_MALE",
+      "female": "PLACEHOLDER_US_STROKE_INC_FEMALE"
+    },
+    "p_stroke_death": "PLACEHOLDER_US_STROKE_DEATH",
+    "logit_p_hf_betas_by_sex": {
+      "male": "PLACEHOLDER_US_HF_PREV_MALE",
+      "female": "PLACEHOLDER_US_HF_PREV_FEMALE"
+    },
+    "ln_h_hf_betas_by_sex": {
+      "male": "PLACEHOLDER_US_HF_INC_MALE",
+      "female": "PLACEHOLDER_US_HF_INC_FEMALE"
+    }
+  },
+  "cost": {
+    "bg_cost_by_stage": "PLACEHOLDER_US_BG_COSTS",
+    "exac_dcost": "PLACEHOLDER_US_EXAC_COSTS",
+    "cost_case_detection": "PLACEHOLDER_US_CASE_DETECTION_COST",
+    "cost_outpatient_diagnosis": "PLACEHOLDER_US_OUTPATIENT_DIAG_COST",
+    "cost_gp_visit": "PLACEHOLDER_US_GP_VISIT_COST",
+    "cost_smoking_cessation": "PLACEHOLDER_US_SMOKING_CES_COST"
+  },
+  "utility": {
+    "bg_util_by_stage": "PLACEHOLDER_US_BG_UTILITY",
+    "exac_dutil": "PLACEHOLDER_US_EXAC_UTILITY"
+  },
+  "manual": {
+    "MORT_COEFF": "PLACEHOLDER_US_MORT_COEFF",
+    "smoking_intercept_k": "PLACEHOLDER_US_SMOKING_K",
+    "explicit_mortality_by_age_sex": {
+      "male": "PLACEHOLDER_US_EXPLICIT_MORT_MALE",
+      "female": "PLACEHOLDER_US_EXPLICIT_MORT_FEMALE"
+    }
+  },
+  "test_values": {
+    "population_over_40_2015": "PLACEHOLDER_US_POPULATION_OVER_40",
+    "expected_severe_exacerbations_per_year": "PLACEHOLDER_US_EXPECTED_SEVERE_EXAC",
+    "expected_severe_exac_tolerance": "PLACEHOLDER_US_SEVERE_EXAC_TOLERANCE"
+  }
+}

@@ -65,22 +65,72 @@ errors<-c(
 #' @param discount_cost Discounting for cost outcomes
 #' @param discount_qaly Discounting for QALY outcomes
 #' @param closed_cohort Whether the model should run as closed_cohort, open-population by default.
+#' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
 #' @export
 get_input <- function(age0 = 40,
                        time_horizon = 20,
                        discount_cost = 0,
                        discount_qaly = 0.03,
-                       closed_cohort=0) {
+                       closed_cohort=0,
+                       jurisdiction = "canada") {
+  
+  # Load configuration file based on jurisdiction
+  config_file <- system.file("config", paste0("config_", jurisdiction, ".json"), package = "epicR")
+  
+  # If package not installed, try development mode path
+  if (!file.exists(config_file) || config_file == "") {
+    config_file <- file.path("inst", "config", paste0("config_", jurisdiction, ".json"))
+  }
+  
+  if (!file.exists(config_file)) {
+    stop(paste("Configuration file for jurisdiction", jurisdiction, "not found. Tried:", config_file))
+  }
+  
+  # Load JSON configuration
+  config <- jsonlite::fromJSON(config_file, simplifyVector = FALSE)
+  
+  # Helper function to convert config values to appropriate R types
+  convert_config_value <- function(value) {
+    if (is.character(value) && startsWith(value, "PLACEHOLDER_")) {
+      stop(paste("Placeholder value not replaced:", value))
+    }
+    if (is.list(value) && length(value) > 0) {
+      # Convert lists to matrices/vectors as needed
+      if (all(sapply(value, is.numeric))) {
+        return(unlist(value))
+      }
+      return(value)
+    }
+    return(value)
+  }
+  
+  # Helper function to create matrices from config
+  create_matrix_from_config <- function(config_section, transpose = TRUE) {
+    if (is.list(config_section)) {
+      mat <- do.call(cbind, lapply(config_section, function(x) convert_config_value(x)))
+      if (transpose) mat <- t(mat)
+      return(mat)
+    }
+    return(convert_config_value(config_section))
+  }
+  
+  # Override config values with function parameters if provided
+  if (!missing(age0)) config$global_parameters$age0 <- age0
+  if (!missing(time_horizon)) config$global_parameters$time_horizon <- time_horizon
+  if (!missing(discount_cost)) config$global_parameters$discount_cost <- discount_cost
+  if (!missing(discount_qaly)) config$global_parameters$discount_qaly <- discount_qaly
+  if (!missing(closed_cohort)) config$global_parameters$closed_cohort <- closed_cohort
+  
   input <- list()
   input_help <- list()
   input_ref <- list()
 
 
-  input$global_parameters <- list(age0 = age0,
-                                  time_horizon = time_horizon,
-                                  discount_cost = discount_cost,
-                                  discount_qaly = discount_qaly,
-                                  closed_cohort = closed_cohort)
+  input$global_parameters <- list(age0 = config$global_parameters$age0,
+                                  time_horizon = config$global_parameters$time_horizon,
+                                  discount_cost = config$global_parameters$discount_cost,
+                                  discount_qaly = config$global_parameters$discount_qaly,
+                                  closed_cohort = config$global_parameters$closed_cohort)
   input_help$global_parameters <- list(age0 = "Starting age in the model",
                                        time_horizon = "Model time horizon",
                                        discount_cost = "Discounting for cost outcomes",
@@ -90,78 +140,65 @@ get_input <- function(age0 = 40,
 
 
   input_help$agent$p_female <- "Proportion of females in the population"
-  input$agent$p_female <- 0.5
+  input$agent$p_female <- convert_config_value(config$agent$p_female)
   input_ref$agent$p_female <- "Model assumption"
 
 
   input_help$agent$height_0_betas <- "Regression coefficients for estimating height (in meters) at baseline"
-  input$agent$height_0_betas <- t(as.matrix(c(intercept = 1.82657, sex = -0.13093, age = -0.00125, age2 = 2.31e-06, sex_age = -0.0001651)))
+  input$agent$height_0_betas <- t(as.matrix(convert_config_value(config$agent$height_0_betas)))
   input_ref$agent$height_0_betas <- ""
 
 
   input_help$agent$height_0_sd <- "SD representing heterogeneity in baseline height"
-  input$agent$height_0_sd <- 0.06738
+  input$agent$height_0_sd <- convert_config_value(config$agent$height_0_sd)
   input_ref$agent$height_0_sd <- ""
 
 
   input_help$agent$weight_0_betas <- "Regression coefficients for estimating weiight (in Kg) at baseline"
-  input$agent$weight_0_betas <- t(as.matrix(c(intercept = 50, sex = -5, age = 0.1, age2 = 0, sex_age = 0, height = 1, year = 0.01)))
+  input$agent$weight_0_betas <- t(as.matrix(convert_config_value(config$agent$weight_0_betas)))
   input_ref$agent$weight_0_betas <- ""
 
 
   input_help$agent$weight_0_sd <- "SD representing heterogeneity in baseline weight"
-  input$agent$weight_0_sd <- 5
+  input$agent$weight_0_sd <- convert_config_value(config$agent$weight_0_sd)
   input_ref$agent$weight_0_sd <- ""
 
 
   input_help$agent$height_weight_rho <- "Correlaiton coefficient between weight and height at baseline"
-  input$agent$height_weight_rho <- 0
+  input$agent$height_weight_rho <- convert_config_value(config$agent$height_weight_rho)
   input_ref$agent$height_weight_rho <- ""
 
-  input$agent$p_prevalence_age <- c(rep(0, 40), c(473.9, 462.7, 463, 469.3, 489.9, 486.3, 482.7, 479, 483.7, 509, 542.8, 557.7,
-                                                  561.4, 549.7, 555.3, 544.6, 531.6, 523.9, 510.2, 494.1, 486.5, 465.6, 442.8, 424.6, 414.9, 404.3, 394.4, 391.5, 387.3, 330.9,
-                                                  304.5, 292.2, 277.4, 255.1, 241.1, 223.2, 211.4, 198.8, 185.6, 178, 166.7, 155.2, 149.1, 140.6, 131.9, 119.7, 105.8, 95.4,
-                                                  83.4, 73.2, 62.4, 52.3, 42.7, 34.7, 27, 19.9, 13.2, 8.8, 5.9, 3.8, 6.8), rep(0, 10))
-
-  input_help$agent$p_prevalence_age <- "Age pyramid at baseline (taken from CanSim.052-0005.xlsm for year 2015)"
+  input_help$agent$p_prevalence_age <- "Age pyramid at baseline"
+  input$agent$p_prevalence_age <- convert_config_value(config$agent$p_prevalence_age)
   input$agent$p_prevalence_age <- input$agent$p_prevalence_age/sum(input$agent$p_prevalence_age)
-  input_ref$agent$p_prevalence_age <- "CanSim.052-0005.xlsm for year 2015. THANKS TO AMIN!"
+  input_ref$agent$p_prevalence_age <- paste("From config for", config$jurisdiction)
 
 
   input_help$agent$p_incidence_age <- "Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration"
-  input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.02* exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
-  input$agent$p_incidence_age <- input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
+  if (config$agent$p_incidence_age == "calculated") {
+    input$agent$p_incidence_age <- c(rep(0, 40), c(1), 0.02* exp(-(0:59)/5), rep(0, 111 - 40 - 1 - 60))
+    input$agent$p_incidence_age <- input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
+  } else {
+    input$agent$p_incidence_age <- convert_config_value(config$agent$p_incidence_age)
+    input$agent$p_incidence_age <- input$agent$p_incidence_age/sum(input$agent$p_incidence_age)
+  }
   input_ref$agent$p_incidence_age <- ""
 
 
   input_help$agent$p_bgd_by_sex <- "Life table"
-  input$agent$p_bgd_by_sex <- cbind(male = c(0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05,
-                                             1e-04, 0.00012, 0.00015, 2e-04, 0.00028, 0.00039, 0.00051, 0.00059, 0.00066, 0.00071, 0.00075, 0.00076, 0.00076, 0.00074,
-                                             0.00071, 7e-04, 0.00069, 7e-04, 0.00071, 0.00074, 0.00078, 0.00082, 0.00086, 0.00091, 0.00096, 0.00102, 0.00108, 0.00115,
-                                             0.00123, 0.00132, 0.00142, 0.00153, 0.00165, 0.00179, 0.00194, 0.00211, 0.00229, 0.00251, 0.00275, 0.00301, 0.00331, 0.00364,
-                                             0.00401, 0.00441, 0.00484, 0.00533, 0.00586, 0.00645, 0.00709, 0.0078, 0.00859, 0.00945, 0.0104, 0.01145, 0.0126, 0.01387,
-                                             0.01528, 0.01682, 0.01852, 0.0204, 0.02247, 0.02475, 0.02726, 0.03004, 0.0331, 0.03647, 0.04019, 0.0443, 0.04883, 0.05383,
-                                             0.05935, 0.06543, 0.07215, 0.07957, 0.08776, 0.0968, 0.10678, 0.1178, 0.12997, 0.14341, 0.15794, 0.17326, 0.18931, 0.20604,
-                                             0.21839, 0.23536, 0.2529, 0.27092, 0.28933, 0.30802, 0.32687, 0.34576, 0.36457, 0.38319, 0.40149, 0.41937, 0.43673, 0.4535,
-                                             0.4696, 1), female = c(0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05,
-                                                                    0.00011, 0.00014, 0.00018, 0.00022, 0.00026, 0.00028, 0.00029, 3e-04, 3e-04, 0.00031, 0.00031, 3e-04, 3e-04, 3e-04, 0.00031,
-                                                                    0.00032, 0.00034, 0.00037, 4e-04, 0.00043, 0.00047, 0.00051, 0.00056, 6e-04, 0.00066, 0.00071, 0.00077, 0.00084, 0.00092,
-                                                                    0.001, 0.00109, 0.00118, 0.00129, 0.0014, 0.00153, 0.00166, 0.00181, 0.00197, 0.00215, 0.00235, 0.00257, 0.0028, 0.00307,
-                                                                    0.00336, 0.00368, 0.00403, 0.00442, 0.00485, 0.00533, 0.00586, 0.00645, 0.0071, 0.00782, 0.00862, 0.00951, 0.01051, 0.01161,
-                                                                    0.01284, 0.0142, 0.01573, 0.01743, 0.01934, 0.02146, 0.02384, 0.02649, 0.02947, 0.0328, 0.03654, 0.04074, 0.04545, 0.05074,
-                                                                    0.05669, 0.06338, 0.07091, 0.0794, 0.08897, 0.09977, 0.11196, 0.12542, 0.13991, 0.15541, 0.1719, 0.18849, 0.20653, 0.22549,
-                                                                    0.24526, 0.26571, 0.28671, 0.3081, 0.3297, 0.35132, 0.3728, 0.39395, 0.41461, 0.43462, 0.45386, 0.47222, 1))
-  input_ref$agent$p_bgd_by_sex <- "Life table"
+  input$agent$p_bgd_by_sex <- create_matrix_from_config(config$agent$p_bgd_by_sex, transpose = FALSE)
+  input_ref$agent$p_bgd_by_sex <- paste("Life table for", config$jurisdiction)
 
 
   input_help$agent$l_inc_betas <- "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration"
-  input$agent$l_inc_betas <- t(as.matrix(c(intercept = -3.55-input$global_parameters$closed_cohort*100, y = 0.01, y2 = 0))) # intercept is the result of model calibration,
+  l_inc_config <- convert_config_value(config$agent$l_inc_betas)
+  l_inc_config[1] <- l_inc_config[1] - input$global_parameters$closed_cohort*100  # adjust intercept for closed cohort
+  input$agent$l_inc_betas <- t(as.matrix(l_inc_config))
   input_ref$agent$l_inc_betas <- "If closed cohort is enabled, incidence population will be turned off."
 
 
   input_help$agent$ln_h_bgd_betas <- "Increased Longevity Over time and effect of other variables"
-  input$agent$ln_h_bgd_betas <- t(as.matrix(c(intercept = 0, y = -0.025, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
-                                              n_stroke = 0, hf = 0)))  #AKA longevity
+  input$agent$ln_h_bgd_betas <- t(as.matrix(convert_config_value(config$agent$ln_h_bgd_betas)))
   input_ref$agent$ln_h_bgd_betas <- ""
 
   ### smoking;
@@ -672,8 +709,83 @@ get_input <- function(age0 = 40,
   #input$project_specific$ROC16_treatment_RR<-0.75
   #input_help$project_specific$ROC16_treatment_RR<-"Treatment effect (relative risk of future exacerbations after treatment is initiated"
 
-  model_input <- list ("values" = input, "help" = input_help, "ref" = input_ref)
+  # Replace remaining parameters with config values
+  
+  # Smoking parameters
+  if (exists("smoking", config)) {
+    input$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(convert_config_value(config$smoking$logit_p_current_smoker_0_betas)))
+    input$smoking$logit_p_never_smoker_con_not_current_0_betas <- t(as.matrix(convert_config_value(config$smoking$logit_p_never_smoker_con_not_current_0_betas)))
+    input$smoking$minimum_smoking_prevalence <- convert_config_value(config$smoking$minimum_smoking_prevalence)
+    input$smoking$mortality_factor_current <- t(as.matrix(convert_config_value(config$smoking$mortality_factor_current)))
+    input$smoking$mortality_factor_former <- t(as.matrix(convert_config_value(config$smoking$mortality_factor_former)))
+    input$smoking$pack_years_0_betas <- t(as.matrix(convert_config_value(config$smoking$pack_years_0_betas)))
+    input$smoking$pack_years_0_sd <- convert_config_value(config$smoking$pack_years_0_sd)
+    input$smoking$ln_h_inc_betas <- convert_config_value(config$smoking$ln_h_inc_betas)
+    input$smoking$ln_h_ces_betas <- convert_config_value(config$smoking$ln_h_ces_betas)
+    input$smoking$smoking_ces_coefficient <- convert_config_value(config$smoking$smoking_ces_coefficient)
+    input$smoking$smoking_cessation_adherence <- convert_config_value(config$smoking$smoking_cessation_adherence)
+  }
+  
+  # COPD parameters
+  if (exists("COPD", config)) {
+    input$COPD$logit_p_COPD_betas_by_sex <- create_matrix_from_config(config$COPD$logit_p_COPD_betas_by_sex, transpose = FALSE)
+    input$COPD$ln_h_COPD_betas_by_sex <- create_matrix_from_config(config$COPD$ln_h_COPD_betas_by_sex, transpose = FALSE)
+  }
+  
+  # Lung function parameters
+  if (exists("lung_function", config)) {
+    input$lung_function$fev1_0_prev_betas_by_sex <- create_matrix_from_config(config$lung_function$fev1_0_prev_betas_by_sex, transpose = FALSE)
+    input$lung_function$fev1_0_prev_sd_by_sex <- convert_config_value(config$lung_function$fev1_0_prev_sd_by_sex)
+    input$lung_function$fev1_0_inc_betas_by_sex <- create_matrix_from_config(config$lung_function$fev1_0_inc_betas_by_sex, transpose = FALSE)
+    input$lung_function$fev1_0_inc_sd_by_sex <- convert_config_value(config$lung_function$fev1_0_inc_sd_by_sex)
+    input$lung_function$fev1_0_ZafarCMAJ_by_sex <- create_matrix_from_config(config$lung_function$fev1_0_ZafarCMAJ_by_sex, transpose = FALSE)
+    input$lung_function$pred_fev1_betas_by_sex <- create_matrix_from_config(config$lung_function$pred_fev1_betas_by_sex, transpose = FALSE)
+    input$lung_function$fev1_betas_by_sex <- create_matrix_from_config(config$lung_function$fev1_betas_by_sex, transpose = FALSE)
+    input$lung_function$dfev1_sigmas <- t(as.matrix(convert_config_value(config$lung_function$dfev1_sigmas)))
+    input$lung_function$dfev1_re_rho <- convert_config_value(config$lung_function$dfev1_re_rho)
+  }
+  
+  # Exacerbation parameters
+  if (exists("exacerbation", config)) {
+    input$exacerbation$ln_rate_betas <- t(as.matrix(convert_config_value(config$exacerbation$ln_rate_betas)))
+    input$exacerbation$ln_rate_intercept_sd <- convert_config_value(config$exacerbation$ln_rate_intercept_sd)
+    input$exacerbation$logit_severity_betas <- t(as.matrix(convert_config_value(config$exacerbation$logit_severity_betas)))
+    input$exacerbation$logit_severity_intercept_sd <- convert_config_value(config$exacerbation$logit_severity_intercept_sd)
+    input$exacerbation$rate_severity_intercept_rho <- convert_config_value(config$exacerbation$rate_severity_intercept_rho)
+    input$exacerbation$exac_end_rate <- t(as.matrix(convert_config_value(config$exacerbation$exac_end_rate)))
+    input$exacerbation$logit_p_death_by_sex <- create_matrix_from_config(config$exacerbation$logit_p_death_by_sex, transpose = FALSE)
+  }
+  
+  # Cost and utility parameters
+  if (exists("cost", config)) {
+    input$cost$bg_cost_by_stage <- t(as.matrix(convert_config_value(config$cost$bg_cost_by_stage)))
+    input$cost$exac_dcost <- t(as.matrix(convert_config_value(config$cost$exac_dcost)))
+    input$cost$cost_case_detection <- convert_config_value(config$cost$cost_case_detection)
+    input$cost$cost_outpatient_diagnosis <- convert_config_value(config$cost$cost_outpatient_diagnosis)
+    input$cost$cost_gp_visit <- convert_config_value(config$cost$cost_gp_visit)
+    input$cost$cost_smoking_cessation <- convert_config_value(config$cost$cost_smoking_cessation)
+  }
+  
+  if (exists("utility", config)) {
+    input$utility$bg_util_by_stage <- t(as.matrix(convert_config_value(config$utility$bg_util_by_stage)))
+    if (is.list(config$utility$exac_dutil)) {
+      input$utility$exac_dutil <- do.call(cbind, lapply(config$utility$exac_dutil, function(x) convert_config_value(x)))
+    }
+  }
+  
+  # Manual parameters
+  if (exists("manual", config)) {
+    input$manual$MORT_COEFF <- convert_config_value(config$manual$MORT_COEFF)
+    input$manual$smoking$intercept_k <- convert_config_value(config$manual$smoking_intercept_k)
+    input$manual$explicit_mortality_by_age_sex <- create_matrix_from_config(config$manual$explicit_mortality_by_age_sex, transpose = FALSE)
+  }
+
+  model_input <- list ("values" = input, "help" = input_help, "ref" = input_ref, "config" = config)
   return (model_input)
 }
 
-model_input <- get_input()
+# Default model input for backward compatibility (only when config file exists)
+if (file.exists(system.file("config", "config_canada.json", package = "epicR")) || 
+    file.exists("inst/config/config_canada.json")) {
+  model_input <- get_input()
+}

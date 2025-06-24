@@ -5,6 +5,8 @@ Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")),
     person("Kate", "Johnson", email = "kate.johnson@alumni.ubc.ca", role = c("aut")))
+Author: Mohsen Sadatsafavi [aut, cph], Amin Adibi [aut, cre], Kate Johnson [aut]
+Maintainer: Amin Adibi <adibi@alumni.ubc.ca>
 Description: Evaluation Platform in COPD (EPIC) is a Discrete Event Simulation (DES) model that simulates health outcomes of COPD patients based on demographics and individual-level risk factors, based on the model published in Sadatsafavi et al. (2019) <doi:10.1177/0272989X18824098>.
 Depends:
     R (>= 4.1.0)
@@ -30,7 +32,7 @@ Imports:
     dplyr,
     reshape2
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests:
     testthat (>= 3.0.0),
     openxlsx,
