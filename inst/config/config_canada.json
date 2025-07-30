@@ -366,6 +366,10 @@
       "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
     },
     "dispersion_gpvisits_COPD": 0.431,
+    "dispersion_gpvisits_COPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in COPD patients",
+      "ref": ""
+    },
     "ln_rate_gpvisits_nonCOPD_by_sex": {
       "male": [-0.3596, 0.0169, 0.0722, 0.181, -0.0275, 0.2262, 0.0807],
       "female": [-0.3501, 0.0169, 0.0722, 0.181, -0.0275, 0.2262, 0.0807]
@@ -375,8 +379,20 @@
       "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
     },
     "dispersion_gpvisits_nonCOPD": 0.4093,
+    "dispersion_gpvisits_nonCOPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in non-COPD patients",
+      "ref": ""
+    },
     "rate_doctor_visit": 0.1,
-    "p_specialist": 0.1
+    "rate_doctor_visit_metadata": {
+      "help": "Rate of doctor visits",
+      "ref": ""
+    },
+    "p_specialist": 0.1,
+    "p_specialist_metadata": {
+      "help": "Probability of specialist visit",
+      "ref": ""
+    }
   },
   "diagnosis": {
     "p_case_detection": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -455,6 +471,10 @@
       "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
     },
     "p_hosp_diagnosis": 1,
+    "p_hosp_diagnosis_metadata": {
+      "help": "Probability of hospital diagnosis",
+      "ref": ""
+    },
     "logit_p_overdiagnosis_by_sex": {
       "male": [-5.2169, 0.0025, 0.6911, 0.0075, 0.7264, 0.7956, 0.66, 0.8798, 0],
       "female": [-4.9572, 0.0025, 0.6911, 0.0075, 0.7264, 0.7956, 0.66, 0.8798, 0]
@@ -463,7 +483,11 @@
       "help": "Probability of being overdiagnosed for non-COPD subjects",
       "ref": "Kate's regression on CanCOLD, provided on 2019-07-16"
     },
-    "p_correct_overdiagnosis": 0.5
+    "p_correct_overdiagnosis": 0.5,
+    "p_correct_overdiagnosis_metadata": {
+      "help": "Probability of correcting overdiagnosis",
+      "ref": ""
+    }
   },
   "medication": {
     "medication_adherence": 0.7,
@@ -543,27 +567,59 @@
       "male": [-3000, 0.001, 0, 0.01, 0.001, 0, 0, 0.05],
       "female": [-3000, 0.001, 0, 0.01, 0.001, 0, 0, 0.05]
     },
+    "logit_p_mi_betas_by_sex_metadata": {
+      "help": "Logit probability of myocardial infarction by sex",
+      "ref": ""
+    },
     "ln_h_mi_betas_by_sex": {
       "male": [-10000.748, 0.1133, -0.00044, 0.01, 0.70953, 0, 0.01, 0.05, 0.5, 0],
       "female": [-30000, 0.001, 0, 0.01, 0.61868, 0, 0.01, 0.05, 0, 0.01]
     },
+    "ln_h_mi_betas_by_sex_metadata": {
+      "help": "Log-hazard of myocardial infarction by sex",
+      "ref": ""
+    },
     "p_mi_death": 0.05,
+    "p_mi_death_metadata": {
+      "help": "Probability of death from myocardial infarction",
+      "ref": ""
+    },
     "logit_p_stroke_betas_by_sex": {
       "male": [-3000, 0.001, 0, 0.01, 0.001, 0, 0, 0.05, 0, 0],
       "female": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0]
+    },
+    "logit_p_stroke_betas_by_sex_metadata": {
+      "help": "Logit probability of stroke by sex",
+      "ref": ""
     },
     "ln_h_stroke_betas_by_sex": {
       "male": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0],
       "female": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0]
     },
+    "ln_h_stroke_betas_by_sex_metadata": {
+      "help": "Log-hazard of stroke by sex",
+      "ref": ""
+    },
     "p_stroke_death": 0.18,
+    "p_stroke_death_metadata": {
+      "help": "Probability of death from stroke",
+      "ref": ""
+    },
     "logit_p_hf_betas_by_sex": {
       "male": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0],
       "female": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0]
     },
+    "logit_p_hf_betas_by_sex_metadata": {
+      "help": "Logit probability of heart failure by sex",
+      "ref": ""
+    },
     "ln_h_hf_betas_by_sex": {
       "male": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0],
       "female": [-3000, 0.001, 0, 0.01, 0.001, 0, 0.01, 0.05, 0, 0.01, 0, 0]
+    },
+    "ln_h_hf_betas_by_sex_metadata": {
+      "help": "Log-hazard of heart failure by sex",
+      "ref": ""
     }
   },
   "cost": {
@@ -617,15 +673,39 @@
   },
   "manual": {
     "MORT_COEFF": 1,
+    "MORT_COEFF_metadata": {
+      "help": "Mortality coefficient",
+      "ref": ""
+    },
     "smoking_intercept_k": 1,
+    "smoking_intercept_k_metadata": {
+      "help": "Smoking intercept coefficient",
+      "ref": ""
+    },
     "explicit_mortality_by_age_sex": {
       "male": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000403539, -0.000146157, -2.02E-06, 2.86E-05, -3.44E-05, -4.23E-05, 4.11E-05, 6.17E-07, -0.000153637, -8.66E-05, -0.000164969, -0.000196571, -0.000187843, -0.000258444, -0.000313082, -0.000450107, -0.000503461, -0.000507455, -0.000685443, -0.000778368, 0.000174258, 0.001290859, 0.001312415, 0.001563206, 0.001702653, 0.001801797, 0.001963438, 0.002204392, 0.002453385, 0.002698432, 0.002205324, 0.0014888, 0.001848938, 0.001817781, 0.002134294, 0.002514315, 0.00259607, 0.003111937, 0.003895328, 0.004266737, 0.003600876, 0.002149508, 0.003656, 0.003476187, 0.004743609, 0.005217777, 0.00717833, 0.009193578, 0.011745021, 0.013994564, 0.016918953, 0.01972724, 0.024327132, 0.029473222, 0.0333568, 0.034382221, 0.043683632, 0.046918264, 0.05015422, 0.056785037, 0.067912998, 0.089136952, 0.084619065, 0.087049684, 0.071382935, 0.113123173, 0.056760747, 0.131580432, 0.102958338, 0.121878112, -0.173197386, -1],
       "female": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000259844, 0.000101718, -3.40E-05, 5.93E-05, 8.02E-05, -1.50E-05, 5.27E-05, -3.42E-05, -2.48E-05, -1.31E-05, -8.41E-05, -6.79E-05, -5.84E-05, -0.00019066, -0.000102213, -0.000117037, -0.000177858, -0.000220223, -0.000265341, -0.000330637, 0.000229625, 0.000747219, 0.000783642, 0.000885681, 0.001036908, 0.001221667, 0.001263684, 0.001488539, 0.001609789, 0.001895704, 0.001446215, 0.001285518, 0.001500222, 0.001575942, 0.001798989, 0.001964052, 0.002175782, 0.002460083, 0.002847027, 0.003243588, 0.002699441, 0.002155372, 0.002928563, 0.003010949, 0.003689935, 0.004178407, 0.00548861, 0.006334125, 0.008011011, 0.009087395, 0.011673741, 0.012943067, 0.017208392, 0.018224239, 0.022955536, 0.026702058, 0.030114256, 0.035733502, 0.03965046, 0.047085019, 0.052203521, 0.058999658, 0.070092134, 0.068989349, 0.05458069, 0.074344634, 0.05941906, 0.105553297, 0.050910243, 0.136369534, -0.107299339, -1]
+    },
+    "explicit_mortality_by_age_sex_metadata": {
+      "help": "Explicit mortality rates by age and sex",
+      "ref": ""
     }
   },
   "test_values": {
     "population_over_40_2015": 18.6e6,
+    "population_over_40_2015_metadata": {
+      "help": "Population over 40 in 2015",
+      "ref": ""
+    },
     "expected_severe_exacerbations_per_year": 100000,
-    "expected_severe_exac_tolerance": 5e3
+    "expected_severe_exacerbations_per_year_metadata": {
+      "help": "Expected severe exacerbations per year",
+      "ref": ""
+    },
+    "expected_severe_exac_tolerance": 5e3,
+    "expected_severe_exac_tolerance_metadata": {
+      "help": "Expected severe exacerbation tolerance",
+      "ref": ""
+    }
   }
 }
