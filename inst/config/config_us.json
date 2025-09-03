@@ -3,8 +3,8 @@
   "global_parameters": {
     "age0": 40,
     "time_horizon": 20,
-    "discount_cost": "PLACEHOLDER_US_DISCOUNT_COST",
-    "discount_qaly": "PLACEHOLDER_US_DISCOUNT_QALY",
+    "discount_cost": 0,
+    "discount_qaly": 0.03,
     "closed_cohort": 0,
     "age0_metadata": {
       "help": "Starting age in the model",
@@ -28,20 +28,72 @@
     }
   },
   "agent": {
-    "p_female": "PLACEHOLDER_US_P_FEMALE",
-    "height_0_betas": "PLACEHOLDER_US_HEIGHT_BETAS",
-    "height_0_sd": "PLACEHOLDER_US_HEIGHT_SD",
-    "weight_0_betas": "PLACEHOLDER_US_WEIGHT_BETAS",
-    "weight_0_sd": "PLACEHOLDER_US_WEIGHT_SD",
-    "height_weight_rho": "PLACEHOLDER_US_HEIGHT_WEIGHT_RHO",
-    "p_prevalence_age": "PLACEHOLDER_US_AGE_PYRAMID",
+    "p_female": 0.5,
+    "height_0_betas":{
+      "intercept": 1.82657,
+      "sex": -0.13093,
+      "age": -0.00125,
+      "age2": 2.31e-06,
+      "sex_age": -0.0001651
+      },
+    "height_0_sd": 0.06738,
+    "weight_0_betas":{
+      "intercept": 50,
+      "sex": -5,
+      "age": 0.1,
+      "age2": 0,
+      "sex_age": 0,
+      "height": 1,
+      "year": 0.01
+      },
+    "weight_0_sd": 5,
+    "height_weight_rho": 0,
+    "p_prevalence_age": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        3974.207, 3849.420, 3907.624, 4083.603, 4317.303, 4370.889, 4141.473, 4055.026, 4059.493, 4134.729, 4382.781, 4462.439,
+                        4458.057, 4447.571, 4500.647, 4538.426, 4383.906, 4355.992, 4305.620, 4149.572, 4113.021, 3942.013, 3790.340, 3640.760,
+                        3526.596, 3442.274, 3335.226, 3296.079, 3430.360, 2527.153, 2486.735, 2414.508, 2464.193, 2141.679, 1950.011, 1836.257,
+                        1718.782, 1636.558, 1498.697, 1420.533, 1350.403, 1200.285, 1148.211, 1081.259, 1013.571, 954.754, 843.278, 771.721,
+                        687.162, 594.409, 520.830, 438.629, 359.436, 292.695, 232.294, 173.061, 122.361, 92.105, 61.601, 43.288, 75.472,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "p_incidence_age": "calculated",
     "p_bgd_by_sex": {
-      "male": "PLACEHOLDER_US_MORTALITY_MALE",
-      "female": "PLACEHOLDER_US_MORTALITY_FEMALE"
+      "male": [0.00586, 0.00042, 0.000272, 0.000225, 0.000184, 0.000157, 0.00014, 0.000128, 0.000122, 0.000123,
+             0.000129, 0.000138, 0.000164, 0.00022, 0.00031, 0.000446, 0.000637, 0.000868, 0.0011, 0.00127,
+             0.001373, 0.001488, 0.001605, 0.001714, 0.001835, 0.001963, 0.002082, 0.002202, 0.00233, 0.002457,
+             0.002574, 0.002683, 0.002787, 0.002881, 0.002974, 0.003074, 0.003175, 0.003295, 0.003444, 0.003608,
+             0.00378, 0.003958, 0.004144, 0.004337, 0.00454, 0.004774, 0.005064, 0.005399, 0.005796, 0.006214,
+             0.006671, 0.007167, 0.007736, 0.008351, 0.009035, 0.00977, 0.010567, 0.011398, 0.012291, 0.013224,
+             0.014267, 0.015353, 0.016484, 0.017617, 0.018759, 0.019914, 0.021104, 0.022423, 0.023847, 0.025357,
+             0.02705, 0.02897, 0.031188, 0.033754, 0.036747, 0.040563, 0.044308, 0.048498, 0.053229, 0.058778,
+             0.064617, 0.070947, 0.077834, 0.085686, 0.094809, 0.10509, 0.116592, 0.129306, 0.142732, 0.157638,
+             0.174458, 0.193027, 0.21293, 0.232657, 0.251826, 0.270943, 0.289756, 0.307998, 0.325393, 0.341662,
+             0.376683, 0.395517, 0.415293, 0.436058, 0.45786, 0.480753, 0.504791, 0.530031, 0.556532, 0.584359,
+             1],
+      "female": [0.005063, 0.000393, 0.000223, 0.000177, 0.000144, 0.000122, 0.000109, 0.000102, 0.000098, 0.000097,
+               0.000103, 0.000113, 0.000131, 0.000157, 0.00019, 0.000233, 0.000291, 0.000355, 0.000418, 0.000461,
+               0.000507, 0.000556, 0.00061, 0.000666, 0.000722, 0.000775, 0.000831, 0.000889, 0.000952, 0.001025,
+               0.001104, 0.001192, 0.001289, 0.001383, 0.001465, 0.001544, 0.001626, 0.001719, 0.001824, 0.00194,
+               0.002066, 0.002202, 0.002351, 0.002482, 0.002622, 0.002789, 0.002994, 0.003219, 0.003467, 0.003729,
+               0.004011, 0.004306, 0.004634, 0.004981, 0.00537, 0.005831, 0.006326, 0.006837, 0.007399, 0.008033,
+               0.008687, 0.009411, 0.010139, 0.010849, 0.01155, 0.012216, 0.012952, 0.013844, 0.014863, 0.016028,
+               0.017329, 0.018859, 0.020609, 0.02262, 0.024958, 0.027906, 0.030925, 0.03414, 0.03762, 0.041725,
+               0.046324, 0.051334, 0.056911, 0.063279, 0.070704, 0.079184, 0.088697, 0.09924, 0.11048, 0.123078,
+               0.137152, 0.152605, 0.169494, 0.187623, 0.206647, 0.22589, 0.245054, 0.263815, 0.281828, 0.298738,
+               0.335662, 0.355802, 0.37715, 0.399779, 0.423766, 0.449192, 0.476143, 0.504712, 0.534994, 0.567094,
+               1]
     },
     "l_inc_betas": "PLACEHOLDER_US_INCIDENCE_BETAS",
-    "ln_h_bgd_betas": "PLACEHOLDER_US_BGD_HAZARD_BETAS",
+    "ln_h_bgd_betas": {
+      "intercept": 0,
+      "y": -0.0001,
+      "y2": 0,
+      "age": -0.000132065698144107,
+      "b_mi": 0,
+      "n_mi": 0,
+      "b_stroke": 0,
+      "n_stroke": 0,
+      "hf": 0
+      },
     "p_female_metadata": {
       "help": "Proportion of females in the population",
       "ref": "Model assumption"
@@ -88,17 +140,64 @@
     }
   },
   "smoking": {
-    "logit_p_current_smoker_0_betas": "PLACEHOLDER_US_SMOKING_CURRENT_BETAS",
-    "logit_p_never_smoker_con_not_current_0_betas": "PLACEHOLDER_US_SMOKING_NEVER_BETAS",
-    "minimum_smoking_prevalence": "PLACEHOLDER_US_MIN_SMOKING_PREV",
-    "mortality_factor_current": "PLACEHOLDER_US_SMOKING_MORTALITY_CURRENT",
-    "mortality_factor_former": "PLACEHOLDER_US_SMOKING_MORTALITY_FORMER",
-    "pack_years_0_betas": "PLACEHOLDER_US_PACK_YEARS_BETAS",
-    "pack_years_0_sd": "PLACEHOLDER_US_PACK_YEARS_SD",
-    "ln_h_inc_betas": "PLACEHOLDER_US_SMOKING_INC_BETAS",
-    "ln_h_ces_betas": "PLACEHOLDER_US_SMOKING_CES_BETAS",
-    "smoking_ces_coefficient": "PLACEHOLDER_US_SMOKING_CES_COEFF",
-    "smoking_cessation_adherence": "PLACEHOLDER_US_SMOKING_CES_ADHERENCE",
+    "logit_p_current_smoker_0_betas": "your_parameter_name": {
+      "Intercept": 0.35,
+      "sex": -0.4,
+      "age": -0.032,
+      "age2": 0,
+      "sex_age": 0,
+      "sex_age2": 0,
+      "year": -0.02
+      },
+    "logit_p_never_smoker_con_not_current_0_betas": {
+      "intercept": 4.9,
+      "sex": 0,
+      "age": -0.06,
+      "age2": 0,
+      "sex_age": 0,
+      "sex_age2": 0,
+      "year": -0.02
+      },
+    "minimum_smoking_prevalence": 0.05,
+    "mortality_factor_current": {
+      "age40to49": 2.33,
+      "age50to59": 3.02,
+      "age60to69": 2.44,
+      "age70to79": 2.44,
+      "age80p": 1.66
+      },
+    "mortality_factor_former": {
+      "age40to49": 1.31,
+      "age50to59": 1.85,
+      "age60to69": 1.91,
+      "age70to79": 1.91,
+      "age80p": 1.27
+      },
+    "pack_years_0_betas": {
+      "intercept": 30,
+      "sex": -4,
+      "age": 0,
+      "year": -0.6,
+      "current_smoker": 10
+      },
+    "pack_years_0_sd": 5,
+    "ln_h_inc_betas": {
+      "intercept": -4,
+      "sex": -0.15,
+      "age": -0.02,
+      "age2": 0,
+      "calendar_time": -0.01
+      },
+    "ln_h_ces_betas": {
+      "intercept": -3.35,
+      "sex": 0,
+      "age": 0.02,
+      "age2": 0,
+      "calendar_time": -0.01,
+      "diagnosis": 0.3222192947339191
+      },
+    "smoking_ces_coefficient": 100,
+    "smoking_cessation_adherence": 0.7,
     "logit_p_current_smoker_0_betas_metadata": {
       "help": "Probability of being a current smoker at the time of creation",
       "ref": ""
@@ -146,12 +245,45 @@
   },
   "COPD": {
     "logit_p_COPD_betas_by_sex": {
-      "male": "PLACEHOLDER_US_COPD_PREV_MALE",
-      "female": "PLACEHOLDER_US_COPD_PREV_FEMALE"
-    },
+      "male": {
+        "intercept": -4.30190,
+        "age": 0.033070,
+        "age2": 0,
+        "pack_years": 0.025049,
+        "current_smoking": 0,
+        "year": 0,
+        "asthma": 0
+        },
+      "female": {
+        "intercept": -4.40202,
+        "age": 0.027359,
+        "age2": 0,
+        "pack_years": 0.030399,
+        "current_smoking": 0,
+        "year": 0,
+        "asthma": 0
+        }
+      },
     "ln_h_COPD_betas_by_sex": {
-      "male": "PLACEHOLDER_US_COPD_INC_MALE",
-      "female": "PLACEHOLDER_US_COPD_INC_FEMALE"
+      "male": {
+        "Intercept": -7.97107937,
+        "age": 0.03245063,
+        "age2": 0,
+        "pack_years": 0.03578899,
+        "smoking_status": 0,
+        "year": 0,
+        "asthma": 0
+         },
+      "female": {
+        "Intercept": -7.78520064,
+        "age": 0.02975571,
+        "age2": 0,
+        "pack_years": 0.04087865,
+        "smoking_status": 0,
+        "year": 0,
+        "asthma": 0
+        }
+      }
     },
     "logit_p_COPD_betas_by_sex_metadata": {
       "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
@@ -164,35 +296,113 @@
   },
   "lung_function": {
     "fev1_0_prev_betas_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_PREV_MALE",
-      "female": "PLACEHOLDER_US_FEV1_PREV_FEMALE"
+      "male": {
+        "intercept": 1.546161,
+        "age": -0.031296,
+        "height_sq": 1.012579,
+        "pack_years": -0.006925,
+        "current_smoker": 0,
+        "sgrq": 0
+      },
+      "female": {
+        "intercept": 1.329805,
+        "age": -0.031296,
+        "height_sq": 1.012579,
+        "pack_years": -0.006925,
+        "current_smoker": 0,
+        "sgrq": 0
+      }
     },
     "fev1_0_prev_sd_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_PREV_SD_MALE",
-      "female": "PLACEHOLDER_US_FEV1_PREV_SD_FEMALE"
+    "male": 0.6148,
+    "female": 0.4242
     },
     "fev1_0_inc_betas_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_INC_MALE",
-      "female": "PLACEHOLDER_US_FEV1_INC_FEMALE"
+    "male": {
+      "intercept": 0.8064,
+      "age": -0.0322,
+      "height_sq": 1.27,
+      "pack_years": -0.00428,
+      "current_smoker": 0,
+      "sgrq": 0
+      },
+      "female": {
+        "intercept": 1.1487,
+        "age": -0.0275,
+        "height_sq": 0.97,
+        "pack_years": -0.00465,
+        "current_smoker": 0,
+        "sgrq": 0
+      }
     },
     "fev1_0_inc_sd_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_INC_SD_MALE",
-      "female": "PLACEHOLDER_US_FEV1_INC_SD_FEMALE"
+      "male": 0.54,
+      "female": 0.36
     },
     "fev1_0_ZafarCMAJ_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_ZAFAR_MALE",
-      "female": "PLACEHOLDER_US_FEV1_ZAFAR_FEMALE"
+      "male": {
+        "intercept": 1.91,
+        "baseline_age": -0.00508,
+        "baseline_weight_kg": -0.00049,
+        "height": -1.8725,
+        "height_sq": 1.9513,
+        "current_smoker": -0.09221,
+        "age_height_sq": -0.00832,
+        "followup_time": 0
+      },
+    "female": {
+      "intercept": 1.4275,
+      "baseline_age": -0.00508,
+      "baseline_weight_kg": -0.00049,
+      "height": -1.8725,
+      "height_sq": 1.9513,
+      "current_smoker": -0.09221,
+      "age_height_sq": -0.00832,
+      "followup_time": 0
+      }
     },
     "pred_fev1_betas_by_sex": {
-      "male": "PLACEHOLDER_US_PRED_FEV1_MALE",
-      "female": "PLACEHOLDER_US_PRED_FEV1_FEMALE"
+      "male": {
+        "intercept": 0.5536,
+        "age": -0.01303,
+        "age_sq": -0.000172,
+        "height": 1.4098
+      },
+      "female": {
+        "intercept": 0.4333,
+        "age": -0.00361,
+        "age_sq": -0.000194,
+        "height": 1.1496
+      }
     },
     "fev1_betas_by_sex": {
-      "male": "PLACEHOLDER_US_FEV1_DECLINE_MALE",
-      "female": "PLACEHOLDER_US_FEV1_DECLINE_FEMALE"
+      "male": {
+        "intercept": -0.16192,
+        "baseline_age": 0.002344,
+        "baseline_weight_kg": 0.000126,
+        "height": 0.05835,
+        "height_sq": 0.01807,
+        "current_smoker": -0.03074,
+        "age_height_sq": -0.00093,
+        "followup_time": -0.00146
+      },
+      "female": {
+        "intercept": -0.1543,
+        "baseline_age": 0.002344,
+        "baseline_weight_kg": 0.000126,
+        "height": 0.05835,
+        "height_sq": 0.01807,
+        "current_smoker": -0.03074,
+        "age_height_sq": -0.00093,
+        "followup_time": -0.00146
+      }
     },
-    "dfev1_sigmas": "PLACEHOLDER_US_FEV1_SIGMAS",
-    "dfev1_re_rho": "PLACEHOLDER_US_FEV1_RHO",
+    "dfev1_sigmas": {
+      "sigma1": 0.317140274816,
+      "sigma2": 0.02756114897
+    },
+    "dfev1_re_rho": 0.09956332
+    },
     "fev1_0_prev_betas_by_sex_metadata": {
       "help": "Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)",
       "ref": "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
@@ -231,15 +441,57 @@
     }
   },
   "exacerbation": {
-    "ln_rate_betas": "PLACEHOLDER_US_EXAC_RATE_BETAS",
-    "ln_rate_intercept_sd": "PLACEHOLDER_US_EXAC_RATE_SD",
-    "logit_severity_betas": "PLACEHOLDER_US_EXAC_SEVERITY_BETAS",
-    "logit_severity_intercept_sd": "PLACEHOLDER_US_EXAC_SEVERITY_SD",
-    "rate_severity_intercept_rho": "PLACEHOLDER_US_EXAC_RHO",
-    "exac_end_rate": "PLACEHOLDER_US_EXAC_END_RATE",
+    "ln_rate_betas": {
+      "intercept": 2.0,
+      "female": 0,
+      "age": 0.004082,
+      "fev1": -1.5,
+      "smoking_status": 0.7,
+      "gold1": 0.15,
+      "gold2": -0.1,
+      "gold3": -0.4,
+      "gold4": -0.75,
+      "diagnosis_effect": 0
+    },
+    "ln_rate_intercept_sd": 0.7416198487095663,
+    "logit_severity_betas": {
+      "intercept1": -2.809,
+      "intercept2": 2.402,
+      "intercept3": 3.808,
+      "female": -0.764,
+      "age": -0.007,
+      "fev1": 0.98,
+      "smoking_status": 0.348,
+      "pack_years": -0.001,
+      "BMI": 0.018
+    },
+    "logit_severity_intercept_sd": 1.439982608343715,
+    "rate_severity_intercept_rho": 0,
+    "exac_end_rate": {
+      "mild": 73,
+      "moderate": 73,
+      "severe": 73,
+      "verysevere": 73
+    },
     "logit_p_death_by_sex": {
-      "male": "PLACEHOLDER_US_EXAC_DEATH_MALE",
-      "female": "PLACEHOLDER_US_EXAC_DEATH_FEMALE"
+      "male": {
+        "intercept": -13,
+        "age": 0.04879016416943205,
+        "mild": 0,
+        "moderate": 0,
+        "severe": 7.4,
+        "very_severe": 8,
+        "n_hist_severe_exac": 0
+      },
+      "female": {
+        "intercept": -13,
+        "age": 0.04879016416943205,
+        "mild": 0,
+        "moderate": 0,
+        "severe": 7.4,
+        "very_severe": 8,
+        "n_hist_severe_exac": 0
+      }
     },
     "ln_rate_betas_metadata": {
       "help": "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)",
@@ -271,40 +523,178 @@
     }
   },
   "symptoms": {
-    "logit_p_cough_COPD_by_sex": {
-      "male": "PLACEHOLDER_US_COUGH_COPD_MALE",
-      "female": "PLACEHOLDER_US_COUGH_COPD_FEMALE"
+  "logit_p_cough_COPD_by_sex": {
+    "male": {
+      "intercept": 4.4006,
+      "age": -0.0412,
+      "smoking": 0.6036,
+      "packyears": 0,
+      "fev1": -0.9564
+      },
+    "female": {
+      "intercept": 3.4534,
+      "age": -0.0412,
+      "smoking": 0.6036,
+      "packyears": 0,
+      "fev1": -0.9564
+      }
     },
-    "logit_p_cough_nonCOPD_by_sex": {
-      "male": "PLACEHOLDER_US_COUGH_NONCOPD_MALE",
-      "female": "PLACEHOLDER_US_COUGH_NONCOPD_FEMALE"
+  "logit_p_cough_nonCOPD_by_sex": {
+    "male": {
+      "intercept": -5.2872,
+      "age": 0.03429,
+      "smoking": 0.3786,
+      "packyears": 0
+      },
+    "female": {
+      "intercept": -5.0694,
+      "age": 0.03429,
+      "smoking": 0.3786,
+      "packyears": 0
+      }
     },
-    "logit_p_phlegm_COPD_by_sex": {
-      "male": "PLACEHOLDER_US_PHLEGM_COPD_MALE",
-      "female": "PLACEHOLDER_US_PHLEGM_COPD_FEMALE"
+  "logit_p_phlegm_COPD_by_sex": {
+    "male": {
+      "intercept": 3.5726,
+      "age": -0.02422,
+      "smoking": 1.0754,
+      "packyears": 0,
+      "fev1": -1.6443
+      },
+    "female": {
+      "intercept": 1.4836,
+      "age": -0.02422,
+      "smoking": 1.0754,
+      "packyears": 0,
+      "fev1": -1.6443
+      }
     },
-    "logit_p_phlegm_nonCOPD_by_sex": {
-      "male": "PLACEHOLDER_US_PHLEGM_NONCOPD_MALE",
-      "female": "PLACEHOLDER_US_PHLEGM_NONCOPD_FEMALE"
+  "logit_p_phlegm_nonCOPD_by_sex": {
+    "male": {
+      "intercept": -10.3164,
+      "age": 0.02771,
+      "smoking": 0.5865,
+      "packyears": 0
+      },
+    "female": {
+      "intercept": -10.6623,
+      "age": 0.02771,
+      "smoking": 0.5865,
+      "packyears": 0
+      }
     },
-    "logit_p_dyspnea_COPD_by_sex": {
-      "male": "PLACEHOLDER_US_DYSPNEA_COPD_MALE",
-      "female": "PLACEHOLDER_US_DYSPNEA_COPD_FEMALE"
+  "logit_p_dyspnea_COPD_by_sex": {
+    "male": {
+      "intercept": 4.8358,
+      "age": -0.00891,
+      "smoking": 0.4177,
+      "packyears": 0,
+      "fev1": -1.9942
+      },
+    "female": {
+      "intercept": 4.2012,
+      "age": -0.00891,
+      "smoking": 0.4177,
+      "packyears": 0,
+      "fev1": -1.9942
+      }
     },
-    "logit_p_dyspnea_nonCOPD_by_sex": {
-      "male": "PLACEHOLDER_US_DYSPNEA_NONCOPD_MALE",
-      "female": "PLACEHOLDER_US_DYSPNEA_NONCOPD_FEMALE"
+  "logit_p_dyspnea_nonCOPD_by_sex": {
+    "male": {
+      "intercept": -7.1802,
+      "age": 0.07002,
+      "smoking": 0.8388,
+      "packyears": 0
+      },
+    "female": {
+      "intercept": -6.2459,
+      "age": 0.07002,
+      "smoking": 0.8388,
+      "packyears": 0
+      }
     },
-    "logit_p_wheeze_COPD_by_sex": {
-      "male": "PLACEHOLDER_US_WHEEZE_COPD_MALE",
-      "female": "PLACEHOLDER_US_WHEEZE_COPD_FEMALE"
+  "logit_p_wheeze_COPD_by_sex": {
+    "male": {
+      "intercept": 14.2686,
+      "age": -0.1408,
+      "smoking": 0.1345,
+      "packyears": 0,
+      "fev1": -2.3122
+      },
+    "female": {
+      "intercept": 12.7691,
+      "age": -0.1408,
+      "smoking": 0.1345,
+      "packyears": 0,
+      "fev1": -2.3122
+      }
     },
-    "logit_p_wheeze_nonCOPD_by_sex": {
-      "male": "PLACEHOLDER_US_WHEEZE_NONCOPD_MALE",
-      "female": "PLACEHOLDER_US_WHEEZE_NONCOPD_FEMALE"
+  "logit_p_wheeze_nonCOPD_by_sex": {
+    "male": {
+      "intercept": -6.6284,
+      "age": -0.02051,
+      "smoking": 0.2332,
+      "packyears": 0
+      },
+    "female": {
+      "intercept": -6.1613,
+      "age": -0.02051,
+      "smoking": 0.2332,
+      "packyears": 0
+      }
     },
-    "covariance_COPD": "PLACEHOLDER_US_SYMPTOMS_COV_COPD",
-    "covariance_nonCOPD": "PLACEHOLDER_US_SYMPTOMS_COV_NONCOPD",
+  "covariance_COPD": {
+    "cough": {
+      "cough": 2.7934,
+      "phlegm": 2.11077,
+      "wheeze": 1.1737,
+      "dyspnea": 0.64573
+      },
+    "phlegm": {
+      "cough": 2.11077,
+      "phlegm": 7.0945,
+      "wheeze": 1.45258,
+      "dyspnea": 0.89548
+      },
+    "wheeze": {
+      "cough": 1.1737,
+      "phlegm": 1.45258,
+      "wheeze": 7.4793,
+      "dyspnea": 1.48313
+      },
+    "dyspnea": {
+      "cough": 0.64573,
+      "phlegm": 0.89548,
+      "wheeze": 1.48313,
+      "dyspnea": 3.6357
+      }
+    },
+  "covariance_nonCOPD": {
+    "cough": {
+      "cough": 10.4693,
+      "phlegm": 17.10328,
+      "wheeze": 9.39833,
+      "dyspnea": 1.04549
+      },
+    "phlegm": {
+      "cough": 17.10328,
+      "phlegm": 138.8,
+      "wheeze": 36.8647,
+      "dyspnea": 4.67073
+      },
+    "wheeze": {
+      "cough": 9.39833,
+      "phlegm": 36.8647,
+      "wheeze": 107.09,
+      "dyspnea": 5.78527
+      },
+    "dyspnea": {
+      "cough": 1.04549,
+      "phlegm": 4.67073,
+      "wheeze": 5.78527,
+      "dyspnea": 5.1828
+      }
+    },
     "logit_p_cough_COPD_by_sex_metadata": {
       "help": "Probability of having cough for COPD patients",
       "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
@@ -348,17 +738,51 @@
   },
   "outpatient": {
     "ln_rate_gpvisits_COPD_by_sex": {
-      "male": "PLACEHOLDER_US_GP_COPD_MALE",
-      "female": "PLACEHOLDER_US_GP_COPD_FEMALE"
+      "male": {
+        "intercept": 0.4472,
+        "age": 0.012,
+        "smoking": 0.0669,
+        "fev1": -0.1414,
+        "cough": -0.0037,
+        "phlegm": -0.0108,
+        "wheeze": 0.0553,
+        "dyspnea": 0.0947
+        },
+      "female": {
+        "intercept": 0.3747,
+        "age": 0.012,
+        "smoking": 0.0669,
+        "fev1": -0.1414,
+        "cough": -0.0037,
+        "phlegm": -0.0108,
+        "wheeze": 0.0553,
+        "dyspnea": 0.0947
+        }
     },
-    "dispersion_gpvisits_COPD": "PLACEHOLDER_US_GP_COPD_DISPERSION",
+    "dispersion_gpvisits_COPD": 0.431,
     "ln_rate_gpvisits_nonCOPD_by_sex": {
-      "male": "PLACEHOLDER_US_GP_NONCOPD_MALE",
-      "female": "PLACEHOLDER_US_GP_NONCOPD_FEMALE"
+      "male": {
+        "intercept": -0.3596,
+        "age": 0.0169,
+        "smoking": 0.0722,
+        "cough": 0.181,
+        "phlegm": -0.0275,
+        "wheeze": 0.2262,
+        "dyspnea": 0.0807
+        },
+      "female": {
+        "intercept": -0.3501,
+        "age": 0.0169,
+        "smoking": 0.0722,
+        "cough": 0.181,
+        "phlegm": -0.0275,
+        "wheeze": 0.2262,
+        "dyspnea": 0.0807
+        }
     },
-    "dispersion_gpvisits_nonCOPD": "PLACEHOLDER_US_GP_NONCOPD_DISPERSION",
-    "rate_doctor_visit": "PLACEHOLDER_US_DOCTOR_VISIT_RATE",
-    "p_specialist": "PLACEHOLDER_US_SPECIALIST_PROB",
+    "dispersion_gpvisits_nonCOPD": 0.4093,
+    "rate_doctor_visit": 0.1,
+    "p_specialist": 0.1,
     "ln_rate_gpvisits_COPD_by_sex_metadata": {
       "help": "Rate of GP visits for COPD patients",
       "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
@@ -385,29 +809,109 @@
     }
   },
   "diagnosis": {
-    "p_case_detection": "PLACEHOLDER_US_CASE_DETECTION_PROB",
-    "case_detection_start_end_yrs": "PLACEHOLDER_US_CASE_DETECTION_YEARS",
-    "years_btw_case_detection": "PLACEHOLDER_US_CASE_DETECTION_INTERVAL",
-    "min_cd_age": "PLACEHOLDER_US_MIN_CD_AGE",
-    "min_cd_pack_years": "PLACEHOLDER_US_MIN_CD_PACK_YEARS",
-    "min_cd_symptoms": "PLACEHOLDER_US_MIN_CD_SYMPTOMS",
-    "case_detection_methods": "PLACEHOLDER_US_CASE_DETECTION_METHODS",
-    "case_detection_methods_eversmokers": "PLACEHOLDER_US_CASE_DETECTION_EVERSMOKERS",
-    "case_detection_methods_symptomatic": "PLACEHOLDER_US_CASE_DETECTION_SYMPTOMATIC",
+    "p_case_detection": [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    "case_detection_start_end_yrs": [100, 100],
+    "years_btw_case_detection": 5,
+    "min_cd_age": 40,
+    "min_cd_pack_years": 0,
+    "min_cd_symptoms": 0,
+    "case_detection_methods": {
+      "None": [0, 0, 0],
+      "CDQ17": [4.1013, 4.394, 11.56],
+      "FlowMeter": [3.174, 1.6025, 30.46],
+      "FlowMeter_CDQ": [2.7321, 0.8779, 42.37]
+    },
+    "case_detection_methods_eversmokers": {
+      "None": [0, 0, 0],
+      "CDQ195": [2.3848, 3.7262, 11.56],
+      "CDQ165": [3.7336, 4.8098, 11.56],
+      "FlowMeter": [3.1677, 2.6657, 24.33],
+      "FlowMeter_CDQ": [2.8545, 0.8779, 42.37]
+    },
+    "case_detection_methods_symptomatic": {
+      "None": [0, 0, 0],
+      "FlowMeter": [3.2705, 2.2735, 24.33]
+    },
     "logit_p_prevalent_diagnosis_by_sex": {
-      "male": "PLACEHOLDER_US_PREV_DIAG_MALE",
-      "female": "PLACEHOLDER_US_PREV_DIAG_FEMALE"
+      "male": {
+        "intercept": 1.0543,
+        "age": -0.0152,
+        "smoking": 0.1068,
+        "fev1": -0.6146,
+        "cough": 0.075,
+        "phlegm": 0.283,
+        "wheeze": -0.0275,
+        "dyspnea": 0.5414,
+        "case_detection": 0
+      },
+      "female": {
+        "intercept": 0.8905,
+        "age": -0.0152,
+        "smoking": 0.1068,
+        "fev1": -0.6146,
+        "cough": 0.075,
+        "phlegm": 0.283,
+        "wheeze": -0.0275,
+        "dyspnea": 0.5414,
+        "case_detection": 0
+      }
     },
     "logit_p_diagnosis_by_sex": {
-      "male": "PLACEHOLDER_US_DIAG_MALE",
-      "female": "PLACEHOLDER_US_DIAG_FEMALE"
+      "male": {
+        "intercept": -2,
+        "age": -0.0324,
+        "smoking": 0.3711,
+        "fev1": -0.8032,
+        "gpvisits": 0.0087,
+        "cough": 0.208,
+        "phlegm": 0.4088,
+        "wheeze": 0.0321,
+        "dyspnea": 0.722,
+        "case_detection": 0
+      },
+      "female": {
+        "intercept": -2.4873,
+        "age": -0.0324,
+        "smoking": 0.3711,
+        "fev1": -0.8032,
+        "gpvisits": 0.0087,
+        "cough": 0.208,
+        "phlegm": 0.4088,
+        "wheeze": 0.0321,
+        "dyspnea": 0.722,
+        "case_detection": 0
+      }
     },
-    "p_hosp_diagnosis": "PLACEHOLDER_US_HOSP_DIAG",
+    "p_hosp_diagnosis": 1,
     "logit_p_overdiagnosis_by_sex": {
-      "male": "PLACEHOLDER_US_OVERDIAG_MALE",
-      "female": "PLACEHOLDER_US_OVERDIAG_FEMALE"
+      "male": {
+        "intercept": -5.2169,
+        "age": 0.0025,
+        "smoking": 0.6911,
+        "gpvisits": 0.0075,
+        "cough": 0.7264,
+        "phlegm": 0.7956,
+        "wheeze": 0.66,
+        "dyspnea": 0.8798,
+        "case_detection": 0
+        },
+      "female": {
+        "intercept": -4.9572,
+        "age": 0.0025,
+        "smoking": 0.6911,
+        "gpvisits": 0.0075,
+        "cough": 0.7264,
+        "phlegm": 0.7956,
+        "wheeze": 0.66,
+        "dyspnea": 0.8798,
+        "case_detection": 0
+      }
     },
-    "p_correct_overdiagnosis": "PLACEHOLDER_US_CORRECT_OVERDIAG",
+    "p_correct_overdiagnosis": 0.5
+    },
     "p_case_detection_metadata": {
       "help": "Probability of recieving case detection in each year given they meet the selection criteria",
       "ref": "Only applies if case_detection_start_year less than time_horizon."
@@ -466,10 +970,61 @@
     }
   },
   "medication": {
-    "medication_adherence": "PLACEHOLDER_US_MED_ADHERENCE",
-    "medication_ln_hr_exac": "PLACEHOLDER_US_MED_EXAC_EFFECTS",
-    "medication_costs": "PLACEHOLDER_US_MED_COSTS",
-    "medication_utility": "PLACEHOLDER_US_MED_UTILITY",
+    "medication_adherence": 0.7,
+    "medication_ln_hr_exac": {
+      "None": 0,
+      "SABA": 0,
+      "LABA": -0.1655144,
+      "SABA_LABA": -0.1655144,
+      "LAMA": -0.1747533,
+      "LAMA_SABA": -0.1747533,
+      "LAMA_LABA": -0.1862291,
+      "LAMA_LABA_SABA": -0.1862291,
+      "ICS": -0.1497833,
+      "ICS_SABA": -0.1497833,
+      "ICS_LABA": -0.2017447,
+      "ICS_LABA_SABA": -0.2017447,
+      "ICS_LAMA": -0.2017447,
+      "ICS_LAMA_SABA": -0.2017447,
+      "ICS_LAMA_LABA": -0.2926957,
+      "ICS_LAMA_LABA_SABA": -0.2926957
+    },
+    "medication_costs": {
+      "None": 0,
+      "SABA": 270.48,
+      "LABA": 0,
+      "SABA_LABA": 0,
+      "LAMA": 1748.04,
+      "LAMA_SABA": 0,
+      "LAMA_LABA": 1831.62,
+      "LAMA_LAMA_SABA": 0,
+      "ICS": 0,
+      "ICS_SABA": 0,
+      "ICS_LABA": 0,
+      "ICS_LABA_SABA": 0,
+      "ICS_LAMA": 0,
+      "ICS_LAMA_SABA": 0,
+      "ICS_LAMA_LABA": 2487.324,
+      "ICS_LAMA_LABA_SABA": 0
+    },
+    "medication_utility": {
+      "None": 0,
+      "SABA": 0.0367,
+      "LABA": 0,
+      "SABA_LABA": 0,
+      "LAMA": 0.0367,
+      "LAMA_SABA": 0,
+      "LAMA_LABA": 0.0367,
+      "LAMA_LAMA_SABA": 0,
+      "ICS": 0,
+      "ICS_SABA": 0,
+      "ICS_LABA": 0,
+      "ICS_LABA_SABA": 0,
+      "ICS_LAMA": 0,
+      "ICS_LAMA_SABA": 0,
+      "ICS_LAMA_LABA": 0.0367,
+      "ICS_LAMA_LABA_SABA": 0
+    },
     "medication_adherence_metadata": {
       "help": "Proportion adherent to medication",
       "ref": ""
@@ -489,30 +1044,169 @@
   },
   "comorbidity": {
     "logit_p_mi_betas_by_sex": {
-      "male": "PLACEHOLDER_US_MI_PREV_MALE",
-      "female": "PLACEHOLDER_US_MI_PREV_FEMALE"
+      "male": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0,
+        "gold": 0.05
+      },
+      "female": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0,
+        "gold": 0.05
+      }
     },
     "ln_h_mi_betas_by_sex": {
-      "male": "PLACEHOLDER_US_MI_INC_MALE",
-      "female": "PLACEHOLDER_US_MI_INC_FEMALE"
+      "male": {
+        "intercept": -10000.748,
+        "age": 0.1133,
+        "age2": -0.00044,
+        "pack_years": 0.01,
+        "smoking": 0.70953,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0.5,
+        "n_mi": 0
+      },
+      "female": {
+        "intercept": -30000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.61868,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01
+      }
     },
-    "p_mi_death": "PLACEHOLDER_US_MI_DEATH",
+    "p_mi_death": 0.05,
     "logit_p_stroke_betas_by_sex": {
-      "male": "PLACEHOLDER_US_STROKE_PREV_MALE",
-      "female": "PLACEHOLDER_US_STROKE_PREV_FEMALE"
+      "male": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "b_mi": 0,
+        "gold": 0.05,
+        "n_mi": 0
+      },
+      "female": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0
+      }
     },
     "ln_h_stroke_betas_by_sex": {
-      "male": "PLACEHOLDER_US_STROKE_INC_MALE",
-      "female": "PLACEHOLDER_US_STROKE_INC_FEMALE"
+      "male": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+      },
+      "female": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+      }
     },
-    "p_stroke_death": "PLACEHOLDER_US_STROKE_DEATH",
+    "p_stroke_death": 0.18,
     "logit_p_hf_betas_by_sex": {
-      "male": "PLACEHOLDER_US_HF_PREV_MALE",
-      "female": "PLACEHOLDER_US_HF_PREV_FEMALE"
+      "male": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+      },
+      "female": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+        }
     },
     "ln_h_hf_betas_by_sex": {
-      "male": "PLACEHOLDER_US_HF_INC_MALE",
-      "female": "PLACEHOLDER_US_HF_INC_FEMALE"
+      "male": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+        },
+      "female": {
+        "intercept": -3000,
+        "age": 0.001,
+        "age2": 0,
+        "pack_years": 0.01,
+        "smoking": 0.001,
+        "calendar_time": 0,
+        "bmi": 0.01,
+        "gold": 0.05,
+        "b_mi": 0,
+        "n_mi": 0.01,
+        "b_stroke": 0,
+        "n_stroke": 0
+        }
     },
     "logit_p_mi_betas_by_sex_metadata": {
       "help": "Logit probability of myocardial infarction by sex",
@@ -548,12 +1242,23 @@
     }
   },
   "cost": {
-    "bg_cost_by_stage": "PLACEHOLDER_US_BG_COSTS",
-    "exac_dcost": "PLACEHOLDER_US_EXAC_COSTS",
-    "cost_case_detection": "PLACEHOLDER_US_CASE_DETECTION_COST",
-    "cost_outpatient_diagnosis": "PLACEHOLDER_US_OUTPATIENT_DIAG_COST",
-    "cost_gp_visit": "PLACEHOLDER_US_GP_VISIT_COST",
-    "cost_smoking_cessation": "PLACEHOLDER_US_SMOKING_CES_COST",
+    "bg_cost_by_stage": {
+      "N": 0,
+      "I": 1382.1792,
+      "II": 1351.9872,
+      "III": 2401.0968,
+      "IV": 3071.6904
+    },
+    "exac_dcost": {
+      "mild": 16.93408,
+      "moderate": 2214.6496,
+      "severe": 23912.8312,
+      "verysevere": 47263.6792
+    },
+    "cost_case_detection": 0,
+    "cost_outpatient_diagnosis": 61.81,
+    "cost_gp_visit": 94.15,
+    "cost_smoking_cessation": 125.65,
     "bg_cost_by_stage_metadata": {
       "help": "Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades",
       "ref": ""
@@ -580,8 +1285,39 @@
     }
   },
   "utility": {
-    "bg_util_by_stage": "PLACEHOLDER_US_BG_UTILITY",
-    "exac_dutil": "PLACEHOLDER_US_EXAC_UTILITY",
+    "bg_util_by_stage": {
+      "N": 0.86,
+      "I": 0.81,
+      "II": 0.72,
+      "III": 0.68,
+      "IV": 0.58
+    },
+    "exac_dutil": {
+      "gold1": {
+        "mild": -0.0225,
+        "moderate": -0.0225,
+        "severe": -0.0728,
+        "verysevere": -0.0728
+      },
+      "gold2": {
+        "mild": -0.0155,
+        "moderate": -0.0155,
+        "severe": -0.0683,
+        "verysevere": -0.0683
+      },
+      "gold3": {
+        "mild": -0.0488,
+        "moderate": -0.0488,
+        "severe": -0.0655,
+        "verysevere": -0.0655
+      },
+      "gold4": {
+        "mild": -0.0488,
+        "moderate": -0.0488,
+        "severe": -0.0655,
+        "verysevere": -0.0655
+      }
+    },
     "bg_util_by_stage_metadata": {
       "help": "Background utilities for non-COPD, and COPD by GOLD grades",
       "ref": ""
@@ -592,11 +1328,25 @@
     }
   },
   "manual": {
-    "MORT_COEFF": "PLACEHOLDER_US_MORT_COEFF",
-    "smoking_intercept_k": "PLACEHOLDER_US_SMOKING_K",
+    "MORT_COEFF": 1,
+    "smoking_intercept_k": 1,
     "explicit_mortality_by_age_sex": {
-      "male": "PLACEHOLDER_US_EXPLICIT_MORT_MALE",
-      "female": "PLACEHOLDER_US_EXPLICIT_MORT_FEMALE"
+      "male": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        4.836766e-05, 0.0001364315, -0.0001055772, 2.621053e-06, -1.858598e-05, -2.552139e-06, -5.102105e-05, -4.783759e-05, -0.0001095271, -0.0001823714,
+        -0.0001582873, -0.0001587474, -0.0002383412, -0.0002177602, -0.0003075937, -0.0004344284, -0.0004947289, -0.0005439476, -0.0008630285, -0.0008019961, 0.0001647573,
+        0.0011904960, 0.001308615, 0.0014487267, 0.0015603151, 0.001808727, 0.001945314, 0.002042871, 0.002324727, 0.002431598, 0.002138459, 0.001522327, 0.001656316,
+        0.001779783, 0.001966527, 0.002463009, 0.002748814, 0.003255945, 0.003871242, 0.004516134, 0.003509108, 0.002739865, 0.003475863, 0.004278087, 0.005179581,
+        0.006289920, 0.007783562, 0.009453040, 0.01290998, 0.01518038, 0.01760435, 0.02133592, 0.02655918, 0.03210128, 0.03550554, 0.03824617, 0.04316201, 0.05124793,
+        0.05911828, 0.06491756, 0.07487575, 0.08861431, 0.07736999, 0.09168526, 0.10113389, 0.09298706, 0.13724456, 0.05960657, 0.18816994, 0.2301123, -0.002400328, -1
+      ],
+      "female": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0.0001338919, 3.417516e-06, 2.534717e-05, 0.0001141018, 2.813487e-05, -9.528259e-06, 2.711746e-05, -3.010519e-05, -3.240835e-06, 1.587881e-05,
+        -4.359238e-05, -0.0000774214, -0.0001186138, -0.0001265431, -0.0001917010, -0.0001988192, -0.0002063766, -0.0003065215, -0.0002253762, -0.0003518858, 9.808678e-05,
+        0.0007046966, 0.000734746, 0.0008358932, 0.0009411519, 0.001052744, 0.001327918, 0.001472617, 0.001557850, 0.001943941, 0.001594793, 0.001308709, 0.001465248,
+        0.001924273, 0.001993160, 0.002353512, 0.002725455, 0.003141527, 0.003508776, 0.003922917, 0.003629799, 0.003380379, 0.003809869, 0.004217783, 0.004978492,
+        0.006281382, 0.007466777, 0.008956746, 0.01077961, 0.01260814, 0.01462480, 0.01723180, 0.02014753, 0.02389180, 0.02883704, 0.03046772, 0.03552317, 0.04107366,
+        0.04825479, 0.05292924, 0.06199334, 0.07325599, 0.07755660, 0.07434556, 0.08361922, 0.08277086, 0.07646969, 0.11362090, 0.01098184, 0.1438143, -0.169152907, -1
+      ]
     },
     "MORT_COEFF_metadata": {
       "help": "Mortality coefficient",
