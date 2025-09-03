@@ -140,8 +140,8 @@
     }
   },
   "smoking": {
-    "logit_p_current_smoker_0_betas": "your_parameter_name": {
-      "Intercept": 0.35,
+    "logit_p_current_smoker_0_betas": {
+      "intercept": 0.35,
       "sex": -0.4,
       "age": -0.032,
       "age2": 0,
@@ -283,8 +283,7 @@
         "year": 0,
         "asthma": 0
         }
-      }
-    },
+      },
     "logit_p_COPD_betas_by_sex_metadata": {
       "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
       "ref": "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term"
@@ -292,7 +291,7 @@
     "ln_h_COPD_betas_by_sex_metadata": {
       "help": "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)",
       "ref": "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)"
-    }
+    },
   },
   "lung_function": {
     "fev1_0_prev_betas_by_sex": {
