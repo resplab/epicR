@@ -119,7 +119,7 @@ input <- get_input()
 
 Below is a list of the parameters that `input$values` returns. 
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-table.css")
 rawHTML <- paste(readLines("html/section-3/set-inputs.html"), collapse="\n")
@@ -159,7 +159,7 @@ The first function is the `Cget_output()` which shows some of the overall result
 results <- Cget_output()
 ```
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-table.css")
 rawHTML <- paste(readLines("html/section-3/main-results.html"), collapse="\n")
@@ -174,7 +174,7 @@ resultsExra <- Cget_output_ex()
 
 **While interpreting the `age` column, it is important to note that EPIC only starts simulating patients at age 40. Also comorbidities are not implemented in the current version of epicR.**
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-table.css")
 rawHTML <- paste(readLines("html/section-3/ex-results.html"), collapse="\n")
@@ -215,7 +215,7 @@ terminate_session()
 You can change the record mode of the simulation by accessing `settings$record_mode` as shown above. Here are what different record modes mean 
 
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-mini-table.css")
 rawHTML <- paste(readLines("html/section-3/record_mode.html"), collapse="\n")
@@ -224,7 +224,7 @@ HTML(rawHTML)
 
 As shown in the code snippet above, you can inspect the event matrix `Cget_all_events_matrix()` by converting it into a data frame using `as.data.frame(Cget_all_events_matrix())`. This data frame consists of 33 columns, as detailed below.
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-table.css")
 rawHTML <- paste(readLines("html/section-3/event-matrix-cols.html"), collapse="\n")
@@ -236,7 +236,7 @@ In the events data frame, each type of event has a code corresponding to the tab
 
 Note: Doctor visit and Medication change are not implemented in this version if epicR
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
 includeCSS("html/section-3/style-mini-table.css")
 rawHTML <- paste(readLines("html/section-3/events.html"), collapse="\n")

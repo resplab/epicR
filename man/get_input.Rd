@@ -9,7 +9,8 @@ get_input(
   time_horizon = 20,
   discount_cost = 0,
   discount_qaly = 0.03,
-  closed_cohort = 0
+  closed_cohort = 0,
+  jurisdiction = "canada"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ get_input(
 \item{discount_qaly}{Discounting for QALY outcomes}
 
 \item{closed_cohort}{Whether the model should run as closed_cohort, open-population by default.}
+
+\item{jurisdiction}{Jurisdiction for model parameters ("canada" or "us")}
 }
 \description{
 Returns a list of default model input values

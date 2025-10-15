@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE  # Set to FALSE to prevent long simulations during package check
 )
 ```
 This document is a guide to basics of running a simulation with the Evaluation Platform in COPD (EPIC) using epicR. 
