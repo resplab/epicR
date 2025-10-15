@@ -15,68 +15,105 @@ Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Brya
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
 
 ## Installation
-### Windows 7 or Later
-1. Download and Install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
-2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-3. Download and Install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/) 
-4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
 
-```r
-  install.packages('remotes')
-```
+### Prerequisites
+epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ integration, which requires compilation tools to be installed on your system.
 
-5. Install epicR from GitHub:
+### Windows (Windows 10 or Later)
 
-```r
-remotes::install_github('resplab/epicR')
-```
+1. **Install R (version 4.1.0 or later)**
+   - Download and install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
 
+2. **Install RStudio (Optional but Recommended)**
+   - Download and install RStudio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
 
-### Mac OS Sierra and Later
-1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
-2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-3. Open the Terminal and remove previous installations of `clang`:
+3. **Install Rtools**
+   - Download and install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/)
+   - **Important**: During installation, make sure to check the option to add Rtools to the system PATH
+   - For R 4.3.0+, install Rtools43 or later
+   - For R 4.2.x, install Rtools42
 
-```bash
-# Delete the clang4 binary
-sudo rm -rf /usr/local/clang4
-# Delete the clang6 binary
-sudo rm -rf /usr/local/clang6
+4. **Verify Rtools Installation**
+   - Open R or RStudio and run:
+   ```r
+   # Check if Rtools is available
+   Sys.which("make")
+   ```
+   - This should return a path to the make executable. If it returns an empty string, Rtools is not properly configured.
 
-# Delete the prior version of gfortran installed
-sudo rm -rf /usr/local/gfortran
-sudo rm -rf /usr/local/bin/gfortran
+5. **Install the remotes package**
+   ```r
+   install.packages('remotes')
+   ```
 
-# Remove the install receipts that indicate a package is present
+6. **Install epicR from GitHub**
+   ```r
+   remotes::install_github('resplab/epicR')
+   ```
 
-# Remove the gfortran install receipts (run after the above commands)
-sudo rm /private/var/db/receipts/com.gnu.gfortran.bom
-sudo rm /private/var/db/receipts/com.gnu.gfortran.plist
+### macOS (macOS 11 Big Sur or Later)
 
-# Remove the clang4 installer receipt
-sudo rm /private/var/db/receipts/com.rbinaries.clang4.bom
-sudo rm /private/var/db/receipts/com.rbinaries.clang4.plist
+1. **Install R (version 4.1.0 or later)**
+   - Download and install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
+   - Choose the appropriate version for your Mac:
+     - For Apple Silicon (M1/M2/M3): Download the arm64 version
+     - For Intel Macs: Download the x86_64 version
 
-# Remove the Makevars file
-rm ~/.R/Makevars
-```
-4. Install the latest version of `clang` by installing Xcode command tools: 
-`xcode-select --install
+2. **Install RStudio (Optional but Recommended)**
+   - Download and install RStudio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
 
-5. Install the appropriate version of `gfortran` based on your Mac OS version using the dmg file found at [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases) 
+3. **Install Xcode Command Line Tools**
+   - Open Terminal and run:
+   ```bash
+   xcode-select --install
+   ```
+   - Follow the prompts to complete the installation
 
-6. Using either an R session in Terminal or in R Studio, install the packages `remotes` and `usethis`:
+4. **Install gfortran**
+   - Download and install the appropriate gfortran version for your macOS from [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases)
+   - Choose the installer that matches your macOS version and chip architecture (Intel vs. Apple Silicon)
 
-```r
-install.packages (c('remotes', 'usethis'))
-```
-7. Open the `.Renviron` file usibng the command `usethis::edit_r_environ()`
-8. Add the line `PATH="/usr/local/clang8/bin:${PATH}"` to the file. If you installed any clang version above 8, modify the file accordingly. Save the `.Renviron` file and restart R.  
+5. **Verify Compiler Installation**
+   - Open Terminal and run:
+   ```bash
+   # Check clang
+   clang --version
+   
+   # Check gfortran
+   gfortran --version
+   ```
+   - Both commands should return version information
 
-9. You should now be able to Install epicR from GitHub:
-```r
-remotes::install_github('resplab/epicR')
-```
+6. **Install the remotes package**
+   - Open R or RStudio and run:
+   ```r
+   install.packages('remotes')
+   ```
+
+7. **Install epicR from GitHub**
+   ```r
+   remotes::install_github('resplab/epicR')
+   ```
+
+### Troubleshooting
+
+#### Windows Issues
+- If you encounter compilation errors, ensure Rtools is in your PATH. You can check this in R:
+  ```r
+  Sys.getenv("PATH")
+  ```
+- If the PATH doesn't include Rtools, you may need to add it manually or reinstall Rtools with the PATH option enabled.
+
+#### macOS Issues
+- If you encounter errors related to missing compilers after installation, try restarting your R session or computer.
+- For Apple Silicon Macs, ensure you're using the arm64 version of R and compatible compilers.
+- If you have previously installed older versions of compilers, they may interfere. Consider cleaning them up:
+  ```bash
+  # Only run if you have issues with old compiler installations
+  sudo rm -rf /usr/local/clang*
+  sudo rm -rf /usr/local/gfortran
+  rm ~/.R/Makevars  # Remove custom compiler settings
+  ```
 
 ### Ubuntu 22.04 and Later
 1. Install R by executing the following commands in Terminal:
