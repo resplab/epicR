@@ -1,0 +1,574 @@
+# epicR
+
+R package for Evaluation Platform in COPD (EPIC). Please refer to our
+published papers for more information:
+
+Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark
+FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation
+of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes
+Model of COPD for Canada. Medical Decision Making.
+<https://doi.org/10.1177/0272989X18824098>
+
+Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin
+DD, Bryan S. Cost effectiveness of case detection strategies for the
+early detection of COPD. Applied Health Economics and Health Policy.
+2021 Mar;19(2):203-15. <https://doi.org/10.1007/s40258-020-00616-2>
+
+## Overview
+
+epicR provides an interface to to interact with the Evaluation Platform
+in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of
+Chronic Onstructive Pulmonary Disease.
+
+## Installation
+
+### Prerequisites
+
+epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for
+C++ integration, which requires compilation tools to be installed on
+your system.
+
+### Windows (Windows 10 or Later)
+
+1.  **Install R (version 4.1.0 or later)**
+
+    - Download and install the latest version of R from
+      <https://cran.r-project.org/bin/windows/base/>
+
+2.  **Install RStudio (Optional but Recommended)**
+
+    - Download and install RStudio from
+      <https://posit.co/download/rstudio-desktop/>
+
+3.  **Install Rtools**
+
+    - Download and install the latest version of Rtools from
+      <https://cran.r-project.org/bin/windows/Rtools/>
+    - **Important**: During installation, make sure to check the option
+      to add Rtools to the system PATH
+    - For R 4.3.0+, install Rtools43 or later
+    - For R 4.2.x, install Rtools42
+
+4.  **Verify Rtools Installation**
+
+    - Open R or RStudio and run:
+
+    ``` r
+    # Check if Rtools is available
+    Sys.which("make")
+    ```
+
+    - This should return a path to the make executable. If it returns an
+      empty string, Rtools is not properly configured.
+
+5.  **Install the remotes package**
+
+    ``` r
+    install.packages('remotes')
+    ```
+
+6.  **Install epicR from GitHub**
+
+    ``` r
+    remotes::install_github('resplab/epicR')
+    ```
+
+### macOS (macOS 11 Big Sur or Later)
+
+1.  **Install R (version 4.1.0 or later)**
+
+    - Download and install the latest version of R from
+      <https://cran.r-project.org/bin/macosx/>
+    - Choose the appropriate version for your Mac:
+      - For Apple Silicon (M1/M2/M3): Download the arm64 version
+      - For Intel Macs: Download the x86_64 version
+
+2.  **Install RStudio (Optional but Recommended)**
+
+    - Download and install RStudio from
+      <https://posit.co/download/rstudio-desktop/>
+
+3.  **Install Xcode Command Line Tools**
+
+    - Open Terminal and run:
+
+    ``` bash
+    xcode-select --install
+    ```
+
+    - Follow the prompts to complete the installation
+
+4.  **Install gfortran**
+
+    - Download and install the appropriate gfortran version for your
+      macOS from
+      <https://github.com/fxcoudert/gfortran-for-macOS/releases>
+    - Choose the installer that matches your macOS version and chip
+      architecture (Intel vs. Apple Silicon)
+
+5.  **Verify Compiler Installation**
+
+    - Open Terminal and run:
+
+    ``` bash
+    # Check clang
+    clang --version
+
+    # Check gfortran
+    gfortran --version
+    ```
+
+    - Both commands should return version information
+
+6.  **Install the remotes package**
+
+    - Open R or RStudio and run:
+
+    ``` r
+    install.packages('remotes')
+    ```
+
+7.  **Install epicR from GitHub**
+
+    ``` r
+    remotes::install_github('resplab/epicR')
+    ```
+
+### Troubleshooting
+
+#### Windows Issues
+
+- If you encounter compilation errors, ensure Rtools is in your PATH.
+  You can check this in R:
+
+  ``` r
+  Sys.getenv("PATH")
+  ```
+
+- If the PATH doesn’t include Rtools, you may need to add it manually or
+  reinstall Rtools with the PATH option enabled.
+
+#### macOS Issues
+
+- If you encounter errors related to missing compilers after
+  installation, try restarting your R session or computer.
+
+- For Apple Silicon Macs, ensure you’re using the arm64 version of R and
+  compatible compilers.
+
+- If you have previously installed older versions of compilers, they may
+  interfere. Consider cleaning them up:
+
+  ``` bash
+  # Only run if you have issues with old compiler installations
+  sudo rm -rf /usr/local/clang*
+  sudo rm -rf /usr/local/gfortran
+  rm ~/.R/Makevars  # Remove custom compiler settings
+  ```
+
+### Ubuntu 22.04 and Later
+
+1.  Install R by executing the following commands in Terminal:
+
+``` bash
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+```
+
+``` bash
+  sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
+```
+
+``` bash
+  sudo apt-get update
+```
+
+``` bash
+  sudo apt-get install r-base
+```
+
+If the installation is successful, you should be able to start R:
+
+``` bash
+  sudo -i R
+```
+
+2.  Download and Install R Studio from
+    <https://www.rstudio.com/products/rstudio/download/>
+3.  Install `libcurl` from Terminal:
+
+``` bash
+  sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
+```
+
+4.  Using either an R session in Terminal or in R Studio, install the
+    package `devtools`:
+
+``` r
+install.packages ('remotes')
+```
+
+5.  Install epicR from GitHub:
+
+``` r
+remotes::install_github('resplab/epicR')
+```
+
+# Quick Guide
+
+To run EPIC with default inputs and settings, use the code snippet
+below.
+
+    library(epicR)
+    init_session()
+    run()
+    Cget_output()
+    terminate_session()
+
+Default inputs can be retrieved with
+[`get_input()`](reference/get_input.md), changed as needed, and
+resubmitted as a parameter to the run function:
+
+    init_session()
+    input <- get_input()
+    input$values$global_parameters$time_horizon <- 5
+    run(input=input$values)
+    results <- Cget_output()
+    resultsExtra <- Cget_output_ex()
+    terminate_session()
+
+## Jurisdiction-Specific Configuration
+
+EPIC now supports jurisdiction-specific parameter sets to enable
+modeling for different countries/regions. Currently, Canadian parameters
+are fully configured, with US parameters available as a template.
+
+### Using Canadian Parameters (Default)
+
+``` r
+# Canadian parameters are used by default
+input <- get_input()
+# or explicitly specify:
+input <- get_input(jurisdiction = "canada")
+```
+
+### Using US Parameters
+
+``` r
+# Note: US parameters must be configured first (see Configuration section)
+input <- get_input(jurisdiction = "us")
+```
+
+### Parameter Override
+
+Function parameters still override jurisdiction defaults:
+
+``` r
+# Use Canadian defaults but change time horizon
+input <- get_input(jurisdiction = "canada", time_horizon = 10)
+```
+
+## Configuration
+
+Model parameters are stored in JSON configuration files located in
+`inst/config/`:
+
+- `config_canada.json` - Canadian parameter set (fully configured)
+- `config_us.json` - US parameter template (requires configuration)
+
+### Configuring US Parameters
+
+To use EPIC for US populations, replace placeholder values in
+`config_us.json` with appropriate US-specific data:
+
+1.  Demographics (age pyramid, mortality tables)
+2.  Smoking patterns and prevalence
+3.  Healthcare costs and utilization
+4.  Disease epidemiology parameters
+
+Example placeholder format:
+
+``` json
+{
+  "agent": {
+    "p_female": "PLACEHOLDER_US_P_FEMALE"
+  }
+}
+```
+
+Replace with actual values:
+
+``` json
+{
+  "agent": {
+    "p_female": 0.51
+  }
+}
+```
+
+### Test Values
+
+Configuration files also include jurisdiction-specific test values used
+for package validation:
+
+``` json
+{
+  "test_values": {
+    "population_over_40_2015": 18600000,
+    "expected_severe_exacerbations_per_year": 100000,
+    "expected_severe_exac_tolerance": 5000
+  }
+}
+```
+
+These values represent: - `population_over_40_2015`: Population over 40
+years of age (used for scaling test results) -
+`expected_severe_exacerbations_per_year`: Expected number of severe
+exacerbations per year for validation -
+`expected_severe_exac_tolerance`: Tolerance level for test assertions
+
+For US parameters, replace with appropriate US values:
+
+``` json
+{
+  "test_values": {
+    "population_over_40_2015": 130000000,
+    "expected_severe_exacerbations_per_year": 700000,
+    "expected_severe_exac_tolerance": 35000
+  }
+}
+```
+
+For some studies, having access to the entire event history of the
+simulated population might be beneficial. Capturing event history is
+possible by setting `record_mode` as a `setting`.
+
+    settings <- get_default_settings()
+    settings$record_mode <- 2
+    settings$n_base_agents <- 1e4
+    init_session(settings = settings)
+    run()
+    results <- Cget_output()
+    events <- as.data.frame(Cget_all_events_matrix())
+    head(events)
+    terminate_session()
+
+Note that you might need a large amount of memory available, if you want
+to collect event history for a large number of patients.
+
+In the events data frame, each type of event has a code corresponding to
+the table below:
+
+| Event                 | No. |
+|-----------------------|-----|
+| start                 | 0   |
+| annual                | 1   |
+| birthday              | 2   |
+| smoking change        | 3   |
+| COPD incidence        | 4   |
+| Exacerbation          | 5   |
+| Exacerbation end      | 6   |
+| Death by Exacerbation | 7   |
+| Doctor visit          | 8   |
+| Medication change     | 9   |
+| Background death      | 13  |
+| End                   | 14  |
+
+## Closed-cohort analysis
+
+Closed-cohort analysis can be specified by changing the appropriate
+input parameters.
+
+    library(epicR)
+    input <- get_input(closed_cohort = 1)$values
+    init_session()
+    run(input=input)
+    Cget_output()
+    terminate_session()
+
+You can also combine jurisdiction and closed-cohort parameters:
+
+``` r
+# Canadian closed-cohort analysis
+input <- get_input(jurisdiction = "canada", closed_cohort = 1)$values
+
+# US closed-cohort analysis (once US parameters are configured)
+input <- get_input(jurisdiction = "us", closed_cohort = 1)$values
+```
+
+# Peer Models Network: EPIC on the Cloud
+
+The [Peer Models Network](https://www.peermodelsnetwork.com/) provides
+educational material abour the model. It also allows users to access
+EPIC through the cloud. A MACRO-enabled Excel-file can be used to
+interact with the model and see the results. To download the PRISM Excel
+template file for EPIC, or to access EPIC using APIs please refer to the
+[PMN model repository](https://models.peermodelsnetwork.com/#/)
+
+## Citation
+
+Please cite:
+
+`Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., … Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. https://doi.org/10.1177/0272989X18824098`
+
+# Package index
+
+## All functions
+
+- [`Cget_agent_events()`](Cget_agent_events.md) : Returns all events of
+  an agent.
+
+- [`Cget_all_events()`](Cget_all_events.md) : Returns all events.
+
+- [`Cget_all_events_matrix()`](Cget_all_events_matrix.md) : Returns a
+  matrix containing all events
+
+- [`Cget_event()`](Cget_event.md) : Returns the events stack.
+
+- [`Cget_events_by_type()`](Cget_events_by_type.md) : Returns all events
+  of a certain type.
+
+- [`Cget_inputs()`](Cget_inputs.md) : Returns inputs
+
+- [`Cget_n_events()`](Cget_n_events.md) : Returns total number of
+  events.
+
+- [`Cget_output()`](Cget_output.md) : Main outputs of the current run.
+
+- [`Cget_output_ex()`](Cget_output_ex.md) : Extra outputs from the model
+
+- [`Cget_runtime_stats()`](Cget_runtime_stats.md) : Returns run time
+  stats.
+
+- [`Cget_settings()`](Cget_settings.md) : Returns current settings.
+
+- [`Cget_smith()`](Cget_smith.md) : Returns agent Smith.
+
+- [`Cset_input_var()`](Cset_input_var.md) : Sets input variables.
+
+- [`Cset_settings_var()`](Cset_settings_var.md) : Sets model settings.
+
+- [`calibrate_COPD_inc()`](calibrate_COPD_inc.md) : Solves
+  stochastically for COPD incidence rate equation.
+
+- [`calibrate_explicit_mortality()`](calibrate_explicit_mortality.md) :
+  Calibrates explicit mortality
+
+- [`calibrate_explicit_mortality2()`](calibrate_explicit_mortality2.md)
+  : Calibrates explicit mortality by Amin
+
+- [`calibrate_mi_incidence()`](calibrate_mi_incidence.md) : Calibrates
+  MI incidence.
+
+- [`calibrate_smoking()`](calibrate_smoking.md) : Calibrates smoking
+
+- [`epicR-package`](epicR-package.md) [`epicR`](epicR-package.md) :
+
+  `epicR` package
+
+- [`export_figures()`](export_figures.md) : Runs the model and exports
+  an excel file with all output data
+
+- [`express_matrix()`](express_matrix.md) : Express matrix.
+
+- [`get_agent_events()`](get_agent_events.md) : Returns events specific
+  to an agent.
+
+- [`get_all_events()`](get_all_events.md) : Returns all events.
+
+- [`get_default_settings()`](get_default_settings.md) : Exports default
+  settings
+
+- [`get_errors()`](get_errors.md) : Returns errors
+
+- [`get_events_by_type()`](get_events_by_type.md) : Returns certain
+  events by type
+
+- [`get_input()`](get_input.md) : Returns a list of default model input
+  values
+
+- [`get_list_elements()`](get_list_elements.md) : Get list elements
+
+- [`get_sample_output()`](get_sample_output.md) : Returns a sample
+  output for a given year and gender.
+
+- [`init_session()`](init_session.md) : Initializes a model. Allocates
+  memory to the C engine.
+
+- [`mvrnormArma()`](mvrnormArma.md) : Samples from a multivariate normal
+
+- [`report_COPD_by_ctime()`](report_COPD_by_ctime.md) : Reports COPD
+  related stats.
+
+- [`report_exacerbation_by_time()`](report_exacerbation_by_time.md) :
+  Reports exacerbation-related stats.
+
+- [`resume()`](resume.md) : Resumes running of model.
+
+- [`run()`](run.md) : Runs the model, after a session has been
+  initialized.
+
+- [`sanity_COPD()`](sanity_COPD.md) : Basic COPD test.
+
+- [`sanity_check()`](sanity_check.md) : Basic tests of model
+  functionality. Serious issues if the test does not pass.
+
+- [`terminate_session()`](terminate_session.md) : Terminates a session
+  and releases allocated memory.
+
+- [`test_case_detection()`](test_case_detection.md) : Returns results of
+  Case Detection strategies
+
+- [`validate_COPD()`](validate_COPD.md) : Returns results of validation
+  tests for COPD
+
+- [`validate_comorbidity()`](validate_comorbidity.md) : Returns results
+  of validation tests for comorbidities
+
+- [`validate_diagnosis()`](validate_diagnosis.md) : Returns results of
+  validation tests for diagnosis
+
+- [`validate_exacerbation()`](validate_exacerbation.md) : Returns
+  results of validation tests for exacerbation rates
+
+- [`validate_gpvisits()`](validate_gpvisits.md) : Returns results of
+  validation tests for GP visits
+
+- [`validate_lung_function()`](validate_lung_function.md) : Returns
+  results of validation tests for lung function
+
+- [`validate_medication()`](validate_medication.md) : Returns results of
+  validation tests for medication module.
+
+- [`validate_mortality()`](validate_mortality.md) : Returns results of
+  validation tests for mortality rate
+
+- [`validate_overdiagnosis()`](validate_overdiagnosis.md) : Returns
+  results of validation tests for overdiagnosis
+
+- [`validate_payoffs()`](validate_payoffs.md) : Returns results of
+  validation tests for payoffs, costs and QALYs
+
+- [`validate_population()`](validate_population.md) : Returns simulated
+  vs. predicted population table and a plot
+
+- [`validate_smoking()`](validate_smoking.md) : Returns results of
+  validation tests for smoking module.
+
+- [`validate_survival()`](validate_survival.md) : Returns the Kaplan
+  Meier curve comparing COPD and non-COPD
+
+- [`validate_symptoms()`](validate_symptoms.md) : Returns results of
+  validation tests for Symptoms
+
+- [`validate_treatment()`](validate_treatment.md) : Returns results of
+  validation tests for Treatment
+
+# Articles
+
+### All vignettes
+
+- [Adding a New Country to epicR](AddingNewCountry.md):
+- [EPIC Background](BackgroundEPIC.md):
+- [Getting Started with EPIC](GettingStarted.md):
+- [RecalibratingEPIC](RecalibratingEPIC.md):
+- [Using EPIC in R](UsingEPICinR.md):

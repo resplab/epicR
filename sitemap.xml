@@ -1,7 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/articles/AddingNewCountry.html</loc></url>
+<url><loc>/articles/BackgroundEPIC.html</loc></url>
 <url><loc>/articles/GettingStarted.html</loc></url>
 <url><loc>/articles/RecalibratingEPIC.html</loc></url>
+<url><loc>/articles/UsingEPICinR.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
@@ -24,7 +27,7 @@
 <url><loc>/reference/calibrate_explicit_mortality2.html</loc></url>
 <url><loc>/reference/calibrate_mi_incidence.html</loc></url>
 <url><loc>/reference/calibrate_smoking.html</loc></url>
-<url><loc>/reference/epicR.html</loc></url>
+<url><loc>/reference/epicR-package.html</loc></url>
 <url><loc>/reference/export_figures.html</loc></url>
 <url><loc>/reference/express_matrix.html</loc></url>
 <url><loc>/reference/get_agent_events.html</loc></url>
