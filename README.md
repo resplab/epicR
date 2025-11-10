@@ -171,9 +171,98 @@ input <- get_input()
 input$values$global_parameters$time_horizon <- 5
 run(input=input$values)
 results <- Cget_output()
-resultsExra <- Cget_output_ex()
+resultsExtra <- Cget_output_ex()
 terminate_session()
 
+```
+
+## Jurisdiction-Specific Configuration
+
+EPIC now supports jurisdiction-specific parameter sets to enable modeling for different countries/regions. Currently, Canadian parameters are fully configured, with US parameters available as a template.
+
+### Using Canadian Parameters (Default)
+```r
+# Canadian parameters are used by default
+input <- get_input()
+# or explicitly specify:
+input <- get_input(jurisdiction = "canada")
+```
+
+### Using US Parameters
+```r
+# Note: US parameters must be configured first (see Configuration section)
+input <- get_input(jurisdiction = "us")
+```
+
+### Parameter Override
+Function parameters still override jurisdiction defaults:
+```r
+# Use Canadian defaults but change time horizon
+input <- get_input(jurisdiction = "canada", time_horizon = 10)
+```
+
+## Configuration
+
+Model parameters are stored in JSON configuration files located in `inst/config/`:
+
+- `config_canada.json` - Canadian parameter set (fully configured)
+- `config_us.json` - US parameter template (requires configuration)
+
+### Configuring US Parameters
+
+To use EPIC for US populations, replace placeholder values in `config_us.json` with appropriate US-specific data:
+
+1. Demographics (age pyramid, mortality tables)
+2. Smoking patterns and prevalence
+3. Healthcare costs and utilization
+4. Disease epidemiology parameters
+
+Example placeholder format:
+```json
+{
+  "agent": {
+    "p_female": "PLACEHOLDER_US_P_FEMALE"
+  }
+}
+```
+
+Replace with actual values:
+```json
+{
+  "agent": {
+    "p_female": 0.51
+  }
+}
+```
+
+### Test Values
+
+Configuration files also include jurisdiction-specific test values used for package validation:
+
+```json
+{
+  "test_values": {
+    "population_over_40_2015": 18600000,
+    "expected_severe_exacerbations_per_year": 100000,
+    "expected_severe_exac_tolerance": 5000
+  }
+}
+```
+
+These values represent:
+- `population_over_40_2015`: Population over 40 years of age (used for scaling test results)
+- `expected_severe_exacerbations_per_year`: Expected number of severe exacerbations per year for validation
+- `expected_severe_exac_tolerance`: Tolerance level for test assertions
+
+For US parameters, replace with appropriate US values:
+```json
+{
+  "test_values": {
+    "population_over_40_2015": 130000000,
+    "expected_severe_exacerbations_per_year": 700000,
+    "expected_severe_exac_tolerance": 35000
+  }
+}
 ```
 
 For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by setting  `record_mode` as a `setting`. 
@@ -221,6 +310,15 @@ init_session()
 run(input=input)
 Cget_output()
 terminate_session()
+```
+
+You can also combine jurisdiction and closed-cohort parameters:
+```r
+# Canadian closed-cohort analysis
+input <- get_input(jurisdiction = "canada", closed_cohort = 1)$values
+
+# US closed-cohort analysis (once US parameters are configured)
+input <- get_input(jurisdiction = "us", closed_cohort = 1)$values
 ```
 
 # Peer Models Network: EPIC on the Cloud

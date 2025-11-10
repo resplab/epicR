@@ -12,14 +12,20 @@ test_that("In untreated patients:
 
   inputs <- Cget_inputs()
   output_ex <- Cget_output_ex()
+  
+  # Get test values from config
+  config <- get_input()$config
+  population_over_40 <- config$test_values$population_over_40_2015
+  expected_severe_exac <- config$test_values$expected_severe_exacerbations_per_year
+  tolerance_value <- config$test_values$expected_severe_exac_tolerance
 
-  #(1) Number of severe exacerbations per year close to 100,000:
+  #(1) Number of severe exacerbations per year close to expected value from config:
   n_exac <- data.frame(year= 1:inputs$global_parameters$time_horizon,
-                      Severe_Exacerbations = output_ex$n_exac_by_ctime_severity_diagnosed[,3]* (18.6e6/rowSums(output_ex$n_alive_by_ctime_sex)))
+                      Severe_Exacerbations = output_ex$n_exac_by_ctime_severity_diagnosed[,3]* (population_over_40/rowSums(output_ex$n_alive_by_ctime_sex)))
 
   averagen_severeexac <- mean(n_exac$Severe_Exacerbations[round(nrow(n_exac)/2,0):nrow(n_exac)])
 
-  expect_equal(averagen_severeexac, 100000, tolerance= 5e+3)
+  expect_equal(averagen_severeexac, expected_severe_exac, tolerance= tolerance_value)
 
   terminate_session()
 

@@ -1,25 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/articles/AddingNewCountry.html</loc></url>
 <url><loc>/articles/BackgroundEPIC.html</loc></url>
 <url><loc>/articles/GettingStarted.html</loc></url>
 <url><loc>/articles/RecalibratingEPIC.html</loc></url>
 <url><loc>/articles/UsingEPICinR.html</loc></url>
-<url><loc>/articles/html/section-2/demographic-table.html</loc></url>
-<url><loc>/articles/html/section-2/event-table.html</loc></url>
-<url><loc>/articles/html/section-2/exacerbation-severity.html</loc></url>
-<url><loc>/articles/html/section-2/exacerbation-table.html</loc></url>
-<url><loc>/articles/html/section-2/lungfunction-table.html</loc></url>
-<url><loc>/articles/html/section-2/mortality-table.html</loc></url>
-<url><loc>/articles/html/section-2/occurrence-table.html</loc></url>
-<url><loc>/articles/html/section-2/payoff-breakdown.html</loc></url>
-<url><loc>/articles/html/section-2/payoff-table.html</loc></url>
-<url><loc>/articles/html/section-2/smoking-table.html</loc></url>
-<url><loc>/articles/html/section-3/event-matrix-cols.html</loc></url>
-<url><loc>/articles/html/section-3/events.html</loc></url>
-<url><loc>/articles/html/section-3/ex-results.html</loc></url>
-<url><loc>/articles/html/section-3/main-results.html</loc></url>
-<url><loc>/articles/html/section-3/record_mode.html</loc></url>
-<url><loc>/articles/html/section-3/set-inputs.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
