@@ -1,5 +1,45 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
+/**
+ * @file model.cpp
+ * @brief EPIC (Evaluation Platform In COPD) - Discrete Event Simulation Engine
+ *
+ * This file contains the core C++ implementation of the EPIC model, a comprehensive
+ * discrete-event simulation model for Chronic Obstructive Pulmonary Disease (COPD)
+ * that simulates disease progression, healthcare utilization, and outcomes in a
+ * virtual population.
+ *
+ * The model tracks individual agents (virtual patients) through their lifetime,
+ * simulating key events including:
+ * - COPD incidence and progression
+ * - Exacerbations (acute worsening of symptoms)
+ * - Lung function decline
+ * - Smoking behavior
+ * - Healthcare utilization
+ * - Mortality
+ * - Quality of life and costs
+ *
+ * @section architecture Architecture
+ * The code is organized into the following sections:
+ * 1. Basic utilities - Helper functions and macros
+ * 2. Settings - Model configuration and parameters
+ * 3. Random number generation - Buffered RNG for performance
+ * 4. Input - Model input parameters and data structures
+ * 5. Output - Results collection and reporting
+ * 6. Agent - Individual patient data and functions
+ * 7. Event - Discrete event handling
+ * 8. Model - Main simulation engine
+ *
+ * @section performance Performance Optimization
+ * The model uses buffered random number generation to minimize overhead from
+ * R's RNG. Large buffers are pre-filled for uniform, normal, exponential, and
+ * gamma distributions.
+ *
+ * @author EPIC Development Team
+ * @see https://github.com/resplab/epicR
+ * @see Sadatsafavi M, et al. (2019) Med Decis Making. DOI: 10.1177/0272989X18824098
+ */
+
 #include "RcppArmadillo.h"
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]
@@ -7,45 +47,58 @@
 using namespace Rcpp;
 
 /*
-Layout:
-1. Basic
-2. Settings
-3. Radom
-4. Input
-5. Output
-6. Agent
-7. Event
-8. Model
-*/
+ * Code Organization:
+ * 1. Basic utilities and helper functions
+ * 2. Settings and configuration
+ * 3. Random number generation
+ * 4. Input parameter structures
+ * 5. Output data structures
+ * 6. Agent (patient) management
+ * 7. Event handling
+ * 8. Main simulation model
+ */
 
 
-#define OUTPUT_EX_BIOMETRICS 1 //height, weight etc;
-#define OUTPUT_EX_SMOKING 2
-#define OUTPUT_EX_COMORBIDITY 4
-#define OUTPUT_EX_LUNG_FUNCTION 8
-#define OUTPUT_EX_COPD 16
-#define OUTPUT_EX_EXACERBATION 32
-#define OUTPUT_EX_GPSYMPTOMS 64
-#define OUTPUT_EX_MORTALITY 128
-#define OUTPUT_EX_MEDICATION 256
-#define OUTPUT_EX_POPULATION 512
+/**
+ * @section output_flags Extended Output Flags
+ * Bit flags for controlling which extended outputs are collected.
+ * These can be combined using bitwise OR to select multiple output types.
+ */
+#define OUTPUT_EX_BIOMETRICS 1   ///< Height, weight, BMI
+#define OUTPUT_EX_SMOKING 2       ///< Smoking status and pack-years
+#define OUTPUT_EX_COMORBIDITY 4   ///< Comorbidities (MI, stroke, HF)
+#define OUTPUT_EX_LUNG_FUNCTION 8 ///< FEV1, predicted FEV1
+#define OUTPUT_EX_COPD 16         ///< COPD status and GOLD stage
+#define OUTPUT_EX_EXACERBATION 32 ///< Exacerbation events
+#define OUTPUT_EX_GPSYMPTOMS 64   ///< GP visits and symptoms
+#define OUTPUT_EX_MORTALITY 128   ///< Mortality events
+#define OUTPUT_EX_MEDICATION 256  ///< Medication use
+#define OUTPUT_EX_POPULATION 512  ///< Population statistics
 
-#define OUTPUT_EX 65535
+#define OUTPUT_EX 65535           ///< All extended outputs enabled
 
-
+/**
+ * @brief Maximum age simulated in the model (years)
+ * Agents are removed from the simulation at this age
+ */
 #define MAX_AGE 111
 
-#define MAX_AGE 111
 
 
-
+/**
+ * @enum errors
+ * @brief Error codes returned by C functions
+ *
+ * Negative values indicate errors. Zero indicates success.
+ * These codes are returned to R to help diagnose issues.
+ */
 enum errors
 {
-ERR_INCORRECT_SETTING_VARIABLE=-1,
-ERR_INCORRECT_VECTOR_SIZE=-2,
-ERR_INCORRECT_INPUT_VAR=-3,
-ERR_EVENT_STACK_FULL=-4,
-ERR_MEMORY_ALLOCATION_FAILED=-5
+ERR_INCORRECT_SETTING_VARIABLE=-1,  ///< Invalid setting variable name
+ERR_INCORRECT_VECTOR_SIZE=-2,       ///< Vector size doesn't match expected size
+ERR_INCORRECT_INPUT_VAR=-3,         ///< Invalid input variable name
+ERR_EVENT_STACK_FULL=-4,            ///< Event stack has reached capacity
+ERR_MEMORY_ALLOCATION_FAILED=-5     ///< Failed to allocate memory
 } errors;
 /*** R
 errors<-c(
@@ -58,12 +111,18 @@ errors<-c(
 */
 
 
+/**
+ * @enum record_mode
+ * @brief Controls what data is recorded during simulation
+ *
+ * Higher modes collect more detailed data but require more memory.
+ */
 enum record_mode
 {
-record_mode_none=0,
-record_mode_agent=1,
-record_mode_event=2,
-record_mode_some_event=3
+record_mode_none=0,       ///< No individual-level data recorded (aggregates only)
+record_mode_agent=1,      ///< Agent-level data recorded
+record_mode_event=2,      ///< All events recorded for all agents
+record_mode_some_event=3  ///< Selected events recorded
 };
 /*** R
 record_mode<-c(
@@ -76,11 +135,17 @@ record_mode<-c(
 
 
 
+/**
+ * @enum agent_creation_mode
+ * @brief Strategy for creating agents at simulation start
+ *
+ * Determines how the initial population is created.
+ */
 enum agent_creation_mode
 {
-agent_creation_mode_one=0,
-agent_creation_mode_all=1,
-agent_creation_mode_pre=2
+agent_creation_mode_one=0,  ///< Create agents one at a time as needed
+agent_creation_mode_all=1,  ///< Create all agents at once at start
+agent_creation_mode_pre=2   ///< Pre-create agents with specific characteristics
 };
 /*** R
 agent_creation_mode<-c(
@@ -93,14 +158,27 @@ agent_creation_mode<-c(
 
 
 
+/**
+ * @enum medication_classes
+ * @brief COPD medication classes as bit flags
+ *
+ * Each medication class is a power of 2, allowing combinations using bitwise OR.
+ * For example, a patient on LABA+ICS would have medication_status = 2|8 = 10.
+ *
+ * SABA = Short-Acting Beta-Agonist
+ * LABA = Long-Acting Beta-Agonist
+ * LAMA = Long-Acting Muscarinic Antagonist
+ * ICS = Inhaled Corticosteroid
+ * MACRO = Macrolide antibiotic
+ */
 enum medication_classes
 {
-MED_CLASS_SABA=1,
-MED_CLASS_LABA=2,
-MED_CLASS_LAMA=4,
-MED_CLASS_ICS=8,
-MED_CLASS_MACRO=16,
-N_MED_CLASS=5 //need to update this if new medication is added
+MED_CLASS_SABA=1,    ///< Short-Acting Beta-Agonist (rescue inhaler)
+MED_CLASS_LABA=2,    ///< Long-Acting Beta-Agonist
+MED_CLASS_LAMA=4,    ///< Long-Acting Muscarinic Antagonist
+MED_CLASS_ICS=8,     ///< Inhaled Corticosteroid
+MED_CLASS_MACRO=16,  ///< Macrolide antibiotic
+N_MED_CLASS=5        ///< Number of medication classes (update if adding new classes)
 };
 
 /*** R
@@ -118,56 +196,80 @@ medication_classes<-c(
 
 
 
-/////////////////////////////////////////////////////////////////////BASICS//////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// SECTION 1: BASIC UTILITIES
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @section basics Basic Utilities and Helper Functions
+ */
+
+/**
+ * @brief Maximum of two values (GCC-specific implementation)
+ * @note Uses GNU C extension (__typeof__). Consider replacing with std::max for portability.
+ */
 #define max(a,b)            \
 ({ __typeof__ (a) _a = (a); \
 __typeof__ (b) _b = (b);  \
 _a > _b ? _a : _b; })     \
 
-
+/**
+ * @brief Minimum of two values (GCC-specific implementation)
+ * @note Uses GNU C extension (__typeof__). Consider replacing with std::min for portability.
+ */
 #define min(a,b)              \
 ({ __typeof__ (a) _a = (a); \
 __typeof__ (b) _b = (b);    \
 _a > _b ? _b : _a; })       \
 
 
+/**
+ * @brief Current simulation time (calendar time in years)
+ * Global variable tracking the current time point in the simulation
+ */
 double calendar_time;
+
+/**
+ * @brief ID of the most recently created agent
+ * Used to assign unique IDs to new agents
+ */
 int last_id;
 
 
-
-// FUNCTIONS BELOW HAVE BEEN EDITED AND MOVED FURTHER DOWN WITH OTHER DISTRIBUTIONS
-
-// arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
-//   int ncols = sigma.n_cols;
-//   arma::mat Y = arma::randn(n, ncols);
-//   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
-// }
-
-
-// arma::vec rand_gamma(int n, double alpha, double beta) {
-//   arma::vec lambda = arma::randg<arma::vec>(n, arma::distr_param(alpha, beta));
-//   return lambda;
-// }
-
-
+/**
+ * @brief Convert C++ vector to R matrix (double version)
+ * @param x Vector of doubles containing matrix data in row-major order
+ * @param nCol Number of columns in the output matrix
+ * @return NumericMatrix in R's column-major format
+ *
+ * Converts a flat C++ vector in row-major order to an R matrix in column-major order.
+ * This is necessary because C++ and R use different memory layouts for matrices.
+ */
 NumericMatrix array_to_Rmatrix(std::vector<double> x, int nCol)
 {
   int nRow=x.size()/nCol;
   NumericMatrix y(nRow,nCol);
-  //important: CPP is column major order but R is row major; we address the R matrix cell by cell but handle the vector in CPP way;
+  // Important: C++ uses row-major order but R uses column-major order
+  // We address the R matrix cell-by-cell to handle the layout conversion
   for(int i=0;i<nRow;i++)
     for(int j=0;j<nCol;j++)
       y(i,j)=x[i*nCol+j];
   return (y);
 }
 
-
+/**
+ * @brief Convert C++ vector to R matrix (integer version)
+ * @param x Vector of integers containing matrix data in row-major order
+ * @param nCol Number of columns in the output matrix
+ * @return NumericMatrix in R's column-major format
+ *
+ * Integer overload of array_to_Rmatrix. Converts integers to doubles for R.
+ */
 NumericMatrix array_to_Rmatrix(std::vector<int> x, int nCol)
 {
   int nRow=x.size()/nCol;
   NumericMatrix y(nRow,nCol);
-  //important: CPP is column major order but R is row major; we address the R matrix cell by cell but handle the vector in CPP way;
+  // Important: C++ uses row-major order but R uses column-major order
   for(int i=0;i<nRow;i++)
     for(int j=0;j<nCol;j++)
       y(i,j)=x[i*nCol+j];
@@ -1229,24 +1331,6 @@ long agent_stack_pointer;
 agent smith;
 
 
-/*
-// [[Rcpp::export]]
-int Cset_agent_var(long id, std::string name, NumericVector value)    //Imports the agent from
-{
-if(name=="local_time") {agent_stack[id].local_time=value[0]; return(0);}
-if(name=="alive") {agent_stack[id].alive=(value[0]!=0); return(0);}
-if(name=="sex") {agent_stack[id].sex=(value[0]!=0); return(0);}
-if(name=="dob") {agent_stack[id].dob=value[0]; return(0);}
-if(name=="age_at_creation") {agent_stack[id].age_at_creation=value[0]; return(0);}
-
-if(name=="event") {agent_stack[id].event=value[0]; return(0);}
-if(name=="tte") {agent_stack[id].tte=value[0]; return(0);}
-
-return(-1);
-}
-*/
-
-
 
 
 List get_agent(agent *ag)
@@ -1326,20 +1410,6 @@ List get_agent(agent *ag)
   out["cumul_cost"] = (*ag).cumul_cost;
   out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
-
-
-
-  // out["norm_refill"] = (*ag).norm_refill;
-  // out["unif_refill"] = (*ag).unif_refill;
-  // out["exp_refill"] = (*ag).exp_refill;
-  // out["gamma_COPD_refill"] = (*ag).gamma_COPD_refill;
-  // out["gamma_NCOPD_refill"] = (*ag).gamma_NCOPD_refill;
-  // out["norm_count"]=(*ag).norm_count;
-  // out["unif_count"]=(*ag).unif_count;
-  // out["exp_count"]=(*ag).exp_count;
-  // out["gamma_COPD_count"]=(*ag).gamma_COPD_count;
-  // out["gamma_NCOPD_count"]=(*ag).gamma_NCOPD_count;
-
 
   return out;
 }
@@ -2542,22 +2612,6 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
 
          // Intercept for FEV1 decline in prevalent cases
 
-         /* double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]
-         + (input.lung_function.dfev1_sigmas[1]/input.lung_function.dfev1_sigmas[0]*input.lung_function.dfev1_re_rho) * ((*ag).fev1_baseline - (*ag).fev1_baseline_ZafarCMAJ - input.lung_function.fev1_0_ZafarCMAJ_by_sex[0][(*ag).sex]);
-         double fev1_variance_bivariate =  ((1-input.lung_function.dfev1_re_rho*input.lung_function.dfev1_re_rho)*input.lung_function.dfev1_sigmas[1]*input.lung_function.dfev1_sigmas[1]);
-
-         (*ag).fev1_decline_intercept = rand_norm()*sqrt(fev1_variance_bivariate) + fev1_mean_bivariate;
-
-         // Calcuating FEV1_baseline based on Zafar's CMAJ paper, excluding the intercept term
-         (*ag).fev1_baseline_ZafarCMAJ = input.lung_function.fev1_0_ZafarCMAJ_by_sex[1][(*ag).sex]*(*ag).age_baseline
-         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[2][(*ag).sex]*(*ag).weight_baseline
-         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[3][(*ag).sex]*(*ag).height
-         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[4][(*ag).sex]*(*ag).height*(*ag).height
-         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[5][(*ag).sex]*(*ag).smoking_status
-         +input.lung_function.fev1_0_ZafarCMAJ_by_sex[6][(*ag).sex]*(*ag).age_baseline*(*ag).height*(*ag).height;
-
-         */
-
          double pred_fev1=CALC_PRED_FEV1(ag);
          (*ag)._pred_fev1=pred_fev1;
 
@@ -3710,7 +3764,7 @@ void event_bgd_process(agent *ag)
 //////////////////////////////////////////////////////////////////EVENT_DOCTOR_VISIT////////////////////////////////////;
 double event_doctor_visit_tte(agent *ag)
 {
-  return(HUGE_VALL); //Currently deisabled;
+  return(HUGE_VAL); //Currently disabled;
   double rate=input.outpatient.rate_doctor_visit;
 
   double tte=rand_exp()/rate;
@@ -4120,26 +4174,7 @@ int Cmodel(int max_n_agents)
         winner=event_doctor_visit;
       }
 
-      /*temp=event_mi_tte(ag);
-      if(temp<tte)
-      {
-      tte=temp;
-      winner=event_mi;
-      }
-
-      temp=event_stroke_tte(ag);
-      if(temp<tte)
-      {
-      tte=temp;
-      winner=event_stroke;
-      }
-
-      temp=event_hf_tte(ag);
-      if(temp<tte)
-      {
-      tte=temp;
-      winner=event_hf;
-      }*/
+      // Comorbidity events (MI, stroke, HF) are not currently implemented
 
       temp=event_bgd_tte(ag);
       if(temp<tte)

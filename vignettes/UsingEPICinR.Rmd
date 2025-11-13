@@ -29,7 +29,7 @@ If you do not have R installed on your computer, please go to [Appendix 1](#appe
 1. Download and Install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
 2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
 3. Download and Install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/)
-4. Using either an R session in Terminal or in R Studio, install the package `remotes``:
+4. Using either an R session in Terminal or in R Studio, install the package `remotes`:
 
 ```{r, eval=FALSE, echo=TRUE}
 install.packages('remotes')
@@ -42,7 +42,26 @@ remotes::install_github('resplab/epicR')
 ```
 
 ### Mac OS Sierra and Later {-}
-TBD
+
+1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
+2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+3. Install Xcode Command Line Tools by running the following in Terminal:
+
+```bash
+xcode-select --install
+```
+
+4. Using either an R session in Terminal or in R Studio, install the package `remotes`:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages('remotes')
+```
+
+5. Install epicR from GitHub:
+
+```{r, eval=FALSE, echo=TRUE}
+remotes::install_github('resplab/epicR')
+```
 
 ### Ubuntu 22.04 and Later {-}
 
@@ -200,7 +219,7 @@ For some studies, having access to the entire event history of the simulated pop
 
 ``` {r, eval=FALSE, echo=TRUE}
 settings <- get_default_settings()
-# record_mode = 2 indicates recording every event that occure
+# record_mode = 2 indicates recording every event that occurs
 settings$record_mode <- 2
 #n_base_agents is the number of people at time 0.
 settings$n_base_agents <- 1e4
@@ -234,7 +253,7 @@ HTML(rawHTML)
 
 In the events data frame, each type of event has a code corresponding to the table below:
 
-Note: Doctor visit and Medication change are not implemented in this version if epicR
+Note: Doctor visit and Medication change are not implemented in this version of epicR
 
 ```{r, eval=FALSE, echo=FALSE}
 library(htmltools)
