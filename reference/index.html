@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <a class="navbar-brand me-2" href="../index.html">epicR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.40.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,8 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/AddingNewCountry.html">Adding a New Country to epicR</a></li>
     <li><a class="dropdown-item" href="../articles/BackgroundEPIC.html">EPIC Background</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Exacerbations.html">Calibrate COPD Exacerbations</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Prevalence.html">Calibrate COPD Prevalence</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Demographics.html">Calibrate Demographics</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Smoking.html">Calibrate Smoking Status</a></li>
     <li><a class="dropdown-item" href="../articles/GettingStarted.html">Getting Started with EPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Payoffs.html">Payoffs</a></li>
     <li><a class="dropdown-item" href="../articles/RecalibratingEPIC.html">RecalibratingEPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Reproducing_bgd.html">Reproducing Background Mortality</a></li>
     <li><a class="dropdown-item" href="../articles/UsingEPICinR.html">Using EPIC in R</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -165,6 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         </dt>
         <dd>Returns all events of an agent.</dd>
+
+        <dt>
+
+          <code><a href="Cget_agent_size_bytes.html">Cget_agent_size_bytes()</a></code>
+
+        </dt>
+        <dd>Returns the size of agent struct in bytes</dd>
 
         <dt>
 
@@ -259,6 +272,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="calc_event_stack_size.html">calc_event_stack_size()</a></code>
+
+        </dt>
+        <dd>Calculate recommended event_stack_size for a given number of agents</dd>
+
+        <dt>
+
           <code><a href="calibrate_COPD_inc.html">calibrate_COPD_inc()</a></code>
 
         </dt>
@@ -280,13 +300,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
-          <code><a href="calibrate_mi_incidence.html">calibrate_mi_incidence()</a></code>
-
-        </dt>
-        <dd>Calibrates MI incidence.</dd>
-
-        <dt>
-
           <code><a href="calibrate_smoking.html">calibrate_smoking()</a></code>
 
         </dt>
@@ -298,6 +311,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         </dt>
         <dd><code>epicR</code> package</dd>
+
+        <dt>
+
+          <code><a href="estimate_memory_required.html">estimate_memory_required()</a></code>
+
+        </dt>
+        <dd>Estimate memory required for simulation</dd>
 
         <dt>
 
@@ -322,10 +342,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="get_agent_size_bytes.html">get_agent_size_bytes()</a></code>
+
+        </dt>
+        <dd>Get size of agent struct in bytes (from C code)</dd>
+
+        <dt>
+
           <code><a href="get_all_events.html">get_all_events()</a></code>
 
         </dt>
         <dd>Returns all events.</dd>
+
+        <dt>
+
+          <code><a href="get_available_memory.html">get_available_memory()</a></code>
+
+        </dt>
+        <dd>Get available system memory (platform-specific)</dd>
 
         <dt>
 
@@ -445,13 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         </dt>
         <dd>Returns results of validation tests for COPD</dd>
-
-        <dt>
-
-          <code><a href="validate_comorbidity.html">validate_comorbidity()</a></code>
-
-        </dt>
-        <dd>Returns results of validation tests for comorbidities</dd>
 
         <dt>
 

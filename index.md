@@ -193,7 +193,7 @@ If the installation is successful, you should be able to start R:
 ```
 
 2.  Download and Install R Studio from
-    <https://www.rstudio.com/products/rstudio/download/>
+    <https://posit.co/download/rstudio-desktop/>
 3.  Install `libcurl` from Terminal:
 
 ``` bash

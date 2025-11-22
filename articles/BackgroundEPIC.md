@@ -31,7 +31,7 @@ period of time.
 In the case of **EPIC**, we wanted to look at the affects of COPD on the
 Canadian population. To start with, the computer model uses data from
 the [2001 Canadian Community Health Survey
-1.1](http://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&Id=3359)
+1.1](https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&Id=3359)
 to create simulated, or “artificial” people. The survey included
 information from 105 908 Canadians. The model uses this to create ~ 22.5
 million community-dwelling Canadians.
@@ -52,9 +52,9 @@ We combined 12 different studies to look at 7 different aspects of COPD:
 ### Demographic and Risk Factor Module
 
 The Demographic and Risk Factor Module is based on the results from
-[POHEM](https://pophealthmetrics.biomedcentral.com/track/pdf/10.1186/s12963-015-0057-x),
-which is the dynamic microsimulation model we described previously. This
-is basically the background data for the simulation.
+[POHEM](https://doi.org/10.1186/s12963-015-0057-x), which is the dynamic
+microsimulation model we described previously. This is basically the
+background data for the simulation.
 
 ### COPD Occurence Module
 

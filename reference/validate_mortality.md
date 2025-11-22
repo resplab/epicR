@@ -11,8 +11,7 @@ validate_mortality(
   bgd = 1,
   bgd_h = 1,
   manual = 1,
-  exacerbation = 1,
-  comorbidity = 1
+  exacerbation = 1
 )
 ```
 
@@ -35,10 +34,6 @@ validate_mortality(
   a number
 
 - exacerbation:
-
-  a number
-
-- comorbidity:
 
   a number
 

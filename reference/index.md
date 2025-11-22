@@ -5,6 +5,9 @@
 - [`Cget_agent_events()`](Cget_agent_events.md) : Returns all events of
   an agent.
 
+- [`Cget_agent_size_bytes()`](Cget_agent_size_bytes.md) : Returns the
+  size of agent struct in bytes
+
 - [`Cget_all_events()`](Cget_all_events.md) : Returns all events.
 
 - [`Cget_all_events_matrix()`](Cget_all_events_matrix.md) : Returns a
@@ -35,6 +38,9 @@
 
 - [`Cset_settings_var()`](Cset_settings_var.md) : Sets model settings.
 
+- [`calc_event_stack_size()`](calc_event_stack_size.md) : Calculate
+  recommended event_stack_size for a given number of agents
+
 - [`calibrate_COPD_inc()`](calibrate_COPD_inc.md) : Solves
   stochastically for COPD incidence rate equation.
 
@@ -44,14 +50,14 @@
 - [`calibrate_explicit_mortality2()`](calibrate_explicit_mortality2.md)
   : Calibrates explicit mortality by Amin
 
-- [`calibrate_mi_incidence()`](calibrate_mi_incidence.md) : Calibrates
-  MI incidence.
-
 - [`calibrate_smoking()`](calibrate_smoking.md) : Calibrates smoking
 
 - [`epicR-package`](epicR-package.md) [`epicR`](epicR-package.md) :
 
   `epicR` package
+
+- [`estimate_memory_required()`](estimate_memory_required.md) : Estimate
+  memory required for simulation
 
 - [`export_figures()`](export_figures.md) : Runs the model and exports
   an excel file with all output data
@@ -61,7 +67,13 @@
 - [`get_agent_events()`](get_agent_events.md) : Returns events specific
   to an agent.
 
+- [`get_agent_size_bytes()`](get_agent_size_bytes.md) : Get size of
+  agent struct in bytes (from C code)
+
 - [`get_all_events()`](get_all_events.md) : Returns all events.
+
+- [`get_available_memory()`](get_available_memory.md) : Get available
+  system memory (platform-specific)
 
 - [`get_default_settings()`](get_default_settings.md) : Exports default
   settings
@@ -108,9 +120,6 @@
 
 - [`validate_COPD()`](validate_COPD.md) : Returns results of validation
   tests for COPD
-
-- [`validate_comorbidity()`](validate_comorbidity.md) : Returns results
-  of validation tests for comorbidities
 
 - [`validate_diagnosis()`](validate_diagnosis.md) : Returns results of
   validation tests for diagnosis

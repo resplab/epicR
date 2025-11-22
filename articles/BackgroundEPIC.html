@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <a class="navbar-brand me-2" href="../index.html">epicR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.40.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,8 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/AddingNewCountry.html">Adding a New Country to epicR</a></li>
     <li><a class="dropdown-item" href="../articles/BackgroundEPIC.html">EPIC Background</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Exacerbations.html">Calibrate COPD Exacerbations</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Prevalence.html">Calibrate COPD Prevalence</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Demographics.html">Calibrate Demographics</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Smoking.html">Calibrate Smoking Status</a></li>
     <li><a class="dropdown-item" href="../articles/GettingStarted.html">Getting Started with EPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Payoffs.html">Payoffs</a></li>
     <li><a class="dropdown-item" href="../articles/RecalibratingEPIC.html">RecalibratingEPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Reproducing_bgd.html">Reproducing Background Mortality</a></li>
     <li><a class="dropdown-item" href="../articles/UsingEPICinR.html">Using EPIC in R</a></li>
   </ul>
 </li>
@@ -215,7 +221,7 @@ about how a population will be affected by say, a disease, over a set
 period of time.</p>
 <p>In the case of <strong>EPIC</strong>, we wanted to look at the
 affects of COPD on the Canadian population. To start with, the computer
-model uses data from the <a href="http://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&amp;Id=3359" class="external-link">2001
+model uses data from the <a href="https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&amp;Id=3359" class="external-link">2001
 Canadian Community Health Survey 1.1</a> to create simulated, or
 “artificial” people. The survey included information from 105 908
 Canadians. The model uses this to create ~ 22.5 million
@@ -239,9 +245,9 @@ COPD:</p>
 <h3 id="demographic">Demographic and Risk Factor Module<a class="anchor" aria-label="anchor" href="#demographic"></a>
 </h3>
 <p>The Demographic and Risk Factor Module is based on the results from
-<a href="https://pophealthmetrics.biomedcentral.com/track/pdf/10.1186/s12963-015-0057-x" class="external-link">POHEM</a>,
-which is the dynamic microsimulation model we described previously. This
-is basically the background data for the simulation.</p>
+<a href="https://doi.org/10.1186/s12963-015-0057-x" class="external-link">POHEM</a>, which is
+the dynamic microsimulation model we described previously. This is
+basically the background data for the simulation.</p>
 </div>
 <div class="section level3">
 <h3 id="occurence">COPD Occurence Module<a class="anchor" aria-label="anchor" href="#occurence"></a>

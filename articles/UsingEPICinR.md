@@ -11,11 +11,11 @@ package as per the instructions below:
 1.  Download and Install the latest version of R from
     <https://cran.r-project.org/bin/windows/base/>
 2.  Download and Install R Studio from
-    <https://www.rstudio.com/products/rstudio/download/>
+    <https://posit.co/download/rstudio-desktop/>
 3.  Download and Install the latest version of Rtools from
     <https://cran.r-project.org/bin/windows/Rtools/>
 4.  Using either an R session in Terminal or in R Studio, install the
-    package \`remotes\`\`:
+    package `remotes`:
 
 ``` r
 install.packages('remotes')
@@ -29,7 +29,29 @@ remotes::install_github('resplab/epicR')
 
 ### Mac OS Sierra and Later
 
-TBD
+1.  Download and Install the latest version of R from
+    <https://cran.r-project.org/bin/macosx/>
+2.  Download and Install R Studio from
+    <https://posit.co/download/rstudio-desktop/>
+3.  Install Xcode Command Line Tools by running the following in
+    Terminal:
+
+``` bash
+xcode-select --install
+```
+
+4.  Using either an R session in Terminal or in R Studio, install the
+    package `remotes`:
+
+``` r
+install.packages('remotes')
+```
+
+5.  Install epicR from GitHub:
+
+``` r
+remotes::install_github('resplab/epicR')
+```
 
 ### Ubuntu 22.04 and Later
 
@@ -58,7 +80,7 @@ If the installation is successful, you should be able to start R:
 ```
 
 2.  Download and Install R Studio from
-    <https://www.rstudio.com/products/rstudio/download/>
+    <https://posit.co/download/rstudio-desktop/>
 3.  Install `libcurl` from Terminal:
 
 ``` bash
@@ -202,7 +224,7 @@ to collect event history for a large number of patients.
 
 ``` r
 settings <- get_default_settings()
-# record_mode = 2 indicates recording every event that occure
+# record_mode = 2 indicates recording every event that occurs
 settings$record_mode <- 2
 #n_base_agents is the number of people at time 0.
 settings$n_base_agents <- 1e4
@@ -228,7 +250,7 @@ In the events data frame, each type of event has a code corresponding to
 the table below:
 
 Note: Doctor visit and Medication change are not implemented in this
-version if epicR
+version of epicR
 
 ### Closed-cohort analysis
 

@@ -4,7 +4,7 @@ Evaluation Platform in COPD (EPIC) R Package
 
 ## Details
 
-See the README on [GitHub](https://github.com/aminadibi/epicR#readme)
+See the README on [GitHub](https://github.com/resplab/epicR#readme)
 
 ## Author
 

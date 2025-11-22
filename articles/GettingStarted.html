@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <a class="navbar-brand me-2" href="../index.html">epicR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.40.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,8 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/AddingNewCountry.html">Adding a New Country to epicR</a></li>
     <li><a class="dropdown-item" href="../articles/BackgroundEPIC.html">EPIC Background</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Exacerbations.html">Calibrate COPD Exacerbations</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Prevalence.html">Calibrate COPD Prevalence</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Demographics.html">Calibrate Demographics</a></li>
+    <li><a class="dropdown-item" href="../articles/Calibrate_Smoking.html">Calibrate Smoking Status</a></li>
     <li><a class="dropdown-item" href="../articles/GettingStarted.html">Getting Started with EPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Payoffs.html">Payoffs</a></li>
     <li><a class="dropdown-item" href="../articles/RecalibratingEPIC.html">RecalibratingEPIC</a></li>
+    <li><a class="dropdown-item" href="../articles/Reproducing_bgd.html">Reproducing Background Mortality</a></li>
     <li><a class="dropdown-item" href="../articles/UsingEPICinR.html">Using EPIC in R</a></li>
   </ul>
 </li>
@@ -181,109 +187,290 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     
-<p>This document is a guide to basics of running a simulation with the
-Evaluation Platform in COPD (EPIC) using epicR.</p>
-<p>EPIC is a discrete-event simulation model for COPD, and models the
-entire pathway of care, from disease incidence, to diagnosis, treatment,
-and outcomes.</p>
-<p>EPIC simulates random Canadians, known in the model as agents. Agents
-have demographic and biological/medical characteristics, including
-symptoms.</p>
-<p>The operations of the model is controlled with inputs and settings.
-The function <code><a href="../reference/get_input.html">get_input()</a></code> returns the default set of inputs,
-while <code><a href="../reference/get_default_settings.html">get_default_settings()</a></code> does the same for
-settings.</p>
-<p>When running the model, the user has the option of changing inputs
-and settings.</p>
-<p>Let’s go over an example.</p>
-<p>First, we need to load the model:</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>This guide will help you get started with the Evaluation Platform in
+COPD (EPIC) using the epicR package. By the end of this vignette, you
+will be able to:</p>
+<ul>
+<li>Run a basic COPD simulation</li>
+<li>Understand and interpret the model outputs</li>
+<li>Customize inputs and settings for your analysis</li>
+<li>Choose between Canadian and US populations</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="what-is-epic">What is EPIC?<a class="anchor" aria-label="anchor" href="#what-is-epic"></a>
+</h2>
+<p>EPIC is a discrete-event simulation (DES) model for Chronic
+Obstructive Pulmonary Disease (COPD). It models the entire pathway of
+care including:</p>
+<ul>
+<li>Disease incidence and progression</li>
+<li>Diagnosis and case detection</li>
+<li>Exacerbations (mild, moderate, severe)</li>
+<li>Treatment and medication</li>
+<li>Healthcare resource utilization</li>
+<li>Mortality</li>
+</ul>
+<p>The model simulates individual patients (called “agents”) with
+demographic and clinical characteristics. Each agent progresses through
+time, experiencing events like birthdays, disease onset, exacerbations,
+and treatment changes.</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>If you haven’t already installed epicR:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span></code></pre></div>
-<p>EPIC is a session-based model, which means at beginning and end of
-our run, we need to open and terminate a session. When a session is
-initialized, required memory resources are allocated to the model.</p>
-<p>Let’s initialize a session and run the model with default
-parameters:</p>
+<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="quick-start-your-first-simulation">Quick Start: Your First Simulation<a class="anchor" aria-label="anchor" href="#quick-start-your-first-simulation"></a>
+</h2>
+<p>Let’s run a basic simulation with default parameters:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Both the <code>init_session</code> and the <code>run</code> functions
-are supposed to return 0 if they encounter no error.</p>
-<p>Once we ran the model, we probably want to see the results of that
-run. The most basic set of results can be retrieved with
-<code><a href="../reference/Cget_output.html">Cget_output()</a></code>:</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="step-1-initialize-a-session">Step 1: Initialize a Session<a class="anchor" aria-label="anchor" href="#step-1-initialize-a-session"></a>
+</h3>
+<p>EPIC is session-based, meaning you must initialize a session before
+running simulations. This allocates the required memory:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>These are high-level outcomes of the simulation. We can get more
-detailed results with the <code><a href="../reference/Cget_output_ex.html">Cget_output_ex()</a></code> function, which
-includes many tables that give results over time horizon of the model.
-Note that we should always have to terminate a session after we are done
-with it.</p>
+<code class="sourceCode R"><span><span class="co"># Initialize with default settings</span></span>
+<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The function returns <code>0</code> if successful.</p>
+</div>
+<div class="section level3">
+<h3 id="step-2-run-the-model">Step 2: Run the Model<a class="anchor" aria-label="anchor" href="#step-2-run-the-model"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results_ex</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results_ex</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Here, we managed to run the model with its default inputs and
-settings. But what were those inputs? We can explore them using
-<code><a href="../reference/get_input.html">get_input()</a></code>:</p>
+<code class="sourceCode R"><span><span class="co"># Run with default inputs</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="step-3-get-results">Step 3: Get Results<a class="anchor" aria-label="anchor" href="#step-3-get-results"></a>
+</h3>
+<p>Retrieve the simulation results:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">)</span></span>
-<span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span></span></code></pre></div>
-<p>As you can see the example above, input is a list, with values, help,
-and references. To change any input, we need to change its value. Help
-and references are there to tell us what each input parameter is, and
-where did it come from. By changing inputs, we can change parameters
-such as time horizon, proportion of female patients, costs and
-utilities, as well as many regression equations that are used in the
-model.</p>
-<p>Similarly, we can retrieve default settings and change them if
-necessary. The most useful setting is record_mode, which specifies
-whether the model should record outputs as aggregates or at the
-individual patient level. If we set record_mode to 2, we can collect
-individual patient level data from the model.</p>
-<p>In the example below, we call the model with modified inputs and
-settings:</p>
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></code></pre></div>
+<p>The basic output includes:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>n_agents</code></td>
+<td>Total number of agents simulated</td>
+</tr>
+<tr class="even">
+<td><code>cumul_time</code></td>
+<td>Total person-years of follow-up</td>
+</tr>
+<tr class="odd">
+<td><code>n_deaths</code></td>
+<td>Number of deaths</td>
+</tr>
+<tr class="even">
+<td><code>n_COPD</code></td>
+<td>Number of agents who developed COPD</td>
+</tr>
+<tr class="odd">
+<td><code>n_exac_*</code></td>
+<td>Exacerbation counts by severity</td>
+</tr>
+<tr class="even">
+<td><code>total_cost</code></td>
+<td>Total healthcare costs</td>
+</tr>
+<tr class="odd">
+<td><code>total_qaly</code></td>
+<td>Total quality-adjusted life years</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="step-4-terminate-the-session">Step 4: Terminate the Session<a class="anchor" aria-label="anchor" href="#step-4-terminate-the-session"></a>
+</h3>
+<p>Always terminate the session when done to free memory:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="choosing-a-jurisdiction-canada-vs-us">Choosing a Jurisdiction: Canada vs US<a class="anchor" aria-label="anchor" href="#choosing-a-jurisdiction-canada-vs-us"></a>
+</h2>
+<p>EPIC supports both Canadian and US populations with
+jurisdiction-specific parameters:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># For Canadian population (default)</span></span>
+<span><span class="va">input_canada</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"ca"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># For US population</span></span>
+<span><span class="va">input_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
+<p>The jurisdictions differ in: - Population demographics - Smoking
+prevalence and trends - Healthcare costs - Disease incidence rates</p>
+</div>
+<div class="section level2">
+<h2 id="customizing-your-simulation">Customizing Your Simulation<a class="anchor" aria-label="anchor" href="#customizing-your-simulation"></a>
+</h2>
+<div class="section level3">
+<h3 id="understanding-inputs">Understanding Inputs<a class="anchor" aria-label="anchor" href="#understanding-inputs"></a>
+</h3>
+<p>Inputs control the model’s parameters. Explore them:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Top-level structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span></span>
+<span><span class="co"># [1] "values" "help" "references"</span></span>
+<span></span>
+<span><span class="co"># Value categories</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example: global parameters</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">)</span></span>
+<span><span class="va">inputs</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span>  <span class="co"># Simulation duration in years</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="common-input-modifications">Common Input Modifications<a class="anchor" aria-label="anchor" href="#common-input-modifications"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Change time horizon (years)</span></span>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
+<span></span>
+<span><span class="co"># Modify COPD-related costs</span></span>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">cost</span><span class="op">$</span><span class="va">exac_dcost</span>  <span class="co"># Exacerbation costs by severity</span></span>
+<span></span>
+<span><span class="co"># Run with modified inputs</span></span>
+<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="understanding-settings">Understanding Settings<a class="anchor" aria-label="anchor" href="#understanding-settings"></a>
+</h3>
+<p>Settings control how the model runs (not what it simulates):</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">settings</span><span class="op">)</span></span></code></pre></div>
+<p>Key settings:</p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="41%">
+<col width="29%">
+</colgroup>
+<thead><tr class="header">
+<th>Setting</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>n_base_agents</code></td>
+<td>Number of agents to simulate</td>
+<td>60,000</td>
+</tr>
+<tr class="even">
+<td><code>record_mode</code></td>
+<td>Level of output detail (0=aggregate, 2=individual)</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="choosing-the-number-of-agents">Choosing the Number of Agents<a class="anchor" aria-label="anchor" href="#choosing-the-number-of-agents"></a>
+</h3>
+<p>More agents = more precision but longer runtime and more memory:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Quick test run</span></span>
+<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span>  <span class="co"># 10,000 agents</span></span>
+<span></span>
+<span><span class="co"># Production run</span></span>
+<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e6</span>  <span class="co"># 1,000,000 agents</span></span>
+<span></span>
+<span><span class="co"># Check memory requirements before running large simulations</span></span>
+<span><span class="fu"><a href="../reference/estimate_memory_required.html">estimate_memory_required</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">1e6</span>, record_mode <span class="op">=</span> <span class="fl">0</span>, time_horizon <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="getting-detailed-results">Getting Detailed Results<a class="anchor" aria-label="anchor" href="#getting-detailed-results"></a>
+</h2>
+<div class="section level3">
+<h3 id="extended-output">Extended Output<a class="anchor" aria-label="anchor" href="#extended-output"></a>
+</h3>
+<p>For more detailed results by year and demographics:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Detailed output tables</span></span>
+<span><span class="va">results_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results_ex</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="individual-patient-data">Individual Patient Data<a class="anchor" aria-label="anchor" href="#individual-patient-data"></a>
+</h3>
+<p>To collect event-level data for each agent, use
+<code>record_mode = 2</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span></span>
+<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span>  <span class="co"># Keep small due to memory requirements</span></span>
+<span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span>settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Get all events as a data frame</span></span>
 <span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Note that you might need a large amount of memory available, if you
-want to collect event history for a large number of patients.</p>
-<p>In the events data frame, each type of event has a code corresponding
-to the table below:</p>
+<p><strong>Warning:</strong> Recording individual events requires
+substantial memory. Start with a small number of agents.</p>
+</div>
+<div class="section level3">
+<h3 id="event-types">Event Types<a class="anchor" aria-label="anchor" href="#event-types"></a>
+</h3>
+<p>Each event in the individual data has a numeric code:</p>
 <table class="table">
 <thead><tr class="header">
 <th>Event</th>
-<th>No.</th>
+<th>Code</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>start</td>
+<td>Start</td>
 <td>0</td>
 </tr>
 <tr class="even">
-<td>annual</td>
+<td>Annual</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td>birthday</td>
+<td>Birthday</td>
 <td>2</td>
 </tr>
 <tr class="even">
-<td>smoking change</td>
+<td>Smoking change</td>
 <td>3</td>
 </tr>
 <tr class="odd">
@@ -299,7 +486,7 @@ to the table below:</p>
 <td>6</td>
 </tr>
 <tr class="even">
-<td>Death by Exacerbation</td>
+<td>Death by exacerbation</td>
 <td>7</td>
 </tr>
 <tr class="odd">
@@ -320,20 +507,104 @@ to the table below:</p>
 </tr>
 </tbody>
 </table>
-<p>By default, EPIC is an open population model that captures population
-trends such as growth, immigration, and emigration. We can change inputs
-to run a closed-cohort analysis, if need be:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
+</div>
+</div>
+<div class="section level2">
+<h2 id="open-vs-closed-cohort">Open vs Closed Cohort<a class="anchor" aria-label="anchor" href="#open-vs-closed-cohort"></a>
+</h2>
+<p>By default, EPIC is an <strong>open population</strong> model that
+captures population dynamics (births, deaths, immigration, emigration).
+For a <strong>closed cohort</strong> analysis (fixed initial population,
+no new entries):</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get inputs configured for closed cohort</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>These are the basics of running a simulation in EPIC. There are many
-other useful functions in the package, including validation functions
-that allow the user to check model validation.</p>
-  </main>
+</div>
+<div class="section level2">
+<h2 id="comparing-scenarios">Comparing Scenarios<a class="anchor" aria-label="anchor" href="#comparing-scenarios"></a>
+</h2>
+<p>A common use case is comparing interventions. Here’s a template:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Baseline scenario</span></span>
+<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">input_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input_baseline</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="va">results_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Intervention scenario (e.g., improved case detection)</span></span>
+<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">input_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Modify relevant parameters for your intervention</span></span>
+<span><span class="co"># input_intervention$values$diagnosis$... &lt;- new_value</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input_intervention</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="va">results_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare outcomes</span></span>
+<span><span class="co"># cost_difference &lt;- results_intervention$total_cost - results_baseline$total_cost</span></span>
+<span><span class="co"># qaly_difference &lt;- results_intervention$total_qaly - results_baseline$total_qaly</span></span>
+<span><span class="co"># icer &lt;- cost_difference / qaly_difference</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+</h2>
+<div class="section level3">
+<h3 id="memory-errors">Memory Errors<a class="anchor" aria-label="anchor" href="#memory-errors"></a>
+</h3>
+<p>If you get memory allocation errors: 1. Reduce
+<code>n_base_agents</code> 2. Use <code>record_mode = 0</code>
+(aggregate only) 3. Check available memory with
+<code><a href="../reference/estimate_memory_required.html">estimate_memory_required()</a></code></p>
+</div>
+<div class="section level3">
+<h3 id="session-not-terminated">Session Not Terminated<a class="anchor" aria-label="anchor" href="#session-not-terminated"></a>
+</h3>
+<p>Always wrap simulations in error handling:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span>, finally <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
+<ul>
+<li>
+<strong>Model Background</strong>: See
+<code><a href="../articles/BackgroundEPIC.html">vignette("BackgroundEPIC")</a></code> for model structure details</li>
+<li>
+<strong>Calibration</strong>: See
+<code><a href="../articles/Calibrate_COPD_Prevalence.html">vignette("Calibrate_COPD_Prevalence")</a></code> for calibration
+methods</li>
+<li>
+<strong>Validation</strong>: Explore the <code>validate_*()</code>
+functions for model validation</li>
+<li>
+<strong>US Model</strong>: See
+<code><a href="../articles/Calibrate_Smoking.html">vignette("Calibrate_Smoking")</a></code> for US-specific
+calibration</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Sadatsafavi M, et al. (2019). Development and Validation of the
+Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of
+COPD for Canada. Medical Decision Making. <a href="doi:10.1177/0272989X18824098" class="uri">doi:10.1177/0272989X18824098</a></p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
