@@ -204,23 +204,11 @@ medication_classes<-c(
  * @section basics Basic Utilities and Helper Functions
  */
 
-/**
- * @brief Maximum of two values (GCC-specific implementation)
- * @note Uses GNU C extension (__typeof__). Consider replacing with std::max for portability.
- */
-#define max(a,b)            \
-({ __typeof__ (a) _a = (a); \
-__typeof__ (b) _b = (b);  \
-_a > _b ? _a : _b; })     \
-
-/**
- * @brief Minimum of two values (GCC-specific implementation)
- * @note Uses GNU C extension (__typeof__). Consider replacing with std::min for portability.
- */
-#define min(a,b)              \
-({ __typeof__ (a) _a = (a); \
-__typeof__ (b) _b = (b);    \
-_a > _b ? _b : _a; })       \
+// Use standard library min/max for portability
+// (Previously used GCC-specific macros with __typeof__)
+#include <algorithm>
+using std::min;
+using std::max;
 
 
 /**
@@ -427,22 +415,49 @@ List Cget_runtime_stats()
 
 
 
-////////////////////////////////////////////////////////////////////RANDOM/////////////////////////////////////////////////
-//these stuff are internal so no expoert/import;
-double *runif_buffer;
-long runif_buffer_pointer;
+////////////////////////////////////////////////////////////////////////////////
+// SECTION 3: RANDOM NUMBER GENERATION
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * @section random Random Number Generation
+ *
+ * This module provides high-performance random number generation using a
+ * buffered approach. Instead of calling R's RNG functions for each random
+ * number (which has significant overhead), we pre-fill large buffers with
+ * random numbers and consume them as needed.
+ *
+ * Buffer Architecture:
+ * - Each distribution type (uniform, normal, exponential, gamma) has its own buffer
+ * - Buffers are refilled automatically when depleted
+ * - Buffer sizes are configurable via settings
+ *
+ * Available Distributions:
+ * - rand_unif()     : Uniform(0,1)
+ * - rand_norm()     : Normal(0,1)
+ * - rand_exp()      : Exponential(rate=1)
+ * - rand_gamma_COPD() : Gamma with COPD-specific dispersion (alpha=1/0.431)
+ * - rand_gamma_NCOPD(): Gamma with non-COPD dispersion (alpha=1/0.4093)
+ * - rand_Poisson(rate): Poisson distribution
+ * - rand_NegBin(rate, dispersion, use_COPD_gamma): Negative binomial
+ *
+ * Thread Safety: NOT thread-safe (global buffers and pointers)
+ */
 
-double *rnorm_buffer;
-long rnorm_buffer_pointer;
+// Random number buffers (internal use only - not exported to R)
+double *runif_buffer;           ///< Buffer for uniform random numbers
+long runif_buffer_pointer;      ///< Current position in uniform buffer
 
-double *rexp_buffer;
-long rexp_buffer_pointer;
+double *rnorm_buffer;           ///< Buffer for normal random numbers
+long rnorm_buffer_pointer;      ///< Current position in normal buffer
 
-double *rgamma_buffer_COPD;
-long rgamma_buffer_pointer_COPD;
+double *rexp_buffer;            ///< Buffer for exponential random numbers
+long rexp_buffer_pointer;       ///< Current position in exponential buffer
 
-double *rgamma_buffer_NCOPD;
-long rgamma_buffer_pointer_NCOPD;
+double *rgamma_buffer_COPD;     ///< Buffer for gamma (COPD dispersion) random numbers
+long rgamma_buffer_pointer_COPD;///< Current position in COPD gamma buffer
+
+double *rgamma_buffer_NCOPD;    ///< Buffer for gamma (non-COPD dispersion) random numbers
+long rgamma_buffer_pointer_NCOPD;///< Current position in non-COPD gamma buffer
 
 
 
@@ -620,56 +635,60 @@ double rand_gamma_NCOPD()
 
 
 
-int rand_NegBin_COPD(double rate, double dispersion)
+/**
+ * @brief Unified negative binomial random number generator
+ * @param rate Mean rate parameter
+ * @param dispersion Dispersion parameter (1 = Poisson, >1 = overdispersed)
+ * @param use_COPD_gamma If true, use COPD gamma buffer; otherwise use non-COPD gamma buffer
+ * @return Random integer from negative binomial distribution
+ *
+ * Generates negative binomial random numbers using the gamma-Poisson mixture approach.
+ * When dispersion=1, this reduces to a Poisson distribution.
+ *
+ * The gamma buffer selection determines which dispersion parameter is used:
+ * - COPD gamma: alpha = 1/0.431 (for COPD patients)
+ * - Non-COPD gamma: alpha = 1/0.4093 (for non-COPD patients)
+ */
+int rand_NegBin(double rate, double dispersion, bool use_COPD_gamma)
 {
   if (dispersion != 1)
   {
-    double size=1/dispersion;
-    double p=size/(size+rate);
-    double alpha=size;
-    double beta=(1-p)/p;
+    double size = 1/dispersion;
+    double p = size/(size+rate);
+    double beta = (1-p)/p;
 
-    // arma::vec lambda_arma = rand_gamma(1,alpha,beta);
-    // double lambda = lambda_arma(0);
-    double lambda = rand_gamma_COPD()*beta;
+    // Use gamma-Poisson mixture for negative binomial
+    double lambda = use_COPD_gamma ? rand_gamma_COPD()*beta : rand_gamma_NCOPD()*beta;
 
-    int x=rand_Poisson(lambda);
-    return(x);
+    return rand_Poisson(lambda);
   }
 
-  if (dispersion == 1)
-    {
-    int x=rand_Poisson(rate);
-    return(x);
-    }
-
-  return(0);
+  // When dispersion == 1, negative binomial reduces to Poisson
+  return rand_Poisson(rate);
 }
 
+/**
+ * @brief Negative binomial for COPD patients (convenience wrapper)
+ * @param rate Mean rate parameter
+ * @param dispersion Dispersion parameter
+ * @return Random integer from negative binomial distribution
+ * @deprecated Use rand_NegBin(rate, dispersion, true) instead
+ */
+int rand_NegBin_COPD(double rate, double dispersion)
+{
+  return rand_NegBin(rate, dispersion, true);
+}
+
+/**
+ * @brief Negative binomial for non-COPD patients (convenience wrapper)
+ * @param rate Mean rate parameter
+ * @param dispersion Dispersion parameter
+ * @return Random integer from negative binomial distribution
+ * @deprecated Use rand_NegBin(rate, dispersion, false) instead
+ */
 int rand_NegBin_NCOPD(double rate, double dispersion)
 {
-  if (dispersion != 1)
-  {
-    double size=1/dispersion;
-    double p=size/(size+rate);
-    double alpha=size;
-    double beta=(1-p)/p;
-
-    // arma::vec lambda_arma = rand_gamma(alpha,beta);
-    // double lambda = lambda_arma(0);
-    double lambda = rand_gamma_NCOPD()*beta;
-
-    int x=rand_Poisson(lambda);
-    return(x);
-  }
-
-  if (dispersion == 1)
-  {
-    int x=rand_Poisson(rate);
-    return(x);
-  }
-
-  return(0);
+  return rand_NegBin(rate, dispersion, false);
 }
 
 
@@ -2380,13 +2399,56 @@ double update_prevalent_diagnosis(agent *ag)
 
 
 
-////
+////////////////////////////////////////////////////////////////////////////////
+// AGENT CREATION
+////////////////////////////////////////////////////////////////////////////////
 
-
+/**
+ * @brief Creates and initializes a new agent (virtual patient) in the simulation
+ *
+ * @param ag Pointer to the agent structure to initialize
+ * @param id Unique identifier for the agent
+ * @return Pointer to the initialized agent
+ *
+ * This function is the core of agent creation in EPIC. It performs the following:
+ *
+ * 1. **Basic Initialization**
+ *    - Sets alive status, local time, and assigns unique ID
+ *    - Resets all state variables to initial values
+ *
+ * 2. **Demographic Assignment**
+ *    - Sex: Randomly assigned based on p_female parameter
+ *    - Age: Sampled from age distribution (different for prevalent vs incident)
+ *    - Height/Weight: Generated using correlated bivariate normal distribution
+ *
+ * 3. **Smoking Status**
+ *    - Determines smoking status (current/former/never)
+ *    - Assigns pack-years based on age and smoking history
+ *
+ * 4. **COPD Status (for prevalent agents)**
+ *    - Determines COPD presence based on risk factors
+ *    - If COPD present: assigns FEV1, GOLD stage, symptoms
+ *    - Handles case detection and diagnosis
+ *
+ * 5. **Health Outcomes**
+ *    - Initializes comorbidity status (MI, stroke, HF)
+ *    - Sets up symptom variables (cough, phlegm, dyspnea, wheeze)
+ *    - Initializes cost and QALY accumulators
+ *
+ * @note For prevalent agents (id < n_base_agents), age is sampled from
+ *       p_prevalence_age; for incident agents, from p_incidence_age.
+ *
+ * @note COPD is only assigned to prevalent agents. Incident agents may
+ *       develop COPD during simulation via the event_COPD event.
+ *
+ * @see event_COPD_tte() for incident COPD handling
+ * @see Cmodel() for how agents are created during simulation
+ */
 agent *create_agent(agent *ag,int id)
 {
-double _bvn[2]; //being used for joint estimation in multiple locations;
+double _bvn[2]; // Bivariate normal sample, reused for correlated variables
 
+// ========== STEP 1: Basic Initialization ==========
 (*ag).id=id;
 (*ag).alive=1;
 (*ag).local_time=0;
@@ -2438,10 +2500,13 @@ double _bvn[2]; //being used for joint estimation in multiple locations;
 // (*ag).gamma_NCOPD_count = 0;
 
 
+// ========== STEP 2: Age Assignment ==========
+// Prevalent agents (id < n_base_agents) use p_prevalence_age distribution
+// Incident agents use p_incidence_age distribution
 double r=rand_unif();
 double cum_p=0;
 
-if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases; the rest are incident ones;
+if(id<settings.n_base_agents)
   for(int i=input.global_parameters.age0;i<111;i++)
   {
     cum_p=cum_p+input.agent.p_prevalence_age[i];
@@ -2455,6 +2520,8 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
       if(r<cum_p) {(*ag).age_at_creation=i; break;}
     }
 
+// ========== STEP 3: Height and Weight Assignment ==========
+    // Uses bivariate normal for correlated height/weight
     rbvnorm(input.agent.height_weight_rho,_bvn);
   (*ag).height=_bvn[0]*input.agent.height_0_sd
     +input.agent.height_0_betas[0]
@@ -2472,7 +2539,7 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   +input.agent.weight_0_betas[5]*(*ag).height
   +input.agent.weight_0_betas[6]*calendar_time;
 
-  //smoking
+  // ========== STEP 4: Smoking Status Assignment ==========
   bool ever_smoker=false;
 
   double odds1=exp(input.smoking.logit_p_current_smoker_0_betas[0]
@@ -2529,7 +2596,7 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   (*ag).smoking_status_LPT=0;
 
 
-  //exacerbation;
+  // ========== STEP 5: Exacerbation Random Effects ==========
   rbvnorm(input.exacerbation.rate_severity_intercept_rho,_bvn);
   (*ag).ln_exac_rate_intercept=_bvn[0]*input.exacerbation.ln_rate_intercept_sd;
   (*ag).logit_exac_severity_intercept=_bvn[1]*input.exacerbation.logit_severity_intercept_sd;
@@ -2555,7 +2622,8 @@ if(id<settings.n_base_agents) //the first n_base_agent cases are prevalent cases
   (*ag).exac_history_n_severe_plus=0;
 
 
-  //COPD;
+  // ========== STEP 6: COPD Status (Prevalent Agents Only) ==========
+  // Calculate probability of COPD based on risk factors
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
                          +input.COPD.logit_p_COPD_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation
                          +input.COPD.logit_p_COPD_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation
@@ -3897,7 +3965,41 @@ agent *event_birthday_process(agent *ag)
 
 
 
-/////////////////////////////////////////////////////////////////////////MODEL///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// MEMORY MANAGEMENT
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Allocates memory resources required for simulation
+ *
+ * @return 0 on success, ERR_MEMORY_ALLOCATION_FAILED on failure
+ *
+ * This function allocates all dynamic memory needed by the simulation:
+ *
+ * ## Allocated Resources
+ *
+ * | Resource             | Size (configured via settings)      | Purpose                    |
+ * |---------------------|-------------------------------------|----------------------------|
+ * | runif_buffer        | runif_buffer_size * sizeof(double)  | Uniform random numbers     |
+ * | rnorm_buffer        | rnorm_buffer_size * sizeof(double)  | Normal random numbers      |
+ * | rexp_buffer         | rexp_buffer_size * sizeof(double)   | Exponential random numbers |
+ * | rgamma_buffer_COPD  | rgamma_buffer_size * sizeof(double) | COPD gamma random numbers  |
+ * | rgamma_buffer_NCOPD | rgamma_buffer_size * sizeof(double) | Non-COPD gamma randoms     |
+ * | agent_stack         | agent_stack_size * sizeof(agent)    | Agent storage              |
+ * | event_stack         | event_stack_size * sizeof(agent)    | Event recording storage    |
+ *
+ * ## Usage Notes
+ *
+ * - Must be called before running the simulation
+ * - Called automatically by init_session() in R
+ * - Call Cdeallocate_resources() when done to free memory
+ * - Can be called multiple times (will realloc if buffers exist)
+ *
+ * @warning Buffers start with pointers set to trigger immediate refill
+ *
+ * @see Cdeallocate_resources() for cleanup
+ * @see Cinit_session() which calls this function
+ */
 // [[Rcpp::export]]
 int Callocate_resources()
 {
@@ -3968,6 +4070,19 @@ List Cget_pointers()
 
 
 
+/**
+ * @brief Deallocates all simulation memory resources
+ *
+ * @return 0 on success
+ *
+ * Frees all memory allocated by Callocate_resources().
+ * Safe to call even if resources were not allocated (checks for NULL).
+ *
+ * @note Called automatically by terminate_session() in R
+ * @note Uses try-catch to handle any deallocation errors gracefully
+ *
+ * @see Callocate_resources() for allocation
+ */
 // [[Rcpp::export]]
 int Cdeallocate_resources()
 {
@@ -4040,8 +4155,26 @@ int Callocate_resources2()
   return(0);
 }
 
+/**
+ * @brief Initializes a new simulation session
+ *
+ * @return 0 on success
+ *
+ * Resets all simulation state to prepare for a new run. This function:
+ *
+ * 1. Resets event_stack_pointer to 0
+ * 2. Clears all output accumulators (reset_output, reset_output_ex)
+ * 3. Resets runtime statistics
+ * 4. Sets calendar_time to 0
+ * 5. Resets last_id (agent counter) to 0
+ *
+ * @note Does NOT allocate memory - call Callocate_resources() first
+ * @note Called by init_session() in R after memory allocation
+ *
+ * @see init_session() R wrapper that calls Cdeallocate/Callocate/Cinit_session
+ */
 // [[Rcpp::export]]
-int Cinit_session() //Does not deal with memory allocation only resets counters etc;
+int Cinit_session()
 {
   event_stack_pointer=0;
 
@@ -4057,6 +4190,80 @@ int Cinit_session() //Does not deal with memory allocation only resets counters 
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// MAIN SIMULATION ENGINE
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Main discrete event simulation engine for EPIC
+ *
+ * @param max_n_agents Maximum number of agents to simulate (can be used to limit runtime)
+ * @return 0 on success, negative error code on failure
+ *
+ * This is the core simulation loop that drives the EPIC model. It implements
+ * a discrete event simulation (DES) approach where:
+ *
+ * ## Algorithm Overview
+ *
+ * 1. **Agent Creation Loop** (outer loop)
+ *    - Creates new agents until time_horizon is reached or max_n_agents limit hit
+ *    - Each agent starts at calendar_time and advances through local_time
+ *
+ * 2. **Event Processing Loop** (inner loop per agent)
+ *    - Computes time-to-event (TTE) for all possible events
+ *    - Selects the event with minimum TTE (next event)
+ *    - Advances time and processes the winning event
+ *    - Continues until agent dies, reaches max age, or simulation ends
+ *
+ * ## Event Types Processed
+ *
+ * | Event Type           | Description                              |
+ * |---------------------|------------------------------------------|
+ * | event_fixed         | Annual outcomes update                    |
+ * | event_birthday      | Age increment, annual updates             |
+ * | event_smoking_change| Smoking status transition                 |
+ * | event_COPD          | COPD incidence                            |
+ * | event_exacerbation  | Acute exacerbation onset                  |
+ * | event_exacerbation_end | Exacerbation resolution                |
+ * | event_doctor_visit  | Healthcare visit (currently disabled)     |
+ * | event_bgd           | Background (non-COPD) death               |
+ * | event_end           | Simulation end for agent                  |
+ *
+ * ## Agent Creation Modes
+ *
+ * Controlled by settings.agent_creation_mode:
+ * - **agent_creation_mode_one**: Create one agent at a time (uses `smith`)
+ * - **agent_creation_mode_all**: Create and store all agents in agent_stack
+ * - **agent_creation_mode_pre**: Use pre-created agents from agent_stack
+ *
+ * ## Recording Modes
+ *
+ * Controlled by settings.record_mode:
+ * - **record_mode_none**: Only aggregate outputs collected
+ * - **record_mode_agent**: Agent-level outcomes recorded
+ * - **record_mode_event**: All events for all agents recorded
+ * - **record_mode_some_event**: Only specified event types recorded
+ *
+ * ## Time Management
+ *
+ * - `calendar_time`: Global simulation time (years from start)
+ * - `local_time`: Time since agent creation
+ * - Actual agent time = calendar_time + local_time
+ *
+ * @note This function is resumable - calendar_time persists between calls
+ * @note Memory must be allocated via init_session() before calling
+ *
+ * @see create_agent() for agent initialization
+ * @see push_event() for event recording
+ * @see event_*_process() functions for event handlers
+ *
+ * @example
+ * // Basic usage from R:
+ * // init_session()
+ * // run()  # which calls Cmodel internally
+ * // Cget_output()
+ * // terminate_session()
+ */
 // [[Rcpp::export]]
 int Cmodel(int max_n_agents)
 {
