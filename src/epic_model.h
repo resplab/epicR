@@ -516,6 +516,9 @@ void reset_runtime_stats();
 void reset_output();
 void reset_output_ex();
 
+// Output functions
+void update_output_ex(agent *ag);
+
 // Agent functions
 agent *create_agent(agent *ag, int id);
 List get_agent(agent *ag);
