@@ -563,6 +563,13 @@ void update_output_ex(agent *ag);
 agent *create_agent(agent *ag, int id);
 List get_agent(agent *ag);
 
+// Agent update/LPT functions (defined in model.cpp)
+void lung_function_LPT(agent *ag);
+void smoking_LPT(agent *ag);
+void exacerbation_LPT(agent *ag);
+void payoffs_LPT(agent *ag);
+void medication_LPT(agent *ag);
+
 // Event stack functions
 int push_event(agent *ag);
 

@@ -147,7 +147,7 @@ agent *event_end_process(agent *ag)
   int _high=ceil(_age);
   for(int i=_low;i<=_high;i++)
   {
-    double delta=min(i+1,_age)-max(i,(*ag).age_at_creation);
+    double delta=min((double)(i+1),_age)-max((double)i,(*ag).age_at_creation);
     if(delta>1e-10) {
       output_ex.sum_time_by_age_sex[i-1][(*ag).sex]+=delta;
     }
@@ -650,7 +650,7 @@ void event_exacerbation_process(agent *ag)
   {
     if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max(MED_CLASS_LAMA, (*ag).medication_status);
+        (*ag).medication_status= max((int)MED_CLASS_LAMA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -659,7 +659,7 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max(MED_CLASS_SABA, (*ag).medication_status);
+        (*ag).medication_status= max((int)MED_CLASS_SABA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -670,7 +670,7 @@ void event_exacerbation_process(agent *ag)
   {
         if (rand_unif() < input.medication.medication_adherence)
         {
-          (*ag).medication_status= max(MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
+          (*ag).medication_status= max((int)(MED_CLASS_LAMA | MED_CLASS_LABA), (*ag).medication_status);
           medication_LPT(ag);
         }
   }
