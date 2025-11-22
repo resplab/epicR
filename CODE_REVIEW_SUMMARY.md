@@ -173,11 +173,46 @@ Added comprehensive Doxygen-style documentation to:
 - Memory management: Section header with resource allocation table
 - Main simulation engine: Section header with algorithm overview
 
+## File Modularization Preparation
+
+### Comprehensive Header File: epic_model.h (506 lines)
+
+A comprehensive header file `epic_model.h` has been created to facilitate future modularization of model.cpp. This header contains:
+
+- All struct definitions (settings_struct, input_struct, agent, output_struct, output_ex_struct)
+- All enum definitions (errors, record_mode, agent_creation_mode, medication_classes, event_type)
+- Extern declarations for all global variables
+- Function declarations for all internal functions
+- Utility macros (AS_VECTOR_DOUBLE, READ_R_VECTOR, etc.)
+- Constants (OUTPUT_EX_*, MAX_AGE)
+
+**Why Not Split model.cpp Now:**
+
+After careful analysis, complete file splitting was deferred for the following reasons:
+
+1. **R's `[[Rcpp::export]]` system** - Many functions in model.cpp are exported to R and tightly integrated with the Rcpp framework. Splitting these requires careful handling of RcppExports.cpp regeneration.
+
+2. **Interdependent global state** - The model uses extensive global state (settings, input, output, agent_stack) that all functions access. While the header declares these as extern, the actual definitions must be in exactly one translation unit.
+
+3. **Preprocessor conditionals** - The `#ifdef OUTPUT_EX` conditionals span multiple functions, making clean splits difficult.
+
+4. **R helper functions** - Functions like `R_runif(int n, double* address)` are internal helpers that would need to be carefully placed.
+
+**Future Modularization Path:**
+
+When ready to split, maintainers can:
+1. Have model.cpp `#include "epic_model.h"`
+2. Create model_globals.cpp with global variable definitions
+3. Create model_random.cpp with RNG functions
+4. Create model_agent.cpp with agent management
+5. Create model_events.cpp with event handlers
+6. Update model.cpp to keep only Cmodel() and memory management
+
 ## Remaining Recommendations (Lower Priority)
 
 ### For Future Work
-1. **Split model.cpp into multiple files** - Now easier with model_types.h in place
-   - Suggested split: model_utils.cpp, model_random.cpp, model_agent.cpp, model_events.cpp
+1. **Complete file modularization** - Use epic_model.h as the starting point
+   - Suggested split: model_globals.cpp, model_random.cpp, model_agent.cpp, model_events.cpp
 
 2. **Standardize memory management** - Choose between malloc/free or new/delete consistently
 
@@ -219,8 +254,8 @@ Added comprehensive Doxygen-style documentation to:
 ## Files Modified
 
 ### C/C++ Code
-- `src/model.cpp` - Major cleanup, consolidation, and documentation (831 insertions, 216 deletions across 2 commits)
-- `src/model_types.h` - NEW FILE: Shared declarations and type definitions (189 lines)
+- `src/model.cpp` - Major cleanup, consolidation, and documentation
+- `src/epic_model.h` - NEW FILE: Comprehensive header for future modularization (506 lines)
 
 ### Vignettes
 - `vignettes/UsingEPICinR.Rmd` - Fixed typos and added Mac installation instructions
@@ -233,9 +268,9 @@ Added comprehensive Doxygen-style documentation to:
 | File | Lines Changed | Net Change |
 |------|---------------|------------|
 | model.cpp | +831, -216 | +615 lines |
-| model_types.h | +189 | New file |
+| epic_model.h | +506 | New file |
 | UsingEPICinR.Rmd | +21, -1 | +20 lines |
-| **Total** | **+1041, -217** | **+824 lines** |
+| **Total** | **~1358, -217** | **~1100 lines** |
 
 ## Backward Compatibility
 
@@ -253,7 +288,7 @@ This comprehensive code review successfully implemented ALL high-priority and me
 ### Completed (High Priority)
 1. ✅ Replaced GCC-specific min/max macros with portable std::min/std::max
 2. ✅ Consolidated duplicate random number generation code
-3. ✅ Created header file for shared declarations (model_types.h)
+3. ✅ Created comprehensive header file for future modularization (epic_model.h)
 
 ### Completed (Medium Priority)
 4. ✅ Documented all major functions with comprehensive Doxygen comments
