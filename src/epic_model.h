@@ -4,9 +4,6 @@
  *
  * This header contains all shared declarations, struct definitions,
  * and extern declarations needed across the modular EPIC implementation.
- *
- * @author EPIC Development Team
- * @see model.cpp, model_random.cpp, model_agent.cpp, model_events.cpp
  */
 
 #ifndef EPIC_MODEL_H
@@ -24,7 +21,7 @@ using std::min;
 using std::max;
 
 ////////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
+// CONSTANTS AND OUTPUT FLAGS
 ////////////////////////////////////////////////////////////////////////////////
 
 #define OUTPUT_EX_BIOMETRICS 1
@@ -40,6 +37,7 @@ using std::max;
 #define OUTPUT_EX 65535
 
 #define MAX_AGE 111
+#define N_MED_CLASS 5
 
 ////////////////////////////////////////////////////////////////////////////////
 // ENUMERATIONS
@@ -71,26 +69,7 @@ enum medication_classes {
   MED_CLASS_LABA = 2,
   MED_CLASS_LAMA = 4,
   MED_CLASS_ICS = 8,
-  MED_CLASS_MACRO = 16,
-  N_MED_CLASS = 5
-};
-
-enum event_type {
-  event_start = 0,
-  event_fixed = 1,
-  event_birthday = 2,
-  event_smoking_change = 3,
-  event_COPD = 4,
-  event_exacerbation = 5,
-  event_exacerbation_end = 6,
-  event_exacerbation_death = 7,
-  event_doctor_visit = 8,
-  event_medication_change = 9,
-  event_mi = 10,
-  event_stroke = 11,
-  event_hf = 12,
-  event_bgd = 13,
-  event_end = 14
+  MED_CLASS_MACRO = 16
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,10 +78,10 @@ enum event_type {
 
 #define AS_VECTOR_DOUBLE(src) std::vector<double>(&src[0],&src[0]+sizeof(src)/sizeof(double))
 #define AS_VECTOR_DOUBLE_SIZE(src,size) std::vector<double>(&src[0],&src[0]+size)
-#define AS_MATRIX_DOUBLE(src)  array_to_Rmatrix(std::vector<double>(&src[0][0],&src[0][0]+sizeof(src)/sizeof(double)),sizeof(src[0])/sizeof(double))
-#define AS_MATRIX_DOUBLE_SIZE(src,size)  array_to_Rmatrix(std::vector<double>(&src[0][0],&src[0][0]+size*sizeof(src[0])/sizeof(double)),sizeof(src[0])/sizeof(double))
-#define AS_MATRIX_INT(src)  array_to_Rmatrix(std::vector<int>(&src[0][0],&src[0][0]+sizeof(src)/sizeof(int)),sizeof(src[0])/sizeof(int))
-#define AS_MATRIX_INT_SIZE(src,size)  array_to_Rmatrix(std::vector<int>(&src[0][0],&src[0][0]+size*sizeof(src[0])/sizeof(int)),sizeof(src[0])/sizeof(int))
+#define AS_MATRIX_DOUBLE(src) array_to_Rmatrix(std::vector<double>(&src[0][0],&src[0][0]+sizeof(src)/sizeof(double)),sizeof(src[0])/sizeof(double))
+#define AS_MATRIX_DOUBLE_SIZE(src,size) array_to_Rmatrix(std::vector<double>(&src[0][0],&src[0][0]+size*sizeof(src[0])/sizeof(double)),sizeof(src[0])/sizeof(double))
+#define AS_MATRIX_INT(src) array_to_Rmatrix(std::vector<int>(&src[0][0],&src[0][0]+sizeof(src)/sizeof(int)),sizeof(src[0])/sizeof(int))
+#define AS_MATRIX_INT_SIZE(src,size) array_to_Rmatrix(std::vector<int>(&src[0][0],&src[0][0]+size*sizeof(src[0])/sizeof(int)),sizeof(src[0])/sizeof(int))
 #define AS_VECTOR_INT(src) std::vector<int>(&src[0],&src[0]+sizeof(src)/sizeof(int))
 #define AS_VECTOR_INT_SIZE(src,size) std::vector<int>(&src[0],&src[0]+size)
 
@@ -113,10 +92,6 @@ enum event_type {
 // STRUCT DEFINITIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @struct settings
- * @brief Model configuration settings
- */
 struct settings {
   int record_mode;
   int events_to_record[100];
@@ -133,10 +108,6 @@ struct settings {
   int event_stack_size;
 };
 
-/**
- * @struct runtime_stats
- * @brief Runtime statistics for debugging and profiling
- */
 struct runtime_stats {
   int agent_size;
   int n_runif_fills;
@@ -146,10 +117,6 @@ struct runtime_stats {
   int n_rgamma_fills_NCOPD;
 };
 
-/**
- * @struct input
- * @brief All model input parameters
- */
 struct input {
   struct {
     int time_horizon;
@@ -265,167 +232,249 @@ struct input {
     double logit_p_hf_betas_by_sex[8][2];
     double ln_h_mi_betas_by_sex[8][2];
     double ln_h_stroke_betas_by_sex[8][2];
-    double ln_h_hf_betas_by_sex[8][2];
+    double ln_h_hf_betas_by_sex[12][2];
     double p_mi_death;
     double p_stroke_death;
+    double p_hf_death;
   } comorbidity;
 
   struct {
     double ln_h_start_betas_by_sex[8][2];
     double medication_ln_hr_exac[5];
   } medication;
+
+  struct {
+  } project_specific;
 };
 
-/**
- * @struct agent
- * @brief Individual patient (agent) data structure
- */
 struct agent {
-  int id;
+  long id;
   double local_time;
   bool alive;
   bool sex;
-  double dob;
+
   double age_at_creation;
+  double age_baseline;
+
   double time_at_creation;
+  double followup_time;
+
   double height;
   double weight;
-  int event;
-  double tte;
+  double weight_LPT;
+  double weight_baseline;
+
+  int smoking_status;
+  double pack_years;
+  double smoking_status_LPT;
 
   double fev1;
   double fev1_baseline;
   double fev1_slope;
   double fev1_slope_t;
-  double age_baseline;
-  double weight_baseline;
-  double followup_time;
-  double local_time_at_COPD;
   double fev1_tail;
-  double _pred_fev1;
 
-  int smoking_status;
-  int smoking_status_LPT;
-  double pack_years;
-
-  int n_mi;
-  int n_stroke;
-  int b_mi;
-  int b_stroke;
-  int hf_status;
-  double time_since_last_mi;
-  double time_since_last_stroke;
-  double time_since_hf;
-
+  double lung_function_LPT;
   int gold;
-  double p_COPD;
+  int local_time_at_COPD;
+  double _pred_fev1;
 
   double ln_exac_rate_intercept;
   double logit_exac_severity_intercept;
+
   int cumul_exac[4];
   double cumul_exac_time[4];
+  double exac_LPT;
   int exac_status;
-  int exac_LPT;
-  double exac_history_time_first;
-  double exac_history_time_second;
-  int exac_history_severity_first;
-  int exac_history_severity_second;
-  int exac_history_n_moderate;
-  int exac_history_n_severe_plus;
-
   double tmp_exac_rate;
 
+  double exac_history_time_first, exac_history_time_second;
+  int exac_history_severity_first, exac_history_severity_second;
+
+  int exac_history_n_moderate, exac_history_n_severe_plus;
+
   double symptom_score;
+
   double last_doctor_visit_time;
   int last_doctor_visit_type;
+
   int medication_status;
-
-  int cough;
-  int phlegm;
-  int wheeze;
-  int dyspnea;
-
-  double re_cough;
-  double re_phlegm;
-  double re_wheeze;
-  double re_dyspnea;
-
-  double gpvisits;
-  int diagnosis;
-  double time_at_diagnosis;
-  int smoking_at_diagnosis;
-  int smoking_cessation;
-  int smoking_cessation_count;
-  int case_detection;
-  int case_detection_eligible;
-  double last_case_detection;
+  double medication_LPT;
 
   double cumul_cost;
   double cumul_cost_prev_yr;
   double cumul_qaly;
+
+  double payoffs_LPT;
+
+  int n_mi;
+  double time_since_last_mi;
+  int n_stroke;
+  double time_since_last_stroke;
+  double hf_status;
+  double time_since_hf;
+
+  double tte;
+  int event;
+
+  double p_COPD;
+
+  bool cough;
+  bool phlegm;
+  bool dyspnea;
+  bool wheeze;
+
+  int gpvisits;
+  int diagnosis;
+  double time_at_diagnosis;
+  int smoking_at_diagnosis;
+  bool smoking_cessation;
+  int smoking_cessation_count;
+  double p_hosp_diagnosis;
+  double p_correct_overdiagnosis;
+  int case_detection;
+  int case_detection_eligible;
+  int last_case_detection;
+  double p_case_detection[20];
+  double case_detection_start_end_yrs[2];
+  int years_btw_case_detection;
+  double min_cd_age;
+  double min_cd_pack_years;
+  int min_cd_symptoms;
+
+  double re_cough;
+  double re_phlegm;
+  double re_dyspnea;
+  double re_wheeze;
 };
 
-/**
- * @struct output
- * @brief Basic simulation output
- */
 struct output {
-  double n_agents;
+  int n_agents;
   double cumul_time;
-  double n_deaths;
-  double n_COPD_deaths;
-  double n_exacs[4];
-  double cumul_cost;
-  double cumul_qaly;
+  int n_deaths;
+  int n_COPD;
+  double total_pack_years;
+  int total_exac[4];
+  double total_exac_time[4];
+  int total_doctor_visit[2];
+  double total_cost;
+  double total_qaly;
+  double total_diagnosed_time;
 };
 
-/**
- * @struct output_ex
- * @brief Extended simulation output with yearly breakdowns
- */
+#ifdef OUTPUT_EX
 struct output_ex {
-  int n_current_agents;
-  int output_ex_type;
-  double biometrics_by_age_sex[MAX_AGE][2][5];
-  double smoking_by_age_sex[MAX_AGE][2][4];
-  double comorbidity_by_age_sex[MAX_AGE][2][8];
-  double lung_function_by_age_sex[MAX_AGE][2][4];
-  double COPD_by_age_sex[MAX_AGE][2][8];
-  double exacerbation_by_age_sex[MAX_AGE][2][5];
-  double exacerbation_by_gold_class[5][4];
-  double annual_exac_rate_by_gold_class[5];
-  double GP_by_age_sex[MAX_AGE][2][3];
-  double mortality_by_age_sex[MAX_AGE][2][3];
-  double medication_by_age_sex[MAX_AGE][2][2];
-  double medication_by_comb[32];
-  double population_by_age_sex[MAX_AGE][2][5];
+  int n_alive_by_ctime_sex[1000][2];
+  int n_smoking_status_by_ctime[1000][3];
+  int n_alive_by_ctime_age[1000][111];
+  int n_current_smoker_by_ctime_sex[1000][2];
+  double annual_cost_ctime[1000];
+  double sum_fev1_ltime[1000];
+  double cumul_time_by_smoking_status[3];
+  double sum_time_by_ctime_sex[100][2];
+  double sum_time_by_age_sex[111][2];
+
+#if OUTPUT_EX > 1
+  double cumul_non_COPD_time;
+  double sum_p_COPD_by_ctime_sex[1000][2];
+  double sum_pack_years_by_ctime_sex[1000][2];
+  double sum_age_by_ctime_sex[1000][2];
+  int n_death_by_age_sex[111][2];
+  int n_alive_by_age_sex[111][2];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_COPD) > 0
+  int n_COPD_by_ctime_sex[1000][2];
+  int n_COPD_by_ctime_age[100][111];
+  int n_inc_COPD_by_ctime_age[100][111];
+  int n_COPD_by_ctime_severity[100][5];
+  int n_COPD_by_age_sex[111][2];
+  int n_Diagnosed_by_ctime_sex[1000][2];
+  int n_Overdiagnosed_by_ctime_sex[1000][2];
+  int n_Diagnosed_by_ctime_severity[1000][5];
+  int n_case_detection_by_ctime[1000][3];
+  int n_case_detection_eligible;
+  int n_diagnosed_true_CD;
+  int n_agents_CD;
+  double cumul_time_by_ctime_GOLD[100][5];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_EXACERBATION) > 0
+  int n_exac_by_ctime_age[100][111];
+  int n_severep_exac_by_ctime_age[100][111];
+  int n_exac_death_by_ctime_age[100][111];
+  int n_exac_death_by_ctime_severity[100][4];
+  int n_exac_death_by_age_sex[111][2];
+  int n_exac_by_ctime_severity[100][4];
+  int n_exac_by_gold_severity[4][4];
+  int n_exac_by_gold_severity_diagnosed[4][4];
+  int n_exac_by_ctime_severity_female[100][4];
+  int n_exac_by_ctime_GOLD[100][4];
+  int n_exac_by_ctime_severity_undiagnosed[100][4];
+  int n_exac_by_ctime_severity_diagnosed[100][4];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS) > 0
+  int n_GPvisits_by_ctime_sex[1000][2];
+  int n_GPvisits_by_ctime_severity[1000][5];
+  int n_GPvisits_by_ctime_diagnosis[1000][2];
+  int n_cough_by_ctime_severity[1000][5];
+  int n_phlegm_by_ctime_severity[1000][5];
+  int n_wheeze_by_ctime_severity[1000][5];
+  int n_dyspnea_by_ctime_severity[1000][5];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
+  int n_mi;
+  int n_incident_mi;
+  int n_mi_by_age_sex[111][2];
+  int n_mi_by_ctime_sex[1000][2];
+  double sum_p_mi_by_ctime_sex[1000][2];
+  int n_stroke;
+  int n_incident_stroke;
+  int n_stroke_by_age_sex[111][2];
+  int n_stroke_by_ctime_sex[1000][2];
+  int n_hf;
+  int n_incident_hf;
+  int n_hf_by_age_sex[111][2];
+  int n_hf_by_ctime_sex[1000][2];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS) > 0
+  double sum_weight_by_ctime_sex[1000][2];
+#endif
+
+#if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+  double medication_time_by_class[N_MED_CLASS];
+  double medication_time_by_ctime_class[1000][N_MED_CLASS];
+  double n_exac_by_medication_class[N_MED_CLASS][3];
+  int n_smoking_cessation_by_ctime[1000];
+#endif
 };
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXTERN GLOBAL VARIABLES
 ////////////////////////////////////////////////////////////////////////////////
 
-// Time and agent tracking
 extern double calendar_time;
 extern int last_id;
 
-// Settings and input
 extern struct settings settings;
 extern struct runtime_stats runtime_stats;
 extern struct input input;
-
-// Output
 extern struct output output;
-extern struct output_ex output_ex;
 
-// Agent storage
+#ifdef OUTPUT_EX
+extern struct output_ex output_ex;
+#endif
+
 extern agent *agent_stack;
 extern long agent_stack_pointer;
 extern agent *event_stack;
 extern long event_stack_pointer;
 extern agent smith;
 
-// Random number buffers
 extern double *runif_buffer;
 extern long runif_buffer_pointer;
 extern double *rnorm_buffer;
@@ -462,44 +511,13 @@ int rexp_fill();
 int rgamma_fill_COPD();
 int rgamma_fill_NCOPD();
 
-// Settings functions
+// Reset functions
 void reset_runtime_stats();
-
-// Output functions
 void reset_output();
 void reset_output_ex();
-int push_event(agent *ag);
 
 // Agent functions
 agent *create_agent(agent *ag, int id);
 List get_agent(agent *ag);
-List get_agent(int id, agent agent_pointer[]);
-
-// Event TTE functions (time-to-event)
-double event_fixed_tte(agent *ag);
-double event_birthday_tte(agent *ag);
-double event_smoking_change_tte(agent *ag);
-double event_COPD_tte(agent *ag);
-double event_exacerbation_tte(agent *ag);
-double event_exacerbation_end_tte(agent *ag);
-double event_doctor_visit_tte(agent *ag);
-double event_bgd_tte(agent *ag);
-
-// Event process functions
-void event_start_process(agent *ag);
-void event_fixed_process(agent *ag);
-void event_birthday_process(agent *ag);
-void event_smoking_change_process(agent *ag);
-void event_COPD_process(agent *ag);
-void event_exacerbation_process(agent *ag);
-void event_exacerbation_end_process(agent *ag);
-void event_exacerbation_death_process(agent *ag);
-
-// Helper functions used by events
-void update_continuous_outcomes(agent *ag);
-void update_symptoms(agent *ag);
-void update_GPvisits(agent *ag);
-void update_prevalent_diagnosis(agent *ag);
-void update_diagnosis(agent *ag);
 
 #endif // EPIC_MODEL_H
