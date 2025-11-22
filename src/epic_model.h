@@ -72,6 +72,24 @@ enum medication_classes {
   MED_CLASS_MACRO = 16
 };
 
+enum events {
+  event_start = 0,
+  event_fixed = 1,
+  event_birthday = 2,
+  event_smoking_change = 3,
+  event_COPD = 4,
+  event_exacerbation = 5,
+  event_exacerbation_end = 6,
+  event_exacerbation_death = 7,
+  event_doctor_visit = 8,
+  event_medication_change = 9,
+  event_mi = 10,
+  event_stroke = 11,
+  event_hf = 12,
+  event_bgd = 13,
+  event_end = 14
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // UTILITY MACROS
 ////////////////////////////////////////////////////////////////////////////////
@@ -522,5 +540,24 @@ void update_output_ex(agent *ag);
 // Agent functions
 agent *create_agent(agent *ag, int id);
 List get_agent(agent *ag);
+
+// Event stack functions
+int push_event(agent *ag);
+
+// Event handler functions
+agent *event_start_process(agent *ag);
+agent *event_end_process(agent *ag);
+agent *event_fixed_process(agent *ag);
+agent *event_birthday_process(agent *ag);
+void event_smoking_change_process(agent *ag);
+void event_COPD_process(agent *ag);
+void event_exacerbation_process(agent *ag);
+void event_exacerbation_end_process(agent *ag);
+void event_exacerbation_death_process(agent *ag);
+void event_mi_process(agent *ag);
+void event_stroke_process(agent *ag);
+void event_hf_process(agent *ag);
+void event_bgd_process(agent *ag);
+void event_doctor_visit_process(agent *ag);
 
 #endif // EPIC_MODEL_H
