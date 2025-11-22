@@ -14,110 +14,314 @@ knitr::opts_chunk$set(
   eval = FALSE  # Set to FALSE to prevent long simulations during package check
 )
 ```
-This document is a guide to basics of running a simulation with the Evaluation Platform in COPD (EPIC) using epicR. 
 
-EPIC is a discrete-event simulation model for COPD, and models the entire pathway of care, from disease incidence, to diagnosis, treatment, and outcomes. 
+## Introduction
 
-EPIC simulates random Canadians, known in the model as agents. Agents have demographic and biological/medical characteristics, including symptoms. 
+This guide will help you get started with the Evaluation Platform in COPD (EPIC) using the epicR package. By the end of this vignette, you will be able to:
 
-The operations of the model is controlled with inputs and settings. The function `get_input()` returns the default set of inputs, while `get_default_settings()` does the same for settings. 
+- Run a basic COPD simulation
+- Understand and interpret the model outputs
+- Customize inputs and settings for your analysis
+- Choose between Canadian and US populations
 
-When running the model, the user has the option of changing inputs and settings.
+## What is EPIC?
 
-Let's go over an example. 
+EPIC is a discrete-event simulation (DES) model for Chronic Obstructive Pulmonary Disease (COPD). It models the entire pathway of care including:
 
-First, we need to load the model: 
+- Disease incidence and progression
+- Diagnosis and case detection
+- Exacerbations (mild, moderate, severe)
+- Treatment and medication
+- Healthcare resource utilization
+- Mortality
+
+The model simulates individual patients (called "agents") with demographic and clinical characteristics. Each agent progresses through time, experiencing events like birthdays, disease onset, exacerbations, and treatment changes.
+
+## Installation
+
+If you haven't already installed epicR:
+
+```{r installation, eval=FALSE}
+# Install from GitHub
+remotes::install_github('resplab/epicR')
+```
+
+## Quick Start: Your First Simulation
+
+Let's run a basic simulation with default parameters:
+
 ```{r setup}
 library(epicR)
 ```
 
-EPIC is a session-based model, which means at beginning and end of our run, we need to open and terminate a session. When a session is initialized, required memory resources are allocated to the model. 
+### Step 1: Initialize a Session
 
-Let's initialize a session and run the model with default parameters: 
+EPIC is session-based, meaning you must initialize a session before running simulations. This allocates the required memory:
 
 ```{r initialize}
+# Initialize with default settings
 init_session()
+```
+
+The function returns `0` if successful.
+
+### Step 2: Run the Model
+
+```{r run}
+# Run with default inputs
 run()
 ```
 
-Both the `init_session` and the `run` functions are supposed to return 0 if they encounter no error. 
+### Step 3: Get Results
 
-Once we ran the model, we probably want to see the results of that run. The most basic set of results can be retrieved with `Cget_output()`:
-```{r basicOutput}
+Retrieve the simulation results:
+
+```{r output}
 results <- Cget_output()
-
+print(results)
 ```
 
-These are high-level outcomes of the simulation. We can get more detailed results with the `Cget_output_ex()` function, which includes many tables that give results over time horizon of the model. Note that we should always have to terminate a session after we are done with it. 
-```{r}
-results_ex<-Cget_output_ex() 
-names(results_ex)
+The basic output includes:
+
+| Output | Description |
+|--------|-------------|
+| `n_agents` | Total number of agents simulated |
+| `cumul_time` | Total person-years of follow-up |
+| `n_deaths` | Number of deaths |
+| `n_COPD` | Number of agents who developed COPD |
+| `n_exac_*` | Exacerbation counts by severity |
+| `total_cost` | Total healthcare costs |
+| `total_qaly` | Total quality-adjusted life years |
+
+### Step 4: Terminate the Session
+
+Always terminate the session when done to free memory:
+
+```{r terminate}
 terminate_session()
 ```
 
-Here, we managed to run the model with its default inputs and settings. But what were those inputs? We can explore them using `get_input()`:
+## Choosing a Jurisdiction: Canada vs US
 
-```{r}
-inputs <- get_input()
-names(inputs)
-names(inputs$values)
-names(inputs$values$global_parameters)
-inputs$values$global_parameters$time_horizon
+EPIC supports both Canadian and US populations with jurisdiction-specific parameters:
 
+```{r jurisdiction}
+# For Canadian population (default)
+input_canada <- get_input(jurisdiction = "ca")
+
+# For US population
+input_us <- get_input(jurisdiction = "us")
 ```
 
-As you can see the example above, input is a list, with values, help, and references. To change any input, we need to change its value. Help and references are there to tell us what each input parameter is, and where did it come from. By changing inputs, we can change parameters such as time horizon, proportion of female patients, costs and utilities, as well as many regression equations that are used in the model.
+The jurisdictions differ in:
+- Population demographics
+- Smoking prevalence and trends
+- Healthcare costs
+- Disease incidence rates
 
-Similarly, we can retrieve default settings and change them if necessary. The most useful setting is record_mode, which specifies whether the model should record outputs as aggregates or at the individual patient level. If we set record_mode to 2, we can collect individual patient level data from the model. 
+## Customizing Your Simulation
 
-In the example below, we call the model with modified inputs and settings:
+### Understanding Inputs
 
-```{r}
+Inputs control the model's parameters. Explore them:
+
+```{r explore_inputs}
+inputs <- get_input()
+
+# Top-level structure
+names(inputs)
+# [1] "values" "help" "references"
+
+# Value categories
+names(inputs$values)
+
+# Example: global parameters
+names(inputs$values$global_parameters)
+inputs$values$global_parameters$time_horizon  # Simulation duration in years
+```
+
+### Common Input Modifications
+
+```{r modify_inputs}
+input <- get_input()
+
+# Change time horizon (years)
+input$values$global_parameters$time_horizon <- 20
+
+# Modify COPD-related costs
+input$values$cost$exac_dcost  # Exacerbation costs by severity
+
+# Run with modified inputs
+init_session()
+run(input = input$values)
+results <- Cget_output()
+terminate_session()
+```
+
+### Understanding Settings
+
+Settings control how the model runs (not what it simulates):
+
+```{r settings}
+settings <- get_default_settings()
+names(settings)
+```
+
+Key settings:
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `n_base_agents` | Number of agents to simulate | 60,000 |
+| `record_mode` | Level of output detail (0=aggregate, 2=individual) | 0 |
+
+### Choosing the Number of Agents
+
+More agents = more precision but longer runtime and more memory:
+
+```{r n_agents}
+settings <- get_default_settings()
+
+# Quick test run
+settings$n_base_agents <- 1e4  # 10,000 agents
+
+# Production run
+settings$n_base_agents <- 1e6  # 1,000,000 agents
+
+# Check memory requirements before running large simulations
+estimate_memory_required(n_agents = 1e6, record_mode = 0, time_horizon = 20)
+```
+
+## Getting Detailed Results
+
+### Extended Output
+
+For more detailed results by year and demographics:
+
+```{r extended_output}
+init_session()
+run()
+
+# Detailed output tables
+results_ex <- Cget_output_ex()
+names(results_ex)
+
+terminate_session()
+```
+
+### Individual Patient Data
+
+To collect event-level data for each agent, use `record_mode = 2`:
+
+```{r individual_data}
 settings <- get_default_settings()
 settings$record_mode <- 2
-settings$n_base_agents <- 1e4
+settings$n_base_agents <- 1e4  # Keep small due to memory requirements
+
 init_session(settings = settings)
 
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
-run(input=input$values)
+run(input = input$values)
 
-results <- Cget_output()
+# Get all events as a data frame
 events <- as.data.frame(Cget_all_events_matrix())
 head(events)
+
 terminate_session()
 ```
 
-Note that you might need a large amount of memory available, if you want to collect event history for a large number of patients. 
+**Warning:** Recording individual events requires substantial memory. Start with a small number of agents.
 
-In the events data frame, each type of event has a code corresponding to the table below:
+### Event Types
 
-|Event|No.|
-|-----|---|
-|start |0 |
-|annual|1 |
-|birthday| 2 |
-|smoking change | 3|
-|COPD incidence | 4|
-|Exacerbation | 5 |
-|Exacerbation end| 6|
-|Death by Exacerbation | 7|
-|Doctor visit | 8|
-|Medication change | 9|
-|Background death | 13|
-|End | 14|
+Each event in the individual data has a numeric code:
 
+| Event | Code |
+|-------|------|
+| Start | 0 |
+| Annual | 1 |
+| Birthday | 2 |
+| Smoking change | 3 |
+| COPD incidence | 4 |
+| Exacerbation | 5 |
+| Exacerbation end | 6 |
+| Death by exacerbation | 7 |
+| Doctor visit | 8 |
+| Medication change | 9 |
+| Background death | 13 |
+| End | 14 |
 
-By default, EPIC is an open population model that captures population trends such as growth, immigration, and emigration. We can change inputs to run a closed-cohort analysis, if need be: 
-```{r}
-library(epicR)
-input <- get_input(closed_cohort = 1)$values
+## Open vs Closed Cohort
+
+By default, EPIC is an **open population** model that captures population dynamics (births, deaths, immigration, emigration). For a **closed cohort** analysis (fixed initial population, no new entries):
+
+```{r closed_cohort}
+# Get inputs configured for closed cohort
+input <- get_input(closed_cohort = 1)
+
 init_session()
-run(input=input)
-Cget_output()
+run(input = input$values)
+results <- Cget_output()
 terminate_session()
 ```
 
-These are the basics of running a simulation in EPIC. There are many other useful functions in the package, including validation functions that allow the user to check model validation.
+## Comparing Scenarios
 
+A common use case is comparing interventions. Here's a template:
 
+```{r scenarios}
+# Baseline scenario
+init_session()
+input_baseline <- get_input()
+run(input = input_baseline$values)
+results_baseline <- Cget_output()
+terminate_session()
+
+# Intervention scenario (e.g., improved case detection)
+init_session()
+input_intervention <- get_input()
+# Modify relevant parameters for your intervention
+# input_intervention$values$diagnosis$... <- new_value
+run(input = input_intervention$values)
+results_intervention <- Cget_output()
+terminate_session()
+
+# Compare outcomes
+# cost_difference <- results_intervention$total_cost - results_baseline$total_cost
+# qaly_difference <- results_intervention$total_qaly - results_baseline$total_qaly
+# icer <- cost_difference / qaly_difference
+```
+
+## Troubleshooting
+
+### Memory Errors
+
+If you get memory allocation errors:
+1. Reduce `n_base_agents`
+2. Use `record_mode = 0` (aggregate only)
+3. Check available memory with `estimate_memory_required()`
+
+### Session Not Terminated
+
+Always wrap simulations in error handling:
+
+```{r error_handling}
+tryCatch({
+  init_session()
+  run()
+  results <- Cget_output()
+}, finally = {
+  terminate_session()
+})
+```
+
+## Next Steps
+
+- **Model Background**: See `vignette("BackgroundEPIC")` for model structure details
+- **Calibration**: See `vignette("Calibrate_COPD_Prevalence")` for calibration methods
+- **Validation**: Explore the `validate_*()` functions for model validation
+- **US Model**: See `vignette("Calibrate_Smoking")` for US-specific calibration
+
+## References
+
+Sadatsafavi M, et al. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. doi:10.1177/0272989X18824098

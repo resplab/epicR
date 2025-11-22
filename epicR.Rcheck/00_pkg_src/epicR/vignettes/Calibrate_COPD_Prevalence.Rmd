@@ -1,0 +1,293 @@
+---
+title: "Calibrate COPD Prevalence"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Calibrate COPD Prevalence}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### Overview
+
+This document outlines the calibration process undertaken to align the model’s outputs with U.S.-based validation targets for COPD prevalence, using NHANES data in which COPD was defined according to the Lower Limit of Normal (LLN) definition. The calibration was conducted over a 25-year simulation time horizon.
+
+**Validation Reference:**  
+Tilert et al. 2013 (DOI: 10.1186/1465-9921-14-103)
+
+**Validation Target (Age-Specific Prevalence):**  
+- **40–59 years:** 8.1%  
+- **60–79 years:** 14.4%  
+
+**Validation Target (Sex-Specific Prevalence):**  
+- **Males:** 12.0%  
+- **Females:** 8.6%
+
+It is important to note that the EPIC model simulates individuals aged 40 and older, including those ≥80 years, whereas Tilert et al. 2013 included only individuals aged 40–79. 
+
+Given this limitation, the calibration emphasized preserving the sex-specific prevalence ratio observed in Tilert et al. 2013 (1.4:1; 12.0% males vs. 8.6% females) as the validation target. The model was deemed adequately calibrated if this ratio was maintained, even if absolute prevalence values by sex differed slightly due to inclusion of older age groups.
+
+**Evolution of LLN Reference Equations and Impact on COPD Prevalence Estimation**
+
+Reference equations used to define the LLN for spirometry to diagnose COPD have evolved over time, moving from race-specific models toward more inclusive, race-neutral approaches. Tilert et al. 2013 defined COPD using LLN values derived from the Hankinson equation, a race-specific model widely used in earlier guidelines. In contrast, current guidelines recommend using the Global Lung Function Initiative (GLI) race-neutral reference equations. A recent analysis by Cadham et al. 2024 (DOI: 10.1186/s12931-024-02841-y) compared COPD prevalence estimates based on the Hankinson and GLI race-neutral equations and found no significant differences between the two approaches.
+
+### Step 1: Load libraries and setup
+
+Here, we load the necessary libraries. We also set the default simulation settings and specify the time horizon for the simulation (25 years).
+
+```{r, eval = TRUE, echo = TRUE, message=FALSE}
+library(epicR)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+
+# Load EPIC general settings
+settings <- get_default_settings()
+settings$record_mode <- 0
+settings$n_base_agents <- 1e6
+init_session(settings = settings)
+
+input <- get_input(jurisdiction = "us")
+time_horizon <- 26
+input$values$global_parameters$time_horizon <- time_horizon
+
+```
+
+### Step 2: Modify intercept value to calibrate proportion of COPD prevalence by age group and sex  
+
+The sex-specific intercepts were adjusted to match the age-specific prevalence targets (age groups: 40–59 and 60–79 years) while maintaining a 1.4:1 male-to-female ratio.
+
+```{r, eval = TRUE, echo = TRUE}
+input$values$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.30190, age = 0.033070, age2 = 0, pack_years = 0.025049   ,
+                                                       current_smoking = 0, year = 0, asthma = 0),
+                                              female = c(intercept = -4.40202, age = 0.027359   , age2 = 0, pack_years=0.030399,                                                         current_smoking = 0, year = 0, asthma = 0))
+```
+
+### Step 3: Run EPIC
+
+```{r, eval = TRUE, echo = TRUE}
+
+# Run EPIC simulation
+run(input = input$values)
+output <- Cget_output_ex()
+terminate_session()
+
+```
+
+### Step 4: Create data tables by age category
+
+```{r, eval = TRUE, echo = TRUE}
+
+# Determine overall COPD prevalence
+
+COPDprevalence_ctime_age<-output$n_COPD_by_ctime_age
+COPDprevalence_ctime_age<-as.data.frame(output$n_COPD_by_ctime_age)
+totalpopulation<-output$n_alive_by_ctime_age
+
+# Overall prevalence of COPD
+
+alive_age_all <- rowSums(output$n_alive_by_ctime_age[1:26, 40:111])
+COPD_age_all <- rowSums (output$n_COPD_by_ctime_age[1:26, 40:111])
+prevalenceCOPD_age_all <- COPD_age_all / alive_age_all
+
+# Prevalence by age 40-59 
+
+alive_age_40to59 <- rowSums(output$n_alive_by_ctime_age[1:26, 40:59])
+COPD_age_40to59 <-rowSums(output$n_COPD_by_ctime_age[1:26, 40:59])
+prevalenceCOPD_age_40to59 <- COPD_age_40to59 / alive_age_40to59
+
+# Prevalence by age 60-79
+
+alive_age_60to79 <- rowSums(output$n_alive_by_ctime_age[1:26, 60:79])
+COPD_age_60to79 <-rowSums(output$n_COPD_by_ctime_age[1:26, 60:79])
+prevalenceCOPD_age_60to79 <- COPD_age_60to79 / alive_age_60to79
+
+# Prevalence by age 80+
+
+alive_age_over80 <- rowSums(output$n_alive_by_ctime_age[1:26, 80:111])
+COPD_age_over80 <-rowSums(output$n_COPD_by_ctime_age[1:26, 80:111])
+prevalenceCOPD_age_over80 <- COPD_age_over80 / alive_age_over80
+
+# Display summary of COPD prevalence by age group 
+
+COPD_prevalence_summary <- data.frame(
+  Year = 2015:2040,
+  Prevalence_all = prevalenceCOPD_age_all,
+  Prevalence_40to59 = prevalenceCOPD_age_40to59,
+  Prevalence_60to79 = prevalenceCOPD_age_60to79,
+  Prevalence_over80 = prevalenceCOPD_age_over80
+  )
+
+kable(COPD_prevalence_summary, 
+      caption = "COPD Prevalence by Age Group Over Time",
+      digits = 3)
+```
+
+### Step 5: Visualize data by age category
+
+COPD prevalence is projected to decline moderately between 2025 and 2050, as reported by Boers et al. 2023 (DOI: 10.1001/jamanetworkopen.2023.46598). A similar trend is observed in EPIC model projections of overall COPD prevalence. However, a limitation of EPIC include underestimating the size of the population aged 80 and older. As COPD prevalence increases with age, this results in a overestimation of overall COPD prevalence in the simulated population.
+
+**COPD prevalence all age groups**
+
+```{r prevalenceall, fig.width = 8, fig.height = 6, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Plot prevalence all ages
+plot_prevalenceCOPD_age_all <- data.frame(
+  Year = 2015:2040,
+  Prevalence = prevalenceCOPD_age_all
+  )
+
+ggplot(plot_prevalenceCOPD_age_all, aes(x = Year, y = Prevalence)) +
+    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
+    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
+    scale_y_continuous(
+      labels = scales::percent_format(accuracy = 1),
+      limits = c(0, 0.15),
+      breaks = seq(0, 0.15, by = 0.05)
+    ) +
+    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    labs(
+      title = "COPD Prevalence Over Time (All Ages)",
+      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      x = "Year",
+      y = "Prevalence (%)"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
+      plot.subtitle = element_text(size = 14, hjust = 0.5),
+      axis.title = element_text(face = "bold"),
+      axis.text = element_text(color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    )
+```
+
+**COPD prevalence from age 40 to 59**
+
+```{r prevalenceof40to59, fig.width = 8, fig.height = 6, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Plot prevalence age 40-59
+plot_prevalence_40to59<- data.frame (Year = 2015:2040, Prevalence = prevalenceCOPD_age_40to59)
+
+ggplot(plot_prevalence_40to59, aes(x = Year, y = Prevalence)) +
+  geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
+  geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    limits = c(0, 0.10),
+    breaks = seq(0, 0.10, by = 0.05)) +
+  scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+  labs(
+    title = "COPD Prevalence Over Time (Age 40–59)",
+    subtitle = "Estimated proportion of population with COPD from 2016–2040",
+    x = "Year",
+    y = "Prevalence (%)") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    axis.line = element_line(color = "black", linewidth = 0.8),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+    )
+```
+
+**COPD prevalence from age 60 to 79**
+
+```{r prevalenceof60to79, fig.width = 8, fig.height = 6, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Plot prevalence age 60-79
+plot_prevalence_60to79 <- data.frame(
+  Year = 2015:2040,
+  Prevalence = prevalenceCOPD_age_60to79
+  )
+
+ggplot(plot_prevalence_60to79, aes(x = Year, y = Prevalence)) +
+    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
+    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
+    scale_y_continuous(
+      labels = scales::percent_format(accuracy = 1),
+      limits = c(0, 0.15),
+      breaks = seq(0, 0.15, by = 0.05)
+    ) +
+    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    labs(
+      title = "COPD Prevalence Over Time (Age 60–79)",
+      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      x = "Year",
+      y = "Prevalence (%)"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
+      plot.subtitle = element_text(size = 14, hjust = 0.5),
+      axis.title = element_text(face = "bold"),
+      axis.text = element_text(color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    )
+```
+
+**COPD prevalence from age 80+**
+
+```{r prevalenceofover80, fig.width = 8, fig.height = 6, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Plot prevalence age 80+
+plot_prevalence_over80<- data.frame(Year = 2015:2040, Prevalence = prevalenceCOPD_age_over80)
+
+ggplot(plot_prevalence_over80, aes(x = Year, y = Prevalence)) +
+  geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
+  geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    limits = c(0, 0.30),
+    breaks = seq(0, 0.30, by = 0.05)
+    ) +
+  scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+  labs(
+    title = "COPD Prevalence Over Time (Age 80+)",
+    subtitle = "Estimated proportion of population with COPD from 2016–2040",
+    x = "Year",
+    y = "Prevalence (%)"
+    ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "black"),
+    axis.line = element_line(color = "black", linewidth = 0.8),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+    )
+```
+
+### Step 6: Create data tables by sex to check if gender distribution matches Tilert et al 2013 (doi:10.1186/1465-9921-14-103))
+
+```{r, eval = TRUE, echo = TRUE}
+
+# Calculate COPD prevalence by sex over time
+
+alive_sex <- output$n_alive_by_ctime_sex
+COPD_sex <- output$n_COPD_by_ctime_sex
+prevalenceCOPD_sex <- COPD_sex / alive_sex
+prevalenceCOPD_sex<-as.data.frame (prevalenceCOPD_sex)
+
+# Rename columns
+colnames(prevalenceCOPD_sex) <- c("Male", "Female")
+prevalenceCOPD_sex$Year <- 2015:2040
+
+
+# Display summary of COPD prevalence by sex
+
+kable(prevalenceCOPD_sex,
+  caption = "COPD Prevalence by Sex Over Time",
+  digits = 3
+)
+```
+
+### 

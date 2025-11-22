@@ -135,7 +135,7 @@ If the installation is successful, you should be able to start R:
   sudo -i R
 ```
 
-2. Download and Install R Studio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+2. Download and Install R Studio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
 3. Install `libcurl` from Terminal: 
 
 ```bash

@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <a class="navbar-brand me-2" href="index.html">epicR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.33.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -151,8 +151,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/AddingNewCountry.html">Adding a New Country to epicR</a></li>
     <li><a class="dropdown-item" href="articles/BackgroundEPIC.html">EPIC Background</a></li>
+    <li><a class="dropdown-item" href="articles/Calibrate_COPD_Exacerbations.html">Calibrate COPD Exacerbations</a></li>
+    <li><a class="dropdown-item" href="articles/Calibrate_COPD_Prevalence.html">Calibrate COPD Prevalence</a></li>
+    <li><a class="dropdown-item" href="articles/Calibrate_Demographics.html">Calibrate Demographics</a></li>
+    <li><a class="dropdown-item" href="articles/Calibrate_Smoking.html">Calibrate Smoking Status</a></li>
     <li><a class="dropdown-item" href="articles/GettingStarted.html">Getting Started with EPIC</a></li>
+    <li><a class="dropdown-item" href="articles/Payoffs.html">Payoffs</a></li>
     <li><a class="dropdown-item" href="articles/RecalibratingEPIC.html">RecalibratingEPIC</a></li>
+    <li><a class="dropdown-item" href="articles/Reproducing_bgd.html">Reproducing Background Mortality</a></li>
     <li><a class="dropdown-item" href="articles/UsingEPICinR.html">Using EPIC in R</a></li>
   </ul>
 </li>
@@ -172,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level1">
 <div class="page-header"><h1 id="epicr">epicR<a class="anchor" aria-label="anchor" href="#epicr"></a>
 </h1></div>
-<p>R package for Evaluation Platform in COPD (EPIC). Please refer to the published papers for more information:</p>
+<p>R package for Evaluation Platform in COPD (EPIC). Please refer to our published papers for more information:</p>
 <p>Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. <a href="https://doi.org/10.1177/0272989X18824098" class="external-link">https://doi.org/10.1177/0272989X18824098</a></p>
 <p>Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Bryan S. Cost effectiveness of case detection strategies for the early detection of COPD. Applied Health Economics and Health Policy. 2021 Mar;19(2):203-15. <a href="https://doi.org/10.1007/s40258-020-00616-2" class="external-link">https://doi.org/10.1007/s40258-020-00616-2</a></p>
 <div class="section level2">
@@ -184,70 +190,164 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="section level3">
-<h3 id="windows-7-or-later">Windows 7 or Later<a class="anchor" aria-label="anchor" href="#windows-7-or-later"></a>
+<h3 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
 </h3>
-<ol style="list-style-type: decimal">
-<li>Download and Install the latest version of R from <a href="https://cran.r-project.org/bin/windows/base/" class="external-link">https://cran.r-project.org/bin/windows/base/</a>
-</li>
-<li>Download and Install R Studio from <a href="https://www.rstudio.com/products/rstudio/download/" class="external-link">https://www.rstudio.com/products/rstudio/download/</a>
-</li>
-<li>Download and Install the latest version of Rtools from <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">https://cran.r-project.org/bin/windows/Rtools/</a>
-</li>
-<li>Using either an R session in Terminal or in R Studio, install the package <code>devtools</code>:</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
-<ol start="5" style="list-style-type: decimal">
-<li>Install epicR from GitHub:</li>
-</ol>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<p>epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ integration, which requires compilation tools to be installed on your system.</p>
 </div>
 <div class="section level3">
-<h3 id="mac-os-sierra-and-later">Mac OS Sierra and Later<a class="anchor" aria-label="anchor" href="#mac-os-sierra-and-later"></a>
+<h3 id="windows-windows-10-or-later">Windows (Windows 10 or Later)<a class="anchor" aria-label="anchor" href="#windows-windows-10-or-later"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Download and Install the latest version of R from <a href="https://cran.r-project.org/bin/macosx/" class="external-link">https://cran.r-project.org/bin/macosx/</a>
+<li>
+<p><strong>Install R (version 4.1.0 or later)</strong></p>
+<ul>
+<li>Download and install the latest version of R from <a href="https://cran.r-project.org/bin/windows/base/" class="external-link">https://cran.r-project.org/bin/windows/base/</a>
 </li>
-<li>Download and Install R Studio from <a href="https://www.rstudio.com/products/rstudio/download/" class="external-link">https://www.rstudio.com/products/rstudio/download/</a>
+</ul>
 </li>
-<li>Open the Terminal and remove previous installations of <code>clang</code>:</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Delete the clang4 binary</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/clang4</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Delete the clang6 binary</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/clang6</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Delete the prior version of gfortran installed</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/gfortran</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/bin/gfortran</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Remove the install receipts that indicate a package is present</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># Remove the gfortran install receipts (run after the above commands)</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="fu">sudo</span> rm /private/var/db/receipts/com.gnu.gfortran.bom</span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="fu">sudo</span> rm /private/var/db/receipts/com.gnu.gfortran.plist</span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co"># Remove the clang4 installer receipt</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="fu">sudo</span> rm /private/var/db/receipts/com.rbinaries.clang4.bom</span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">sudo</span> rm /private/var/db/receipts/com.rbinaries.clang4.plist</span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co"># Remove the Makevars file</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="fu">rm</span> ~/.R/Makevars</span></code></pre></div>
-<ol start="4" style="list-style-type: decimal">
-<li><p>Install the latest version of <code>clang</code> by installing Xcode command tools: `xcode-select –install</p></li>
-<li><p>Install the appropriate version of <code>gfortran</code> based on your Mac OS version using the dmg file found at <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases" class="external-link">https://github.com/fxcoudert/gfortran-for-macOS/releases</a></p></li>
-<li><p>Using either an R session in Terminal or in R Studio, install the packages <code>remotes</code> and <code>usethis</code>:</p></li>
-</ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'remotes'</span>, <span class="st">'usethis'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<ol start="7" style="list-style-type: decimal">
-<li><p>Open the <code>.Renviron</code> file usibng the command <code><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">usethis::edit_r_environ()</a></code></p></li>
-<li><p>Add the line <code>PATH="/usr/local/clang8/bin:${PATH}"</code> to the file. If you installed any clang version above 8, modify the file accordingly. Save the <code>.Renviron</code> file and restart R.</p></li>
-<li><p>You should now be able to Install epicR from GitHub:</p></li>
-</ol>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<li>
+<p><strong>Install RStudio (Optional but Recommended)</strong></p>
+<ul>
+<li>Download and install RStudio from <a href="https://posit.co/download/rstudio-desktop/" class="external-link">https://posit.co/download/rstudio-desktop/</a>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Install Rtools</strong></p>
+<ul>
+<li>Download and install the latest version of Rtools from <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">https://cran.r-project.org/bin/windows/Rtools/</a>
+</li>
+<li>
+<strong>Important</strong>: During installation, make sure to check the option to add Rtools to the system PATH</li>
+<li>For R 4.3.0+, install Rtools43 or later</li>
+<li>For R 4.2.x, install Rtools42</li>
+</ul>
+</li>
+<li>
+<p><strong>Verify Rtools Installation</strong></p>
+<ul>
+<li>Open R or RStudio and run:</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check if Rtools is available</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"make"</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>This should return a path to the make executable. If it returns an empty string, Rtools is not properly configured.</li>
+</ul>
+</li>
+<li>
+<p><strong>Install the remotes package</strong></p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li>
+<p><strong>Install epicR from GitHub</strong></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="macos-macos-11-big-sur-or-later">macOS (macOS 11 Big Sur or Later)<a class="anchor" aria-label="anchor" href="#macos-macos-11-big-sur-or-later"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>
+<p><strong>Install R (version 4.1.0 or later)</strong></p>
+<ul>
+<li>Download and install the latest version of R from <a href="https://cran.r-project.org/bin/macosx/" class="external-link">https://cran.r-project.org/bin/macosx/</a>
+</li>
+<li>Choose the appropriate version for your Mac:
+<ul>
+<li>For Apple Silicon (M1/M2/M3): Download the arm64 version</li>
+<li>For Intel Macs: Download the x86_64 version</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Install RStudio (Optional but Recommended)</strong></p>
+<ul>
+<li>Download and install RStudio from <a href="https://posit.co/download/rstudio-desktop/" class="external-link">https://posit.co/download/rstudio-desktop/</a>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Install Xcode Command Line Tools</strong></p>
+<ul>
+<li>Open Terminal and run:</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span></code></pre></div>
+<ul>
+<li>Follow the prompts to complete the installation</li>
+</ul>
+</li>
+<li>
+<p><strong>Install gfortran</strong></p>
+<ul>
+<li>Download and install the appropriate gfortran version for your macOS from <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases" class="external-link">https://github.com/fxcoudert/gfortran-for-macOS/releases</a>
+</li>
+<li>Choose the installer that matches your macOS version and chip architecture (Intel vs. Apple Silicon)</li>
+</ul>
+</li>
+<li>
+<p><strong>Verify Compiler Installation</strong></p>
+<ul>
+<li>Open Terminal and run:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Check clang</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">clang</span> <span class="at">--version</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Check gfortran</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="ex">gfortran</span> <span class="at">--version</span></span></code></pre></div>
+<ul>
+<li>Both commands should return version information</li>
+</ul>
+</li>
+<li>
+<p><strong>Install the remotes package</strong></p>
+<ul>
+<li>Open R or RStudio and run:</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li>
+<p><strong>Install epicR from GitHub</strong></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+</h3>
+<div class="section level4">
+<h4 id="windows-issues">Windows Issues<a class="anchor" aria-label="anchor" href="#windows-issues"></a>
+</h4>
+<ul>
+<li>
+<p>If you encounter compilation errors, ensure Rtools is in your PATH. You can check this in R:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATH"</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li><p>If the PATH doesn’t include Rtools, you may need to add it manually or reinstall Rtools with the PATH option enabled.</p></li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="macos-issues">macOS Issues<a class="anchor" aria-label="anchor" href="#macos-issues"></a>
+</h4>
+<ul>
+<li><p>If you encounter errors related to missing compilers after installation, try restarting your R session or computer.</p></li>
+<li><p>For Apple Silicon Macs, ensure you’re using the arm64 version of R and compatible compilers.</p></li>
+<li>
+<p>If you have previously installed older versions of compilers, they may interfere. Consider cleaning them up:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Only run if you have issues with old compiler installations</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/clang<span class="pp">*</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /usr/local/gfortran</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">rm</span> ~/.R/Makevars  <span class="co"># Remove custom compiler settings</span></span></code></pre></div>
+</li>
+</ul>
+</div>
 </div>
 <div class="section level3">
 <h3 id="ubuntu-2204-and-later">Ubuntu 22.04 and Later<a class="anchor" aria-label="anchor" href="#ubuntu-2204-and-later"></a>
@@ -255,27 +355,27 @@ document.addEventListener('DOMContentLoaded', function() {
 <ol style="list-style-type: decimal">
 <li>Install R by executing the following commands in Terminal:</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-key adv <span class="at">--keyserver</span> keyserver.ubuntu.com <span class="at">--recv-keys</span> E298A3A825C0D65DFD57CBB651716619E084DAB9</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>  <span class="fu">sudo</span> add-apt-repository <span class="st">'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get update</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get install r-base</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-key adv <span class="at">--keyserver</span> keyserver.ubuntu.com <span class="at">--recv-keys</span> E298A3A825C0D65DFD57CBB651716619E084DAB9</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>  <span class="fu">sudo</span> add-apt-repository <span class="st">'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get update</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get install r-base</span></code></pre></div>
 <p>If the installation is successful, you should be able to start R:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>  <span class="fu">sudo</span> <span class="at">-i</span> R</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>  <span class="fu">sudo</span> <span class="at">-i</span> R</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
-<li>Download and Install R Studio from <a href="https://www.rstudio.com/products/rstudio/download/" class="external-link">https://www.rstudio.com/products/rstudio/download/</a>
+<li>Download and Install R Studio from <a href="https://posit.co/download/rstudio-desktop/" class="external-link">https://posit.co/download/rstudio-desktop/</a>
 </li>
 <li>Install <code>libcurl</code> from Terminal:</li>
 </ol>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get install libcurl4-openssl-dev libssl-dev r-base-dev</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get install libcurl4-openssl-dev libssl-dev r-base-dev</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Using either an R session in Terminal or in R Studio, install the package <code>devtools</code>:</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span> <span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Install epicR from GitHub:</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -304,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-canadian-parameters-default">Using Canadian Parameters (Default)<a class="anchor" aria-label="anchor" href="#using-canadian-parameters-default"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Canadian parameters are used by default</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or explicitly specify:</span></span>
@@ -313,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-us-parameters">Using US Parameters<a class="anchor" aria-label="anchor" href="#using-us-parameters"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note: US parameters must be configured first (see Configuration section)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -321,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h3 id="parameter-override">Parameter Override<a class="anchor" aria-label="anchor" href="#parameter-override"></a>
 </h3>
 <p>Function parameters still override jurisdiction defaults:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use Canadian defaults but change time horizon</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span>, time_horizon <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -347,17 +447,38 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>Disease epidemiology parameters</li>
 </ol>
 <p>Example placeholder format:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>Replace with actual values:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="fl">0.51</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="fl">0.51</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="test-values">Test Values<a class="anchor" aria-label="anchor" href="#test-values"></a>
+</h3>
+<p>Configuration files also include jurisdiction-specific test values used for package validation:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">18600000</span><span class="fu">,</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">100000</span><span class="fu">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">5000</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>These values represent: - <code>population_over_40_2015</code>: Population over 40 years of age (used for scaling test results) - <code>expected_severe_exacerbations_per_year</code>: Expected number of severe exacerbations per year for validation - <code>expected_severe_exac_tolerance</code>: Tolerance level for test assertions</p>
+<p>For US parameters, replace with appropriate US values:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">130000000</span><span class="fu">,</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">700000</span><span class="fu">,</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">35000</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by setting <code>record_mode</code> as a <code>setting</code>.</p>
 <pre><code><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -439,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <p>You can also combine jurisdiction and closed-cohort parameters:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Canadian closed-cohort analysis</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span>, closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
 <span></span>
@@ -501,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

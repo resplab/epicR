@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Reproducing Background Mortality</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Reproducing Background Mortality</h1>
+
+
+
+<p>In this document, we aim to explore how the model behaves when
+COPD-related mortality is turned off. Specifically, our goal is to
+observe probability of death values that closely align with the
+background mortality rates from official U.S. sources. This is the
+expected behavior, as disabling exacerbation-related deaths causes the
+model to no longer predict mortality from exacerbations, which should
+result in values matching the background mortality rates.</p>
+<p>To achieve this, we followed the series of steps below:</p>
+<div id="step-1-shutting-off-exacerbation-related-mortality." class="section level3">
+<h3>Step 1: Shutting off exacerbation related mortality.</h3>
+<p>First, we set the intercept of the exacerbation equation to a high
+value, effectively disabling death from exacerbations in the model. This
+adjustment is made by changing the relevant variable as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(epicR)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&quot;epicR&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>input<span class="ot">&lt;-</span><span class="fu">get_input</span>(<span class="at">jurisdiction =</span> <span class="st">&quot;us&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>exacerbation<span class="sc">$</span>logit_p_death_by_sex <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">male =</span> <span class="fu">c</span>(<span class="at">intercept =</span> <span class="sc">-</span><span class="dv">13000</span>, <span class="at">age =</span> <span class="fu">log</span>(<span class="fl">1.05</span>), <span class="at">mild =</span> <span class="dv">0</span>, <span class="at">moderate =</span> <span class="dv">0</span>, <span class="at">severe =</span> <span class="fl">7.4</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="at">very_severe =</span> <span class="dv">8</span>, <span class="at">n_hist_severe_exac =</span> <span class="dv">0</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">female =</span> <span class="fu">c</span>(<span class="at">intercept =</span> <span class="sc">-</span><span class="dv">13000</span>, <span class="at">age =</span> <span class="fu">log</span>(<span class="fl">1.05</span>), <span class="at">mild =</span> <span class="dv">0</span>, <span class="at">moderate =</span> <span class="dv">0</span>, <span class="at">severe =</span> <span class="fl">7.4</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="at">very_severe =</span> <span class="dv">8</span>, <span class="at">n_hist_severe_exac =</span> <span class="dv">0</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#also setting exlicit mortality = 0 so there is no correction made</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>manual<span class="sc">$</span>explicit_mortality_by_age_sex <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">111</span>)),</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">111</span>)))</span></code></pre></div>
+</div>
+<div id="step-2-setting-longevitiy-related-parameters-to-0." class="section level3">
+<h3>Step 2: Setting longevitiy-related parameters to 0.</h3>
+<p>Longevity is another factor in the model that influences population.
+To ensure that no external factors impact the population, we set these
+parameters to 0. This adjustment can be made in the input.R file.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>agent<span class="sc">$</span>ln_h_bgd_betas <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">c</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">y2 =</span> <span class="dv">0</span>, <span class="at">age =</span> <span class="dv">0</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                                            <span class="at">b_mi =</span> <span class="dv">0</span>, <span class="at">n_mi =</span> <span class="dv">0</span>, <span class="at">b_stroke =</span> <span class="dv">0</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                                            <span class="at">n_stroke =</span> <span class="dv">0</span>, <span class="at">hf =</span> <span class="dv">0</span>)))</span></code></pre></div>
+</div>
+<div id="step-3-run-the-model-for-1-year-and-retrieve-events-matrix" class="section level3">
+<h3>Step 3: Run the model for 1 year and retrieve events matrix</h3>
+<p>Initially we run the model for 1 year and get the events matrix. This
+matrix logs all the events that individuals go through thoughout the
+model. We will use this matrix to calculate death probabilities produced
+by epicR</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(epicR)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>settings <span class="ot">&lt;-</span> <span class="fu">get_default_settings</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>settings<span class="sc">$</span>record_mode <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>settings<span class="sc">$</span>n_base_agents <span class="ot">&lt;-</span> <span class="fl">3.5e5</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">init_session</span>(<span class="at">settings =</span> settings)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># input &lt;- get_input(jurisdiction = &quot;us&quot;)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># set time horizon as 1 initially </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>time_horizon <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>global_parameters<span class="sc">$</span>time_horizon <span class="ot">&lt;-</span> time_horizon</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="fu">run</span>(<span class="at">input =</span> input<span class="sc">$</span>values)</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">Cget_all_events_matrix</span>())</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="fu">terminate_session</span>()</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># checking to make sure event 7 (death by exacerbation) is not included </span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co"># because we shut that off in the model</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">unique</span>(events<span class="sc">$</span>event)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="fu">table</span>(events<span class="sc">$</span>event)</span></code></pre></div>
+</div>
+<div id="step-4-calculating-probability-of-death-from-events-matrix" class="section level3">
+<h3>Step 4: Calculating probability of death from events matrix</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># we will group by age so we convert ages into whole numbers.</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>events <span class="ot">&lt;-</span> events <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_and_local =</span> <span class="fu">floor</span>(local_time <span class="sc">+</span> age_at_creation))</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Filter events to identify individuals who have experienced event 14,</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># while also creating a flag for whether they ever experienced event 13 (death)</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>events_filtered<span class="ot">&lt;-</span> events <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">death=</span> <span class="fu">ifelse</span>(event<span class="sc">==</span><span class="dv">13</span>,<span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">group_by</span>(id) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ever_death =</span> <span class="fu">sum</span>(death)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="fu">filter</span>(event<span class="sc">==</span><span class="dv">14</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co"># calculationg probability of death</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>death_prob<span class="ot">&lt;-</span> events_filtered <span class="sc">%&gt;%</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="fu">group_by</span>(age_and_local, female) <span class="sc">%&gt;%</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    <span class="at">total_count =</span> <span class="fu">n</span>(),</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">death_count =</span> <span class="fu">sum</span>(ever_death<span class="sc">==</span><span class="dv">1</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    <span class="at">death_probability =</span> death_count <span class="sc">/</span> total_count</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="inspecting-the-results" class="section level3">
+<h3>Inspecting the results</h3>
+<p>We should not consider 40 year-olds beause (Amin said … )</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(death_prob, <span class="dv">15</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(death_prob,<span class="dv">15</span>))</span></code></pre></div>
+<p>While these values are not perfectly aligned with our validation
+target, the variation is negligible.</p>
+<p>Next, we want to ensure a consistent directional effect. We expect
+that increasing time_horizon to 5 years will bring the results closer to
+our target.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">init_session</span>(<span class="at">settings =</span> settings)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># set time horizon to 5</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>time_horizon <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>global_parameters<span class="sc">$</span>time_horizon <span class="ot">&lt;-</span> time_horizon</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="fu">run</span>(<span class="at">input =</span> input<span class="sc">$</span>values)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>events5 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">Cget_all_events_matrix</span>())</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">terminate_session</span>()</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="fu">table</span>(events<span class="sc">$</span>event)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>events5 <span class="ot">&lt;-</span> events5 <span class="sc">%&gt;%</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_and_local =</span> <span class="fu">floor</span>(local_time <span class="sc">+</span> age_at_creation))</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>events5 <span class="ot">&lt;-</span> events5 <span class="sc">%&gt;%</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">local_time_adj =</span> <span class="fu">ceiling</span>(events5<span class="sc">$</span>local_time))</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co"># withing that year have they ever died?</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>events5_filtered<span class="ot">&lt;-</span> events5 <span class="sc">%&gt;%</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">death=</span> <span class="fu">ifelse</span>(event<span class="sc">==</span><span class="dv">13</span>,<span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>  <span class="fu">group_by</span>(id,local_time_adj) <span class="sc">%&gt;%</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ever_death =</span> <span class="fu">sum</span>(death)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  <span class="fu">filter</span>(event<span class="sc">==</span><span class="dv">14</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>death_prob5<span class="ot">&lt;-</span> events5_filtered <span class="sc">%&gt;%</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>  <span class="fu">group_by</span>(age_and_local, female, local_time_adj) <span class="sc">%&gt;%</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    <span class="at">total_count =</span> <span class="fu">n</span>(),</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="at">death_count =</span> <span class="fu">sum</span>(ever_death<span class="sc">==</span><span class="dv">1</span>),</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>    <span class="at">death_probability =</span> death_count <span class="sc">/</span> total_count</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Now, when we check the results. We see that the results are even
+further away:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(death_prob5, <span class="dv">15</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">tail</span>(death_prob5,<span class="dv">15</span>))</span></code></pre></div>
+</div>
+<div id="visualizing-results" class="section level3">
+<h3>Visualizing results</h3>
+<p>To better understand the differences, we visualize the results and
+compare them against the target values.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>death_prob_clean <span class="ot">&lt;-</span> death_prob <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>   <span class="fu">select</span>(age_and_local, female, death_probability) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>   <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> female, <span class="at">values_from =</span> death_probability, <span class="at">names_prefix =</span> <span class="st">&quot;sex_&quot;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">colnames</span>(death_prob_clean) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Age&quot;</span>, <span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>USlifetables_num <span class="ot">&lt;-</span> input<span class="sc">$</span>values<span class="sc">$</span>agent<span class="sc">$</span>p_bgd_by_sex</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>USlifetables_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">Age =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(USlifetables_num),  <span class="co"># Start age from 1</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">Male =</span> USlifetables_num[, <span class="dv">1</span>],</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">Female =</span> USlifetables_num[, <span class="dv">2</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>common_ages <span class="ot">&lt;-</span> <span class="fu">intersect</span>(death_prob_clean<span class="sc">$</span>Age, USlifetables_df<span class="sc">$</span>Age)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co"># filter both so only include the rows with matching Age</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>death_prob_filtered <span class="ot">&lt;-</span> death_prob_clean[death_prob_clean<span class="sc">$</span>Age <span class="sc">%in%</span> common_ages, ]</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>USlifetables_filtered <span class="ot">&lt;-</span> USlifetables_df[USlifetables_df<span class="sc">$</span>Age <span class="sc">%in%</span> common_ages, ]</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>combined_data_long <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  death_prob_filtered <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="st">&quot;epicR&quot;</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  USlifetables_filtered <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="st">&quot;US Life Tables&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="at">names_to =</span> <span class="st">&quot;Sex&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Death_Probability&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="fu">filter</span>(Age <span class="sc">&gt;</span> <span class="dv">40</span>)  </span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data_long, <span class="fu">aes</span>(<span class="at">x =</span> Age, <span class="at">y =</span> Death_Probability, <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span>  </span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Sex) <span class="sc">+</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Comparison of epicR Death Probability vs. US Life Tables (time_horizon =1)&quot;</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Death Probability&quot;</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Source:&quot;</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="st">&quot;center&quot;</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="dv">10</span>))</span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>  )</span></code></pre></div>
+<p>When <code>time_horizon = 6</code>, we get the following plot.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>combined_data_long5 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  death_prob5_filtered <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="st">&quot;epicR&quot;</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  USlifetables_filtered <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="st">&quot;US Life Tables&quot;</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>), <span class="at">names_to =</span> <span class="st">&quot;Sex&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Death_Probability&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="fu">filter</span>(Age <span class="sc">&gt;</span> <span class="dv">40</span>)  </span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>final_EPIC_death5<span class="ot">&lt;-</span> <span class="fu">filter</span>(combined_data_long5, Source <span class="sc">==</span> <span class="st">&quot;epicR&quot;</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>final_US_death<span class="ot">&lt;-</span> <span class="fu">filter</span>(combined_data_long5, Source <span class="sc">==</span> <span class="st">&quot;US Life Tables&quot;</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co"># Add Death_Probability to USlifetables_filtered</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>USlifetables_filtered_long <span class="ot">&lt;-</span> USlifetables_filtered <span class="sc">%&gt;%</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">&quot;Sex&quot;</span>, <span class="at">value =</span> <span class="st">&quot;Death_Probability&quot;</span>, Male, Female)</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co"># Loop through each unique year in the combined_data_long dataset</span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="cf">for</span> (year <span class="cf">in</span> <span class="fu">unique</span>(combined_data_long5<span class="sc">$</span>Year)) {</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>  </span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  <span class="co"># Filter the data for the current year</span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>  year_data <span class="ot">&lt;-</span> combined_data_long5 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">==</span> year)</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a>  </span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a>  <span class="co"># Create the plot for the current year</span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data_long, <span class="fu">aes</span>(<span class="at">x =</span> Age, <span class="at">y =</span> Death_Probability, <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span>  </span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Sex) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Comparison of epicR Death Probability vs. US Life Tables (time_horizon = 6)&quot;</span>,</span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Death Probability&quot;</span>,</span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Source:&quot;</span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="st">&quot;center&quot;</span>,</span>
+<span id="cb11-41"><a href="#cb11-41" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="dv">10</span>))</span>
+<span id="cb11-42"><a href="#cb11-42" tabindex="-1"></a>  )</span>
+<span id="cb11-43"><a href="#cb11-43" tabindex="-1"></a>  </span>
+<span id="cb11-44"><a href="#cb11-44" tabindex="-1"></a>  <span class="co"># Print the plot for the current year</span></span>
+<span id="cb11-45"><a href="#cb11-45" tabindex="-1"></a>  <span class="co"># print(p)</span></span>
+<span id="cb11-46"><a href="#cb11-46" tabindex="-1"></a>}</span>
+<span id="cb11-47"><a href="#cb11-47" tabindex="-1"></a></span>
+<span id="cb11-48"><a href="#cb11-48" tabindex="-1"></a><span class="fu">print</span>(p)</span></code></pre></div>
+<p>When we break it down and analyze per year, it seems to be in line
+with what we expect.</p>
+</div>
+<div id="eliminating-smoking-mortality" class="section level3">
+<h3>Eliminating smoking mortality</h3>
+<p>We have identified a potential source of the observed mortality
+discrepancies. Specifically, the mortality ratio associated with both
+former and current smokers appears to be influencing the results.</p>
+<p>To investigate this, we set the following smoking-related mortality
+factors to 1 (indicating no excess mortality risk for former and current
+smokers):</p>
+<p>After making this adjustment, the results align more closely with the
+life tables.</p>
+<ul>
+<li>This suggests that either:
+<ul>
+<li>The model may be generating an excessive number of current and
+former smokers, leading to higher mortality than expected.</li>
+<li>We will need to update the mortality ratio estimates depending on
+whether an individual currently or formerly smokes.</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>smoking<span class="sc">$</span>mortality_factor_former<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">age40to49=</span><span class="dv">1</span>,<span class="at">age50to59=</span><span class="dv">1</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>                                                 <span class="at">age60to69=</span><span class="dv">1</span>,<span class="at">age70to79=</span><span class="dv">1</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>                                                 <span class="at">age80p=</span><span class="dv">1</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>smoking<span class="sc">$</span>mortality_factor_current<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">age40to49=</span><span class="dv">1</span>,<span class="at">age50to59=</span><span class="dv">1</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>                                                  <span class="at">age60to69=</span><span class="dv">1</span>,<span class="at">age70to79=</span><span class="dv">1</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>                                                  <span class="at">age80p=</span><span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="changing-the-intercept-of-logit_p_never_smoker_con_not_current_0_betas" class="section level3">
+<h3>Changing the intercept of
+<code>logit_p_never_smoker_con_not_current_0_betas</code></h3>
+<p>Currently the model has too many former smokers. This can be adjusted
+by increased the intercept of
+<code>logit_p_never_smoker_con_not_current_0_betas</code>. So
+first,instead of changing the mortality factors, we keep the mortality
+factors for current and former smokers the same.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>settings <span class="ot">&lt;-</span> <span class="fu">get_default_settings</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>settings<span class="sc">$</span>record_mode <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>settings<span class="sc">$</span>n_base_agents <span class="ot">&lt;-</span> <span class="fl">1e6</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="fu">init_session</span>(<span class="at">settings =</span> settings)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>input<span class="ot">&lt;-</span><span class="fu">get_input</span>(<span class="at">jurisdiction =</span> <span class="st">&quot;us&quot;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>time_horizon <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>global_parameters<span class="sc">$</span>time_horizon <span class="ot">&lt;-</span> time_horizon</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co"># kept the same</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>smoking<span class="sc">$</span>mortality_factor_current <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">c</span>(<span class="at">age40to49 =</span> <span class="dv">1</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>                                                        <span class="at">age50to59 =</span> <span class="dv">1</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>                                                        <span class="at">age60to69 =</span> <span class="fl">1.94</span>,</span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>                                                        <span class="at">age70to79 =</span> <span class="fl">1.86</span>,</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a>                                                        <span class="at">age80p =</span> <span class="fl">1.66</span> )))</span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co"># kept the same</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>smoking<span class="sc">$</span>mortality_factor_former<span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">c</span>(<span class="at">age40to49 =</span> <span class="dv">1</span>,</span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>                                                      <span class="at">age50to59 =</span> <span class="dv">1</span>,</span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>                                                      <span class="at">age60to69 =</span> <span class="fl">1.54</span>,</span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>                                                      <span class="at">age70to79 =</span> <span class="fl">1.36</span>,</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a>                                                      <span class="at">age80p =</span> <span class="fl">1.27</span> )))</span></code></pre></div>
+<p>Then, we adjust the intercept to ensure that the ratio of
+never-smokers to the total population is approximately 0.21. We modify
+the intercept accordingly to achieve this target.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Probability of being a never-smoker conditional on not being current smoker,</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co"># at the time of creation</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>smoking<span class="sc">$</span>logit_p_never_smoker_con_not_current_0_betas <span class="ot">&lt;-</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="fu">t</span>(<span class="fu">as.matrix</span>(<span class="fu">c</span>(<span class="at">intercept =</span> <span class="fl">4.85</span>, <span class="at">sex =</span> <span class="dv">0</span>, <span class="at">age =</span> <span class="sc">-</span><span class="fl">0.06</span>, <span class="at">age2 =</span> <span class="dv">0</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>                <span class="at">sex_age =</span> <span class="dv">0</span>,<span class="at">sex_age2 =</span> <span class="dv">0</span>, <span class="at">year =</span> <span class="sc">-</span><span class="fl">0.02</span>)))</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="fu">run</span>(<span class="at">input =</span> input<span class="sc">$</span>values)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">Cget_all_events_matrix</span>())</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="fu">terminate_session</span>()</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co"># checking the ratio</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>output<span class="ot">&lt;-</span><span class="fu">Cget_output_ex</span>()</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>smoking_num<span class="ot">&lt;-</span>output<span class="sc">$</span>n_smoking_status_by_ctime</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>never_smoker_ratio <span class="ot">&lt;-</span> smoking_num[<span class="dv">1</span>, <span class="dv">3</span>] <span class="sc">/</span> <span class="fu">sum</span>(smoking_num[<span class="dv">1</span>, ])</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>never_smoker_ratio</span></code></pre></div>
+<p>Now we can visualize the change:</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

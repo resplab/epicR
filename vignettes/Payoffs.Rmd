@@ -1,0 +1,187 @@
+---
+title: "Payoffs"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Payoffs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Overview
+
+This document outlines the steps taken to determine input values for the payoff module. 
+
+## Step 1: Estimating annual COPD medication costs
+
+Annual COPD medication costs were estimated using two components:
+
+1. **Inhaler unit cost by drug class**  
+   - Prices were obtained from published literature (DOI: 10.1513/AnnalsATS.202008-1082RL). Prices of SABA and LAMA were digitized from Figure 2A as these prices were not reported in the text.
+   - It was assumed that one inhaler is used per month per drug class, resulting in 12 inhalers annually.  
+   - Annual cost per drug class (2018 Costs USD) was calculated as:  
+     `Annual Cost = Inhaler Unit Price × 12`
+
+2. **Real-world dispensing frequency based on proportion of days covered (PDC)**  
+   - PDC estimates were used to determine adherence to inhaler therapies
+   - Sources for PDC data include:
+     - **Mannino et al. 2022** (DOI: 10.1016/j.rmed.2022.106807)
+     - **Slade et al. 2021** (DOI: 10.1186/s12890-021-01612-5)
+     - **Bengtson et al. 2018** (DOI: 10.1177/1753466618772750) 
+
+#### Dispense frequency per year (adjusted via PDC)
+
+**Mannino et al. 2022:**  
+- **ICS + LAMA + LABA**: PDC = 0.66  
+
+**Slade et al. 2021:**  
+- **LAMA + LABA**: PDC = 0.44  
+- **LAMA**: PDC = 0.37  
+
+**Bengtson et al. 2018**
+- **SABA**: The study reported an average of 1 fill per month 
+
+**Adherence:** Adherence was determined to be an average of the PDC reported between the studies that assessed non-SABA inhalers= 0.49.
+
+```{r, eval = TRUE, echo = FALSE}
+
+library(knitr)
+
+drug_costs <- data.frame(
+  class <- c("ICS + LAMA + LABA", "LAMA", "LAMA+LABA", "SABA"),
+  monthly_cost <- c(296.11, 208.10, 218.05, 32.2),
+  dispenses_per_year = c(12, 12, 12, 12)
+)
+
+drug_costs$annual_cost <- round(drug_costs$monthly_cost * drug_costs$dispenses_per_year, 2)
+
+kable(drug_costs,
+      col.names = c("Drug Class", "Monthly Cost (USD)", "Dispenses/Year", "Estimated Annual Cost (USD)"),
+      format.args = list(big.mark = ","),
+      caption = "Estimated Annual COPD Inhaler Costs by Drug Class")
+
+```
+
+## Step 2: Estimating COPD-related background costs by GOLD stage
+
+COPD-related background costs were estimated using data from Wallace et al 2019 (DOI: 10.18553/jmcp.2019.25.2.205) Table 3, specifically the row labeled "COPD-related costs, all patients". Background costs were calculated by subtracting the costs of **Inpatient Care**, **Emergency Room (ER) Visits**, and **Pharmacy** from the **Total COPD-related Medical Costs** (2016 Costs USD) as these costs are determined separately.
+
+```{r, eval = TRUE, echo = FALSE}
+
+copd_background_costs <- data.frame(
+  `GOLD Stage` = c("GOLD I", "GOLD II", "GOLD III", "GOLD IV"),
+  `Total COPD Cost` = c(5945, 6978, 10751, 18070),
+  `Inpatient` = c(3853, 4449, 6277, 12139),
+  `ER Visits` = c(186, 144, 193, 534),
+  `Pharmacy` = c(592, 1101, 2000, 2479),
+  `Background Cost` = c(1314, 1284, 2281, 2918)
+)
+
+kable(copd_background_costs,
+      col.names = c("GOLD Stage", "Total COPD-related Medical Costs", "Inpatient", "ER Visits", "Pharmacy", "Background Cost (USD)"),
+      format.args = list(big.mark = ","),
+      caption = "COPD-related Background Costs by GOLD Stage")
+
+```
+
+## Step 3: Estimating exacerbation costs by severity
+
+The exacerbation module assigns per-event direct medical costs based on severity: **Mild**, **Moderate**, **Severe**, and **Very Severe**. These cost estimates were derived from U.S.-based healthcare utilization studies.
+
+- **Mild Exacerbation**: Defined as an increase in bronchodilator use that does not result in a healthcare encounter. It is assumed that half of the number of available doses in a SABA inhaler is used per event. Cost of SABA inhaler is obtained from the published literature (DOI: 10.1513/AnnalsATS.202008-1082RL).
+- **Moderate Exacerbation**: Involves a visit to a healthcare facility (e.g., physician office or emergency department) without resulting in hospital admission.
+- **Severe Exacerbation**: Defined as an inpatient hospital admission
+- **Very Severe Exacerbation**: Defined as ICU admission
+
+The following references were used:
+
+- **Dalal et al. 2011** (DOI: 10.1016/j.rmed.2010.09.003) — 2008 Costs USD  
+- **Bogart et al. 2020** (DOI: 10.37765/ajmc.2020.43157) — 2017 Costs USD
+
+```{r, eval = TRUE, echo = FALSE}
+
+exacerbation_costs <- data.frame(
+  `Exacerbation Severity` = c("Mild", "Moderate", "Severe", "Very Severe"),
+  `Definition` = c(
+    "Increased SABA medication usage",
+    "No hospitalization",
+    "Inpatient hospitalization",
+    "ICU + intubation"
+  ),
+  `Cost (USD)` = c(16.1, 2107, 22729, 44909),
+  `Source` = c(
+    "Assumption",
+    "Bogart et al. 2020",
+    "Bogart et al. 2020",
+    "Dalal et al. 2011"
+  )
+)
+
+kable(exacerbation_costs,
+      col.names = c("Exacerbation Severity", "Definition", "Cost (USD)", "Source"),
+      format.args = list(big.mark = ","),
+      caption = "Per-Event COPD Exacerbation Costs by Severity")
+```
+
+
+## Step 4: Estimating costs for smoking cessation 
+
+## Estimating the Cost of Smoking Cessation Therapy
+
+To estimate the cost of smoking cessation therapy, the distribution of commonly used pharmacologic and behavioral therapies was obtained from the MMWR study (DOI: 10.15585/mmwr.mm7329a1). The reported usage among individuals attempting to quit included:
+
+- **Nicotine patch**: 19.6%  
+- **Nicotine gum/lozenge**: 18.4%  
+- **Nicotine spray/inhaler**: 1.0%  
+- **Varenicline**: 9.6%  
+- **Bupropion**: 6.4%  
+- **Behavioral counseling**: 7.3%  
+
+### Reweighted to Assume 100% Uptake
+
+To standardize the distribution across therapies, reweighting was performed using the total of all therapies (62.3%):
+
+- **Nicotine patch**: (19.6 / 62.3) × 100 ≈ **31.5%**  
+- **Nicotine gum/lozenge**: (18.4 / 62.3) × 100 ≈ **29.5%**  
+- **Nicotine spray/inhaler**: (1.0 / 62.3) × 100 ≈ **1.6%**  
+- **Varenicline**: (9.6 / 62.3) × 100 ≈ **15.4%**  
+- **Bupropion**: (6.4 / 62.3) × 100 ≈ **10.3%**  
+- **Behavioral counseling**: (7.3 / 62.3) × 100 ≈ **11.7%**  
+
+### Estimated 3-Month Cost of Smoking Cessation Therapy
+
+Cost estimates were based on 2025 GoodRx prices for a 3-month course of pharmacotherapy.  
+For behavioral counseling, Medicare reimburses up to 8 sessions per year, which was assumed to be the number of sessions used.  
+The per-session cost was based on **2015 CPT codes**:
+
+- **99406**: \$14.37 for sessions <10 minutes  
+- **99407**: \$27.67 for sessions >10 minutes  
+
+A midpoint value of **\$21.02** per session was applied, totaling **\$168.16** for 8 sessions.
+
+Using the reweighted proportions, the weighted average cost for 3 months of smoking cessation pharmacotherapy was calculated as:
+
+**Average cost**: \$125.65
+
+```{r, eval = TRUE, echo = FALSE}
+
+smoking_cessation <- data.frame(
+  Therapy = c("Nicotine Patch", "Nicotine Gum/Lozenge", "Nicotine Spray/Inhaler", 
+              "Varenicline", "Bupropion", "Behavioral Counseling", "Average (weighted)"),
+  `Reweighted Proportion (%)` = c(31.5, 29.5, 1.6, 15.4, 10.3, 11.7, "--"),
+  `Cost (USD)` = c(71, 35, 550, 402, 25, 168.16, 125.65)
+)
+
+kable(smoking_cessation,
+      col.names = c("Therapy", "Reweighted Proportion (%)", "Cost (USD)"),
+      format.args = list(big.mark = ",", nsmall = 2),
+      caption = "Smoking Cessation Therapy Use and Cost Estimates (3-Month Duration)")
+
+```
+
+## Step 5: Estimating costs for GP visits and diagnostic spirometry 
+
+**GP visits**.  
+CPT code 99214 is a standard outpatient GP visit, the midpoint between facility and non facility visit reimbursement amounts was used which equates $94.15 (2015 Costs USD)
+
+**Spirometry**. 
+CPT code 94060 was used which equates to $61.81 (2015 Costs USD)
