@@ -221,6 +221,17 @@ run <- function(max_n_agents = NULL, input = NULL) {
   }
   reset_errors()
 
+
+  # Display record_mode information
+  current_settings <- Cget_settings()
+  record_mode_value <- current_settings$record_mode
+  record_mode_names <- c("record_mode_none", "record_mode_agent", "record_mode_event", "record_mode_some_event")
+  record_mode_name <- record_mode_names[record_mode_value + 1]
+  message("Running model with record_mode: ", record_mode_name, " (", record_mode_value, ")")
+  if (record_mode_value == 0) {
+    message("Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.")
+  }
+
   default_input<-get_input()$values
   res<-set_Cmodel_inputs(process_input(default_input))
 

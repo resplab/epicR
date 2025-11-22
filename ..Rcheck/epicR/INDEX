@@ -1,0 +1,83 @@
+Cget_agent_events       Returns all events of an agent.
+Cget_all_events         Returns all events.
+Cget_all_events_matrix
+                        Returns a matrix containing all events
+Cget_event              Returns the events stack.
+Cget_events_by_type     Returns all events of a certain type.
+Cget_inputs             Returns inputs
+Cget_n_events           Returns total number of events.
+Cget_output             Main outputs of the current run.
+Cget_output_ex          Extra outputs from the model
+Cget_runtime_stats      Returns run time stats.
+Cget_settings           Returns current settings.
+Cget_smith              Returns agent Smith.
+Cset_input_var          Sets input variables.
+Cset_settings_var       Sets model settings.
+calibrate_COPD_inc      Solves stochastically for COPD incidence rate
+                        equation.
+calibrate_explicit_mortality
+                        Calibrates explicit mortality
+calibrate_explicit_mortality2
+                        Calibrates explicit mortality by Amin
+calibrate_mi_incidence
+                        Calibrates MI incidence.
+calibrate_smoking       Calibrates smoking
+epicR-package           'epicR' package
+export_figures          Runs the model and exports an excel file with
+                        all output data
+express_matrix          Express matrix.
+get_agent_events        Returns events specific to an agent.
+get_all_events          Returns all events.
+get_default_settings    Exports default settings
+get_errors              Returns errors
+get_events_by_type      Returns certain events by type
+get_input               Returns a list of default model input values
+get_list_elements       Get list elements
+get_sample_output       Returns a sample output for a given year and
+                        gender.
+init_session            Initializes a model. Allocates memory to the C
+                        engine.
+mvrnormArma             Samples from a multivariate normal
+report_COPD_by_ctime    Reports COPD related stats.
+report_exacerbation_by_time
+                        Reports exacerbation-related stats.
+resume                  Resumes running of model.
+run                     Runs the model, after a session has been
+                        initialized.
+sanity_COPD             Basic COPD test.
+sanity_check            Basic tests of model functionality. Serious
+                        issues if the test does not pass.
+terminate_session       Terminates a session and releases allocated
+                        memory.
+test_case_detection     Returns results of Case Detection strategies
+validate_COPD           Returns results of validation tests for COPD
+validate_comorbidity    Returns results of validation tests for
+                        comorbidities
+validate_diagnosis      Returns results of validation tests for
+                        diagnosis
+validate_exacerbation   Returns results of validation tests for
+                        exacerbation rates
+validate_gpvisits       Returns results of validation tests for GP
+                        visits
+validate_lung_function
+                        Returns results of validation tests for lung
+                        function
+validate_medication     Returns results of validation tests for
+                        medication module.
+validate_mortality      Returns results of validation tests for
+                        mortality rate
+validate_overdiagnosis
+                        Returns results of validation tests for
+                        overdiagnosis
+validate_payoffs        Returns results of validation tests for
+                        payoffs, costs and QALYs
+validate_population     Returns simulated vs. predicted population
+                        table and a plot
+validate_smoking        Returns results of validation tests for smoking
+                        module.
+validate_survival       Returns the Kaplan Meier curve comparing COPD
+                        and non-COPD
+validate_symptoms       Returns results of validation tests for
+                        Symptoms
+validate_treatment      Returns results of validation tests for
+                        Treatment

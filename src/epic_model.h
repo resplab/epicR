@@ -216,16 +216,16 @@ struct input {
     double min_cd_age;
     double min_cd_pack_years;
     double min_cd_symptoms;
-    double case_detection_methods[3][20];
-    double case_detection_methods_eversmokers[3][20];
-    double case_detection_methods_symptomatic[3][20];
+    double case_detection_methods[3][4];
+    double case_detection_methods_eversmokers[3][5];
+    double case_detection_methods_symptomatic[3][2];
   } diagnosis;
 
   struct {
     double ln_rate_betas[10];
     double ln_rate_intercept_sd;
     double rate_severity_intercept_rho;
-    double logit_severity_betas[10];
+    double logit_severity_betas[9];
     double logit_severity_intercept_sd;
     double exac_end_rate[4];
     double p_death[4];
@@ -233,7 +233,7 @@ struct input {
   } exacerbation;
 
   struct {
-    double bg_cost_by_stage[4];
+    double bg_cost_by_stage[5];
     double exac_dcost[4];
     double cost_case_detection;
     double cost_outpatient_diagnosis;
@@ -246,7 +246,7 @@ struct input {
 
   struct {
     double bg_util_by_stage[5];
-    double exac_dutil[4][2];
+    double exac_dutil[4][4];
   } utility;
 
   struct {
@@ -291,9 +291,9 @@ struct input {
 
   struct {
     double ln_h_start_betas_by_sex[8][2];
-    double medication_ln_hr_exac[5];
-    double medication_costs[32];
-    double medication_utility[32];
+    double medication_ln_hr_exac[16];
+    double medication_costs[16];
+    double medication_utility[16];
     double medication_adherence;
     double ln_h_start_betas_by_class[5][8];
     double ln_h_stop_betas_by_class[5][8];

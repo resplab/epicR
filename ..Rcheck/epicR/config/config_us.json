@@ -1,0 +1,631 @@
+{
+  "jurisdiction": "us",
+  "global_parameters": {
+    "age0": 40,
+    "time_horizon": 20,
+    "discount_cost": "PLACEHOLDER_US_DISCOUNT_COST",
+    "discount_qaly": "PLACEHOLDER_US_DISCOUNT_QALY",
+    "closed_cohort": 0,
+    "age0_metadata": {
+      "help": "Starting age in the model",
+      "ref": ""
+    },
+    "time_horizon_metadata": {
+      "help": "Model time horizon",
+      "ref": ""
+    },
+    "discount_cost_metadata": {
+      "help": "Discounting for cost outcomes",
+      "ref": ""
+    },
+    "discount_qaly_metadata": {
+      "help": "Discounting for QALY outcomes",
+      "ref": ""
+    },
+    "closed_cohort_metadata": {
+      "help": "Whether the model should run as closed_cohort, open-population by default",
+      "ref": ""
+    }
+  },
+  "agent": {
+    "p_female": "PLACEHOLDER_US_P_FEMALE",
+    "height_0_betas": "PLACEHOLDER_US_HEIGHT_BETAS",
+    "height_0_sd": "PLACEHOLDER_US_HEIGHT_SD",
+    "weight_0_betas": "PLACEHOLDER_US_WEIGHT_BETAS",
+    "weight_0_sd": "PLACEHOLDER_US_WEIGHT_SD",
+    "height_weight_rho": "PLACEHOLDER_US_HEIGHT_WEIGHT_RHO",
+    "p_prevalence_age": "PLACEHOLDER_US_AGE_PYRAMID",
+    "p_incidence_age": "calculated",
+    "p_bgd_by_sex": {
+      "male": "PLACEHOLDER_US_MORTALITY_MALE",
+      "female": "PLACEHOLDER_US_MORTALITY_FEMALE"
+    },
+    "l_inc_betas": "PLACEHOLDER_US_INCIDENCE_BETAS",
+    "ln_h_bgd_betas": "PLACEHOLDER_US_BGD_HAZARD_BETAS",
+    "p_female_metadata": {
+      "help": "Proportion of females in the population",
+      "ref": "Model assumption"
+    },
+    "height_0_betas_metadata": {
+      "help": "Regression coefficients for estimating height (in meters) at baseline",
+      "ref": ""
+    },
+    "height_0_sd_metadata": {
+      "help": "SD representing heterogeneity in baseline height",
+      "ref": ""
+    },
+    "weight_0_betas_metadata": {
+      "help": "Regression coefficients for estimating weight (in Kg) at baseline",
+      "ref": ""
+    },
+    "weight_0_sd_metadata": {
+      "help": "SD representing heterogeneity in baseline weight",
+      "ref": ""
+    },
+    "height_weight_rho_metadata": {
+      "help": "Correlation coefficient between weight and height at baseline",
+      "ref": ""
+    },
+    "p_prevalence_age_metadata": {
+      "help": "Age pyramid at baseline",
+      "ref": "From config for us"
+    },
+    "p_incidence_age_metadata": {
+      "help": "Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration",
+      "ref": ""
+    },
+    "p_bgd_by_sex_metadata": {
+      "help": "Life table",
+      "ref": "Life table for us"
+    },
+    "l_inc_betas_metadata": {
+      "help": "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration",
+      "ref": "If closed cohort is enabled, incidence population will be turned off."
+    },
+    "ln_h_bgd_betas_metadata": {
+      "help": "Increased Longevity Over time and effect of other variables",
+      "ref": ""
+    }
+  },
+  "smoking": {
+    "logit_p_current_smoker_0_betas": "PLACEHOLDER_US_SMOKING_CURRENT_BETAS",
+    "logit_p_never_smoker_con_not_current_0_betas": "PLACEHOLDER_US_SMOKING_NEVER_BETAS",
+    "minimum_smoking_prevalence": "PLACEHOLDER_US_MIN_SMOKING_PREV",
+    "mortality_factor_current": "PLACEHOLDER_US_SMOKING_MORTALITY_CURRENT",
+    "mortality_factor_former": "PLACEHOLDER_US_SMOKING_MORTALITY_FORMER",
+    "pack_years_0_betas": "PLACEHOLDER_US_PACK_YEARS_BETAS",
+    "pack_years_0_sd": "PLACEHOLDER_US_PACK_YEARS_SD",
+    "ln_h_inc_betas": "PLACEHOLDER_US_SMOKING_INC_BETAS",
+    "ln_h_ces_betas": "PLACEHOLDER_US_SMOKING_CES_BETAS",
+    "smoking_ces_coefficient": "PLACEHOLDER_US_SMOKING_CES_COEFF",
+    "smoking_cessation_adherence": "PLACEHOLDER_US_SMOKING_CES_ADHERENCE",
+    "logit_p_current_smoker_0_betas_metadata": {
+      "help": "Probability of being a current smoker at the time of creation",
+      "ref": ""
+    },
+    "logit_p_never_smoker_con_not_current_0_betas_metadata": {
+      "help": "Probability of being a never-smoker conditional on not being current smoker, at the time of creation",
+      "ref": ""
+    },
+    "minimum_smoking_prevalence_metadata": {
+      "help": "Minimum Smoking Prevalence",
+      "ref": ""
+    },
+    "mortality_factor_current_metadata": {
+      "help": "Mortality ratio for current smokers vs. non-smokers by sex and age group",
+      "ref": "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+    },
+    "mortality_factor_former_metadata": {
+      "help": "Mortality ratio for former smokers vs. non-smokers by sex and age group",
+      "ref": "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+    },
+    "pack_years_0_betas_metadata": {
+      "help": "Regression equations for determining the pack-years of smoking at the time of creation (for smokers)",
+      "ref": ""
+    },
+    "pack_years_0_sd_metadata": {
+      "help": "Standard deviation for variation in pack-years among individuals (current or former smokers)",
+      "ref": ""
+    },
+    "ln_h_inc_betas_metadata": {
+      "help": "Log-hazard of starting smoking (incidence or relapse)",
+      "ref": ""
+    },
+    "ln_h_ces_betas_metadata": {
+      "help": "Log-hazard of smoking cessation",
+      "ref": "Diagnosis coefficient from Wu et al. BMC Public Health 2006"
+    },
+    "smoking_ces_coefficient_metadata": {
+      "help": "Coefficient for the decay rate of smoking cessaton treatment, default is 100",
+      "ref": ""
+    },
+    "smoking_cessation_adherence_metadata": {
+      "help": "Proportion adherent to smoking cessation treatment",
+      "ref": ""
+    }
+  },
+  "COPD": {
+    "logit_p_COPD_betas_by_sex": {
+      "male": "PLACEHOLDER_US_COPD_PREV_MALE",
+      "female": "PLACEHOLDER_US_COPD_PREV_FEMALE"
+    },
+    "ln_h_COPD_betas_by_sex": {
+      "male": "PLACEHOLDER_US_COPD_INC_MALE",
+      "female": "PLACEHOLDER_US_COPD_INC_FEMALE"
+    },
+    "logit_p_COPD_betas_by_sex_metadata": {
+      "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
+      "ref": "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term"
+    },
+    "ln_h_COPD_betas_by_sex_metadata": {
+      "help": "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)",
+      "ref": "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)"
+    }
+  },
+  "lung_function": {
+    "fev1_0_prev_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_PREV_MALE",
+      "female": "PLACEHOLDER_US_FEV1_PREV_FEMALE"
+    },
+    "fev1_0_prev_sd_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_PREV_SD_MALE",
+      "female": "PLACEHOLDER_US_FEV1_PREV_SD_FEMALE"
+    },
+    "fev1_0_inc_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_INC_MALE",
+      "female": "PLACEHOLDER_US_FEV1_INC_FEMALE"
+    },
+    "fev1_0_inc_sd_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_INC_SD_MALE",
+      "female": "PLACEHOLDER_US_FEV1_INC_SD_FEMALE"
+    },
+    "fev1_0_ZafarCMAJ_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_ZAFAR_MALE",
+      "female": "PLACEHOLDER_US_FEV1_ZAFAR_FEMALE"
+    },
+    "pred_fev1_betas_by_sex": {
+      "male": "PLACEHOLDER_US_PRED_FEV1_MALE",
+      "female": "PLACEHOLDER_US_PRED_FEV1_FEMALE"
+    },
+    "fev1_betas_by_sex": {
+      "male": "PLACEHOLDER_US_FEV1_DECLINE_MALE",
+      "female": "PLACEHOLDER_US_FEV1_DECLINE_FEMALE"
+    },
+    "dfev1_sigmas": "PLACEHOLDER_US_FEV1_SIGMAS",
+    "dfev1_re_rho": "PLACEHOLDER_US_FEV1_RHO",
+    "fev1_0_prev_betas_by_sex_metadata": {
+      "help": "Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)",
+      "ref": "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
+    },
+    "fev1_0_prev_sd_by_sex_metadata": {
+      "help": "SD of FEV1 at time of creation for those with COPD (separately by sex)",
+      "ref": ""
+    },
+    "fev1_0_inc_betas_by_sex_metadata": {
+      "help": "Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)",
+      "ref": "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
+    },
+    "fev1_0_inc_sd_by_sex_metadata": {
+      "help": "SD of FEV1 at time of development of COPD (separately by sex)",
+      "ref": ""
+    },
+    "fev1_0_ZafarCMAJ_by_sex_metadata": {
+      "help": "Regression coefficients for mean of FEV1 at time of creation with COPD or development of COPD based on Zafar's CMAJ. Used for conditional normal distribution in FEV1 decline equations.  (separately by sex)",
+      "ref": "Zafari Z, Sin DD, Postma DS, Lofdahl CG, Vonk J, Bryan S, Lam S, Tammemagi CM, Khakban R, Man SP, Tashkin D. Individualized prediction of lung-function decline in chronic obstructive pulmonary disease. Canadian Medical Association Journal. 2016 Oct 4;188(14):1004-11."
+    },
+    "pred_fev1_betas_by_sex_metadata": {
+      "help": "Coefficients for calculation of predicted FEV1 based on individual characteristics",
+      "ref": ""
+    },
+    "fev1_betas_by_sex_metadata": {
+      "help": "Regression equations (mixed-effects model) for rate of FEV1 decline",
+      "ref": ""
+    },
+    "dfev1_sigmas_metadata": {
+      "help": "Sigmas in G Matrix for FEV1 decline",
+      "ref": ""
+    },
+    "dfev1_re_rho_metadata": {
+      "help": "Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline",
+      "ref": "G Matrix Zafari CMAJ 2016 - Modified"
+    }
+  },
+  "exacerbation": {
+    "ln_rate_betas": "PLACEHOLDER_US_EXAC_RATE_BETAS",
+    "ln_rate_intercept_sd": "PLACEHOLDER_US_EXAC_RATE_SD",
+    "logit_severity_betas": "PLACEHOLDER_US_EXAC_SEVERITY_BETAS",
+    "logit_severity_intercept_sd": "PLACEHOLDER_US_EXAC_SEVERITY_SD",
+    "rate_severity_intercept_rho": "PLACEHOLDER_US_EXAC_RHO",
+    "exac_end_rate": "PLACEHOLDER_US_EXAC_END_RATE",
+    "logit_p_death_by_sex": {
+      "male": "PLACEHOLDER_US_EXAC_DEATH_MALE",
+      "female": "PLACEHOLDER_US_EXAC_DEATH_FEMALE"
+    },
+    "ln_rate_betas_metadata": {
+      "help": "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)",
+      "ref": "Rates from DOI: 10.2147/COPD.S13826, adjusted to account for diganosis bias. Adjusted on 2018-10-02 to match manuscript. Recalibrated on 2022-11-04, see validate_exacerbations()"
+    },
+    "ln_rate_intercept_sd_metadata": {
+      "help": "SD of the random intercept for log-hazard of exacerbation",
+      "ref": ""
+    },
+    "logit_severity_betas_metadata": {
+      "help": "Regression coefficients for the proportional odds model of exacerbation severity",
+      "ref": "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on manuscript submission"
+    },
+    "logit_severity_intercept_sd_metadata": {
+      "help": "SD of the random intercept for proportional odds model of exacerbation severity",
+      "ref": ""
+    },
+    "rate_severity_intercept_rho_metadata": {
+      "help": "Correlation coefficient between the random effect terms of rate and severity",
+      "ref": ""
+    },
+    "exac_end_rate_metadata": {
+      "help": "Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level",
+      "ref": ""
+    },
+    "logit_p_death_by_sex_metadata": {
+      "help": "Probability of death due to exacerbation according to its severity level",
+      "ref": ""
+    }
+  },
+  "symptoms": {
+    "logit_p_cough_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_COUGH_COPD_MALE",
+      "female": "PLACEHOLDER_US_COUGH_COPD_FEMALE"
+    },
+    "logit_p_cough_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_COUGH_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_COUGH_NONCOPD_FEMALE"
+    },
+    "logit_p_phlegm_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_PHLEGM_COPD_MALE",
+      "female": "PLACEHOLDER_US_PHLEGM_COPD_FEMALE"
+    },
+    "logit_p_phlegm_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_PHLEGM_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_PHLEGM_NONCOPD_FEMALE"
+    },
+    "logit_p_dyspnea_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_DYSPNEA_COPD_MALE",
+      "female": "PLACEHOLDER_US_DYSPNEA_COPD_FEMALE"
+    },
+    "logit_p_dyspnea_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_DYSPNEA_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_DYSPNEA_NONCOPD_FEMALE"
+    },
+    "logit_p_wheeze_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_WHEEZE_COPD_MALE",
+      "female": "PLACEHOLDER_US_WHEEZE_COPD_FEMALE"
+    },
+    "logit_p_wheeze_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_WHEEZE_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_WHEEZE_NONCOPD_FEMALE"
+    },
+    "covariance_COPD": "PLACEHOLDER_US_SYMPTOMS_COV_COPD",
+    "covariance_nonCOPD": "PLACEHOLDER_US_SYMPTOMS_COV_NONCOPD",
+    "logit_p_cough_COPD_by_sex_metadata": {
+      "help": "Probability of having cough for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_cough_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having cough for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_phlegm_COPD_by_sex_metadata": {
+      "help": "Probability of having phlegm for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_phlegm_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having phlegm for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_dyspnea_COPD_by_sex_metadata": {
+      "help": "Probability of having dyspnea for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_dyspnea_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having dyspnea for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_wheeze_COPD_by_sex_metadata": {
+      "help": "Probability of having wheeze for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_wheeze_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having wheeze for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "covariance_COPD_metadata": {
+      "help": "Covariance matrix for symptoms random effects in COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "covariance_nonCOPD_metadata": {
+      "help": "Covariance matrix for symptoms random effects in non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    }
+  },
+  "outpatient": {
+    "ln_rate_gpvisits_COPD_by_sex": {
+      "male": "PLACEHOLDER_US_GP_COPD_MALE",
+      "female": "PLACEHOLDER_US_GP_COPD_FEMALE"
+    },
+    "dispersion_gpvisits_COPD": "PLACEHOLDER_US_GP_COPD_DISPERSION",
+    "ln_rate_gpvisits_nonCOPD_by_sex": {
+      "male": "PLACEHOLDER_US_GP_NONCOPD_MALE",
+      "female": "PLACEHOLDER_US_GP_NONCOPD_FEMALE"
+    },
+    "dispersion_gpvisits_nonCOPD": "PLACEHOLDER_US_GP_NONCOPD_DISPERSION",
+    "rate_doctor_visit": "PLACEHOLDER_US_DOCTOR_VISIT_RATE",
+    "p_specialist": "PLACEHOLDER_US_SPECIALIST_PROB",
+    "ln_rate_gpvisits_COPD_by_sex_metadata": {
+      "help": "Rate of GP visits for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "dispersion_gpvisits_COPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in COPD patients",
+      "ref": ""
+    },
+    "ln_rate_gpvisits_nonCOPD_by_sex_metadata": {
+      "help": "Rate of GP visits for Non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "dispersion_gpvisits_nonCOPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in non-COPD patients",
+      "ref": ""
+    },
+    "rate_doctor_visit_metadata": {
+      "help": "Rate of doctor visits",
+      "ref": ""
+    },
+    "p_specialist_metadata": {
+      "help": "Probability of specialist visit",
+      "ref": ""
+    }
+  },
+  "diagnosis": {
+    "p_case_detection": "PLACEHOLDER_US_CASE_DETECTION_PROB",
+    "case_detection_start_end_yrs": "PLACEHOLDER_US_CASE_DETECTION_YEARS",
+    "years_btw_case_detection": "PLACEHOLDER_US_CASE_DETECTION_INTERVAL",
+    "min_cd_age": "PLACEHOLDER_US_MIN_CD_AGE",
+    "min_cd_pack_years": "PLACEHOLDER_US_MIN_CD_PACK_YEARS",
+    "min_cd_symptoms": "PLACEHOLDER_US_MIN_CD_SYMPTOMS",
+    "case_detection_methods": "PLACEHOLDER_US_CASE_DETECTION_METHODS",
+    "case_detection_methods_eversmokers": "PLACEHOLDER_US_CASE_DETECTION_EVERSMOKERS",
+    "case_detection_methods_symptomatic": "PLACEHOLDER_US_CASE_DETECTION_SYMPTOMATIC",
+    "logit_p_prevalent_diagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_PREV_DIAG_MALE",
+      "female": "PLACEHOLDER_US_PREV_DIAG_FEMALE"
+    },
+    "logit_p_diagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_DIAG_MALE",
+      "female": "PLACEHOLDER_US_DIAG_FEMALE"
+    },
+    "p_hosp_diagnosis": "PLACEHOLDER_US_HOSP_DIAG",
+    "logit_p_overdiagnosis_by_sex": {
+      "male": "PLACEHOLDER_US_OVERDIAG_MALE",
+      "female": "PLACEHOLDER_US_OVERDIAG_FEMALE"
+    },
+    "p_correct_overdiagnosis": "PLACEHOLDER_US_CORRECT_OVERDIAG",
+    "p_case_detection_metadata": {
+      "help": "Probability of recieving case detection in each year given they meet the selection criteria",
+      "ref": "Only applies if case_detection_start_year less than time_horizon."
+    },
+    "case_detection_start_end_yrs_metadata": {
+      "help": "Years in which case detection programme is to begin and end, respectively.",
+      "ref": "Acts as on on/off switch for case detection. Default is 100 i.e. case detection is off. To apply case detection, start year must be less than the time horizon. If case detection is to be administered for entire time horizon then start year would be zero and end year >= time horizon."
+    },
+    "years_btw_case_detection_metadata": {
+      "help": "Number of years between case detection",
+      "ref": ""
+    },
+    "min_cd_age_metadata": {
+      "help": "Minimum age for recieving case detection",
+      "ref": ""
+    },
+    "min_cd_pack_years_metadata": {
+      "help": "Minimum pack-years smoking to recieve case detection",
+      "ref": ""
+    },
+    "min_cd_symptoms_metadata": {
+      "help": "Set to 1 if only patients with symptoms should recieve case detection at baseline",
+      "ref": ""
+    },
+    "case_detection_methods_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods in the total population",
+      "ref": "Sichletidis et al 2011"
+    },
+    "case_detection_methods_eversmokers_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods among ever smokers",
+      "ref": "Haroon et al. BMJ Open 2015"
+    },
+    "case_detection_methods_symptomatic_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods among ever smokers",
+      "ref": "CanCOLD analysed on Sept 9, 2019"
+    },
+    "logit_p_prevalent_diagnosis_by_sex_metadata": {
+      "help": "Probability of being diagnosed for patients with prevalent COPD",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-08-09"
+    },
+    "logit_p_diagnosis_by_sex_metadata": {
+      "help": "Probability of being diagnosed for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "p_hosp_diagnosis_metadata": {
+      "help": "Probability of hospital diagnosis",
+      "ref": ""
+    },
+    "logit_p_overdiagnosis_by_sex_metadata": {
+      "help": "Probability of being overdiagnosed for non-COPD subjects",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-07-16"
+    },
+    "p_correct_overdiagnosis_metadata": {
+      "help": "Probability of correcting overdiagnosis",
+      "ref": ""
+    }
+  },
+  "medication": {
+    "medication_adherence": "PLACEHOLDER_US_MED_ADHERENCE",
+    "medication_ln_hr_exac": "PLACEHOLDER_US_MED_EXAC_EFFECTS",
+    "medication_costs": "PLACEHOLDER_US_MED_COSTS",
+    "medication_utility": "PLACEHOLDER_US_MED_UTILITY",
+    "medication_adherence_metadata": {
+      "help": "Proportion adherent to medication",
+      "ref": ""
+    },
+    "medication_ln_hr_exac_metadata": {
+      "help": "Rate reduction in exacerbations due to treatment",
+      "ref": "ICS/LABA: Annual Rate Ratio of Comibation Therapy (Salmeterol and Fluticasone Propionate) vs. Placebo from TORCH (doi: 10.1056/NEJMoa063070), ICS: Annual Rate Ratio between Fluticasone vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2), LABA: Annual Rate Ratio between Salmeterol vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2), LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
+    },
+    "medication_costs_metadata": {
+      "help": "Costs of treatment",
+      "ref": "BC administrative data"
+    },
+    "medication_utility_metadata": {
+      "help": "Utility addition from treatment",
+      "ref": "Lambe et al. Thorax 2019"
+    }
+  },
+  "comorbidity": {
+    "logit_p_mi_betas_by_sex": {
+      "male": "PLACEHOLDER_US_MI_PREV_MALE",
+      "female": "PLACEHOLDER_US_MI_PREV_FEMALE"
+    },
+    "ln_h_mi_betas_by_sex": {
+      "male": "PLACEHOLDER_US_MI_INC_MALE",
+      "female": "PLACEHOLDER_US_MI_INC_FEMALE"
+    },
+    "p_mi_death": "PLACEHOLDER_US_MI_DEATH",
+    "logit_p_stroke_betas_by_sex": {
+      "male": "PLACEHOLDER_US_STROKE_PREV_MALE",
+      "female": "PLACEHOLDER_US_STROKE_PREV_FEMALE"
+    },
+    "ln_h_stroke_betas_by_sex": {
+      "male": "PLACEHOLDER_US_STROKE_INC_MALE",
+      "female": "PLACEHOLDER_US_STROKE_INC_FEMALE"
+    },
+    "p_stroke_death": "PLACEHOLDER_US_STROKE_DEATH",
+    "logit_p_hf_betas_by_sex": {
+      "male": "PLACEHOLDER_US_HF_PREV_MALE",
+      "female": "PLACEHOLDER_US_HF_PREV_FEMALE"
+    },
+    "ln_h_hf_betas_by_sex": {
+      "male": "PLACEHOLDER_US_HF_INC_MALE",
+      "female": "PLACEHOLDER_US_HF_INC_FEMALE"
+    },
+    "logit_p_mi_betas_by_sex_metadata": {
+      "help": "Logit probability of myocardial infarction by sex",
+      "ref": ""
+    },
+    "ln_h_mi_betas_by_sex_metadata": {
+      "help": "Log-hazard of myocardial infarction by sex",
+      "ref": ""
+    },
+    "p_mi_death_metadata": {
+      "help": "Probability of death from myocardial infarction",
+      "ref": ""
+    },
+    "logit_p_stroke_betas_by_sex_metadata": {
+      "help": "Logit probability of stroke by sex",
+      "ref": ""
+    },
+    "ln_h_stroke_betas_by_sex_metadata": {
+      "help": "Log-hazard of stroke by sex",
+      "ref": ""
+    },
+    "p_stroke_death_metadata": {
+      "help": "Probability of death from stroke",
+      "ref": ""
+    },
+    "logit_p_hf_betas_by_sex_metadata": {
+      "help": "Logit probability of heart failure by sex",
+      "ref": ""
+    },
+    "ln_h_hf_betas_by_sex_metadata": {
+      "help": "Log-hazard of heart failure by sex",
+      "ref": ""
+    }
+  },
+  "cost": {
+    "bg_cost_by_stage": "PLACEHOLDER_US_BG_COSTS",
+    "exac_dcost": "PLACEHOLDER_US_EXAC_COSTS",
+    "cost_case_detection": "PLACEHOLDER_US_CASE_DETECTION_COST",
+    "cost_outpatient_diagnosis": "PLACEHOLDER_US_OUTPATIENT_DIAG_COST",
+    "cost_gp_visit": "PLACEHOLDER_US_GP_VISIT_COST",
+    "cost_smoking_cessation": "PLACEHOLDER_US_SMOKING_CES_COST",
+    "bg_cost_by_stage_metadata": {
+      "help": "Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades",
+      "ref": ""
+    },
+    "exac_dcost_metadata": {
+      "help": "Incremental direct costs of exacerbations by severity levels",
+      "ref": ""
+    },
+    "cost_case_detection_metadata": {
+      "help": "Cost of case detection",
+      "ref": ""
+    },
+    "cost_outpatient_diagnosis_metadata": {
+      "help": "Cost of diagnostic spirometry",
+      "ref": ""
+    },
+    "cost_gp_visit_metadata": {
+      "help": "Cost of GP visit",
+      "ref": ""
+    },
+    "cost_smoking_cessation_metadata": {
+      "help": "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014",
+      "ref": ""
+    }
+  },
+  "utility": {
+    "bg_util_by_stage": "PLACEHOLDER_US_BG_UTILITY",
+    "exac_dutil": "PLACEHOLDER_US_EXAC_UTILITY",
+    "bg_util_by_stage_metadata": {
+      "help": "Background utilities for non-COPD, and COPD by GOLD grades",
+      "ref": ""
+    },
+    "exac_dutil_metadata": {
+      "help": "Incremental change in utility during exacerbations by severity level",
+      "ref": ""
+    }
+  },
+  "manual": {
+    "MORT_COEFF": "PLACEHOLDER_US_MORT_COEFF",
+    "smoking_intercept_k": "PLACEHOLDER_US_SMOKING_K",
+    "explicit_mortality_by_age_sex": {
+      "male": "PLACEHOLDER_US_EXPLICIT_MORT_MALE",
+      "female": "PLACEHOLDER_US_EXPLICIT_MORT_FEMALE"
+    },
+    "MORT_COEFF_metadata": {
+      "help": "Mortality coefficient",
+      "ref": ""
+    },
+    "smoking_intercept_k_metadata": {
+      "help": "Smoking intercept coefficient",
+      "ref": ""
+    },
+    "explicit_mortality_by_age_sex_metadata": {
+      "help": "Explicit mortality rates by age and sex",
+      "ref": ""
+    }
+  },
+  "test_values": {
+    "population_over_40_2015": "PLACEHOLDER_US_POPULATION_OVER_40",
+    "expected_severe_exacerbations_per_year": "PLACEHOLDER_US_EXPECTED_SEVERE_EXAC",
+    "expected_severe_exac_tolerance": "PLACEHOLDER_US_SEVERE_EXAC_TOLERANCE",
+    "population_over_40_2015_metadata": {
+      "help": "Population over 40 in 2015",
+      "ref": ""
+    },
+    "expected_severe_exacerbations_per_year_metadata": {
+      "help": "Expected severe exacerbations per year",
+      "ref": ""
+    },
+    "expected_severe_exac_tolerance_metadata": {
+      "help": "Expected severe exacerbation tolerance",
+      "ref": ""
+    }
+  }
+}
