@@ -542,19 +542,16 @@ get_input <- function(age0 = 40,
   input$medication$ln_rr_exac_by_class <- rep(log(1), length(medication_classes))  #TODO: update this to represent different medication effect
 
 
-  ### comorbidity - from config
-  input$comorbidity$logit_p_mi_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_mi_betas_by_sex, transpose = FALSE)
-  input$comorbidity$ln_h_mi_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_mi_betas_by_sex, transpose = FALSE)
-  input$comorbidity$p_mi_death <- convert_config_value(config$comorbidity$p_mi_death)
-
-  #stroke - from config
-  input$comorbidity$logit_p_stroke_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_stroke_betas_by_sex, transpose = FALSE)
-  input$comorbidity$ln_h_stroke_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_stroke_betas_by_sex, transpose = FALSE)
-  input$comorbidity$p_stroke_death <- convert_config_value(config$comorbidity$p_stroke_death)
-
-  #hf - from config
-  input$comorbidity$logit_p_hf_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_hf_betas_by_sex, transpose = FALSE)
-  input$comorbidity$ln_h_hf_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_hf_betas_by_sex, transpose = FALSE)
+  ### comorbidity - DEPRECATED (MI/stroke/HF removed from model)
+  # These inputs are no longer used - kept commented for reference
+  # input$comorbidity$logit_p_mi_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_mi_betas_by_sex, transpose = FALSE)
+  # input$comorbidity$ln_h_mi_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_mi_betas_by_sex, transpose = FALSE)
+  # input$comorbidity$p_mi_death <- convert_config_value(config$comorbidity$p_mi_death)
+  # input$comorbidity$logit_p_stroke_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_stroke_betas_by_sex, transpose = FALSE)
+  # input$comorbidity$ln_h_stroke_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_stroke_betas_by_sex, transpose = FALSE)
+  # input$comorbidity$p_stroke_death <- convert_config_value(config$comorbidity$p_stroke_death)
+  # input$comorbidity$logit_p_hf_betas_by_sex = create_matrix_from_config(config$comorbidity$logit_p_hf_betas_by_sex, transpose = FALSE)
+  # input$comorbidity$ln_h_hf_betas_by_sex = create_matrix_from_config(config$comorbidity$ln_h_hf_betas_by_sex, transpose = FALSE)
 
 
   ##cost and utility

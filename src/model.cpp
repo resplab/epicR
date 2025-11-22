@@ -191,9 +191,6 @@ List get_agent(agent *ag)
   out["last_doctor_visit_type"] = (*ag).last_doctor_visit_type;
   out["medication_status"] = (*ag).medication_status;
 
-  out["n_mi"] = (*ag).n_mi;
-  out["n_stroke"] = (*ag).n_stroke;
-
   out["p_COPD"] = (*ag).p_COPD;
 
   out["cough"] = (*ag).cough;
@@ -256,16 +253,6 @@ List Cget_smith()
 
 
 
-
-
-#define CALC_MI_ODDS(ag) (exp(input.comorbidity.logit_p_mi_betas_by_sex[0][(*ag).sex]                   \
-+input.comorbidity.logit_p_mi_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation                        \
-  +input.comorbidity.logit_p_mi_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation\
-  +input.comorbidity.logit_p_mi_betas_by_sex[3][(*ag).sex]*(*ag).pack_years                           \
-  +input.comorbidity.logit_p_mi_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status                       \
-  +input.comorbidity.logit_p_mi_betas_by_sex[5][(*ag).sex]*calendar_time                              \
-  +input.comorbidity.logit_p_mi_betas_by_sex[6][(*ag).sex]*(*ag).weight/pow((*ag).height,2)           \
-  +input.comorbidity.logit_p_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold));                              \
 
 
 #define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex]                                                                                        \
@@ -1120,69 +1107,11 @@ if(id<settings.n_base_agents)
   (*ag).medication_status=0;
   (*ag).medication_LPT=0;
 
-  //comorbidity
-  //mi
-  double mi_odds=CALC_MI_ODDS(ag);
-
-  if(rand_unif()<mi_odds/(1+mi_odds))
-  {
-    (*ag).n_mi=1;
-  }
-  else
-  {
-    (*ag).n_mi=0;
-  }
-
   //symptoms
   update_symptoms(ag);
 
   //diagnosis
   update_prevalent_diagnosis(ag);
-
-  //stroke
-  double stroke_odds=exp(input.comorbidity.logit_p_stroke_betas_by_sex[0][(*ag).sex]
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[5][(*ag).sex]*calendar_time
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[6][(*ag).sex]*(*ag).weight/pow((*ag).height,2)
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[7][(*ag).sex]*(*ag).gold
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[8][(*ag).sex]*((*ag).n_mi>0)
-                           +input.comorbidity.logit_p_stroke_betas_by_sex[9][(*ag).sex]*((*ag).n_mi)
-  );
-  if(rand_unif()<stroke_odds/(1+stroke_odds))
-  {
-    (*ag).n_stroke=1;
-  }
-  else
-  {
-    (*ag).n_stroke=0;
-  }
-
-
-  //hf
-  double hf_odds=exp(input.comorbidity.logit_p_hf_betas_by_sex[0][(*ag).sex]
-                       +input.comorbidity.logit_p_hf_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation
-                       +input.comorbidity.logit_p_hf_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation
-                       +input.comorbidity.logit_p_hf_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
-                       +input.comorbidity.logit_p_hf_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-                       +input.comorbidity.logit_p_hf_betas_by_sex[5][(*ag).sex]*calendar_time
-                       +input.comorbidity.logit_p_hf_betas_by_sex[6][(*ag).sex]*(*ag).weight/pow((*ag).height,2)
-                       +input.comorbidity.logit_p_hf_betas_by_sex[7][(*ag).sex]*(*ag).gold
-                       +input.comorbidity.logit_p_hf_betas_by_sex[8][(*ag).sex]*((*ag).n_mi>0)
-                       +input.comorbidity.logit_p_hf_betas_by_sex[9][(*ag).sex]*((*ag).n_mi)
-                       +input.comorbidity.logit_p_hf_betas_by_sex[10][(*ag).sex]*((*ag).n_stroke>0)
-                       +input.comorbidity.logit_p_hf_betas_by_sex[11][(*ag).sex]*((*ag).n_stroke)
-  );
-  if(rand_unif()<hf_odds/(1+hf_odds))
-  {
-    (*ag).hf_status=1;
-  }
-  else
-  {
-    (*ag).hf_status=0;
-  }
 
 
 

@@ -82,45 +82,7 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
 }
 
 
-#' Calibrates MI incidence.
-#' @param simple true or false.
-#' @return TODO not implemented yet.
-#' @export
-calibrate_mi_incidence <- function(simple = F) {
-  settings <- default_settings
-  settings$record_mode <- record_mode["record_mode_none"]
-  settings$n_base_agents <- 1e+05
-  settings$event_stack_size <- 0
-  init_session(settings = settings)
-
-  observed <- c(age40 = 0.001, age50 = 0.002, age60 = 0.004, age70 = 0.007, age80 = 0.011)
-
-  betas <- c(beta0 = -7, beta_age = 0.02, beta_age2 = 0.00015)
-
-  ages <- c(40, 50, 60, 70, 80)
-
-  equation <- function(betas, simple = T) {
-    if (simple)
-      return(betas[1] + betas[2] * ages + betas[3] * ages^2)
-    cat(betas, "\n")
-    # betas[3]<-betas[3]/100
-    model_input$comorbidity$ln_h_mi_betas_by_sex[1:3, 1] <<- betas
-    run()
-    temp <- Cget_output_ex()
-    res <- (temp$n_mi_by_age_sex[, 1]/temp$n_alive_by_age_sex[, 1])[c(41, 51, 61, 71, 81)]
-    cat(res, "\n")
-    return(res)
-  }
-
-  penalty <- function(x) {
-    return(sqrt(sum((log(observed) - equation(x))^2)))
-  }
-
-  res <- optim(par = betas, fn = penalty, method = "SANN")
-
-  plot(exp(equation(res$par)), type = "l")
-  lines(observed, type = "o")
-}
+# calibrate_mi_incidence removed - MI/stroke/HF deprecated
 
 
 

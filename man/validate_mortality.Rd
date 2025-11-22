@@ -9,8 +9,7 @@ validate_mortality(
   bgd = 1,
   bgd_h = 1,
   manual = 1,
-  exacerbation = 1,
-  comorbidity = 1
+  exacerbation = 1
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ validate_mortality(
 \item{manual}{a number}
 
 \item{exacerbation}{a number}
-
-\item{comorbidity}{a number}
 }
 \value{
 validation test results

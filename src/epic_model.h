@@ -26,7 +26,7 @@ using std::max;
 
 #define OUTPUT_EX_BIOMETRICS 1
 #define OUTPUT_EX_SMOKING 2
-#define OUTPUT_EX_COMORBIDITY 4
+// OUTPUT_EX_COMORBIDITY removed - MI/stroke/HF deprecated
 #define OUTPUT_EX_LUNG_FUNCTION 8
 #define OUTPUT_EX_COPD 16
 #define OUTPUT_EX_EXACERBATION 32
@@ -83,11 +83,8 @@ enum events {
   event_exacerbation_death = 7,
   event_doctor_visit = 8,
   event_medication_change = 9,
-  event_mi = 10,
-  event_stroke = 11,
-  event_hf = 12,
-  event_bgd = 13,
-  event_end = 14
+  event_bgd = 10,
+  event_end = 11
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,14 +108,6 @@ enum events {
 +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time) \
 +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
 
-#define CALC_MI_ODDS(ag) (exp(input.comorbidity.logit_p_mi_betas_by_sex[0][(*ag).sex] \
-+input.comorbidity.logit_p_mi_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation \
-+input.comorbidity.logit_p_mi_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation \
-+input.comorbidity.logit_p_mi_betas_by_sex[3][(*ag).sex]*(*ag).pack_years \
-+input.comorbidity.logit_p_mi_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status \
-+input.comorbidity.logit_p_mi_betas_by_sex[5][(*ag).sex]*calendar_time \
-+input.comorbidity.logit_p_mi_betas_by_sex[6][(*ag).sex]*(*ag).weight/pow((*ag).height,2) \
-+input.comorbidity.logit_p_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold))
 
 ////////////////////////////////////////////////////////////////////////////////
 // STRUCT DEFINITIONS
@@ -240,8 +229,6 @@ struct input {
     double cost_gp_visit;
     double cost_smoking_cessation;
     double doctor_visit_by_type[2];
-    double mi_dcost;
-    double stroke_dcost;
   } cost;
 
   struct {
@@ -276,18 +263,6 @@ struct input {
     double covariance_COPD[4][4];
     double covariance_nonCOPD[4][4];
   } symptoms;
-
-  struct {
-    double logit_p_mi_betas_by_sex[8][2];
-    double logit_p_stroke_betas_by_sex[10][2];
-    double logit_p_hf_betas_by_sex[12][2];
-    double ln_h_mi_betas_by_sex[10][2];
-    double ln_h_stroke_betas_by_sex[12][2];
-    double ln_h_hf_betas_by_sex[12][2];
-    double p_mi_death;
-    double p_stroke_death;
-    double p_hf_death;
-  } comorbidity;
 
   struct {
     double ln_h_start_betas_by_sex[8][2];
@@ -363,13 +338,6 @@ struct agent {
   double cumul_qaly;
 
   double payoffs_LPT;
-
-  int n_mi;
-  double time_since_last_mi;
-  int n_stroke;
-  double time_since_last_stroke;
-  double hf_status;
-  double time_since_hf;
 
   double tte;
   int event;
@@ -481,21 +449,7 @@ struct output_ex {
   int n_dyspnea_by_ctime_severity[1000][5];
 #endif
 
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
-  int n_mi;
-  int n_incident_mi;
-  int n_mi_by_age_sex[111][2];
-  int n_mi_by_ctime_sex[1000][2];
-  double sum_p_mi_by_ctime_sex[1000][2];
-  int n_stroke;
-  int n_incident_stroke;
-  int n_stroke_by_age_sex[111][2];
-  int n_stroke_by_ctime_sex[1000][2];
-  int n_hf;
-  int n_incident_hf;
-  int n_hf_by_age_sex[111][2];
-  int n_hf_by_ctime_sex[1000][2];
-#endif
+// OUTPUT_EX_COMORBIDITY removed - MI/stroke/HF deprecated
 
 #if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS) > 0
   double sum_weight_by_ctime_sex[1000][2];

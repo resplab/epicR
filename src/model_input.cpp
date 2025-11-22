@@ -114,16 +114,7 @@ List Cget_inputs()
       Rcpp::Named("case_detection_methods_eversmokers")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods_eversmokers),
       Rcpp::Named("case_detection_methods_symptomatic")=AS_MATRIX_DOUBLE(input.diagnosis.case_detection_methods_symptomatic)
     ),
-    Rcpp::Named("comorbidity")=Rcpp::List::create(
-      Rcpp::Named("logit_p_mi_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.logit_p_mi_betas_by_sex),
-      Rcpp::Named("ln_h_mi_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.ln_h_mi_betas_by_sex),
-      Rcpp::Named("p_mi_death")=input.comorbidity.p_mi_death,
-      Rcpp::Named("logit_p_stroke_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.logit_p_stroke_betas_by_sex),
-      Rcpp::Named("ln_h_stroke_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.ln_h_stroke_betas_by_sex),
-      Rcpp::Named("p_stroke_death")=input.comorbidity.p_stroke_death,
-      Rcpp::Named("logit_p_hf_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.logit_p_hf_betas_by_sex),
-      Rcpp::Named("ln_h_hf_betas_by_sex")=AS_MATRIX_DOUBLE(input.comorbidity.ln_h_hf_betas_by_sex)
-    ),
+    // comorbidity section removed - MI/stroke/HF deprecated
     Rcpp::Named("cost")=Rcpp::List::create(
       Rcpp::Named("bg_cost_by_stage")=AS_VECTOR_DOUBLE(input.cost.bg_cost_by_stage),
       Rcpp::Named("exac_dcost")=AS_VECTOR_DOUBLE(input.cost.exac_dcost),
@@ -272,14 +263,7 @@ int Cset_input_var(std::string name, NumericVector value)
   if(name=="utility$bg_util_by_stage") READ_R_VECTOR(value,input.utility.bg_util_by_stage);
   if(name=="utility$exac_dutil") READ_R_MATRIX(value,input.utility.exac_dutil);
 
-  if(name=="comorbidity$logit_p_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_mi_betas_by_sex);
-  if(name=="comorbidity$ln_h_mi_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_mi_betas_by_sex);
-  if(name=="comorbidity$p_mi_death") {input.comorbidity.p_mi_death=value[0]; return(0);}
-  if(name=="comorbidity$logit_p_stroke_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_stroke_betas_by_sex);
-  if(name=="comorbidity$ln_h_stroke_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_stroke_betas_by_sex);
-  if(name=="comorbidity$p_stroke_death") {input.comorbidity.p_stroke_death=value[0]; return(0);}
-  if(name=="comorbidity$logit_p_hf_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.logit_p_hf_betas_by_sex);
-  if(name=="comorbidity$ln_h_hf_betas_by_sex") READ_R_MATRIX(value,input.comorbidity.ln_h_hf_betas_by_sex);
+  // comorbidity inputs removed - MI/stroke/HF deprecated
 
   //Define your project-specific inputs here;
 

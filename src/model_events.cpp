@@ -32,13 +32,8 @@ events<-c(
     event_exacerbation_death=7,
     event_doctor_visit=8,
     event_medication_change=9,
-
-    event_mi=10,
-    event_stroke=11,
-    event_hf=12,
-
-    event_bgd=13,
-    event_end=14
+    event_bgd=10,
+    event_end=11
 )
   */
 
@@ -153,13 +148,6 @@ agent *event_end_process(agent *ag)
     }
   }
 
-#endif
-
-
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
-  output_ex.n_mi+=(*ag).n_mi;
-  output_ex.n_stroke+=(*ag).n_stroke;
-  output_ex.n_hf+=((*ag).hf_status>0);
 #endif
 
   // needed for random number maintenance
@@ -806,135 +794,6 @@ void event_exacerbation_death_process(agent *ag)
 
 
 
-////////////////////////////////////////////////////////////////////comorbidity events/////////////////////////////////////;
-double event_mi_tte(agent *ag)
-{
-  double age=(*ag).local_time+(*ag).age_at_creation;
-  double time=calendar_time+(*ag).local_time;
-  //int age_cut=floor(age);
-
-  double rate=exp(
-    input.comorbidity.ln_h_mi_betas_by_sex[0][(*ag).sex]
-  +input.comorbidity.ln_h_mi_betas_by_sex[1][(*ag).sex]*age
-    +input.comorbidity.ln_h_mi_betas_by_sex[2][(*ag).sex]*age*age
-    +input.comorbidity.ln_h_mi_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
-    +input.comorbidity.ln_h_mi_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-    +input.comorbidity.ln_h_mi_betas_by_sex[5][(*ag).sex]*time
-    +input.comorbidity.ln_h_mi_betas_by_sex[6][(*ag).sex]*((*ag).weight/pow((*ag).height,2))
-    +input.comorbidity.ln_h_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold
-    +input.comorbidity.ln_h_mi_betas_by_sex[8][(*ag).sex]*((*ag).n_mi>0)
-    +input.comorbidity.ln_h_mi_betas_by_sex[9][(*ag).sex]*(*ag).n_mi
-  );
-
-  if(rate==0) return(HUGE_VAL);
-  return(rand_exp()/rate);
-}
-
-
-
-void event_mi_process(agent *ag)
-{
-  (*ag).n_mi++;
-  (*ag).cumul_cost+=input.cost.mi_dcost;
-  if(rand_unif()<input.comorbidity.p_mi_death)
-  {
-    (*ag).alive=0;
-  }
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
-  output_ex.n_incident_mi++;
-  output_ex.n_mi_by_age_sex[(int)floor((*ag).local_time+(*ag).age_at_creation)][(*ag).sex]++;
-  output_ex.n_mi_by_ctime_sex[(int)floor((*ag).local_time+calendar_time)][(*ag).sex]++;
-#endif
-}
-
-
-
-
-
-double event_stroke_tte(agent *ag)
-{
-  double age=(*ag).local_time+(*ag).age_at_creation;
-  double time=calendar_time+(*ag).local_time;
-  //int age_cut=floor(age);
-
-  double rate=exp(
-    input.comorbidity.ln_h_stroke_betas_by_sex[0][(*ag).sex]
-  +input.comorbidity.ln_h_stroke_betas_by_sex[1][(*ag).sex]*age
-    +input.comorbidity.ln_h_stroke_betas_by_sex[2][(*ag).sex]*age*age
-    +input.comorbidity.ln_h_stroke_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
-    +input.comorbidity.ln_h_stroke_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-    +input.comorbidity.ln_h_stroke_betas_by_sex[5][(*ag).sex]*time
-    +input.comorbidity.ln_h_stroke_betas_by_sex[6][(*ag).sex]*((*ag).weight/pow((*ag).height,2))
-    +input.comorbidity.ln_h_stroke_betas_by_sex[7][(*ag).sex]*(*ag).gold
-    +input.comorbidity.ln_h_stroke_betas_by_sex[8][(*ag).sex]*((*ag).n_mi>0)
-    +input.comorbidity.ln_h_stroke_betas_by_sex[9][(*ag).sex]*(*ag).n_mi
-    +input.comorbidity.ln_h_stroke_betas_by_sex[10][(*ag).sex]*((*ag).n_stroke>0)
-    +input.comorbidity.ln_h_stroke_betas_by_sex[11][(*ag).sex]*(*ag).n_stroke
-  );
-
-  if(rate==0) return(HUGE_VAL);
-  return(rand_exp()/rate);
-}
-
-
-void event_stroke_process(agent *ag)
-{
-  (*ag).n_stroke++;
-  (*ag).cumul_cost+=input.cost.stroke_dcost;
-  if(rand_unif()<input.comorbidity.p_stroke_death)
-  {
-    (*ag).alive=0;
-  }
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
-  output_ex.n_incident_stroke++;
-  output_ex.n_stroke_by_age_sex[(int)floor((*ag).local_time+(*ag).age_at_creation)][(*ag).sex]++;
-  output_ex.n_stroke_by_ctime_sex[(int)floor((*ag).local_time+calendar_time)][(*ag).sex]++;
-#endif
-}
-
-
-
-
-
-double event_hf_tte(agent *ag)
-{
-  if((*ag).hf_status>0) return(HUGE_VAL);
-
-  double age=(*ag).local_time+(*ag).age_at_creation;
-  double time=calendar_time+(*ag).local_time;
-  //int age_cut=floor(age);
-
-  double rate=exp(
-    input.comorbidity.ln_h_hf_betas_by_sex[0][(*ag).sex]
-  +input.comorbidity.ln_h_hf_betas_by_sex[1][(*ag).sex]*age
-    +input.comorbidity.ln_h_hf_betas_by_sex[2][(*ag).sex]*age*age
-    +input.comorbidity.ln_h_hf_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
-    +input.comorbidity.ln_h_hf_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-    +input.comorbidity.ln_h_hf_betas_by_sex[5][(*ag).sex]*time
-    +input.comorbidity.ln_h_hf_betas_by_sex[6][(*ag).sex]*((*ag).weight/pow((*ag).height,2))
-    +input.comorbidity.ln_h_hf_betas_by_sex[7][(*ag).sex]*(*ag).gold
-    +input.comorbidity.ln_h_hf_betas_by_sex[8][(*ag).sex]*((*ag).n_mi>0)
-    +input.comorbidity.ln_h_hf_betas_by_sex[9][(*ag).sex]*(*ag).n_mi
-    +input.comorbidity.ln_h_hf_betas_by_sex[10][(*ag).sex]*((*ag).n_stroke>0)
-    +input.comorbidity.ln_h_hf_betas_by_sex[11][(*ag).sex]*(*ag).n_stroke
-  );
-
-  if(rate==0) return(HUGE_VAL);
-  return(rand_exp()/rate);
-}
-
-
-void event_hf_process(agent *ag)
-{
-  (*ag).hf_status=1;
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY) > 0
-  output_ex.n_incident_hf++;
-#endif
-}
-
-
-
-
 ////////////////////////////////////////////////////////////////////EVENT_bgd/////////////////////////////////////;
 double event_bgd_tte(agent *ag)
 {
@@ -942,16 +801,13 @@ double event_bgd_tte(agent *ag)
   double time=(*ag).time_at_creation+(*ag).local_time;
   int age_cut=floor(age);
 
+  // Note: ln_h_bgd_betas[4-8] were for MI/stroke/HF which are now deprecated
+  // These agent fields are always 0 so those terms have no effect
   double _or=exp(
     input.agent.ln_h_bgd_betas[0]
   +input.agent.ln_h_bgd_betas[1]*time
     +input.agent.ln_h_bgd_betas[2]*time*time
-    +input.agent.ln_h_bgd_betas[3]*age
-    +input.agent.ln_h_bgd_betas[4]*((*ag).n_mi>0)
-    +input.agent.ln_h_bgd_betas[5]*((*ag).n_mi)
-    +input.agent.ln_h_bgd_betas[6]*((*ag).n_stroke>0)
-    +input.agent.ln_h_bgd_betas[7]*((*ag).n_stroke)
-    +input.agent.ln_h_bgd_betas[8]*((*ag).hf_status));
+    +input.agent.ln_h_bgd_betas[3]*age);
 
     double ttd=HUGE_VAL;
     double p=input.agent.p_bgd_by_sex[age_cut][(int)(*ag).sex];

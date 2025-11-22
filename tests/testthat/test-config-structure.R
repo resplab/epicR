@@ -37,11 +37,11 @@ test_config_structure <- function(config_file, jurisdiction_name) {
   expect_equal(config$jurisdiction, jurisdiction_name,
                info = paste("Jurisdiction should be", jurisdiction_name))
   
-  # Required sections
+  # Required sections (comorbidity removed - MI/stroke/HF deprecated)
   required_sections <- c(
-    "global_parameters", "agent", "smoking", "COPD", "lung_function", 
-    "exacerbation", "symptoms", "outpatient", "diagnosis", "medication", 
-    "comorbidity", "cost", "utility", "manual", "test_values"
+    "global_parameters", "agent", "smoking", "COPD", "lung_function",
+    "exacerbation", "symptoms", "outpatient", "diagnosis", "medication",
+    "cost", "utility", "manual", "test_values"
   )
   
   for (section in required_sections) {
@@ -274,10 +274,10 @@ test_that("Config loading works with get_input function", {
       canada_input <- get_input(jurisdiction = "canada")
     }, regexp = NA, info = "Canada config should load successfully")
     
-    # US config should fail with placeholder error (expected behavior)
+    # US config should now load successfully with real values
     expect_error({
       us_input <- get_input(jurisdiction = "us")
-    }, regexp = "PLACEHOLDER", info = "US config should fail on placeholder values")
+    }, regexp = NA, info = "US config should load successfully with real values")
   }
 })
 

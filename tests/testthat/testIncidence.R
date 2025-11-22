@@ -1,6 +1,6 @@
 test_that("COPD incidence is set so that prevalence is independent of calendar year within GOLD and gender stratas", {
-  settings <- default_settings
-  settings$record_mode <- record_mode["record_mode_event"]
+  settings <- get_default_settings()
+  settings$record_mode <- epicR:::session_env$record_mode["record_mode_event"]
   init_session(settings = settings)
   run()
   data <- as.data.frame(Cget_all_events_matrix())

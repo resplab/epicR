@@ -612,10 +612,9 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' @param bgd_h a number
 #' @param manual a number
 #' @param exacerbation a number
-#' @param comorbidity a number
 #' @return validation test results
 #' @export
-validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1, comorbidity = 1) {
+validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1) {
   message("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
   petoc()
 
@@ -637,12 +636,6 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * manual
 
   input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * exacerbation
-
-  if (comorbidity == 0) {
-    input$comorbidity$p_mi_death <- 0
-    input$comorbidity$p_stroke_death <- 0
-    input$agent$ln_h_bgd_betas[, c("b_mi", "n_mi", "b_stroke", "n_stroke", "hf")] <- 0
-  }
 
   message("working...\n")
   res <- run(input = input)
@@ -672,71 +665,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 
 
 
-#' Returns results of validation tests for comorbidities
-#'
-#' This function does not exist at the moment
-#' @param n_sim number of agents
-#' @return validation test results
-#' @export
-validate_comorbidity <- function(n_sim = 1e+05) {
-  message("Hello from EPIC! I am going to validate comorbidities for ya\n")
-  petoc()
-
-  settings <- default_settings
-  settings$record_mode <- record_mode["record_mode_none"]
-  settings$agent_stack_size <- 0
-  settings$n_base_agents <- n_sim
-  settings$event_stack_size <- 0
-  init_session(settings = settings)
-
-  input <- model_input$values
-
-  res <- run(input = input)
-  if (res < 0)
-    stop("Execution stopped.\n")
-
-  output <- Cget_output()
-  output_ex <- Cget_output_ex()
-
-  message("The prevalence of having MI at baseline was ", (output_ex$n_mi - output_ex$n_incident_mi)/output$n_agent, "\n")
-  message("The incidence of MI during follow-up was ", output_ex$n_incident_mi/output$cumul_time, "/PY\n")
-  message("The prevalence of having stroke at baseline was ", (output_ex$n_stroke - output_ex$n_incident_stroke)/output$n_agent, "\n")
-  message("The incidence of stroke during follow-up was ", output_ex$n_incident_stroke/output$cumul_time, "/PY\n")
-  message("The prevalence of having hf at baseline was ", (output_ex$n_stroke - output_ex$n_hf)/output$n_agent, "\n")
-  message("The incidence of hf during follow-up was ", output_ex$n_incident_hf/output$cumul_time, "/PY\n")
-  terminate_session()
-
-  settings$record_mode <- record_mode["record_mode_some_event"]
-  settings$events_to_record <- events[c("event_start", "event_mi", "event_stroke", "event_hf", "event_end")]
-  settings$n_base_agents <- 1e+05
-  settings$event_stack_size <- settings$n_base_agents * 1.6 * 10
-  init_session(settings = settings)
-
-  input <- model_input$values
-
-  if (run(input = input) < 0)
-    stop("Execution stopped.\n")
-  output <- Cget_output()
-  output_ex <- Cget_output_ex()
-
-  # mi_events<-get_events_by_type(events['event_mi']) stroke_events<-get_events_by_type(events['event_stroke'])
-  # hf_events<-get_events_by_type(events['event_hf']) end_events<-get_events_by_type(events['event_end'])
-
-  plot(output_ex$n_mi_by_age_sex[41:100, 1]/output_ex$n_alive_by_age_sex[41:100, 1], type = "l", col = "red")
-  lines(output_ex$n_mi_by_age_sex[41:100, 2]/output_ex$n_alive_by_age_sex[41:100, 2], type = "l", col = "blue")
-  title(cex.main = 0.5, "Incidence of MI by age and sex")
-
-  plot(output_ex$n_stroke_by_age_sex[, 1]/output_ex$n_alive_by_age_sex[, 1], type = "l", col = "red")
-  lines(output_ex$n_stroke_by_age_sex[, 2]/output_ex$n_alive_by_age_sex[, 2], type = "l", col = "blue")
-  title(cex.main = 0.5, "Incidence of Stroke by age and sex")
-
-  plot(output_ex$n_hf_by_age_sex[, 1]/output_ex$n_alive_by_age_sex[, 1], type = "l", col = "red")
-  lines(output_ex$n_hf_by_age_sex[, 2]/output_ex$n_alive_by_age_sex[, 2], type = "l", col = "blue")
-  title(cex.main = 0.5, "Incidence of HF by age and sex")
-
-  output_ex$n_mi_by_age_sex[41:111, ]/output_ex$n_alive_by_age_sex[41:111, ]
-}
-
+# validate_comorbidity removed - MI/stroke/HF deprecated
 
 
 #' Returns results of validation tests for lung function

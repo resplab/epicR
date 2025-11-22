@@ -137,22 +137,7 @@ List Cget_output_ex()
       out["n_dyspnea_by_ctime_severity"]=AS_MATRIX_INT_SIZE(output_ex.n_dyspnea_by_ctime_severity,input.global_parameters.time_horizon),
 #endif
 
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
-      out["n_mi"]=output_ex.n_mi;
-      out["n_incident_mi"]=output_ex.n_incident_mi;
-      out["n_mi_by_age_sex"]=AS_MATRIX_INT(output_ex.n_mi_by_age_sex);
-      out["n_mi_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_mi_by_ctime_sex,input.global_parameters.time_horizon);
-      out["sum_p_mi_by_ctime_sex"]=AS_MATRIX_DOUBLE_SIZE(output_ex.sum_p_mi_by_ctime_sex,input.global_parameters.time_horizon);
-
-      out["n_stroke"]=output_ex.n_stroke;
-      out["n_incident_stroke"]=output_ex.n_incident_stroke;
-      out["n_stroke_by_age_sex"]=AS_MATRIX_INT(output_ex.n_stroke_by_age_sex);
-      out["n_stroke_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_stroke_by_ctime_sex,input.global_parameters.time_horizon);
-      out["n_hf"]=output_ex.n_hf;
-      out["n_incident_hf"]=output_ex.n_incident_hf;
-      out["n_hf_by_age_sex"]=AS_MATRIX_INT(output_ex.n_hf_by_age_sex);
-      out["n_hf_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_hf_by_ctime_sex,input.global_parameters.time_horizon);
-#endif
+// OUTPUT_EX_COMORBIDITY removed - MI/stroke/HF deprecated
 
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION)>0
       out["medication_time_by_class"]=AS_VECTOR_DOUBLE(output_ex.medication_time_by_class);
@@ -240,15 +225,6 @@ void update_output_ex(agent *ag)
       output_ex.n_dyspnea_by_ctime_severity[time][(*ag).gold]+=((*ag).dyspnea>0)*1;
 #endif
 
-#if (OUTPUT_EX & OUTPUT_EX_COMORBIDITY)>0
-      double mi_odds=CALC_MI_ODDS(ag);
-      output_ex.sum_p_mi_by_ctime_sex[time][(*ag).sex]+=mi_odds/(1+mi_odds);
-      if((*ag).hf_status>0)
-      {
-        output_ex.n_hf_by_age_sex[age-1][(*ag).sex]++;
-        output_ex.n_hf_by_ctime_sex[time][(*ag).sex]++;
-      }
-#endif
   }
 #endif
 }
