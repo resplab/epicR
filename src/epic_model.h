@@ -193,11 +193,11 @@ struct input {
   } COPD;
 
   struct {
-    double fev1_0_prev_betas_by_sex[5][2];
+    double fev1_0_prev_betas_by_sex[6][2];
     double fev1_0_prev_sd_by_sex[2];
-    double fev1_0_inc_betas_by_sex[5][2];
+    double fev1_0_inc_betas_by_sex[6][2];
     double fev1_0_inc_sd_by_sex[2];
-    double pred_fev1_betas_by_sex[5][2];
+    double pred_fev1_betas_by_sex[4][2];
     double fev1_betas_by_sex[8][2];
     double dfev1_re_rho;
     double dfev1_sigmas[2];
@@ -206,7 +206,7 @@ struct input {
 
   struct {
     double logit_p_prevalent_diagnosis_by_sex[9][2];
-    double logit_p_diagnosis_by_sex[9][2];
+    double logit_p_diagnosis_by_sex[10][2];
     double p_hosp_diagnosis;
     double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
@@ -259,14 +259,14 @@ struct input {
   } outpatient;
 
   struct {
-    double logit_p_cough_COPD_by_sex[8][2];
-    double logit_p_cough_nonCOPD_by_sex[7][2];
-    double logit_p_phlegm_COPD_by_sex[8][2];
-    double logit_p_phlegm_nonCOPD_by_sex[7][2];
-    double logit_p_wheeze_COPD_by_sex[8][2];
-    double logit_p_wheeze_nonCOPD_by_sex[7][2];
-    double logit_p_dyspnea_COPD_by_sex[8][2];
-    double logit_p_dyspnea_nonCOPD_by_sex[7][2];
+    double logit_p_cough_COPD_by_sex[5][2];
+    double logit_p_cough_nonCOPD_by_sex[4][2];
+    double logit_p_phlegm_COPD_by_sex[5][2];
+    double logit_p_phlegm_nonCOPD_by_sex[4][2];
+    double logit_p_wheeze_COPD_by_sex[5][2];
+    double logit_p_wheeze_nonCOPD_by_sex[4][2];
+    double logit_p_dyspnea_COPD_by_sex[5][2];
+    double logit_p_dyspnea_nonCOPD_by_sex[4][2];
     double re_cough_sd;
     double re_phlegm_sd;
     double re_wheeze_sd;
@@ -279,10 +279,10 @@ struct input {
 
   struct {
     double logit_p_mi_betas_by_sex[8][2];
-    double logit_p_stroke_betas_by_sex[8][2];
-    double logit_p_hf_betas_by_sex[8][2];
-    double ln_h_mi_betas_by_sex[8][2];
-    double ln_h_stroke_betas_by_sex[8][2];
+    double logit_p_stroke_betas_by_sex[10][2];
+    double logit_p_hf_betas_by_sex[12][2];
+    double ln_h_mi_betas_by_sex[10][2];
+    double ln_h_stroke_betas_by_sex[12][2];
     double ln_h_hf_betas_by_sex[12][2];
     double p_mi_death;
     double p_stroke_death;
