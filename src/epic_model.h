@@ -582,4 +582,18 @@ void event_hf_process(agent *ag);
 void event_bgd_process(agent *ag);
 void event_doctor_visit_process(agent *ag);
 
+// Event time-to-event functions
+double event_fixed_tte(agent *ag);
+double event_birthday_tte(agent *ag);
+double event_smoking_change_tte(agent *ag);
+double event_COPD_tte(agent *ag);
+double event_exacerbation_tte(agent *ag);
+double event_exacerbation_end_tte(agent *ag);
+double event_exacerbation_death_tte(agent *ag);
+double event_mi_tte(agent *ag);
+double event_stroke_tte(agent *ag);
+double event_hf_tte(agent *ag);
+double event_bgd_tte(agent *ag);
+double event_doctor_visit_tte(agent *ag);
+
 #endif // EPIC_MODEL_H
