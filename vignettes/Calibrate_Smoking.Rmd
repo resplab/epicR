@@ -37,16 +37,16 @@ Here, the necessary libraries are loaded. The default simulation settings is set
 ```{r, eval = TRUE, echo = TRUE, message=FALSE}
 
 library(epicR)
-library(tidyverse)
 library(ggplot2)
 library(scales)
 library(dplyr)
+library(tidyr)
 library(knitr)
 
 # Load EPIC general settings
 settings <- get_default_settings()
 settings$record_mode <- 0
-settings$n_base_agents <- 1e6
+settings$n_base_agents <- 1e5
 init_session(settings = settings)
 
 input <- get_input(jurisdiction = "us")
@@ -97,11 +97,11 @@ input$values$smoking$minimum_smoking_prevalence <- 0.05
 
 ### Step 5: Modify intercept value to calibrate number of pack-years smoked in current and former smokers
 
-EPIC’s existing calibration function (from EPIC Canada) underpredicted
+EPIC's existing calibration function (from EPIC Canada) underpredicted
 the pack-years of adults who ever smoked to that reported in the
-Population Assessment of Tobacco and Health (PATH) Study (<https://pmc.ncbi.nlm.nih.gov/articles/PMC11601830/>). Data provided in
+Population Assessment of Tobacco and Health (PATH) Study (<https://pubmed.ncbi.nlm.nih.gov/39461637/>). Data provided in
 2018-2019 by the PATH Study estimated an average of 32.9 pack-years
-among adults who ever smoked (<https://pmc.ncbi.nlm.nih.gov/articles/PMC11601830/>). 
+among adults who ever smoked (<https://pubmed.ncbi.nlm.nih.gov/39461637/>). 
 To address this, the intercept in the logistic regression equation that
 determines pack-years of smoking at the time of creation was modified. Increasing the
 intercept to 30 improved alignment with to data from PATH.

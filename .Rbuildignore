@@ -8,4 +8,14 @@
 ^Meta$
 ^_pkgdown\.yml$
 ^pkgdown$
-.claude
+^\.claude$
+^\.Rhistory$
+^\.Rapp\.history$
+^\.\.Rcheck$
+^vignettes/\.build\.timestamp$
+^\.git$
+^\.gitignore$
+^R/\.Rapp\.history$
+^R/\.gitignore$
+^src/\.gitignore$
+^vignettes/\.gitignore$

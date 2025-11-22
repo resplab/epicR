@@ -1,0 +1,31 @@
+.event-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 1em;
+        font-family: Arial, sans-serif;
+        text-align: left;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
+    }
+
+    .event-table table th {
+        background-color: #f3f4f5;
+        font-weight: bold;
+        border-bottom: 3px solid #333;
+        padding: 10px;
+    }
+
+    .event-table table td {
+        padding: 8px;
+    }
+
+    .event-table table tr:nth-child(even) {
+        background-color: #f3f4f5;
+    }
+
+    .event-table table tr:nth-child(odd) {
+        background-color: #ffffff;
+    }

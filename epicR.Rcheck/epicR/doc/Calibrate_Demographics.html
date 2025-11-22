@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Calibrate Demographics</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Calibrate Demographics</h1>
+
+
+
+<p>In this vignette, we will walk through the process of optimizing
+parameters for two equations: the longevity equation
+<code>l_inc_betas</code> and the incidence equation
+<code>ln_h_bgd_betas</code>. Specifically, we aim to optimize these
+parameters to minimize the Root Mean Squared Error (RMSE) between the
+projected population sizes and actual U.S. population data for certain
+age groups.</p>
+<p>We perform optimization using the optim function in R, and the goal
+is to fine-tune the model’s parameters so that the RMSE is minimized. We
+focus on two specific age groups for optimization—40-59 and 60-79—while
+excluding the 80+ age group, as the RMSE for this group was
+significantly high, contributing excessively to the overall error.</p>
+<div id="step-1load-libraries-and-setup" class="section level3">
+<h3>Step 1:Load Libraries and Setup</h3>
+<p>Here, we load the necessary libraries. We also set the default
+simulation settings and specify the time horizon for the simulation (56
+years).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(epicR)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>USSimulation <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;USCensus.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;epicR&quot;</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                         </span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>settings <span class="ot">&lt;-</span> <span class="fu">get_default_settings</span>()</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>settings<span class="sc">$</span>record_mode <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>settings<span class="sc">$</span>n_base_agents <span class="ot">&lt;-</span> settings<span class="sc">$</span>n_base_agents</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">get_input</span>(<span class="at">jurisdiction =</span> <span class="st">&quot;us&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>time_horizon <span class="ot">&lt;-</span> <span class="dv">56</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>input<span class="sc">$</span>values<span class="sc">$</span>global_parameters<span class="sc">$</span>time_horizon <span class="ot">&lt;-</span> time_horizon</span></code></pre></div>
+</div>
+<div id="step-2-define-the-rmse-calculation-function" class="section level3">
+<h3>Step 2: Define the RMSE Calculation Function</h3>
+<p>The <code>calculate_rmse_optim</code> function calculates the RMSE
+for each iteration of parameter optimization. Within this function:</p>
+<ol style="list-style-type: decimal">
+<li>We assign the first three values of the parameter vector
+(params[1:3]) to l_inc_betas, which represents parameters for the
+longevity equation.</li>
+<li>The next four values (params[4:7]) are assigned to the
+ln_h_bgd_betas vector, which is part of the incidence equation. 3)The
+model is then run using the updated parameters, and we extract the
+projected population sizes (EPIC_popsize) and calculate the RMSE between
+the projected and observed U.S. population data for the specified age
+ranges.</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># RMSE function for optimization</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>calculate_rmse_optim <span class="ot">&lt;-</span> <span class="cf">function</span>(params) {</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">init_session</span>(<span class="at">settings =</span> settings)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="co">#assigning first 3 values to l_inc_betas</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  input<span class="sc">$</span>values<span class="sc">$</span>agent<span class="sc">$</span>l_inc_betas <span class="ot">&lt;-</span> params[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="co"># assigning the next 4 values to the first four ln_h_bgd_betas, others = 0</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  input<span class="sc">$</span>values<span class="sc">$</span>agent<span class="sc">$</span>ln_h_bgd_betas <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="at">intercept =</span> params[<span class="dv">4</span>],</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="at">y =</span> params[<span class="dv">5</span>],</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="at">y2 =</span> params[<span class="dv">6</span>],</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    <span class="at">age =</span> params[<span class="dv">7</span>],</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    <span class="at">b_mi =</span> <span class="dv">0</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    <span class="at">n_mi =</span> <span class="dv">0</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    <span class="at">b_stroke =</span> <span class="dv">0</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>    <span class="at">n_stroke =</span> <span class="dv">0</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>    <span class="at">hf =</span> <span class="dv">0</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  )</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="fu">run</span>(<span class="at">input=</span>input<span class="sc">$</span>values)</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="fu">Cget_output_ex</span>()</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="fu">terminate_session</span>()</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  epic_popsize_age <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="fu">seq</span>(<span class="dv">2015</span>, <span class="at">by =</span> <span class="dv">1</span>, <span class="at">length.out =</span> time_horizon),</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>                                 output<span class="sc">$</span>n_alive_by_ctime_age)</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  <span class="fu">colnames</span>(epic_popsize_age)[<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(epic_popsize_age)] <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(epic_popsize_age) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  epic_popsize_age <span class="ot">&lt;-</span> epic_popsize_age[, <span class="sc">-</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">40</span>)]</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  epic_popsize_age_long <span class="ot">&lt;-</span> epic_popsize_age <span class="sc">%&gt;%</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="sc">!</span>year, <span class="at">names_to =</span> <span class="st">&quot;age&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;EPIC_popsize&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">age=</span><span class="fu">as.integer</span>(age))</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  validate_pop_size_scaled <span class="ot">&lt;-</span> USSimulation <span class="sc">%&gt;%</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">US_popsize =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>    <span class="fu">left_join</span>(epic_popsize_age_long, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;age&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">EPIC_output_scaled =</span> <span class="fu">ifelse</span>(year <span class="sc">==</span> <span class="dv">2015</span>, US_popsize, <span class="cn">NA</span>))</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>  <span class="co"># calculate total population and growth rates</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>  total_epic_by_year <span class="ot">&lt;-</span> validate_pop_size_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a>    <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">total_EPIC_output =</span> <span class="fu">sum</span>(EPIC_popsize, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>    <span class="fu">arrange</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">growth_rate =</span> total_EPIC_output <span class="sc">/</span> <span class="fu">lag</span>(total_EPIC_output))</span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>  df_with_growth <span class="ot">&lt;-</span> validate_pop_size_scaled <span class="sc">%&gt;%</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>    <span class="fu">left_join</span>(total_epic_by_year, <span class="at">by =</span> <span class="st">&quot;year&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a>    <span class="fu">arrange</span>(year, age) <span class="sc">%&gt;%</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>    <span class="fu">group_by</span>(age) <span class="sc">%&gt;%</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>      <span class="at">EPIC_output_scaled =</span> <span class="fu">ifelse</span>(year <span class="sc">==</span> <span class="dv">2015</span>, US_popsize, <span class="cn">NA</span>),</span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>      <span class="at">EPIC_output_scaled =</span> <span class="fu">replace_na</span>(EPIC_output_scaled, <span class="fu">first</span>(US_popsize)) <span class="sc">*</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>        <span class="fu">cumprod</span>(<span class="fu">replace_na</span>(growth_rate, <span class="dv">1</span>))</span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>    )</span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>  <span class="co"># filter and sum population data by age group (40-59 and 60-79)</span></span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a>  df_summed_ranges <span class="ot">&lt;-</span> df_with_growth <span class="sc">%&gt;%</span></span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a>      <span class="at">age_group =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a>        age <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="dv">59</span> <span class="sc">~</span> <span class="st">&quot;40-59&quot;</span>,</span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a>        age <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="dv">79</span> <span class="sc">~</span> <span class="st">&quot;60-79&quot;</span></span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a>      )</span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a>    <span class="fu">filter</span>(age_group <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;40-59&quot;</span>, <span class="st">&quot;60-79&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a>    <span class="fu">group_by</span>(year, age_group) <span class="sc">%&gt;%</span></span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">total_EPIC_population =</span> <span class="fu">sum</span>(EPIC_output_scaled, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a>              <span class="at">total_US_population =</span> <span class="fu">sum</span>(US_popsize, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a>  <span class="co"># calculating RMSE of each age group across years</span></span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a>  rmse_per_range <span class="ot">&lt;-</span> df_summed_ranges <span class="sc">%&gt;%</span></span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a>    <span class="fu">group_by</span>(age_group) <span class="sc">%&gt;%</span></span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a>      <span class="at">rmse =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((total_EPIC_population <span class="sc">-</span> total_US_population)<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a>    )</span>
+<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a>  <span class="co"># summing all the age ranges</span></span>
+<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a>  total_rmse <span class="ot">&lt;-</span> <span class="fu">sum</span>(rmse_per_range<span class="sc">$</span>rmse, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a></span>
+<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Params:&quot;</span>, <span class="fu">paste</span>(params, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>)))</span>
+<span id="cb2-86"><a href="#cb2-86" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;RMSE:&quot;</span>, total_rmse))</span>
+<span id="cb2-87"><a href="#cb2-87" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" tabindex="-1"></a>  <span class="fu">return</span>(total_rmse)</span>
+<span id="cb2-89"><a href="#cb2-89" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="step-3-define-initial-guess-bounds-and-run-optimization" class="section level3">
+<h3>Step 3: Define Initial Guess, Bounds, and Run Optimization</h3>
+<p>We now define our initial guess for the parameters and set the bounds
+for each parameter. The optimization method used is L-BFGS-B, which is
+well-suited for differentiable functions with bounds. We also specify
+the stopping criterion.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>initial_guess <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3.5</span>, <span class="fl">0.0005</span>, <span class="sc">-</span><span class="fl">0.00005</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="fl">0.025</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>lower_bounds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3.6</span>, <span class="fl">0.0001</span>, <span class="sc">-</span><span class="fl">0.0001</span>, <span class="sc">-</span><span class="fl">0.0005</span>, <span class="sc">-</span><span class="fl">0.0001</span>, <span class="sc">-</span><span class="fl">0.0005</span>, <span class="sc">-</span><span class="fl">0.0005</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>upper_bounds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3.45</span>, <span class="fl">0.01</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># here i am using L-BFGS-B because RMSE is a differentiable function</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># we can define lower and upper bounds,</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#more memory efficient in BFGS, making it suitable for large parameter spaces.</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>result_optim <span class="ot">&lt;-</span> <span class="fu">optim</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">par =</span> initial_guess,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">fn =</span> calculate_rmse_optim,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">lower =</span> lower_bounds,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="at">upper =</span> upper_bounds,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;L-BFGS-B&quot;</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">maxit =</span> <span class="dv">20</span>, <span class="at">iterlim =</span> <span class="dv">3</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Optimal Growth Rate:&quot;</span>, result_optim<span class="sc">$</span>par))</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Optimized RMSE:&quot;</span>, result_optim<span class="sc">$</span>value))</span></code></pre></div>
+</div>
+<div id="step-4-optimal-parameters-and-result" class="section level3">
+<h3>Step 4: Optimal Parameters and Result</h3>
+<p>After running the optimization process, we obtain the optimal values
+for the parameters. These values minimize the RMSE for the specified age
+groups (40-59 and 60-79) and exclude the 80+ age group.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>params <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">3.48672063032448</span>, <span class="fl">0.00202274171887977</span>, <span class="sc">-</span><span class="fl">4.37035899506131e-05</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>            <span class="dv">0</span>, <span class="sc">-</span><span class="fl">1e-04</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="fl">0.000132065698144107</span>)</span></code></pre></div>
+<p>These are the optimized parameters that yield the lowest RMSE, and
+they reflect the best possible values for the model in terms of
+population size predictions for the selected age groups.</p>
+</div>
+<div id="visualization" class="section level3">
+<h3>Visualization</h3>
+<p>In this section, we visualize and compare the population trends over
+time for different age groups using the optimized parameters and U.S.
+population data.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
