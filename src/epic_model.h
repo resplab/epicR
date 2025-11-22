@@ -106,6 +106,11 @@ enum events {
 #define READ_R_VECTOR(src,dest) {if(src.size()==sizeof(dest)/sizeof(dest[0])) {std::copy(src.begin(),src.end(),&dest[0]); return(0);} else return(ERR_INCORRECT_VECTOR_SIZE);}
 #define READ_R_MATRIX(src,dest) {if(src.size()==sizeof(dest)/sizeof(dest[0][0])) {std::copy(src.begin(),src.end(),&dest[0][0]); return(0);} else return(ERR_INCORRECT_VECTOR_SIZE);}
 
+#define CALC_PRED_FEV1(ag) (input.lung_function.pred_fev1_betas_by_sex[0][(*ag).sex] \
++input.lung_function.pred_fev1_betas_by_sex[1][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time) \
++input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time) \
++input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
+
 ////////////////////////////////////////////////////////////////////////////////
 // STRUCT DEFINITIONS
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,8 +218,9 @@ struct input {
     double rate_severity_intercept_rho;
     double logit_severity_betas[10];
     double logit_severity_intercept_sd;
-    double exac_end_rate;
+    double exac_end_rate[4];
     double p_death[4];
+    double logit_p_death_by_sex[7][2];
   } exacerbation;
 
   struct {
@@ -224,6 +230,7 @@ struct input {
     double cost_outpatient_diagnosis;
     double cost_gp_visit;
     double cost_smoking_cessation;
+    double doctor_visit_by_type[2];
   } cost;
 
   struct {
@@ -562,6 +569,7 @@ void update_output_ex(agent *ag);
 // Agent functions
 agent *create_agent(agent *ag, int id);
 List get_agent(agent *ag);
+List get_agent(int id, agent agent_pointer[]);
 
 // Agent update/LPT functions (defined in model.cpp)
 void lung_function_LPT(agent *ag);
@@ -569,6 +577,9 @@ void smoking_LPT(agent *ag);
 void exacerbation_LPT(agent *ag);
 void payoffs_LPT(agent *ag);
 void medication_LPT(agent *ag);
+double update_symptoms(agent *ag);
+double update_gpvisits(agent *ag);
+double update_diagnosis(agent *ag);
 
 // Event stack functions
 int push_event(agent *ag);
