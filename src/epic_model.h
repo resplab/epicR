@@ -111,6 +111,15 @@ enum events {
 +input.lung_function.pred_fev1_betas_by_sex[2][(*ag).sex]*((*ag).age_at_creation+(*ag).local_time)*((*ag).age_at_creation+(*ag).local_time) \
 +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
 
+#define CALC_MI_ODDS(ag) (exp(input.comorbidity.logit_p_mi_betas_by_sex[0][(*ag).sex] \
++input.comorbidity.logit_p_mi_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation \
++input.comorbidity.logit_p_mi_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation \
++input.comorbidity.logit_p_mi_betas_by_sex[3][(*ag).sex]*(*ag).pack_years \
++input.comorbidity.logit_p_mi_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status \
++input.comorbidity.logit_p_mi_betas_by_sex[5][(*ag).sex]*calendar_time \
++input.comorbidity.logit_p_mi_betas_by_sex[6][(*ag).sex]*(*ag).weight/pow((*ag).height,2) \
++input.comorbidity.logit_p_mi_betas_by_sex[7][(*ag).sex]*(*ag).gold))
+
 ////////////////////////////////////////////////////////////////////////////////
 // STRUCT DEFINITIONS
 ////////////////////////////////////////////////////////////////////////////////
