@@ -191,10 +191,20 @@ struct input {
   } lung_function;
 
   struct {
-    double logit_p_prevalent_diagnosis_by_sex[8][2];
-    double logit_p_diagnosis_by_sex[8][2];
-    double logit_p_overdiagnosis_by_sex[8][2];
+    double logit_p_prevalent_diagnosis_by_sex[9][2];
+    double logit_p_diagnosis_by_sex[9][2];
+    double p_hosp_diagnosis;
+    double logit_p_overdiagnosis_by_sex[9][2];
     double p_correct_overdiagnosis;
+    double p_case_detection[20];
+    double case_detection_start_end_yrs[2];
+    double years_btw_case_detection;
+    double min_cd_age;
+    double min_cd_pack_years;
+    double min_cd_symptoms;
+    double case_detection_methods[3][20];
+    double case_detection_methods_eversmokers[3][20];
+    double case_detection_methods_symptomatic[3][20];
   } diagnosis;
 
   struct {
@@ -264,6 +274,12 @@ struct input {
   struct {
     double ln_h_start_betas_by_sex[8][2];
     double medication_ln_hr_exac[5];
+    double medication_costs[32];
+    double medication_utility[32];
+    double medication_adherence;
+    double ln_h_start_betas_by_class[5][8];
+    double ln_h_stop_betas_by_class[5][8];
+    double ln_rr_exac_by_class[5];
   } medication;
 
   struct {
