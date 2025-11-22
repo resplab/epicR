@@ -231,6 +231,8 @@ struct input {
     double cost_gp_visit;
     double cost_smoking_cessation;
     double doctor_visit_by_type[2];
+    double mi_dcost;
+    double stroke_dcost;
   } cost;
 
   struct {
