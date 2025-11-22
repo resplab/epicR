@@ -104,16 +104,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Cdeallocate_resources2
-int Cdeallocate_resources2();
-RcppExport SEXP _epicR_Cdeallocate_resources2() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(Cdeallocate_resources2());
-    return rcpp_result_gen;
-END_RCPP
-}
 // Cinit_session
 int Cinit_session();
 RcppExport SEXP _epicR_Cinit_session() {

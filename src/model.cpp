@@ -113,6 +113,15 @@ List Cget_settings()
   );
 }
 
+//' Returns the size of agent struct in bytes
+//' @return size of agent struct in bytes
+//' @export
+// [[Rcpp::export]]
+int Cget_agent_size_bytes()
+{
+  return sizeof(agent);
+}
+
 //' Returns run time stats.
 //' @return agent size as well as memory and random variable fill stats.
 //' @export
@@ -1245,58 +1254,70 @@ int Ccreate_agents()
  * @see Cdeallocate_resources() for cleanup
  * @see Cinit_session() which calls this function
  */
+// Forward declaration for use in error cleanup
+int Cdeallocate_resources();
+
 // [[Rcpp::export]]
 int Callocate_resources()
 {
-  if(runif_buffer==NULL)
-    runif_buffer=(double *)malloc(settings.runif_buffer_size*sizeof(double));
-  else
-    runif_buffer=(double *)realloc(runif_buffer,settings.runif_buffer_size*sizeof(double));
-  if(runif_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  runif_buffer_pointer=settings.runif_buffer_size; //invoikes fill next time;
+  double *temp_double;
+  agent *temp_agent;
 
-  if(rnorm_buffer==NULL)
-    rnorm_buffer=(double *)malloc(settings.rnorm_buffer_size*sizeof(double));
-  else
-    rnorm_buffer=(double *)realloc(rnorm_buffer,settings.rnorm_buffer_size*sizeof(double));
-  if(rnorm_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rnorm_buffer_pointer=settings.rnorm_buffer_size;
+  // Helper macro for safe realloc - preserves original pointer on failure
+  #define SAFE_REALLOC_DOUBLE(ptr, size) do { \
+    temp_double = (double *)realloc(ptr, (size) * sizeof(double)); \
+    if (temp_double == NULL) goto allocation_failed; \
+    ptr = temp_double; \
+  } while(0)
 
-  if(rexp_buffer==NULL)
-    rexp_buffer=(double *)malloc(settings.rexp_buffer_size*sizeof(double));
-  else
-    rexp_buffer=(double *)realloc(rexp_buffer,settings.rexp_buffer_size*sizeof(double));
-  if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rexp_buffer_pointer=settings.rexp_buffer_size;
+  #define SAFE_REALLOC_AGENT(ptr, size) do { \
+    temp_agent = (agent *)realloc(ptr, (size) * sizeof(agent)); \
+    if (temp_agent == NULL) goto allocation_failed; \
+    ptr = temp_agent; \
+  } while(0)
 
-  if(rgamma_buffer_COPD==NULL)
-    rgamma_buffer_COPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
-  else
-    rgamma_buffer_COPD=(double *)realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
-  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
+  // Allocate random number buffers
+  SAFE_REALLOC_DOUBLE(runif_buffer, settings.runif_buffer_size);
+  runif_buffer_pointer = settings.runif_buffer_size; // invokes fill next time
 
-  if(rgamma_buffer_NCOPD==NULL)
-    rgamma_buffer_NCOPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
-  else
-    rgamma_buffer_NCOPD=(double *)realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
-  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
+  SAFE_REALLOC_DOUBLE(rnorm_buffer, settings.rnorm_buffer_size);
+  rnorm_buffer_pointer = settings.rnorm_buffer_size;
 
-  if(agent_stack==NULL)
-    agent_stack=(agent *)malloc(settings.agent_stack_size*sizeof(agent));
-  else
-    agent_stack=(agent *)realloc(agent_stack,settings.agent_stack_size*sizeof(agent));
-  if(agent_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  agent_stack_pointer=0;
+  SAFE_REALLOC_DOUBLE(rexp_buffer, settings.rexp_buffer_size);
+  rexp_buffer_pointer = settings.rexp_buffer_size;
 
-  if(event_stack==NULL)
-    event_stack=(agent *)malloc(settings.event_stack_size*sizeof(agent));
-  else
-    event_stack=(agent *)realloc(event_stack,settings.event_stack_size*sizeof(agent));
-  if(event_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
+  SAFE_REALLOC_DOUBLE(rgamma_buffer_COPD, settings.rgamma_buffer_size);
+  rgamma_buffer_pointer_COPD = settings.rgamma_buffer_size;
+
+  SAFE_REALLOC_DOUBLE(rgamma_buffer_NCOPD, settings.rgamma_buffer_size);
+  rgamma_buffer_pointer_NCOPD = settings.rgamma_buffer_size;
+
+  // Allocate agent stack (always needed)
+  if (settings.agent_stack_size > 0) {
+    SAFE_REALLOC_AGENT(agent_stack, settings.agent_stack_size);
+  }
+  agent_stack_pointer = 0;
+
+  // Only allocate event_stack if record_mode requires it (saves ~2GB when not recording)
+  if (settings.record_mode != record_mode_none && settings.event_stack_size > 0) {
+    SAFE_REALLOC_AGENT(event_stack, settings.event_stack_size);
+  } else {
+    // Free any previously allocated event_stack when not recording
+    if (event_stack != NULL) {
+      free(event_stack);
+      event_stack = NULL;
+    }
+  }
+
+  #undef SAFE_REALLOC_DOUBLE
+  #undef SAFE_REALLOC_AGENT
 
   return(0);
+
+allocation_failed:
+  // Clean up all allocated memory on failure
+  Cdeallocate_resources();
+  return(ERR_MEMORY_ALLOCATION_FAILED);
 }
 
 
@@ -1341,62 +1362,6 @@ int Cdeallocate_resources()
     if(agent_stack!=NULL) {free(agent_stack); agent_stack=NULL;}
     if(event_stack!=NULL) {free(event_stack); event_stack=NULL;}
   }catch(const std::exception& e){};
-  return(0);
-}
-
-
-
-
-// [[Rcpp::export]]
-int Cdeallocate_resources2()
-{
-  try
-  {
-    delete[] runif_buffer;
-    delete[] rnorm_buffer;
-    delete[] rexp_buffer;
-    delete[] rgamma_buffer_COPD;
-    delete[] rgamma_buffer_NCOPD;
-    delete[] agent_stack;
-    delete[] event_stack;
-  }catch(const std::exception& e){};
-  return(0);
-}
-
-
-
-
-
-int Callocate_resources2()
-{
-  //runif_buffer=(double *)malloc(runif_buffer_size*sizeof(double));
-  runif_buffer=new double[settings.runif_buffer_size];
-  if(runif_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  runif_buffer_pointer=settings.runif_buffer_size; //invokes fill next time;
-
-  rnorm_buffer=new double[settings.rnorm_buffer_size];
-  if(rnorm_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rnorm_buffer_pointer=settings.rnorm_buffer_size;
-
-  rexp_buffer=new double[settings.rexp_buffer_size];
-  if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rexp_buffer_pointer=settings.rexp_buffer_size;
-
-  rgamma_buffer_COPD=new double[settings.rgamma_buffer_size];
-  if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
-
-  rgamma_buffer_NCOPD=new double[settings.rgamma_buffer_size];
-  if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
-
-  agent_stack=new agent[settings.agent_stack_size];
-  if(agent_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-  agent_stack_pointer=0;
-
-  event_stack=new agent[settings.event_stack_size];
-  if(event_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
-
   return(0);
 }
 

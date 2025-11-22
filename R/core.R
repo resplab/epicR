@@ -29,6 +29,19 @@ session_env$agent_creation_mode<-c(
 
 
 
+# Events per agent per year (empirically determined from model runs)
+.events_per_agent_per_year <- 1.7
+
+#' Get size of agent struct in bytes (from C code)
+#' @return size in bytes
+#' @export
+get_agent_size_bytes <- function() {
+  tryCatch(
+    Cget_agent_size_bytes(),
+    error = function(e) 800  # Fallback estimate if C function not available
+  )
+}
+
 default_settings <- list(record_mode = session_env$record_mode["record_mode_none"],
                          events_to_record = c(0),
                          agent_creation_mode = session_env$agent_creation_mode["agent_creation_mode_one"],
@@ -40,7 +53,7 @@ default_settings <- list(record_mode = session_env$record_mode["record_mode_none
                          rexp_buffer_size = 5e4,
                          rgamma_buffer_size = 5e4,
                          agent_stack_size = 0,
-                         event_stack_size = 5e4 * 1.7 * 30)
+                         event_stack_size = NULL)  # NULL means auto-calculate
 
 #' Exports default settings
 #' @return default settings
@@ -48,6 +61,96 @@ default_settings <- list(record_mode = session_env$record_mode["record_mode_none
 get_default_settings<-function()
 {
   return(default_settings)
+}
+
+#' Calculate recommended event_stack_size for a given number of agents
+#' @param n_agents number of agents to simulate
+#' @param time_horizon simulation time horizon in years (default 20)
+#' @return recommended event_stack_size
+#' @export
+calc_event_stack_size <- function(n_agents, time_horizon = 20) {
+  events_per_agent <- .events_per_agent_per_year * time_horizon
+  return(ceiling(n_agents * events_per_agent))
+}
+
+#' Estimate memory required for simulation
+#' @param n_agents number of agents
+#' @param record_mode recording mode (0=none, 1=agent, 2=event, 3=some_event)
+#' @param time_horizon simulation time horizon in years
+#' @return estimated memory in bytes
+#' @export
+estimate_memory_required <- function(n_agents, record_mode = 0, time_horizon = 20) {
+  agent_size <- get_agent_size_bytes()
+
+  # Random number buffers (5 buffers * 50000 * 8 bytes)
+  buffer_mem <- 5 * 5e4 * 8
+
+  # Agent stack (usually 0)
+  agent_mem <- 0
+
+  # Event stack (only when recording)
+  if (record_mode != 0) {
+    event_stack_size <- calc_event_stack_size(n_agents, time_horizon)
+    event_mem <- event_stack_size * agent_size
+  } else {
+    event_mem <- 0
+  }
+
+  return(buffer_mem + agent_mem + event_mem)
+}
+
+#' Get available system memory (platform-specific)
+#' @return available memory in bytes
+#' @export
+get_available_memory <- function() {
+  tryCatch({
+    os <- Sys.info()["sysname"]
+
+    if (os == "Linux") {
+      # Linux: read from /proc/meminfo
+      if (file.exists("/proc/meminfo")) {
+        meminfo <- readLines("/proc/meminfo", n = 10)
+        # Prefer MemAvailable (accounts for caches), fallback to MemFree
+        avail_line <- grep("^MemAvailable:", meminfo, value = TRUE)
+        if (length(avail_line) == 0) {
+          avail_line <- grep("^MemFree:", meminfo, value = TRUE)
+        }
+        if (length(avail_line) > 0) {
+          mem_kb <- as.numeric(gsub("[^0-9]", "", avail_line[1]))
+          return(mem_kb * 1024)  # Convert KB to bytes
+        }
+      }
+    } else if (os == "Darwin") {
+      # macOS: use vm_stat
+      vm_stat <- system("vm_stat", intern = TRUE)
+      # Parse page size (usually 4096 bytes)
+      page_size <- 4096
+      page_line <- grep("page size", vm_stat, value = TRUE)
+      if (length(page_line) > 0) {
+        page_size <- as.numeric(gsub("[^0-9]", "", page_line))
+      }
+      # Get free + inactive pages (available for use)
+      free_line <- grep("Pages free:", vm_stat, value = TRUE)
+      inactive_line <- grep("Pages inactive:", vm_stat, value = TRUE)
+      free_pages <- if (length(free_line) > 0) as.numeric(gsub("[^0-9]", "", free_line)) else 0
+      inactive_pages <- if (length(inactive_line) > 0) as.numeric(gsub("[^0-9]", "", inactive_line)) else 0
+      return((free_pages + inactive_pages) * page_size)
+    } else if (os == "Windows") {
+      # Windows: use wmic command
+      wmic_output <- system("wmic OS get FreePhysicalMemory /value", intern = TRUE)
+      mem_line <- grep("FreePhysicalMemory", wmic_output, value = TRUE)
+      if (length(mem_line) > 0) {
+        mem_kb <- as.numeric(gsub("[^0-9]", "", mem_line))
+        return(mem_kb * 1024)  # Convert KB to bytes
+      }
+    }
+
+    # Fallback: assume 4GB available
+    return(4e9)
+  }, error = function(e) {
+    # If anything fails, assume 4GB available
+    return(4e9)
+  })
 }
 
 
@@ -62,12 +165,57 @@ init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
   if (exists("Cdeallocate_resources"))
     Cdeallocate_resources()
+
+  # Get time_horizon from input parameters for memory calculation
+  input_params <- get_input()
+  time_horizon <- input_params$values$global_parameters$time_horizon
+  if (is.null(time_horizon)) time_horizon <- 20  # default
+
+  # Auto-calculate event_stack_size if not specified (NULL)
+  if (is.null(settings$event_stack_size)) {
+    if (settings$record_mode == 0) {
+      # No recording needed, minimal allocation
+      settings$event_stack_size <- 0
+    } else {
+      # Calculate based on n_base_agents and time_horizon
+      settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
+    }
+  }
+
+  # Check available memory before attempting allocation
+  required_mem <- estimate_memory_required(settings$n_base_agents, settings$record_mode, time_horizon)
+  available_mem <- get_available_memory()
+
+  if (required_mem > available_mem * 0.8) {  # Leave 20% headroom
+    required_gb <- required_mem / 1e9
+    available_gb <- available_mem / 1e9
+    stop(sprintf(
+      "Insufficient memory for simulation. Required: %.1f GB, Available: %.1f GB. ",
+      required_gb, available_gb),
+      "Try reducing n_base_agents or use record_mode_none (record_mode=0) if you don't need to record events.",
+      call. = FALSE)
+  }
+
   if (!is.null(settings))
     apply_settings(settings)
-  get_input()
   Cinit_session()
-  session_env$initialized  <- TRUE
-  return(Callocate_resources())
+
+  # Allocate memory and check for errors
+  alloc_result <- Callocate_resources()
+  if (alloc_result != 0) {
+    session_env$initialized <- FALSE
+    current_settings <- Cget_settings()
+    est_memory_gb <- estimate_memory_required(current_settings$n_base_agents,
+                                               current_settings$record_mode, time_horizon) / 1e9
+    stop(sprintf(
+      "Memory allocation failed (error code: %d). Estimated memory required: %.1f GB. ",
+      alloc_result, est_memory_gb),
+      "Try reducing n_base_agents or use record_mode_none if you don't need to record events.",
+      call. = FALSE)
+  }
+
+  session_env$initialized <- TRUE
+  return(alloc_result)
 }
 
 #' Terminates a session and releases allocated memory.

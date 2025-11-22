@@ -51,10 +51,6 @@ Cdeallocate_resources <- function() {
     .Call(`_epicR_Cdeallocate_resources`)
 }
 
-Cdeallocate_resources2 <- function() {
-    .Call(`_epicR_Cdeallocate_resources2`)
-}
-
 Cinit_session <- function() {
     .Call(`_epicR_Cinit_session`)
 }

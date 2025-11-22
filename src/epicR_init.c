@@ -11,7 +11,6 @@
 extern SEXP _epicR_Callocate_resources();
 extern SEXP _epicR_Ccreate_agents();
 extern SEXP _epicR_Cdeallocate_resources();
-extern SEXP _epicR_Cdeallocate_resources2();
 extern SEXP _epicR_Cget_agent(SEXP);
 extern SEXP _epicR_Cget_agent_events(SEXP);
 extern SEXP _epicR_Cget_all_events();
@@ -38,7 +37,6 @@ static const R_CallMethodDef CallEntries[] = {
   {"_epicR_Callocate_resources",    (DL_FUNC) &_epicR_Callocate_resources,    0},
   {"_epicR_Ccreate_agents",         (DL_FUNC) &_epicR_Ccreate_agents,         0},
   {"_epicR_Cdeallocate_resources",  (DL_FUNC) &_epicR_Cdeallocate_resources,  0},
-  {"_epicR_Cdeallocate_resources2", (DL_FUNC) &_epicR_Cdeallocate_resources2, 0},
   {"_epicR_Cget_agent",             (DL_FUNC) &_epicR_Cget_agent,             1},
   {"_epicR_Cget_agent_events",      (DL_FUNC) &_epicR_Cget_agent_events,      1},
   {"_epicR_Cget_all_events",        (DL_FUNC) &_epicR_Cget_all_events,        0},
