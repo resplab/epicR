@@ -24,45 +24,6 @@ Cget_runtime_stats <- function() {
     .Call(`_epicR_Cget_runtime_stats`)
 }
 
-#' Samples from a multivariate normal
-#' @param n number of samples to be taken
-#' @param mu the mean
-#' @param sigma the covariance matrix
-#' @return the multivariate normal sample
-#' @export
-mvrnormArma <- function(n, mu, sigma) {
-    .Call(`_epicR_mvrnormArma`, n, mu, sigma)
-}
-
-Xrexp <- function(n, rate) {
-    .Call(`_epicR_Xrexp`, n, rate)
-}
-
-#' Returns inputs
-#' @return all inputs
-#' @export
-Cget_inputs <- function() {
-    .Call(`_epicR_Cget_inputs`)
-}
-
-#' Sets input variables.
-#' @param name a string
-#' @param value a number
-#' @return 0 if successful
-#' @export
-Cset_input_var <- function(name, value) {
-    .Call(`_epicR_Cset_input_var`, name, value)
-}
-
-#' Returns a sample output for a given year and gender.
-#' @param year a number
-#' @param sex a number, 0 for male and 1 for female
-#' @return that specific output
-#' @export
-get_sample_output <- function(year, sex) {
-    .Call(`_epicR_get_sample_output`, year, sex)
-}
-
 Cget_agent <- function(id) {
     .Call(`_epicR_Cget_agent`, id)
 }
@@ -74,22 +35,32 @@ Cget_smith <- function() {
     .Call(`_epicR_Cget_smith`)
 }
 
-#' Main outputs of the current run.
-#' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
-#' @export
-Cget_output <- function() {
-    .Call(`_epicR_Cget_output`)
-}
-
-#' Extra outputs from the model
-#' @return Extra outputs from the model.
-#' @export
-Cget_output_ex <- function() {
-    .Call(`_epicR_Cget_output_ex`)
-}
-
 Ccreate_agents <- function() {
     .Call(`_epicR_Ccreate_agents`)
+}
+
+Callocate_resources <- function() {
+    .Call(`_epicR_Callocate_resources`)
+}
+
+Cget_pointers <- function() {
+    .Call(`_epicR_Cget_pointers`)
+}
+
+Cdeallocate_resources <- function() {
+    .Call(`_epicR_Cdeallocate_resources`)
+}
+
+Cdeallocate_resources2 <- function() {
+    .Call(`_epicR_Cdeallocate_resources2`)
+}
+
+Cinit_session <- function() {
+    .Call(`_epicR_Cinit_session`)
+}
+
+Cmodel <- function(max_n_agents) {
+    .Call(`_epicR_Cmodel`, max_n_agents)
 }
 
 #' Returns the events stack.
@@ -137,27 +108,56 @@ Cget_all_events_matrix <- function() {
     .Call(`_epicR_Cget_all_events_matrix`)
 }
 
-Callocate_resources <- function() {
-    .Call(`_epicR_Callocate_resources`)
+#' Returns inputs
+#' @return all inputs
+#' @export
+Cget_inputs <- function() {
+    .Call(`_epicR_Cget_inputs`)
 }
 
-Cget_pointers <- function() {
-    .Call(`_epicR_Cget_pointers`)
+#' Sets input variables.
+#' @param name a string
+#' @param value a number
+#' @return 0 if successful
+#' @export
+Cset_input_var <- function(name, value) {
+    .Call(`_epicR_Cset_input_var`, name, value)
 }
 
-Cdeallocate_resources <- function() {
-    .Call(`_epicR_Cdeallocate_resources`)
+#' Returns a sample output for a given year and gender.
+#' @param year a number
+#' @param sex a number, 0 for male and 1 for female
+#' @return that specific output
+#' @export
+get_sample_output <- function(year, sex) {
+    .Call(`_epicR_get_sample_output`, year, sex)
 }
 
-Cdeallocate_resources2 <- function() {
-    .Call(`_epicR_Cdeallocate_resources2`)
+#' Main outputs of the current run.
+#' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
+#' @export
+Cget_output <- function() {
+    .Call(`_epicR_Cget_output`)
 }
 
-Cinit_session <- function() {
-    .Call(`_epicR_Cinit_session`)
+#' Extra outputs from the model
+#' @return Extra outputs from the model.
+#' @export
+Cget_output_ex <- function() {
+    .Call(`_epicR_Cget_output_ex`)
 }
 
-Cmodel <- function(max_n_agents) {
-    .Call(`_epicR_Cmodel`, max_n_agents)
+#' Samples from a multivariate normal
+#' @param n number of samples to be taken
+#' @param mu the mean
+#' @param sigma the covariance matrix
+#' @return the multivariate normal sample
+#' @export
+mvrnormArma <- function(n, mu, sigma) {
+    .Call(`_epicR_mvrnormArma`, n, mu, sigma)
+}
+
+Xrexp <- function(n, rate) {
+    .Call(`_epicR_Xrexp`, n, rate)
 }
 
