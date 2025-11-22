@@ -223,25 +223,30 @@ struct input {
 
   struct {
     double rate_doctor_visit;
-    double ln_rate_gpvisits_COPD_by_sex[6][2];
-    double ln_rate_gpvisits_NCOPD_by_sex[6][2];
+    double p_specialist;
+    double ln_rate_gpvisits_COPD_by_sex[8][2];
+    double ln_rate_gpvisits_nonCOPD_by_sex[7][2];
+    double dispersion_gpvisits_COPD;
+    double dispersion_gpvisits_nonCOPD;
   } outpatient;
 
   struct {
     double logit_p_cough_COPD_by_sex[8][2];
-    double logit_p_cough_NCOPD_by_sex[7][2];
+    double logit_p_cough_nonCOPD_by_sex[7][2];
     double logit_p_phlegm_COPD_by_sex[8][2];
-    double logit_p_phlegm_NCOPD_by_sex[7][2];
+    double logit_p_phlegm_nonCOPD_by_sex[7][2];
     double logit_p_wheeze_COPD_by_sex[8][2];
-    double logit_p_wheeze_NCOPD_by_sex[7][2];
+    double logit_p_wheeze_nonCOPD_by_sex[7][2];
     double logit_p_dyspnea_COPD_by_sex[8][2];
-    double logit_p_dyspnea_NCOPD_by_sex[7][2];
+    double logit_p_dyspnea_nonCOPD_by_sex[7][2];
     double re_cough_sd;
     double re_phlegm_sd;
     double re_wheeze_sd;
     double re_dyspnea_sd;
     double re_cough_phlegm_rho;
     double re_wheeze_dyspnea_rho;
+    double covariance_COPD[4][4];
+    double covariance_nonCOPD[4][4];
   } symptoms;
 
   struct {
@@ -523,6 +528,7 @@ int rand_NegBin(double rate, double dispersion, bool use_COPD_gamma);
 int rand_NegBin_COPD(double rate, double dispersion);
 int rand_NegBin_NCOPD(double rate, double dispersion);
 void rbvnorm(double rho, double x[2]);
+arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma);
 int runif_fill();
 int rnorm_fill();
 int rexp_fill();
