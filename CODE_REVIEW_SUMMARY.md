@@ -175,38 +175,48 @@ Added comprehensive Doxygen-style documentation to:
 
 ## File Modularization Preparation
 
-### Comprehensive Header File: epic_model.h (506 lines)
+### Reference Header File: epic_model.h (506 lines)
 
-A comprehensive header file `epic_model.h` has been created to facilitate future modularization of model.cpp. This header contains:
+A comprehensive reference header file `epic_model.h` has been created to document the structure of model.cpp and facilitate future modularization. This header contains:
 
-- All struct definitions (settings_struct, input_struct, agent, output_struct, output_ex_struct)
-- All enum definitions (errors, record_mode, agent_creation_mode, medication_classes, event_type)
-- Extern declarations for all global variables
-- Function declarations for all internal functions
+- Struct definitions (settings, runtime_stats, input, agent, output, output_ex)
+- Enum definitions (errors, record_mode, agent_creation_mode, medication_classes, event_type)
+- Extern declarations for global variables
+- Function declarations for internal functions
 - Utility macros (AS_VECTOR_DOUBLE, READ_R_VECTOR, etc.)
 - Constants (OUTPUT_EX_*, MAX_AGE)
 
-**Why Not Split model.cpp Now:**
+**Note:** The header file is provided as REFERENCE DOCUMENTATION. It is NOT currently included by model.cpp due to the complexity issues described below.
 
-After careful analysis, complete file splitting was deferred for the following reasons:
+### Why Complete Modularization Was Not Implemented
 
-1. **R's `[[Rcpp::export]]` system** - Many functions in model.cpp are exported to R and tightly integrated with the Rcpp framework. Splitting these requires careful handling of RcppExports.cpp regeneration.
+Full modularization was attempted but reverted due to critical complexity issues:
 
-2. **Interdependent global state** - The model uses extensive global state (settings, input, output, agent_stack) that all functions access. While the header declares these as extern, the actual definitions must be in exactly one translation unit.
+1. **Struct definition mismatches** - The `output_ex` struct in model.cpp uses `#ifdef OUTPUT_EX` preprocessor conditionals to conditionally include different fields. A shared header cannot easily replicate this context-dependent behavior.
 
-3. **Preprocessor conditionals** - The `#ifdef OUTPUT_EX` conditionals span multiple functions, making clean splits difficult.
+2. **`struct X { } X;` pattern** - model.cpp uses the C idiom where struct and variable share the same name (e.g., `struct settings { ... } settings;`). This creates complications for extern declarations.
 
-4. **R helper functions** - Functions like `R_runif(int n, double* address)` are internal helpers that would need to be carefully placed.
+3. **25+ Rcpp exported functions** - Functions like `Cget_inputs()`, `Cset_settings_var()`, etc. use macros like `AS_VECTOR_DOUBLE()` that depend on `array_to_Rmatrix()`. Moving functions between files requires careful dependency management.
 
-**Future Modularization Path:**
+4. **Duplicate definitions** - Simply splitting code would cause multiple definition errors at link time. Proper splitting requires removing definitions from model.cpp, which risks breaking the working code.
 
-When ready to split, maintainers can:
-1. Have model.cpp `#include "epic_model.h"`
-2. Create model_globals.cpp with global variable definitions
-3. Create model_random.cpp with RNG functions
-4. Create model_agent.cpp with agent management
-5. Create model_events.cpp with event handlers
-6. Update model.cpp to keep only Cmodel() and memory management
+### What Would Be Required for Full Modularization
+
+1. **Update epic_model.h** to exactly match model.cpp's struct definitions, including all `#ifdef` conditionals
+2. **Have model.cpp include epic_model.h** and remove all local struct/enum definitions
+3. **Create model_globals.cpp** with global variable definitions (using extern declarations from header)
+4. **Create model_random.cpp** with RNG functions (buffer management, rand_* functions)
+5. **Regenerate RcppExports.cpp** after moving `[[Rcpp::export]]` functions
+6. **Test thoroughly** - run R CMD check and all tests
+
+### Current Approach
+
+The epic_model.h file serves as:
+- Documentation of the codebase structure
+- A starting point for future modularization efforts
+- Reference for developers understanding the data structures
+
+model.cpp remains the single source of truth for all definitions and implementations.
 
 ## Remaining Recommendations (Lower Priority)
 

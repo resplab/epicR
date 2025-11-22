@@ -114,10 +114,10 @@ enum event_type {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @struct settings_struct
+ * @struct settings
  * @brief Model configuration settings
  */
-struct settings_struct {
+struct settings {
   int record_mode;
   int events_to_record[100];
   int n_events_to_record;
@@ -134,10 +134,10 @@ struct settings_struct {
 };
 
 /**
- * @struct runtime_stats_struct
+ * @struct runtime_stats
  * @brief Runtime statistics for debugging and profiling
  */
-struct runtime_stats_struct {
+struct runtime_stats {
   int agent_size;
   int n_runif_fills;
   int n_rnorm_fills;
@@ -147,10 +147,10 @@ struct runtime_stats_struct {
 };
 
 /**
- * @struct input_struct
+ * @struct input
  * @brief All model input parameters
  */
-struct input_struct {
+struct input {
   struct {
     int time_horizon;
     double y0;
@@ -366,10 +366,10 @@ struct agent {
 };
 
 /**
- * @struct output_struct
+ * @struct output
  * @brief Basic simulation output
  */
-struct output_struct {
+struct output {
   double n_agents;
   double cumul_time;
   double n_deaths;
@@ -380,10 +380,10 @@ struct output_struct {
 };
 
 /**
- * @struct output_ex_struct
+ * @struct output_ex
  * @brief Extended simulation output with yearly breakdowns
  */
-struct output_ex_struct {
+struct output_ex {
   int n_current_agents;
   int output_ex_type;
   double biometrics_by_age_sex[MAX_AGE][2][5];
@@ -410,13 +410,13 @@ extern double calendar_time;
 extern int last_id;
 
 // Settings and input
-extern settings_struct settings;
-extern runtime_stats_struct runtime_stats;
-extern input_struct input;
+extern struct settings settings;
+extern struct runtime_stats runtime_stats;
+extern struct input input;
 
 // Output
-extern output_struct output;
-extern output_ex_struct output_ex;
+extern struct output output;
+extern struct output_ex output_ex;
 
 // Agent storage
 extern agent *agent_stack;
