@@ -1251,49 +1251,49 @@ int Callocate_resources()
   if(runif_buffer==NULL)
     runif_buffer=(double *)malloc(settings.runif_buffer_size*sizeof(double));
   else
-    realloc(runif_buffer,settings.runif_buffer_size*sizeof(double));
+    runif_buffer=(double *)realloc(runif_buffer,settings.runif_buffer_size*sizeof(double));
   if(runif_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   runif_buffer_pointer=settings.runif_buffer_size; //invoikes fill next time;
 
   if(rnorm_buffer==NULL)
     rnorm_buffer=(double *)malloc(settings.rnorm_buffer_size*sizeof(double));
   else
-    realloc(rnorm_buffer,settings.rnorm_buffer_size*sizeof(double));
+    rnorm_buffer=(double *)realloc(rnorm_buffer,settings.rnorm_buffer_size*sizeof(double));
   if(rnorm_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rnorm_buffer_pointer=settings.rnorm_buffer_size;
 
   if(rexp_buffer==NULL)
     rexp_buffer=(double *)malloc(settings.rexp_buffer_size*sizeof(double));
   else
-    realloc(rexp_buffer,settings.rexp_buffer_size*sizeof(double));
+    rexp_buffer=(double *)realloc(rexp_buffer,settings.rexp_buffer_size*sizeof(double));
   if(rexp_buffer==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rexp_buffer_pointer=settings.rexp_buffer_size;
 
   if(rgamma_buffer_COPD==NULL)
     rgamma_buffer_COPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
   else
-    realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
+    rgamma_buffer_COPD=(double *)realloc(rgamma_buffer_COPD,settings.rgamma_buffer_size*sizeof(double));
   if(rgamma_buffer_COPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rgamma_buffer_pointer_COPD=settings.rgamma_buffer_size;
 
   if(rgamma_buffer_NCOPD==NULL)
     rgamma_buffer_NCOPD=(double *)malloc(settings.rgamma_buffer_size*sizeof(double));
   else
-    realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
+    rgamma_buffer_NCOPD=(double *)realloc(rgamma_buffer_NCOPD,settings.rgamma_buffer_size*sizeof(double));
   if(rgamma_buffer_NCOPD==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   rgamma_buffer_pointer_NCOPD=settings.rgamma_buffer_size;
 
   if(agent_stack==NULL)
     agent_stack=(agent *)malloc(settings.agent_stack_size*sizeof(agent));
   else
-    realloc(agent_stack,settings.agent_stack_size*sizeof(agent));
+    agent_stack=(agent *)realloc(agent_stack,settings.agent_stack_size*sizeof(agent));
   if(agent_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
   agent_stack_pointer=0;
 
   if(event_stack==NULL)
     event_stack=(agent *)malloc(settings.event_stack_size*sizeof(agent));
   else
-    realloc(event_stack,settings.event_stack_size*sizeof(agent));
+    event_stack=(agent *)realloc(event_stack,settings.event_stack_size*sizeof(agent));
   if(event_stack==NULL) return(ERR_MEMORY_ALLOCATION_FAILED);
 
   return(0);

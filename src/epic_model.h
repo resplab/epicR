@@ -188,8 +188,8 @@ struct input {
   } smoking;
 
   struct {
-    double logit_p_COPD_betas_by_sex[8][2];
-    double ln_h_COPD_betas_by_sex[8][2];
+    double logit_p_COPD_betas_by_sex[7][2];
+    double ln_h_COPD_betas_by_sex[7][2];
   } COPD;
 
   struct {
