@@ -31,6 +31,13 @@ Cget_runtime_stats <- function() {
     .Call(`_epicR_Cget_runtime_stats`)
 }
 
+#' Returns current simulation progress.
+#' @return Number of agents processed so far (last_id).
+#' @export
+Cget_progress <- function() {
+    .Call(`_epicR_Cget_progress`)
+}
+
 Cget_agent <- function(id) {
     .Call(`_epicR_Cget_agent`, id)
 }

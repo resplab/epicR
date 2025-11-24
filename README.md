@@ -186,7 +186,7 @@ pak::pkg_install('resplab/epicR')
 
 ## Simple Usage (Recommended)
 
-The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically and provides progress information:
+The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically and provides progress information including a real-time progress bar:
 
 ```r
 library(epicR)
@@ -194,7 +194,7 @@ library(epicR)
 # Run with defaults (Canada, 20 year horizon, 60,000 agents)
 results <- simulate()
 print(results$basic)
-# Shows configuration, progress messages, and elapsed time
+# Shows configuration, progress bar (10% 20% ... 100%), and elapsed time
 
 # Run for US with custom parameters
 results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)

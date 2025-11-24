@@ -35,8 +35,8 @@ list with simulation results (always includes 'basic', optionally 'extended' and
 \description{
 This is a simplified interface that handles session management automatically
 and returns the results directly. Ideal for most users. Progress information
-is displayed including: configuration summary, simulation progress, elapsed time,
-and data collection status.
+is displayed including: configuration summary, a real-time progress bar showing
+percentage completion (10%, 20%, ... 100%), elapsed time, and data collection status.
 }
 \examples{
 \dontrun{
