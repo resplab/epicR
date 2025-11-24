@@ -41,14 +41,14 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    ```
    - This should return a path to the make executable. If it returns an empty string, Rtools is not properly configured.
 
-5. **Install the remotes package**
+5. **Install the pak package**
    ```r
-   install.packages('remotes')
+   install.packages('pak')
    ```
 
 6. **Install epicR from GitHub**
    ```r
-   remotes::install_github('resplab/epicR')
+   pak::pkg_install('resplab/epicR')
    ```
 
 ### macOS (macOS 11 Big Sur or Later)
@@ -90,15 +90,15 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    ```
    - Both commands should return version information
 
-6. **Install the remotes package**
+6. **Install the pak package**
    - Open R or RStudio and run:
    ```r
-   install.packages('remotes')
+   install.packages('pak')
    ```
 
 7. **Install epicR from GitHub**
    ```r
-   remotes::install_github('resplab/epicR')
+   pak::pkg_install('resplab/epicR')
    ```
 
 ### Troubleshooting
@@ -120,7 +120,7 @@ This error occurs when gfortran is not properly installed or configured. Try the
 
   After installation, restart R and try installing the package again:
   ```r
-  remotes::install_github('resplab/epicR')
+  pak::pkg_install('resplab/epicR')
   ```
 
 - **Solution 2: Configure R to use built-in libraries** (if you prefer not to install gfortran):
@@ -170,38 +170,88 @@ If the installation is successful, you should be able to start R:
   sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
 ```
 
-4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+4. Using either an R session in Terminal or in R Studio, install the package `pak`:
 
 ```r
-install.packages ('remotes')
+install.packages('pak')
 ```
-  
+
 5. Install epicR from GitHub:
 
 ```r
-remotes::install_github('resplab/epicR')
+pak::pkg_install('resplab/epicR')
 ```
 
 # Quick Guide
 
-To run EPIC with default inputs and settings, use the code snippet below. 
-```
+## Simple Usage (Recommended)
+
+The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically and provides progress information:
+
+```r
 library(epicR)
+
+# Run with defaults (Canada, 20 year horizon, 60,000 agents)
+results <- simulate()
+print(results$basic)
+# Shows configuration, progress messages, and elapsed time
+
+# Run for US with custom parameters
+results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
+
+# Quick test with fewer agents (faster)
+results <- simulate(n_agents = 10000)
+
+# Get both basic and extended results
+results <- simulate(return_extended = TRUE)
+print(results$basic)
+print(results$extended)
+
+# Get event history (automatically enables event recording)
+results <- simulate(return_events = TRUE)
+print(head(results$events))
+
+# Get everything with custom settings
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 15,
+  n_agents = 50000,
+  return_extended = TRUE,
+  return_events = TRUE
+)
+# Returns: results$basic, results$extended, results$events
+```
+
+## Advanced Usage
+
+For advanced users who need more control (e.g., running multiple simulations in one session), you can manage sessions manually:
+
+```r
+library(epicR)
+
+# Initialize session once
 init_session()
+
+# Run multiple simulations
 run()
-Cget_output()
+results1 <- Cget_output()
+
+run()  # run again with same session
+results2 <- Cget_output()
+
+# Clean up when done
 terminate_session()
 ```
-Default inputs can be retrieved with `get_input()`, changed as needed, and resubmitted as a parameter to the run function:
-```
+
+You can also customize inputs:
+
+```r
 init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
-run(input=input$values)
+run(input = input$values)
 results <- Cget_output()
-resultsExtra <- Cget_output_ex()
 terminate_session()
-
 ```
 
 ## Jurisdiction-Specific Configuration

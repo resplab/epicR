@@ -43,42 +43,76 @@ If you haven't already installed epicR:
 
 ```{r installation, eval=FALSE}
 # Install from GitHub
-remotes::install_github('resplab/epicR')
+pak::pkg_install("resplab/epicR")
 ```
 
 ## Quick Start: Your First Simulation
 
-Let's run a basic simulation with default parameters:
+### Simple Approach (Recommended)
+
+The easiest way to run a simulation is using the `simulate()` function, which handles all session management automatically and provides progress information (configuration summary, elapsed time, and status messages):
 
 ```{r setup}
 library(epicR)
 ```
 
-### Step 1: Initialize a Session
+```{r simple-simulate, eval=FALSE}
+# Run with defaults - that's it!
+results <- simulate()
 
-EPIC is session-based, meaning you must initialize a session before running simulations. This allocates the required memory:
+# Access basic results
+print(results$basic)
 
-```{r initialize}
+# Custom parameters
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 100000
+)
+
+# Quick test with fewer agents (faster for testing)
+results <- simulate(n_agents = 10000)
+
+# Get extended results (includes both basic and extended)
+results <- simulate(return_extended = TRUE)
+print(results$extended)
+
+# Get event history (automatically sets record_mode)
+results <- simulate(return_events = TRUE)
+head(results$events)
+```
+
+### Step-by-Step Approach
+
+For more control, you can manage the session manually:
+
+#### Step 1: Initialize a Session
+
+```{r initialize, eval=FALSE}
 # Initialize with default settings
 init_session()
 ```
 
 The function returns `0` if successful.
 
-### Step 2: Run the Model
+#### Step 2: Run the Model
 
-```{r run}
+```{r run, eval=FALSE}
 # Run with default inputs
 run()
 ```
 
-### Step 3: Get Results
+#### Step 3: Get Results
 
-Retrieve the simulation results:
-
-```{r output}
+```{r output, eval=FALSE}
 results <- Cget_output()
 print(results)
+```
+
+#### Step 4: Clean Up
+
+```{r terminate, eval=FALSE}
+terminate_session()
 ```
 
 The basic output includes:

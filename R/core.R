@@ -345,32 +345,70 @@ get_all_events <- function() {
 
 
 
-#' Runs the model, after a session has been initialized.
+#' Runs the model. Auto-initializes if no session is active.
 #' @param max_n_agents maximum number of agents
 #' @param input customized input criteria
-#' @return 0 if successful.
+#' @param settings customized settings (only used if auto-initializing)
+#' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
+#' @return simulation results if successful
 #' @export
-run <- function(max_n_agents = NULL, input = NULL) {
+#' @examples
+#' \dontrun{
+#' # Simple usage - everything handled automatically
+#' results <- run()
+#'
+#' # Or with custom input
+#' input <- get_input(jurisdiction = "us", time_horizon = 10)
+#' results <- run(input = input$values)
+#'
+#' # Advanced: manual session management for multiple runs
+#' init_session()
+#' run()
+#' run()  # run again with same session
+#' terminate_session()
+#' }
+run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE) {
 
-  #Cinit_session()
-  #In the updated version (2019.02.21) user can submit partial input. So better first set the input with default values so that partial inputs are incremental.
+  # Auto-initialize if not already initialized
+  auto_initialized <- FALSE
   if (!(session_env$initialized)) {
-    stop("Session not initialized. Please use init_session() to start a new session")
+    message("No active session - initializing automatically")
+    if (is.null(settings)) {
+      settings <- get_default_settings()
+    }
+    init_session(settings = settings)
+    auto_initialized <- TRUE
   }
   reset_errors()
 
+
+  # Get default input (always needed)
+  default_input_full <- get_input()
+
+  # Display jurisdiction information
+  jurisdiction <- "canada"  # default fallback
+  if (!is.null(default_input_full$config$jurisdiction)) {
+    jurisdiction <- default_input_full$config$jurisdiction
+  }
+
+  # Show appropriate message based on whether custom input is provided
+  if (!is.null(input) && length(input) > 0) {
+    message("Running EPIC model (with custom input parameters)")
+  } else {
+    message("Running EPIC model for jurisdiction: ", toupper(jurisdiction))
+  }
 
   # Display record_mode information
   current_settings <- Cget_settings()
   record_mode_value <- current_settings$record_mode
   record_mode_names <- c("record_mode_none", "record_mode_agent", "record_mode_event", "record_mode_some_event")
   record_mode_name <- record_mode_names[record_mode_value + 1]
-  message("Running model with record_mode: ", record_mode_name, " (", record_mode_value, ")")
+  message("Record mode: ", record_mode_name, " (", record_mode_value, ")")
   if (record_mode_value == 0) {
     message("Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.")
   }
 
-  default_input<-get_input()$values
+  default_input <- default_input_full$values
   res<-set_Cmodel_inputs(process_input(default_input))
 
   if (!is.null(input) || length(input)==0)
@@ -389,6 +427,17 @@ run <- function(max_n_agents = NULL, input = NULL) {
   }
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
+    if (auto_terminate) {
+      terminate_session()
+    }
+    stop("Simulation failed")
+  }
+
+  # Auto-terminate only if explicitly requested
+  # Don't auto-terminate just because we auto-initialized
+  # (simulate() needs the session to stay open to get results)
+  if (auto_terminate) {
+    terminate_session()
   }
 
   return(res)
@@ -396,6 +445,160 @@ run <- function(max_n_agents = NULL, input = NULL) {
 }
 
 
+
+
+#' Convenience function: run simulation and return results
+#'
+#' This is a simplified interface that handles session management automatically
+#' and returns the results directly. Ideal for most users. Progress information
+#' is displayed including: configuration summary, simulation progress, elapsed time,
+#' and data collection status.
+#'
+#' @param input customized input criteria (optional)
+#' @param settings customized settings (optional)
+#' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
+#' @param time_horizon Model time horizon in years (default: 20)
+#' @param n_agents Number of agents to simulate (default: 60,000)
+#' @param return_extended whether to return extended results in addition to basic (default: FALSE)
+#' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
+#' @return list with simulation results (always includes 'basic', optionally 'extended' and 'events')
+#' @export
+#' @examples
+#' \dontrun{
+#' # Simplest usage
+#' results <- simulate()
+#' print(results$basic)
+#'
+#' # With custom parameters
+#' results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
+#'
+#' # Quick test with fewer agents
+#' results <- simulate(n_agents = 10000)
+#'
+#' # With extended output (includes both basic and extended)
+#' results <- simulate(return_extended = TRUE)
+#' print(results$basic)
+#' print(results$extended)
+#'
+#' # With event history
+#' results <- simulate(return_events = TRUE)
+#' print(results$events)  # Event matrix
+#' }
+simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
+                     time_horizon = 20, n_agents = NULL,
+                     return_extended = FALSE, return_events = FALSE) {
+  # If no custom input provided, use get_input with specified parameters
+  if (is.null(input)) {
+    input_full <- get_input(jurisdiction = jurisdiction,
+                            time_horizon = time_horizon)
+    input <- input_full$values
+  }
+
+  # Get or create settings
+  if (is.null(settings)) {
+    settings <- get_default_settings()
+  }
+
+  # Override n_base_agents if specified
+  if (!is.null(n_agents)) {
+    settings$n_base_agents <- n_agents
+  }
+
+  # If return_events is TRUE, automatically set record_mode
+  if (return_events) {
+    # Set record_mode to record_mode_event (2) to capture all events
+    settings$record_mode <- 2
+
+    # Calculate appropriate event_stack_size if not already set
+    if (is.null(settings$event_stack_size) || settings$event_stack_size == 0) {
+      settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
+    }
+  }
+
+  # Display configuration summary
+  message("=== EPIC Simulation Configuration ===")
+  message("Jurisdiction: ", toupper(jurisdiction))
+  message("Time horizon: ", time_horizon, " years")
+  message("Number of agents: ", format(settings$n_base_agents, scientific = FALSE, big.mark = ","))
+
+  if (return_events || settings$record_mode > 0) {
+    message("Event recording: ENABLED (record_mode = ", settings$record_mode, ")")
+    if (!is.null(settings$event_stack_size) && settings$event_stack_size > 0) {
+      # Calculate memory requirement and show in human-readable format
+      agent_size_bytes <- get_agent_size_bytes()
+      memory_bytes <- settings$event_stack_size * agent_size_bytes
+      memory_gb <- memory_bytes / 1e9
+
+      if (memory_gb >= 1) {
+        memory_str <- sprintf("%.2f GB", memory_gb)
+      } else {
+        memory_mb <- memory_bytes / 1e6
+        memory_str <- sprintf("%.1f MB", memory_mb)
+      }
+
+      message("Estimated memory for events: ", memory_str)
+    }
+  } else {
+    message("Event recording: DISABLED")
+  }
+  message("=====================================")
+
+  # Run WITHOUT auto-termination (we need to get results first)
+  # Use tryCatch to ensure we terminate session even if errors occur
+  tryCatch({
+    # Track simulation time and show progress
+    message("\nStarting simulation...")
+    start_time <- Sys.time()
+
+    run(input = input, settings = settings, auto_terminate = FALSE)
+
+    # Calculate and display elapsed time
+    end_time <- Sys.time()
+    elapsed <- as.numeric(difftime(end_time, start_time, units = "secs"))
+
+    if (elapsed < 60) {
+      time_msg <- sprintf("%.1f seconds", elapsed)
+    } else if (elapsed < 3600) {
+      time_msg <- sprintf("%.1f minutes", elapsed / 60)
+    } else {
+      time_msg <- sprintf("%.1f hours", elapsed / 3600)
+    }
+
+    message("Simulation completed in ", time_msg)
+    message("Collecting results...")
+
+    # Get all results BEFORE terminating session
+    results <- list(
+      basic = Cget_output()
+    )
+
+    # Add extended results if requested (in addition to basic)
+    if (return_extended) {
+      message("Collecting extended results...")
+      results$extended <- Cget_output_ex()
+    }
+
+    # Add events if requested
+    if (return_events) {
+      message("Collecting event history...")
+      results$events <- as.data.frame(Cget_all_events_matrix())
+    }
+
+    # Now terminate the session
+    terminate_session()
+
+    message("Done!\n")
+
+    return(results)
+
+  }, error = function(e) {
+    # Ensure we terminate session even on error
+    if (session_env$initialized) {
+      terminate_session()
+    }
+    stop("Simulation failed: ", e$message)
+  })
+}
 
 
 #' Resumes running of model.

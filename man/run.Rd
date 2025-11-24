@@ -2,18 +2,38 @@
 % Please edit documentation in R/core.R
 \name{run}
 \alias{run}
-\title{Runs the model, after a session has been initialized.}
+\title{Runs the model. Auto-initializes if no session is active.}
 \usage{
-run(max_n_agents = NULL, input = NULL)
+run(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE)
 }
 \arguments{
 \item{max_n_agents}{maximum number of agents}
 
 \item{input}{customized input criteria}
+
+\item{settings}{customized settings (only used if auto-initializing)}
+
+\item{auto_terminate}{whether to automatically terminate session after run (default: FALSE)}
 }
 \value{
-0 if successful.
+simulation results if successful
 }
 \description{
-Runs the model, after a session has been initialized.
+Runs the model. Auto-initializes if no session is active.
+}
+\examples{
+\dontrun{
+# Simple usage - everything handled automatically
+results <- run()
+
+# Or with custom input
+input <- get_input(jurisdiction = "us", time_horizon = 10)
+results <- run(input = input$values)
+
+# Advanced: manual session management for multiple runs
+init_session()
+run()
+run()  # run again with same session
+terminate_session()
+}
 }
