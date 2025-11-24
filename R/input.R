@@ -75,15 +75,30 @@ get_input <- function(age0 = 40,
                        jurisdiction = "canada") {
   
   # Load configuration file based on jurisdiction
-  config_file <- system.file("config", paste0("config_", jurisdiction, ".json"), package = "epicR")
-  
-  # If package not installed, try development mode path
-  if (!file.exists(config_file) || config_file == "") {
-    config_file <- file.path("inst", "config", paste0("config_", jurisdiction, ".json"))
+  # First check user's config directory
+  user_config_file <- file.path(Sys.getenv("HOME"), ".epicR", "config",
+                                paste0("config_", jurisdiction, ".json"))
+
+  if (file.exists(user_config_file)) {
+    config_file <- user_config_file
+    message(paste("Using user config file from:", config_file))
+  } else {
+    # Fall back to package config
+    config_file <- system.file("config", paste0("config_", jurisdiction, ".json"), package = "epicR")
+
+    # If package not installed, try development mode path
+    if (!file.exists(config_file) || config_file == "") {
+      config_file <- file.path("inst", "config", paste0("config_", jurisdiction, ".json"))
+    }
+
+    if (file.exists(config_file)) {
+      message(paste("Using package config file from:", config_file))
+    }
   }
-  
+
   if (!file.exists(config_file)) {
-    stop(paste("Configuration file for jurisdiction", jurisdiction, "not found. Tried:", config_file))
+    stop(paste("Configuration file for jurisdiction", jurisdiction, "not found.",
+               "\nTry running copy_configs_to_user() to set up user configs."))
   }
   
   # Load JSON configuration

@@ -5,11 +5,7 @@
 <!-- badges: end -->
 
 # epicR
-R package for Evaluation Platform in COPD (EPIC). Please refer to our published papers for more information: 
-
-Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. [https://doi.org/10.1177/0272989X18824098](https://doi.org/10.1177/0272989X18824098)
-
-Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Bryan S. Cost effectiveness of case detection strategies for the early detection of COPD. Applied Health Economics and Health Policy. 2021 Mar;19(2):203-15. [https://doi.org/10.1007/s40258-020-00616-2](https://doi.org/10.1007/s40258-020-00616-2)
+R package for Evaluation Platform in COPD (EPIC). 
 
 ## Overview
 epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
@@ -281,7 +277,51 @@ input <- get_input(jurisdiction = "canada", time_horizon = 10)
 
 ## Configuration
 
-Model parameters are stored in JSON configuration files located in `inst/config/`:
+### User-Customizable Configuration Files
+
+epicR now supports user-customizable configuration files. When you load the package for the first time, configuration files are automatically copied to your home directory at `~/.epicR/config/`, allowing you to modify model parameters without changing the package code.
+
+#### Key Features:
+- **Automatic Setup**: Config files are copied to your home directory on first load
+- **Easy Customization**: Edit JSON files in `~/.epicR/config/` to adjust parameters
+- **Automatic Detection**: The package automatically uses your custom configs
+- **Simple Reset**: Return to defaults anytime with `reset_user_configs()`
+
+#### Configuration Management Functions:
+```r
+# View config directory location
+get_user_config_dir()
+
+# Open config directory in file explorer
+open_user_config_dir()
+
+# List available jurisdictions
+list_available_jurisdictions()
+
+# Validate your configuration
+validate_config("canada", user = TRUE)
+
+# Reset to package defaults
+reset_user_configs()  # All configs
+reset_user_configs("canada")  # Specific jurisdiction
+```
+
+#### Customizing Parameters:
+```r
+# 1. Open config directory
+open_user_config_dir()
+
+# 2. Edit config_canada.json or config_us.json with your parameters
+
+# 3. Your changes are automatically used
+input <- get_input(jurisdiction = "canada")
+```
+
+For detailed instructions, see the [User Configuration Guide](USER_CONFIG_GUIDE.md).
+
+### Package Configuration Files
+
+Default configurations are stored in the package at `inst/config/`:
 
 - `config_canada.json` - Canadian parameter set (fully configured)
 - `config_us.json` - US parameter template (requires configuration)
@@ -399,12 +439,22 @@ input <- get_input(jurisdiction = "canada", closed_cohort = 1)$values
 input <- get_input(jurisdiction = "us", closed_cohort = 1)$values
 ```
 
-# Peer Models Network: EPIC on the Cloud
+## Publications with epicR
 
-The [Peer Models Network](https://www.peermodelsnetwork.com/) provides educational material abour the model. It also allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, or to access EPIC using APIs please refer to the [PMN model repository](https://models.peermodelsnetwork.com/#/)
+The following publications have used epicR for their analyses:
+
+Yan, K., Duan, K. and Johnson, K.M., 2025. Development and Validation of EPIC-USA: A COPD Policy Model for the United States. American Journal of Respiratory and Critical Care Medicine, 211(Abstracts), pp.A7130-A7130.
+
+Mountain, R., Kim, D. and Johnson, K.M., 2023. Budget impact analysis of adopting primary care–based case detection of chronic obstructive pulmonary disease in the Canadian general population. Canadian Medical Association Open Access Journal, 11(6), pp.E1048-E1058.
+
+Mountain, R., Duan, K.I. and Johnson, K.M., 2024. Benefit–harm analysis of earlier initiation of triple therapy for prevention of acute exacerbation in patients with chronic obstructive pulmonary disease. Annals of the American Thoracic Society, 21(8), pp.1139-1146.
+
+Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Bryan S. Cost effectiveness of case detection strategies for the early detection of COPD. Applied Health Economics and Health Policy. 2021 Mar;19(2):203-15. [https://doi.org/10.1007/s40258-020-00616-2](https://doi.org/10.1007/s40258-020-00616-2)
+
 
 ## Citation
 
 Please cite:
 
-```Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., … Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. https://doi.org/10.1177/0272989X18824098```
+Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. [https://doi.org/10.1177/0272989X18824098](https://doi.org/10.1177/0272989X18824098)
+
