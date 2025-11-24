@@ -360,17 +360,34 @@ run <- function(max_n_agents = NULL, input = NULL) {
   reset_errors()
 
 
+  # Get default input first to check jurisdiction
+  default_input_full <- get_input()
+
+  # Display jurisdiction information
+  # Note: If user provides custom input from a different jurisdiction,
+  # we can't detect it easily, so we show the default jurisdiction
+  jurisdiction <- "canada"  # default
+  if (!is.null(default_input_full$config$jurisdiction)) {
+    jurisdiction <- default_input_full$config$jurisdiction
+  }
+
+  if (is.null(input) || length(input) == 0) {
+    message("Running EPIC model for jurisdiction: ", toupper(jurisdiction))
+  } else {
+    message("Running EPIC model (with custom input parameters)")
+  }
+
   # Display record_mode information
   current_settings <- Cget_settings()
   record_mode_value <- current_settings$record_mode
   record_mode_names <- c("record_mode_none", "record_mode_agent", "record_mode_event", "record_mode_some_event")
   record_mode_name <- record_mode_names[record_mode_value + 1]
-  message("Running model with record_mode: ", record_mode_name, " (", record_mode_value, ")")
+  message("Record mode: ", record_mode_name, " (", record_mode_value, ")")
   if (record_mode_value == 0) {
     message("Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.")
   }
 
-  default_input<-get_input()$values
+  default_input <- default_input_full$values
   res<-set_Cmodel_inputs(process_input(default_input))
 
   if (!is.null(input) || length(input)==0)
