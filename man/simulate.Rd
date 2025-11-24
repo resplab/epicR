@@ -9,6 +9,7 @@ simulate(
   settings = NULL,
   jurisdiction = "canada",
   time_horizon = 20,
+  n_agents = NULL,
   return_extended = FALSE,
   return_events = FALSE
 )
@@ -20,7 +21,9 @@ simulate(
 
 \item{jurisdiction}{Jurisdiction for model parameters ("canada" or "us")}
 
-\item{time_horizon}{Model time horizon (default: 20)}
+\item{time_horizon}{Model time horizon in years (default: 20)}
+
+\item{n_agents}{Number of agents to simulate (default: 60,000)}
 
 \item{return_extended}{whether to return extended results in addition to basic (default: FALSE)}
 
@@ -40,7 +43,10 @@ results <- simulate()
 print(results$basic)
 
 # With custom parameters
-results <- simulate(jurisdiction = "us", time_horizon = 10)
+results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
+
+# Quick test with fewer agents
+results <- simulate(n_agents = 10000)
 
 # With extended output (includes both basic and extended)
 results <- simulate(return_extended = TRUE)

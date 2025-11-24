@@ -63,6 +63,16 @@ results <- simulate()
 # Access basic results
 print(results$basic)
 
+# Custom parameters
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 100000
+)
+
+# Quick test with fewer agents (faster for testing)
+results <- simulate(n_agents = 10000)
+
 # Get extended results (includes both basic and extended)
 results <- simulate(return_extended = TRUE)
 print(results$extended)

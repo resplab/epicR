@@ -455,7 +455,8 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @param input customized input criteria (optional)
 #' @param settings customized settings (optional)
 #' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
-#' @param time_horizon Model time horizon (default: 20)
+#' @param time_horizon Model time horizon in years (default: 20)
+#' @param n_agents Number of agents to simulate (default: 60,000)
 #' @param return_extended whether to return extended results in addition to basic (default: FALSE)
 #' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
 #' @return list with simulation results (always includes 'basic', optionally 'extended' and 'events')
@@ -467,7 +468,10 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' print(results$basic)
 #'
 #' # With custom parameters
-#' results <- simulate(jurisdiction = "us", time_horizon = 10)
+#' results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
+#'
+#' # Quick test with fewer agents
+#' results <- simulate(n_agents = 10000)
 #'
 #' # With extended output (includes both basic and extended)
 #' results <- simulate(return_extended = TRUE)
@@ -479,8 +483,8 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' print(results$events)  # Event matrix
 #' }
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
-                     time_horizon = 20, return_extended = FALSE,
-                     return_events = FALSE) {
+                     time_horizon = 20, n_agents = NULL,
+                     return_extended = FALSE, return_events = FALSE) {
   # If no custom input provided, use get_input with specified parameters
   if (is.null(input)) {
     input_full <- get_input(jurisdiction = jurisdiction,
@@ -491,6 +495,11 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
   # Get or create settings
   if (is.null(settings)) {
     settings <- get_default_settings()
+  }
+
+  # Override n_base_agents if specified
+  if (!is.null(n_agents)) {
+    settings$n_base_agents <- n_agents
   }
 
   # If return_events is TRUE, automatically set record_mode

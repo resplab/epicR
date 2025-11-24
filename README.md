@@ -191,12 +191,15 @@ The easiest way to run EPIC is with the `simulate()` function, which handles all
 ```r
 library(epicR)
 
-# Run with defaults (Canada, 20 year horizon)
+# Run with defaults (Canada, 20 year horizon, 60,000 agents)
 results <- simulate()
 print(results$basic)
 
-# Run for US with custom time horizon
-results <- simulate(jurisdiction = "us", time_horizon = 10)
+# Run for US with custom parameters
+results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
+
+# Quick test with fewer agents (faster)
+results <- simulate(n_agents = 10000)
 
 # Get both basic and extended results
 results <- simulate(return_extended = TRUE)
@@ -207,8 +210,14 @@ print(results$extended)
 results <- simulate(return_events = TRUE)
 print(head(results$events))
 
-# Get everything
-results <- simulate(return_extended = TRUE, return_events = TRUE)
+# Get everything with custom settings
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 15,
+  n_agents = 50000,
+  return_extended = TRUE,
+  return_events = TRUE
+)
 # Returns: results$basic, results$extended, results$events
 ```
 
