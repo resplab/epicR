@@ -138,6 +138,15 @@ List Cget_runtime_stats()
   );
 }
 
+//' Returns current simulation progress.
+//' @return Number of agents processed so far (last_id).
+//' @export
+// [[Rcpp::export]]
+int Cget_progress()
+{
+  return last_id;
+}
+
 
 // SECTION 3: AGENT
 ////////////////////////////////////////////////////////////////////////////////
@@ -1410,10 +1419,39 @@ int Cmodel(int max_n_agents)
 
   agent *ag;
 
+  // Progress reporting variables
+  // Use n_base_agents for progress as that's the actual target
+  int total_agents_target = settings.n_base_agents;
+  int progress_check_interval = std::max(1, total_agents_target / 100); // Update every ~1%
+  int last_percent_reported = 0;
+
+  Rprintf("Simulating %d base agents: ", total_agents_target);
+  R_FlushConsole();
+
   while(calendar_time<input.global_parameters.time_horizon && max_n_agents>0)
     //for(int i=0;i<n_agents;i++)
   {
     max_n_agents--;
+
+    // Check for user interrupt and report progress periodically
+    // Use last_id which tracks total agents created
+    if (last_id > 0 && last_id % progress_check_interval == 0 && last_id <= total_agents_target) {
+      Rcpp::checkUserInterrupt(); // Allow user to interrupt with Ctrl+C
+
+      // Report progress in 10% increments using R's console output
+      int current_percent = (last_id * 100) / total_agents_target;
+      // Report in 10% increments (10, 20, 30... 90, 100)
+      int milestone = (current_percent / 10) * 10;
+      if (milestone > last_percent_reported && milestone <= 100) {
+        if (milestone % 50 == 0) {
+          Rprintf("%d%%\n", milestone);
+        } else {
+          Rprintf("%d%% ", milestone);
+        }
+        R_FlushConsole();
+        last_percent_reported = milestone;
+      }
+    }
     //calendar_time=0; NO! calendar_time is set to zero at init_session. Cmodel should be resumable;
 
 

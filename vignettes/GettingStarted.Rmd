@@ -50,7 +50,7 @@ pak::pkg_install("resplab/epicR")
 
 ### Simple Approach (Recommended)
 
-The easiest way to run a simulation is using the `simulate()` function, which handles all session management automatically and provides progress information (configuration summary, elapsed time, and status messages):
+The easiest way to run a simulation is using the `simulate()` function, which handles all session management automatically and provides progress information (configuration summary, real-time progress bar, elapsed time, and status messages):
 
 ```{r setup}
 library(epicR)
@@ -131,7 +131,7 @@ The basic output includes:
 
 Always terminate the session when done to free memory:
 
-```{r terminate}
+```{r terminate-manual}
 terminate_session()
 ```
 

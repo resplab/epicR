@@ -1,0 +1,435 @@
+---
+title: "EPIC Branch Comparison: Current vs Main"
+format:
+  html:
+    toc: true
+    code-fold: false
+execute:
+  warning: false
+  message: false
+---
+
+## Overview
+
+This document compares simulation results between:
+
+- **Current branch**: `claude/review-des-c-engine-011CV4qkDnfPtDLa1nkYgxQG`
+- **Main branch**: `master`
+
+For both Canadian and US populations.
+
+## Setup
+
+```{r}
+#| label: setup
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+
+# Configuration
+N_AGENTS <- 1e5
+TIME_HORIZON <- 20
+SEED <- 12345
+```
+
+## Helper Functions
+
+```{r}
+#| label: helpers
+
+run_simulation <- function(jurisdiction = "ca", n_agents = N_AGENTS,
+                           time_horizon = TIME_HORIZON, seed = SEED) {
+  set.seed(seed)
+
+  settings <- epicR::get_default_settings()
+  settings$n_base_agents <- n_agents
+
+  epicR::init_session(settings = settings)
+
+  input <- epicR::get_input(jurisdiction = jurisdiction)
+  input$values$global_parameters$time_horizon <- time_horizon
+
+  epicR::run(input = input$values)
+
+  results <- epicR::Cget_output()
+  results_ex <- epicR::Cget_output_ex()
+
+  epicR::terminate_session()
+
+  list(
+    basic = results,
+    extended = results_ex
+  )
+}
+
+extract_key_metrics <- function(results) {
+  r <- results$basic
+  data.frame(
+    n_agents = r$n_agents,
+    cumul_time = r$cumul_time,
+    n_deaths = r$n_deaths,
+    n_COPD = r$n_COPD,
+    n_exac_mild = r$n_exac_mild,
+    n_exac_mod = r$n_exac_mod,
+    n_exac_sev = r$n_exac_sev,
+    n_exac_vsev = r$n_exac_vsev,
+    total_cost = r$total_cost,
+    total_qaly = r$total_qaly
+  )
+}
+
+compare_metrics <- function(current, main, tolerance = 0.05) {
+  comparison <- data.frame(
+    metric = names(current),
+    current = as.numeric(current[1, ]),
+    main = as.numeric(main[1, ])
+  ) |>
+    mutate(
+      abs_diff = current - main,
+      pct_diff = ifelse(main != 0, (current - main) / main * 100, NA),
+      within_tolerance = abs(pct_diff) <= tolerance * 100 | is.na(pct_diff),
+      status = ifelse(within_tolerance, "PASS", "REVIEW")
+    )
+
+  comparison
+}
+```
+
+## Run Current Branch Simulations
+
+```{r}
+#| label: current-branch
+
+cat("Running simulations on CURRENT branch...\n")
+cat("Package version:", as.character(packageVersion("epicR")), "\n\n")
+
+# Canadian simulation
+cat("Running Canadian simulation...\n")
+results_ca_current <- run_simulation(jurisdiction = "ca")
+metrics_ca_current <- extract_key_metrics(results_ca_current)
+
+# US simulation
+cat("Running US simulation...\n")
+results_us_current <- run_simulation(jurisdiction = "us")
+metrics_us_current <- extract_key_metrics(results_us_current)
+
+cat("Current branch simulations complete.\n")
+```
+
+## Switch to Main Branch and Run
+
+```{r}
+#| label: switch-to-main
+#| eval: false
+
+# This chunk saves current results and provides instructions
+# for manual branch switching
+
+# Save current branch results
+saveRDS(
+  list(
+    ca = metrics_ca_current,
+    us = metrics_us_current,
+    ca_full = results_ca_current,
+    us_full = results_us_current
+  ),
+  file = "results_current_branch.rds"
+)
+
+cat("\n")
+cat("=== MANUAL STEP REQUIRED ===\n")
+cat("1. Save this file\n")
+cat("2. In terminal, run:\n")
+cat("   cd /home/amin/epicR\n")
+cat("   git stash\n")
+cat("   git checkout master\n")
+cat("   R CMD INSTALL .\n")
+cat("3. Restart R session\n
+")
+cat("4. Run the 'main-branch' chunk below\n")
+cat("============================\n")
+```
+
+```{r}
+#| label: main-branch
+#| eval: false
+
+# Run this AFTER switching to main branch and reinstalling
+
+cat("Running simulations on MAIN branch...\n")
+cat("Package version:", as.character(packageVersion("epicR")), "\n\n")
+
+# Canadian simulation
+cat("Running Canadian simulation...\n")
+results_ca_main <- run_simulation(jurisdiction = "ca")
+metrics_ca_main <- extract_key_metrics(results_ca_main)
+
+# US simulation
+cat("Running US simulation...\n
+")
+results_us_main <- run_simulation(jurisdiction = "us")
+metrics_us_main <- extract_key_metrics(results_us_main)
+
+# Save main branch results
+saveRDS(
+  list(
+    ca = metrics_ca_main,
+    us = metrics_us_main,
+    ca_full = results_ca_main,
+    us_full = results_us_main
+  ),
+  file = "results_main_branch.rds"
+)
+
+cat("Main branch simulations complete.\n")
+cat("\nSwitch back to feature branch:\n")
+cat("   git checkout claude/review-des-c-engine-011CV4qkDnfPtDLa1nkYgxQG\n")
+cat("   git stash pop\n")
+cat("   R CMD INSTALL .\n")
+```
+
+## Compare Results
+
+```{r}
+#| label: compare
+#| eval: false
+
+# Run this AFTER both branches have been tested
+
+# Load saved results
+results_current <- readRDS("results_current_branch.rds")
+results_main <- readRDS("results_main_branch.rds")
+
+# Compare Canadian results
+cat("\n=== CANADIAN POPULATION COMPARISON ===\n\n")
+comparison_ca <- compare_metrics(results_current$ca, results_main$ca)
+kable(comparison_ca, digits = 2, caption = "Canada: Current vs Main Branch")
+
+# Compare US results
+cat("\n=== US POPULATION COMPARISON ===\n\n")
+comparison_us <- compare_metrics(results_current$us, results_main$us)
+kable(comparison_us, digits = 2, caption = "US: Current vs Main Branch")
+
+# Summary
+cat("\n=== SUMMARY ===\n")
+all_pass_ca <- all(comparison_ca$within_tolerance, na.rm = TRUE)
+all_pass_us <- all(comparison_us$within_tolerance, na.rm = TRUE)
+
+cat("Canada - All metrics within 5% tolerance:", ifelse(all_pass_ca, "YES", "NO"), "\n")
+cat("US - All metrics within 5% tolerance:", ifelse(all_pass_us, "YES", "NO"), "\n")
+
+if (!all_pass_ca) {
+  cat("\nCanada metrics requiring review:\n")
+  print(comparison_ca |> filter(!within_tolerance) |> select(metric, pct_diff))
+}
+
+if (!all_pass_us) {
+  cat("\nUS metrics requiring review:\n")
+  print(comparison_us |> filter(!within_tolerance) |> select(metric, pct_diff))
+}
+```
+
+## Automated Comparison Script
+
+For a fully automated comparison, you can run this R script from the terminal:
+
+```{r}
+#| label: automated-script
+#| eval: false
+
+# Save this as compare_branches.R and run from terminal
+
+automated_comparison <- function() {
+
+  pkg_dir <- "/home/amin/epicR"
+  current_branch <- "claude/review-des-c-engine-011CV4qkDnfPtDLa1nkYgxQG"
+  main_branch <- "master"
+
+  run_branch_simulation <- function(branch_name) {
+    # Checkout and install
+    system(paste0("cd ", pkg_dir, " && git checkout ", branch_name))
+    system(paste0("R CMD INSTALL ", pkg_dir))
+
+    # Reload package
+    unloadNamespace("epicR")
+    library(epicR)
+
+    # Run simulations
+    set.seed(12345)
+
+    # Canada
+    settings <- get_default_settings()
+    settings$n_base_agents <- 1e5
+    init_session(settings = settings)
+    input <- get_input(jurisdiction = "ca")
+    input$values$global_parameters$time_horizon <- 20
+    run(input = input$values)
+    ca_results <- Cget_output()
+    terminate_session()
+
+    # US
+    set.seed(12345)
+    init_session(settings = settings)
+    input <- get_input(jurisdiction = "us")
+    input$values$global_parameters$time_horizon <- 20
+    run(input = input$values)
+    us_results <- Cget_output()
+    terminate_session()
+
+    list(ca = ca_results, us = us_results)
+  }
+
+  # Run on both branches
+  results_current <- run_branch_simulation(current_branch)
+  results_main <- run_branch_simulation(main_branch)
+
+  # Return to current branch
+  system(paste0("cd ", pkg_dir, " && git checkout ", current_branch))
+  system(paste0("R CMD INSTALL ", pkg_dir))
+
+  list(current = results_current, main = results_main)
+}
+```
+
+## Visual Comparison
+
+```{r}
+#| label: visualization
+#| eval: false
+
+# Run after comparison data is available
+
+plot_comparison <- function(comparison_df, title) {
+  comparison_df |>
+    filter(metric != "n_agents") |>
+    ggplot(aes(x = reorder(metric, abs(pct_diff)), y = pct_diff, fill = status)) +
+    geom_col() +
+    geom_hline(yintercept = c(-5, 5), linetype = "dashed", color = "red") +
+    coord_flip() +
+    scale_fill_manual(values = c("PASS" = "forestgreen", "REVIEW" = "orange")) +
+    labs(
+      title = title,
+      x = "Metric",
+      y = "Percent Difference (Current vs Main)",
+      fill = "Status"
+    ) +
+    theme_minimal()
+}
+
+# Generate plots
+p1 <- plot_comparison(comparison_ca, "Canada: Branch Comparison")
+p2 <- plot_comparison(comparison_us, "US: Branch Comparison")
+
+print(p1)
+print(p2)
+```
+
+## Instructions for Running
+
+### Option 1: Step-by-Step Manual Process
+
+1. **Run current branch simulations** (chunks: setup, helpers, current-branch)
+2. **Save results** (chunk: switch-to-main)
+3. **Switch branches in terminal**:
+   ```bash
+   cd /home/amin/epicR
+   git stash
+   git checkout master
+   R CMD INSTALL .
+   ```
+4. **Restart R and run main branch simulations** (chunk: main-branch)
+5. **Switch back**:
+   ```bash
+   git checkout claude/review-des-c-engine-011CV4qkDnfPtDLa1nkYgxQG
+   git stash pop
+   R CMD INSTALL .
+   ```
+6. **Run comparison** (chunk: compare, visualization)
+
+### Option 2: Using callr for Isolated Sessions
+
+```{r}
+#| label: callr-method
+#| eval: false
+
+# This method uses callr to run in separate R sessions
+# avoiding the need to manually restart R
+
+library(callr)
+
+run_in_fresh_session <- function(branch, jurisdiction) {
+  # First install the branch
+  system(paste0("cd /home/amin/epicR && git checkout ", branch,
+                " && R CMD INSTALL . --no-multiarch"),
+         ignore.stdout = TRUE, ignore.stderr = TRUE)
+
+  # Run in fresh R session
+  callr::r(function(jurisdiction) {
+    library(epicR)
+    set.seed(12345)
+
+    settings <- get_default_settings()
+    settings$n_base_agents <- 1e5
+    init_session(settings = settings)
+
+    input <- get_input(jurisdiction = jurisdiction)
+    input$values$global_parameters$time_horizon <- 20
+    run(input = input$values)
+
+    results <- Cget_output()
+    terminate_session()
+
+    as.list(results)
+  }, args = list(jurisdiction = jurisdiction))
+}
+
+# Run all combinations
+current_branch <- "claude/review-des-c-engine-011CV4qkDnfPtDLa1nkYgxQG"
+main_branch <- "master"
+
+cat("Running Current Branch - Canada...\n")
+ca_current <- run_in_fresh_session(current_branch, "ca")
+
+cat("Running Current Branch - US...\n")
+us_current <- run_in_fresh_session(current_branch, "us")
+
+cat("Running Main Branch - Canada...\n")
+ca_main <- run_in_fresh_session(main_branch, "ca")
+
+cat("Running Main Branch - US...\n")
+us_main <- run_in_fresh_session(main_branch, "us")
+
+# Return to current branch
+system(paste0("cd /home/amin/epicR && git checkout ", current_branch,
+              " && R CMD INSTALL . --no-multiarch"),
+       ignore.stdout = TRUE, ignore.stderr = TRUE)
+
+# Compare
+cat("\n=== COMPARISON RESULTS ===\n")
+
+compare_results <- function(current, main, name) {
+  cat(paste0("\n", name, ":\n"))
+  metrics <- c("n_COPD", "n_deaths", "total_cost", "total_qaly",
+               "n_exac_mild", "n_exac_mod", "n_exac_sev")
+
+  for (m in metrics) {
+    curr_val <- current[[m]]
+    main_val <- main[[m]]
+    pct_diff <- (curr_val - main_val) / main_val * 100
+    status <- ifelse(abs(pct_diff) <= 5, "PASS", "REVIEW")
+    cat(sprintf("  %s: %.2f%% diff [%s]\n", m, pct_diff, status))
+  }
+}
+
+compare_results(ca_current, ca_main, "CANADA")
+compare_results(us_current, us_main, "US")
+```
+
+## Expected Behavior
+
+- **Identical results**: If no functional changes were made to the simulation engine
+- **Small differences (<1%)**: Expected from floating-point arithmetic or minor refactoring
+- **Moderate differences (1-5%)**: May indicate intentional calibration changes
+- **Large differences (>5%)**: Requires investigation - could be bug or intended change
