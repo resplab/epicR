@@ -16,7 +16,9 @@ test_that("n_base_agents creates exactly the specified number of base agents", {
   # Get closed cohort input (sets incidence to near-zero)
   input <- get_input(closed_cohort = 1)$values
 
-  # Run with just the base agents (use n_target as max_n_agents)
+  # Run the simulation. The n_agents parameter caps how many agents are processed,
+  # so we set it equal to n_target to ensure we only process base agents.
+  # With closed cohort (no incident cases), this should create exactly n_target agents.
   run(n_agents = n_target, input = input)
 
   # Get the number of agents created
