@@ -1,12 +1,9 @@
 ---
 title: "EPIC Background"
-output: 
-  html_document:
+output:
+  rmarkdown::html_vignette:
     toc: true
-    toc_float: true  
     toc_depth: 4
-    css: []
-
 vignette: >
   %\VignetteIndexEntry{BackgroundEPIC}
   %\VignetteEngine{knitr::rmarkdown}
@@ -17,8 +14,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  eval = FALSE  # Set to FALSE to prevent errors from missing HTML files during package check
+  comment = "#>"
 )
 
 options(rmarkdown.html_vignette.check_title = FALSE)
@@ -46,13 +42,17 @@ In the case of **EPIC**, we wanted to look at the affects of COPD on the Canadia
 
 As with any real population, the simulated population is constantly changing. We define a change in a simulated individual as an **event**.
 
+**Events in EPIC:**
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/event-table.css")
-rawHTML <- paste(readLines("html/section-2/event-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+| Event Type | Description |
+|------------|-------------|
+| Birth | A new individual enters the population |
+| Death | An individual exits the population |
+| Birthday | An individual ages by one year |
+| Smoking status change | Individual changes smoking behavior |
+| COPD incidence | Individual develops COPD |
+| Exacerbation | COPD patient experiences symptom worsening |
+| Medical visit | Healthcare utilization event |
 
 
 We combined 12 different studies to look at 7 different aspects of COPD:
@@ -69,105 +69,150 @@ We combined 12 different studies to look at 7 different aspects of COPD:
 
 The Demographic and Risk Factor Module is based on the results from [POHEM](https://doi.org/10.1186/s12963-015-0057-x), which is the dynamic microsimulation model we described previously. This is basically the background data for the simulation.
 
+**Key Components:**
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-tags$script(src = "html/section-2/toggle-buttons.js")
-rawHTML <- paste(readLines("html/section-2/demographic-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+| Component | Data Source | Description |
+|-----------|-------------|-------------|
+| Age distribution | Statistics Canada (2001 Census) | Initial age pyramid for the Canadian population |
+| Sex distribution | Statistics Canada | Proportion of males and females |
+| Birth rates | Statistics Canada | Annual birth rates by age group |
+| Mortality rates | Canadian Life Tables | Background mortality rates by age and sex |
+| Immigration/Emigration | Statistics Canada | Population flow rates |
+| Initial population | Canadian Community Health Survey 1.1 | Starting population characteristics (n=105,908) |
 
 ### COPD Occurence Module {#occurence}
 
 We used data from the Canadian Cohort of Obstructive Lung Disease (COLD) to assign a binary COPD status to individuals upon their creation.
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/occurrence-table.html"), collapse="\n")
-HTML(rawHTML)
+**COPD Incidence Model:**
 
-```
+| Parameter | Data Source | Notes |
+|-----------|-------------|-------|
+| Prevalent COPD at baseline | CanCOLD study | Initial COPD status for existing population |
+| Incident COPD probability | CanCOLD study | Annual probability of developing COPD |
+| Risk factors | Literature review | Smoking status, pack-years, age, sex |
+| GOLD staging | Spirometry data | Severity classification based on FEV₁ |
+
+**COPD Definition:** Post-bronchodilator FEV₁/FVC ratio < 0.70 (GOLD criteria)
 
 ### Lung Function Module {#lungfunction}
 
-Once the COPD designation is defined for an individual, an individual-specific initial FEV₁  value and an individual-specific annual rate of FEV₁  decline are assigned. The 3 components of this module are the initial FEV₁  value for preexisting (prevalent) COPD cases, initial FEV₁  values for incident COPD cases, and the slope of decline in FEV₁ over time.
+Once the COPD designation is defined for an individual, an individual-specific initial FEV₁ value and an individual-specific annual rate of FEV₁ decline are assigned. The 3 components of this module are the initial FEV₁ value for preexisting (prevalent) COPD cases, initial FEV₁ values for incident COPD cases, and the slope of decline in FEV₁ over time.
 
-```{r, eval=FALSE, echo=FALSE, warning = FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/lungfunction-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+**Lung Function Components:**
+
+| Component | Data Source | Description |
+|-----------|-------------|-------------|
+| Initial FEV₁ (prevalent COPD) | CanCOLD study | Starting lung function for existing COPD patients |
+| Initial FEV₁ (incident COPD) | CanCOLD study | Lung function at time of COPD diagnosis |
+| FEV₁ decline rate | Fletcher & Peto curves | Annual rate of lung function decline (mL/year) |
+| GOLD stage transitions | Literature review | Progression between severity stages |
+
+**FEV₁ Decline Factors:**
+- Current smoking status (faster decline in current smokers)
+- Age and sex
+- Pack-years of smoking history
+- Baseline FEV₁ level
 
 ### Exacerbation Module {#exacerbation}
 
 In COPD, patients can sometimes experience what are called exacerbations.
 
-**exacerbation**: acute worsening of COPD symptoms; acute means sudden onset, short in duration; COPD symptoms include shortness of breath, wheezing, coughing up mucus, etc.
+**Exacerbation Definition:** Acute worsening of COPD symptoms (shortness of breath, wheezing, coughing up mucus, etc.) requiring medical intervention.
 
 #### Exacerbation Severity
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-rawHTML <- paste(readLines("html/section-2/exacerbation-severity.html"), collapse="\n")
-HTML(rawHTML)
+| Severity Level | Definition | Treatment Setting |
+|----------------|------------|-------------------|
+| Mild | Managed with rescue medications only | Self-managed at home |
+| Moderate | Requires antibiotics and/or oral corticosteroids | Primary care visit |
+| Severe | Requires hospitalization | Emergency department/hospital admission |
+| Very Severe | Requires ICU admission | Intensive care unit |
 
+**Exacerbation Model Parameters:**
 
-```
+| Parameter | Data Source | Description |
+|-----------|-------------|-------------|
+| Baseline exacerbation rate | TORCH, UPLIFT trials | Rate by GOLD stage and severity |
+| Rate multipliers | Meta-analysis | Effect of smoking, previous exacerbations |
+| Seasonal variation | Literature review | Higher rates in winter months |
+| Case fatality rate | Canadian administrative data | Mortality risk during severe exacerbations |
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/exacerbation-table.html"), collapse="\n")
-HTML(rawHTML)
-```
-
- **hazard**: instantaneous exacerbation rate
+**Note:** *Hazard* refers to the instantaneous exacerbation rate at any given time.
 
 ### Mortality Module {#mortality}
 
 We categorized death into two categories: death from COPD, and death not from COPD. More formally:
 
-**COPD-related mortality**: Death due to a severe or very severe COPD exacerbation.
-**Background mortality**: Death from all other causes (excluding COPD).
+- **COPD-related mortality**: Death due to a severe or very severe COPD exacerbation
+- **Background mortality**: Death from all other causes (excluding COPD)
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/mortality-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+**Mortality Model Components:**
+
+| Mortality Type | Data Source | Key Parameters |
+|----------------|-------------|----------------|
+| Background mortality | Statistics Canada Life Tables | Age- and sex-specific mortality rates |
+| COPD-related mortality | Administrative data, clinical trials | Case fatality rates during severe/very severe exacerbations |
+| Mortality rate ratios | Meta-analysis | Increased mortality risk by GOLD stage |
+| Smoking impact | Literature review | Hazard ratios for current vs. former vs. never smokers |
+
+**Case Fatality Rates:**
+- Severe exacerbations: ~2-5% in-hospital mortality
+- Very severe exacerbations (ICU): ~10-15% in-hospital mortality
+- Rates increase with age and comorbidities
 
 ### Payoff Module {#payoff}
 
-Like any disease, COPD costs money to treat, and is a cost on the healthcare system. Additionally, having COPD can reduce quality of life, which depends on the severity of the diagnosis and number of exacerbations. We define cost and utility, below, and divided each into 2 categories:
+Like any disease, COPD costs money to treat, and is a cost on the healthcare system. Additionally, having COPD can reduce quality of life, which depends on the severity of the diagnosis and number of exacerbations.
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/payoff-breakdown.html"), collapse="\n")
-HTML(rawHTML)
-```
+**Cost and Utility Categories:**
 
-#### Module Summary
+| Category | Description | Components |
+|----------|-------------|------------|
+| **Maintenance costs** | Ongoing annual costs of managing stable COPD | Medications, routine physician visits, diagnostic tests |
+| **Exacerbation costs** | Direct costs of treating exacerbations | Emergency visits, hospitalizations, ICU care, medications |
+| **Maintenance utility** | Baseline quality of life with stable COPD | Health-related quality of life by GOLD stage |
+| **Exacerbation utility** | Temporary reduction in quality of life during exacerbation | Severity-specific utility decrements |
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/payoff-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+**Payoff Model Parameters:**
+
+| Parameter | Data Source | Notes |
+|-----------|-------------|-------|
+| Annual maintenance costs | Canadian costing studies | Costs by GOLD stage (mild to very severe) |
+| Exacerbation costs | Provincial administrative data | By severity: mild, moderate, severe, very severe |
+| Baseline utilities | EQ-5D studies | Health state utilities by GOLD stage |
+| Exacerbation disutility | Literature review | Temporary quality of life reduction |
+| Discount rate | Canadian guidelines | 1.5% for both costs and QALYs |
+
+**Cost Ranges (CAD, 2015 dollars):**
+- Mild exacerbation: ~$50-100
+- Moderate exacerbation: ~$200-400
+- Severe exacerbation: ~$5,000-10,000
+- Very severe exacerbation (ICU): ~$15,000-30,000
 
 ### Smoking Module {#smoking}
 
-This module assesses the impact of smoking on the development and progression of COPD. Smoking status (e.g., smoker, former smoker, non-smoker) is incorporated into the model to account for its effect on the individual’s health trajectory.
+This module assesses the impact of smoking on the development and progression of COPD. Smoking status (e.g., current smoker, former smoker, never smoker) is incorporated into the model to account for its effect on the individual's health trajectory.
 
-```{r, eval=FALSE, echo=FALSE, warning=FALSE}
-library(htmltools)
-includeCSS("html/section-2/dropdown-table.css")
-rawHTML <- paste(readLines("html/section-2/smoking-table.html"), collapse="\n")
-HTML(rawHTML)
-```
+**Smoking Model Components:**
+
+| Component | Data Source | Description |
+|-----------|-------------|-------------|
+| Initial smoking status | CCHS 1.1 | Proportion of current, former, and never smokers by age/sex |
+| Pack-years | CCHS, literature | Cumulative smoking exposure (packs per day × years) |
+| Smoking initiation rates | Statistics Canada | Age-specific rates of starting smoking |
+| Smoking cessation rates | Statistics Canada | Age-specific rates of quitting smoking |
+| Relapse rates | Literature review | Probability of restarting smoking after quitting |
+
+**Smoking Status Definitions:**
+- **Never smoker**: < 100 cigarettes lifetime
+- **Former smoker**: ≥ 100 cigarettes lifetime, currently quit
+- **Current smoker**: Currently smoking
+
+**Impact on COPD:**
+- Increased risk of COPD incidence (dose-response relationship with pack-years)
+- Faster FEV₁ decline in current smokers
+- Higher exacerbation rates
+- Increased mortality risk
+- Reduced effectiveness of some treatments
 
