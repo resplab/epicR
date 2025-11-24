@@ -2,24 +2,35 @@
 
 This file contains instructions for AI assistants (like Claude) working on the epicR package.
 
-## After Making Changes to Package Functions
+## When to Run devtools::document()
 
-Whenever you modify R functions in the `R/` directory, especially when:
-- Adding new exported functions (with `@export`)
-- Changing function parameters
-- Updating roxygen documentation (`#'` comments)
-- Adding or removing functions
+**You MUST run `devtools::document()` after:**
 
-**You MUST run:**
+1. **Modifying R functions** in the `R/` directory, especially when:
+   - Adding new exported functions (with `@export`)
+   - Changing function parameters
+   - Updating roxygen documentation (`#'` comments)
+   - Adding or removing functions
+
+2. **Modifying C++ functions** in the `src/` directory when:
+   - Adding, removing, or changing C++ functions with `// [[Rcpp::export]]`
+   - This regenerates `src/RcppExports.cpp` and `R/RcppExports.R`
+
+3. **Changing package-level documentation** (e.g., in `R/epicR.R`)
+
+**Run it like this:**
 
 ```r
 devtools::document()
 ```
 
-This will:
-- Regenerate `man/*.Rd` documentation files
-- Update the `NAMESPACE` file with exports
-- Ensure the package documentation is in sync with the code
+**What it does:**
+- Regenerates `man/*.Rd` documentation files from roxygen comments
+- Updates the `NAMESPACE` file with exports
+- Regenerates Rcpp exports if C++ files changed
+- Ensures the package documentation is in sync with the code
+
+**Rule of thumb**: When in doubt, run `devtools::document()` - it's safe and fast!
 
 ## After Making Changes
 
@@ -64,9 +75,13 @@ Always test that the package can be:
 
 When changing files in `src/`:
 1. Make your changes
-2. Run `devtools::load_all()` (recompiles automatically)
-3. Test thoroughly
-4. Run `devtools::check()` to ensure no compilation warnings
+2. If you modified C++ functions that are exported to R (via Rcpp):
+   - Run `devtools::document()` to update RcppExports
+3. Run `devtools::load_all()` (recompiles automatically)
+4. Test thoroughly
+5. Run `devtools::check()` to ensure no compilation warnings
+
+**Important**: Changes to C++ functions with `// [[Rcpp::export]]` require `devtools::document()` to regenerate `src/RcppExports.cpp` and `R/RcppExports.R`.
 
 ### Updating Vignettes
 
