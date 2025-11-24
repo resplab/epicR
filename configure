@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Check if FLIBS causes linking issues (common on macOS without gfortran)
+echo "Checking for Fortran libraries..."
+
+# Try to use FLIBS if available, otherwise leave empty
+if ${R_HOME}/bin/R CMD config FLIBS > /dev/null 2>&1; then
+  FLIBS=`${R_HOME}/bin/R CMD config FLIBS`
+  echo "Found FLIBS: ${FLIBS}"
+else
+  FLIBS=""
+  echo "Warning: FLIBS not available, using R's internal BLAS/LAPACK only"
+fi
+
+# Substitute into Makevars
+sed -e "s|@FLIBS@|${FLIBS}|" src/Makevars.in > src/Makevars
+
+echo "Configuration complete."
