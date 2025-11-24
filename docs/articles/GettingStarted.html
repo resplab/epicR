@@ -225,38 +225,44 @@ and treatment changes.</p>
 <p>If you haven’t already installed epicR:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pkg_install</span><span class="op">(</span><span class="st">"resplab/epicR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start-your-first-simulation">Quick Start: Your First Simulation<a class="anchor" aria-label="anchor" href="#quick-start-your-first-simulation"></a>
 </h2>
-<p>Let’s run a basic simulation with default parameters:</p>
+<div class="section level3">
+<h3 id="simple-approach-recommended">Simple Approach (Recommended)<a class="anchor" aria-label="anchor" href="#simple-approach-recommended"></a>
+</h3>
+<p>The easiest way to run a simulation is using the
+<code><a href="../reference/simulate.html">simulate()</a></code> function, which handles all session management
+automatically and provides progress information (configuration summary,
+real-time progress bar, elapsed time, and status messages):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="step-1-initialize-a-session">Step 1: Initialize a Session<a class="anchor" aria-label="anchor" href="#step-1-initialize-a-session"></a>
-</h3>
-<p>EPIC is session-based, meaning you must initialize a session before
-running simulations. This allocates the required memory:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Initialize with default settings</span></span>
-<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>The function returns <code>0</code> if successful.</p>
-</div>
-<div class="section level3">
-<h3 id="step-2-run-the-model">Step 2: Run the Model<a class="anchor" aria-label="anchor" href="#step-2-run-the-model"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run with default inputs</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step-3-get-results">Step 3: Get Results<a class="anchor" aria-label="anchor" href="#step-3-get-results"></a>
-</h3>
-<p>Retrieve the simulation results:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Run with defaults - that's it!</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Access basic results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Custom parameters</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"us"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">100000</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Quick test with fewer agents (faster for testing)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get extended results (includes both basic and extended)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get event history (automatically sets record_mode)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_events <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">events</span><span class="op">)</span></span></code></pre></div>
 <p>The basic output includes:</p>
 <table class="table">
 <thead><tr class="header">
@@ -295,25 +301,18 @@ running simulations. This allocates the required memory:</p>
 </tbody>
 </table>
 </div>
-<div class="section level3">
-<h3 id="step-4-terminate-the-session">Step 4: Terminate the Session<a class="anchor" aria-label="anchor" href="#step-4-terminate-the-session"></a>
-</h3>
-<p>Always terminate the session when done to free memory:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="choosing-a-jurisdiction-canada-vs-us">Choosing a Jurisdiction: Canada vs US<a class="anchor" aria-label="anchor" href="#choosing-a-jurisdiction-canada-vs-us"></a>
 </h2>
 <p>EPIC supports both Canadian and US populations with
 jurisdiction-specific parameters:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For Canadian population (default)</span></span>
-<span><span class="va">input_canada</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"ca"</span><span class="op">)</span></span>
+<span><span class="va">results_canada</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># For US population</span></span>
-<span><span class="va">input_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">results_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
 <p>The jurisdictions differ in: - Population demographics - Smoking
 prevalence and trends - Healthcare costs - Disease incidence rates</p>
 </div>
@@ -324,7 +323,7 @@ prevalence and trends - Healthcare costs - Disease incidence rates</p>
 <h3 id="understanding-inputs">Understanding Inputs<a class="anchor" aria-label="anchor" href="#understanding-inputs"></a>
 </h3>
 <p>Inputs control the model’s parameters. Explore them:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Top-level structure</span></span>
@@ -341,26 +340,33 @@ prevalence and trends - Healthcare costs - Disease incidence rates</p>
 <div class="section level3">
 <h3 id="common-input-modifications">Common Input Modifications<a class="anchor" aria-label="anchor" href="#common-input-modifications"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<p>The <code><a href="../reference/simulate.html">simulate()</a></code> function provides convenient parameters
+for common customizations:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Change time horizon</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>time_horizon <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Change time horizon (years)</span></span>
-<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
+<span><span class="co"># Change jurisdiction and time horizon</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span>, time_horizon <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Modify COPD-related costs</span></span>
+<span><span class="co"># For quick testing</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">10000</span>, time_horizon <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<p>For more advanced input modifications, you can use
+<code><a href="../reference/get_input.html">get_input()</a></code> to explore and modify parameters:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Explore available inputs</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>  <span class="co"># See categories</span></span>
+<span></span>
+<span><span class="co"># View specific parameters</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">cost</span><span class="op">$</span><span class="va">exac_dcost</span>  <span class="co"># Exacerbation costs by severity</span></span>
-<span></span>
-<span><span class="co"># Run with modified inputs</span></span>
-<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="understanding-settings">Understanding Settings<a class="anchor" aria-label="anchor" href="#understanding-settings"></a>
 </h3>
 <p>Settings control how the model runs (not what it simulates):</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">settings</span><span class="op">)</span></span></code></pre></div>
 <p>Key settings:</p>
@@ -393,14 +399,15 @@ prevalence and trends - Healthcare costs - Disease incidence rates</p>
 <h3 id="choosing-the-number-of-agents">Choosing the Number of Agents<a class="anchor" aria-label="anchor" href="#choosing-the-number-of-agents"></a>
 </h3>
 <p>More agents = more precision but longer runtime and more memory:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Quick test run (10,000 agents)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">1e4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Quick test run</span></span>
-<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span>  <span class="co"># 10,000 agents</span></span>
+<span><span class="co"># Standard run (60,000 agents - default)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Production run</span></span>
-<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e6</span>  <span class="co"># 1,000,000 agents</span></span>
+<span><span class="co"># Production run (1,000,000 agents)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Check memory requirements before running large simulations</span></span>
 <span><span class="fu"><a href="../reference/estimate_memory_required.html">estimate_memory_required</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">1e6</span>, record_mode <span class="op">=</span> <span class="fl">0</span>, time_horizon <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
@@ -413,37 +420,40 @@ prevalence and trends - Healthcare costs - Disease incidence rates</p>
 <h3 id="extended-output">Extended Output<a class="anchor" aria-label="anchor" href="#extended-output"></a>
 </h3>
 <p>For more detailed results by year and demographics:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get both basic and extended results</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Detailed output tables</span></span>
-<span><span class="va">results_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results_ex</span><span class="op">)</span></span>
+<span><span class="co"># Access basic results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Access detailed output tables</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="individual-patient-data">Individual Patient Data<a class="anchor" aria-label="anchor" href="#individual-patient-data"></a>
 </h3>
 <p>To collect event-level data for each agent, use
-<code>record_mode = 2</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span>  <span class="co"># Keep small due to memory requirements</span></span>
+<code>return_events = TRUE</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get event history (automatically sets record_mode = 2)</span></span>
+<span><span class="co"># Keep n_agents small due to memory requirements</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  n_agents <span class="op">=</span> <span class="fl">1e4</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  return_events <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span>settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
+<span><span class="co"># Access events data frame</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">events</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get all events as a data frame</span></span>
-<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Can also get basic and extended results together</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  n_agents <span class="op">=</span> <span class="fl">1e4</span>,</span>
+<span>  return_extended <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  return_events <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Returns: results$basic, results$extended, results$events</span></span></code></pre></div>
 <p><strong>Warning:</strong> Recording individual events requires
 substantial memory. Start with a small number of agents.</p>
 </div>
@@ -516,56 +526,93 @@ substantial memory. Start with a small number of agents.</p>
 captures population dynamics (births, deaths, immigration, emigration).
 For a <strong>closed cohort</strong> analysis (fixed initial population,
 no new entries):</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get inputs configured for closed cohort</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run closed cohort analysis</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Combine with other parameters</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  closed_cohort <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"us"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">50000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="comparing-scenarios">Comparing Scenarios<a class="anchor" aria-label="anchor" href="#comparing-scenarios"></a>
+</h2>
+<p>A common use case is comparing interventions. The
+<code><a href="../reference/simulate.html">simulate()</a></code> function makes this straightforward:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Baseline scenario</span></span>
+<span><span class="va">results_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"canada"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">100000</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Intervention scenario (e.g., different time horizon or jurisdiction)</span></span>
+<span><span class="va">results_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"us"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">100000</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare outcomes</span></span>
+<span><span class="va">cost_diff</span> <span class="op">&lt;-</span> <span class="va">results_intervention</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">total_cost</span> <span class="op">-</span></span>
+<span>  <span class="va">results_baseline</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">total_cost</span></span>
+<span><span class="va">qaly_diff</span> <span class="op">&lt;-</span> <span class="va">results_intervention</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">total_qaly</span> <span class="op">-</span></span>
+<span>  <span class="va">results_baseline</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">total_qaly</span></span>
+<span><span class="va">icer</span> <span class="op">&lt;-</span> <span class="va">cost_diff</span> <span class="op">/</span> <span class="va">qaly_diff</span></span></code></pre></div>
+<p>For more complex scenarios requiring custom input modifications, see
+the “Advanced Usage” section below.</p>
+</div>
+<div class="section level2">
+<h2 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
+</h2>
+<p>For advanced users who need fine-grained control (e.g., running
+multiple simulations in one session or modifying complex input
+parameters), you can manage sessions manually:</p>
+<div class="section level3">
+<h3 id="manual-session-management">Manual Session Management<a class="anchor" aria-label="anchor" href="#manual-session-management"></a>
+</h3>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Initialize session once</span></span>
+<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run multiple simulations with same session</span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># run again with same session</span></span>
+<span><span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Clean up when done</span></span>
+<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="custom-input-modifications">Custom Input Modifications<a class="anchor" aria-label="anchor" href="#custom-input-modifications"></a>
+</h3>
+<p>For complex input modifications not covered by
+<code><a href="../reference/simulate.html">simulate()</a></code> parameters:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get and modify inputs</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Modify specific parameters</span></span>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">agent</span><span class="op">$</span><span class="va">p_female</span> <span class="op">&lt;-</span> <span class="fl">0.55</span></span>
+<span></span>
+<span><span class="co"># Run with custom inputs</span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="comparing-scenarios">Comparing Scenarios<a class="anchor" aria-label="anchor" href="#comparing-scenarios"></a>
-</h2>
-<p>A common use case is comparing interventions. Here’s a template:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Baseline scenario</span></span>
-<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">input_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input_baseline</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">results_baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Intervention scenario (e.g., improved case detection)</span></span>
-<span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">input_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co"># Modify relevant parameters for your intervention</span></span>
-<span><span class="co"># input_intervention$values$diagnosis$... &lt;- new_value</span></span>
-<span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input_intervention</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">results_intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compare outcomes</span></span>
-<span><span class="co"># cost_difference &lt;- results_intervention$total_cost - results_baseline$total_cost</span></span>
-<span><span class="co"># qaly_difference &lt;- results_intervention$total_qaly - results_baseline$total_qaly</span></span>
-<span><span class="co"># icer &lt;- cost_difference / qaly_difference</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
-</h2>
 <div class="section level3">
-<h3 id="memory-errors">Memory Errors<a class="anchor" aria-label="anchor" href="#memory-errors"></a>
+<h3 id="error-handling">Error Handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
 </h3>
-<p>If you get memory allocation errors: 1. Reduce
-<code>n_base_agents</code> 2. Use <code>record_mode = 0</code>
-(aggregate only) 3. Check available memory with
-<code><a href="../reference/estimate_memory_required.html">estimate_memory_required()</a></code></p>
-</div>
-<div class="section level3">
-<h3 id="session-not-terminated">Session Not Terminated<a class="anchor" aria-label="anchor" href="#session-not-terminated"></a>
-</h3>
-<p>Always wrap simulations in error handling:</p>
+<p>Always wrap manual session management in error handling:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -574,6 +621,27 @@ no new entries):</p>
 <span><span class="op">}</span>, finally <span class="op">=</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+</h2>
+<div class="section level3">
+<h3 id="memory-errors">Memory Errors<a class="anchor" aria-label="anchor" href="#memory-errors"></a>
+</h3>
+<p>If you get memory allocation errors: 1. Reduce the number of agents:
+<code>simulate(n_agents = 10000)</code> 2. Don’t request event history
+unless needed (omit <code>return_events</code>) 3. Check available
+memory with <code><a href="../reference/estimate_memory_required.html">estimate_memory_required()</a></code></p>
+</div>
+<div class="section level3">
+<h3 id="session-issues">Session Issues<a class="anchor" aria-label="anchor" href="#session-issues"></a>
+</h3>
+<p>The <code><a href="../reference/simulate.html">simulate()</a></code> function handles session management
+automatically and includes error handling. If you’re using manual
+session management (see Advanced Usage), always use
+<code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> to ensure <code><a href="../reference/terminate_session.html">terminate_session()</a></code> is
+called even if errors occur.</p>
 </div>
 </div>
 <div class="section level2">
