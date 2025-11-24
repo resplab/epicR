@@ -491,41 +491,67 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     settings <- get_default_settings()
   }
 
+  # If return_events is TRUE, automatically set record_mode
+  if (return_events) {
+    # Set record_mode to record_mode_event (2) to capture all events
+    settings$record_mode <- 2
+
+    # Calculate appropriate event_stack_size if not already set
+    if (is.null(settings$event_stack_size) || settings$event_stack_size == 0) {
+      settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
+      message("Auto-calculated event_stack_size: ",
+              format(settings$event_stack_size, scientific = FALSE, big.mark = ","))
+    }
+  }
+
   # Display configuration summary
   message("=== EPIC Simulation Configuration ===")
   message("Jurisdiction: ", toupper(jurisdiction))
   message("Time horizon: ", time_horizon, " years")
   message("Number of agents: ", format(settings$n_base_agents, scientific = FALSE, big.mark = ","))
 
-  # If return_events is TRUE, automatically set record_mode
-  if (return_events) {
-    # Set record_mode to record_mode_event (2) to capture all events
-    settings$record_mode <- 2
-    message("Event recording: ENABLED (record_mode = 2)")
+  if (return_events || settings$record_mode > 0) {
+    message("Event recording: ENABLED (record_mode = ", settings$record_mode, ")")
+    if (!is.null(settings$event_stack_size) && settings$event_stack_size > 0) {
+      message("Event stack size: ", format(settings$event_stack_size, scientific = FALSE, big.mark = ","))
+    }
   } else {
-    message("Event recording: ", ifelse(settings$record_mode == 0, "DISABLED", "ENABLED"))
+    message("Event recording: DISABLED")
   }
   message("=====================================")
 
-  # Run with auto-initialization and auto-termination
-  run(input = input, settings = settings, auto_terminate = TRUE)
+  # Run WITHOUT auto-termination (we need to get results first)
+  # Use tryCatch to ensure we terminate session even if errors occur
+  tryCatch({
+    run(input = input, settings = settings, auto_terminate = FALSE)
 
-  # Get and return results - always include basic
-  results <- list(
-    basic = Cget_output()
-  )
+    # Get all results BEFORE terminating session
+    results <- list(
+      basic = Cget_output()
+    )
 
-  # Add extended results if requested (in addition to basic)
-  if (return_extended) {
-    results$extended <- Cget_output_ex()
-  }
+    # Add extended results if requested (in addition to basic)
+    if (return_extended) {
+      results$extended <- Cget_output_ex()
+    }
 
-  # Add events if requested
-  if (return_events) {
-    results$events <- as.data.frame(Cget_all_events_matrix())
-  }
+    # Add events if requested
+    if (return_events) {
+      results$events <- as.data.frame(Cget_all_events_matrix())
+    }
 
-  return(results)
+    # Now terminate the session
+    terminate_session()
+
+    return(results)
+
+  }, error = function(e) {
+    # Ensure we terminate session even on error
+    if (session_env$initialized) {
+      terminate_session()
+    }
+    stop("Simulation failed: ", e$message)
+  })
 }
 
 
