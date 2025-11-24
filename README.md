@@ -70,8 +70,14 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    - Follow the prompts to complete the installation
 
 4. **Install gfortran**
-   - Download and install the appropriate gfortran version for your macOS from [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases)
-   - Choose the installer that matches your macOS version and chip architecture (Intel vs. Apple Silicon)
+   - **For Apple Silicon (M1/M2/M3):**
+     ```bash
+     curl -O https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
+     sudo installer -pkg gfortran-12.2-universal.pkg -target /
+     ```
+   - **For Intel Macs:**
+     - Download from [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases)
+     - Choose the installer that matches your macOS version
 
 5. **Verify Compiler Installation**
    - Open Terminal and run:
@@ -105,6 +111,28 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
 - If the PATH doesn't include Rtools, you may need to add it manually or reinstall Rtools with the PATH option enabled.
 
 #### macOS Issues
+
+**Linker Error: `ld: library 'emutls_w' not found`**
+
+This error occurs when gfortran is not properly installed or configured. Try these solutions:
+
+- **Solution 1: Install gfortran** (see step 4 above)
+
+  After installation, restart R and try installing the package again:
+  ```r
+  remotes::install_github('resplab/epicR')
+  ```
+
+- **Solution 2: Configure R to use built-in libraries** (if you prefer not to install gfortran):
+  ```bash
+  mkdir -p ~/.R
+  cat > ~/.R/Makevars << 'EOF'
+  FLIBS=-L$(R_HOME)/lib -lRblas -lRlapack
+  EOF
+  ```
+  Then try installing the package again in R.
+
+**Other Common Issues:**
 - If you encounter errors related to missing compilers after installation, try restarting your R session or computer.
 - For Apple Silicon Macs, ensure you're using the arm64 version of R and compatible compilers.
 - If you have previously installed older versions of compilers, they may interfere. Consider cleaning them up:
