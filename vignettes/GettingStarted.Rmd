@@ -82,39 +82,6 @@ results <- simulate(return_events = TRUE)
 head(results$events)
 ```
 
-### Step-by-Step Approach
-
-For more control, you can manage the session manually:
-
-#### Step 1: Initialize a Session
-
-```{r initialize, eval=FALSE}
-# Initialize with default settings
-init_session()
-```
-
-The function returns `0` if successful.
-
-#### Step 2: Run the Model
-
-```{r run, eval=FALSE}
-# Run with default inputs
-run()
-```
-
-#### Step 3: Get Results
-
-```{r output, eval=FALSE}
-results <- Cget_output()
-print(results)
-```
-
-#### Step 4: Clean Up
-
-```{r terminate, eval=FALSE}
-terminate_session()
-```
-
 The basic output includes:
 
 | Output | Description |
@@ -127,24 +94,16 @@ The basic output includes:
 | `total_cost` | Total healthcare costs |
 | `total_qaly` | Total quality-adjusted life years |
 
-### Step 4: Terminate the Session
-
-Always terminate the session when done to free memory:
-
-```{r terminate-manual}
-terminate_session()
-```
-
 ## Choosing a Jurisdiction: Canada vs US
 
 EPIC supports both Canadian and US populations with jurisdiction-specific parameters:
 
 ```{r jurisdiction}
 # For Canadian population (default)
-input_canada <- get_input(jurisdiction = "ca")
+results_canada <- simulate(jurisdiction = "canada")
 
 # For US population
-input_us <- get_input(jurisdiction = "us")
+results_us <- simulate(jurisdiction = "us")
 ```
 
 The jurisdictions differ in:
@@ -176,20 +135,29 @@ inputs$values$global_parameters$time_horizon  # Simulation duration in years
 
 ### Common Input Modifications
 
-```{r modify_inputs}
+The `simulate()` function provides convenient parameters for common customizations:
+
+```{r modify_inputs_simple}
+# Change time horizon
+results <- simulate(time_horizon = 20)
+
+# Change jurisdiction and time horizon
+results <- simulate(jurisdiction = "us", time_horizon = 15)
+
+# For quick testing
+results <- simulate(n_agents = 10000, time_horizon = 5)
+```
+
+For more advanced input modifications, you can use `get_input()` to explore and modify parameters:
+
+```{r explore_inputs_advanced}
+# Explore available inputs
 input <- get_input()
+names(input$values)  # See categories
 
-# Change time horizon (years)
-input$values$global_parameters$time_horizon <- 20
-
-# Modify COPD-related costs
+# View specific parameters
 input$values$cost$exac_dcost  # Exacerbation costs by severity
-
-# Run with modified inputs
-init_session()
-run(input = input$values)
-results <- Cget_output()
-terminate_session()
+input$values$global_parameters$time_horizon
 ```
 
 ### Understanding Settings
@@ -213,13 +181,14 @@ Key settings:
 More agents = more precision but longer runtime and more memory:
 
 ```{r n_agents}
-settings <- get_default_settings()
+# Quick test run (10,000 agents)
+results <- simulate(n_agents = 1e4)
 
-# Quick test run
-settings$n_base_agents <- 1e4  # 10,000 agents
+# Standard run (60,000 agents - default)
+results <- simulate()
 
-# Production run
-settings$n_base_agents <- 1e6  # 1,000,000 agents
+# Production run (1,000,000 agents)
+results <- simulate(n_agents = 1e6)
 
 # Check memory requirements before running large simulations
 estimate_memory_required(n_agents = 1e6, record_mode = 0, time_horizon = 20)
@@ -232,36 +201,39 @@ estimate_memory_required(n_agents = 1e6, record_mode = 0, time_horizon = 20)
 For more detailed results by year and demographics:
 
 ```{r extended_output}
-init_session()
-run()
+# Get both basic and extended results
+results <- simulate(return_extended = TRUE)
 
-# Detailed output tables
-results_ex <- Cget_output_ex()
-names(results_ex)
+# Access basic results
+print(results$basic)
 
-terminate_session()
+# Access detailed output tables
+names(results$extended)
 ```
 
 ### Individual Patient Data
 
-To collect event-level data for each agent, use `record_mode = 2`:
+To collect event-level data for each agent, use `return_events = TRUE`:
 
 ```{r individual_data}
-settings <- get_default_settings()
-settings$record_mode <- 2
-settings$n_base_agents <- 1e4  # Keep small due to memory requirements
+# Get event history (automatically sets record_mode = 2)
+# Keep n_agents small due to memory requirements
+results <- simulate(
+  n_agents = 1e4,
+  time_horizon = 5,
+  return_events = TRUE
+)
 
-init_session(settings = settings)
+# Access events data frame
+head(results$events)
 
-input <- get_input()
-input$values$global_parameters$time_horizon <- 5
-run(input = input$values)
-
-# Get all events as a data frame
-events <- as.data.frame(Cget_all_events_matrix())
-head(events)
-
-terminate_session()
+# Can also get basic and extended results together
+results <- simulate(
+  n_agents = 1e4,
+  return_extended = TRUE,
+  return_events = TRUE
+)
+# Returns: results$basic, results$extended, results$events
 ```
 
 **Warning:** Recording individual events requires substantial memory. Start with a small number of agents.
@@ -290,56 +262,92 @@ Each event in the individual data has a numeric code:
 By default, EPIC is an **open population** model that captures population dynamics (births, deaths, immigration, emigration). For a **closed cohort** analysis (fixed initial population, no new entries):
 
 ```{r closed_cohort}
-# Get inputs configured for closed cohort
-input <- get_input(closed_cohort = 1)
+# Run closed cohort analysis
+results <- simulate(closed_cohort = TRUE)
 
+# Combine with other parameters
+results <- simulate(
+  closed_cohort = TRUE,
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 50000
+)
+```
+
+## Comparing Scenarios
+
+A common use case is comparing interventions. The `simulate()` function makes this straightforward:
+
+```{r scenarios}
+# Baseline scenario
+results_baseline <- simulate(
+  jurisdiction = "canada",
+  time_horizon = 20,
+  n_agents = 100000
+)
+
+# Intervention scenario (e.g., different time horizon or jurisdiction)
+results_intervention <- simulate(
+  jurisdiction = "us",
+  time_horizon = 20,
+  n_agents = 100000
+)
+
+# Compare outcomes
+cost_diff <- results_intervention$basic$total_cost -
+  results_baseline$basic$total_cost
+qaly_diff <- results_intervention$basic$total_qaly -
+  results_baseline$basic$total_qaly
+icer <- cost_diff / qaly_diff
+```
+
+For more complex scenarios requiring custom input modifications, see the "Advanced Usage" section below.
+
+## Advanced Usage
+
+For advanced users who need fine-grained control (e.g., running multiple simulations in one session or modifying complex input parameters), you can manage sessions manually:
+
+### Manual Session Management
+
+```{r advanced_manual}
+# Initialize session once
+init_session()
+
+# Run multiple simulations with same session
+run()
+results1 <- Cget_output()
+
+run()  # run again with same session
+results2 <- Cget_output()
+
+# Clean up when done
+terminate_session()
+```
+
+### Custom Input Modifications
+
+For complex input modifications not covered by `simulate()` parameters:
+
+```{r advanced_inputs}
+# Get and modify inputs
+input <- get_input()
+
+# Modify specific parameters
+input$values$global_parameters$time_horizon <- 5
+input$values$agent$p_female <- 0.55
+
+# Run with custom inputs
 init_session()
 run(input = input$values)
 results <- Cget_output()
 terminate_session()
 ```
 
-## Comparing Scenarios
+### Error Handling
 
-A common use case is comparing interventions. Here's a template:
+Always wrap manual session management in error handling:
 
-```{r scenarios}
-# Baseline scenario
-init_session()
-input_baseline <- get_input()
-run(input = input_baseline$values)
-results_baseline <- Cget_output()
-terminate_session()
-
-# Intervention scenario (e.g., improved case detection)
-init_session()
-input_intervention <- get_input()
-# Modify relevant parameters for your intervention
-# input_intervention$values$diagnosis$... <- new_value
-run(input = input_intervention$values)
-results_intervention <- Cget_output()
-terminate_session()
-
-# Compare outcomes
-# cost_difference <- results_intervention$total_cost - results_baseline$total_cost
-# qaly_difference <- results_intervention$total_qaly - results_baseline$total_qaly
-# icer <- cost_difference / qaly_difference
-```
-
-## Troubleshooting
-
-### Memory Errors
-
-If you get memory allocation errors:
-1. Reduce `n_base_agents`
-2. Use `record_mode = 0` (aggregate only)
-3. Check available memory with `estimate_memory_required()`
-
-### Session Not Terminated
-
-Always wrap simulations in error handling:
-
-```{r error_handling}
+```{r error_handling_advanced}
 tryCatch({
   init_session()
   run()
@@ -348,6 +356,19 @@ tryCatch({
   terminate_session()
 })
 ```
+
+## Troubleshooting
+
+### Memory Errors
+
+If you get memory allocation errors:
+1. Reduce the number of agents: `simulate(n_agents = 10000)`
+2. Don't request event history unless needed (omit `return_events`)
+3. Check available memory with `estimate_memory_required()`
+
+### Session Issues
+
+The `simulate()` function handles session management automatically and includes error handling. If you're using manual session management (see Advanced Usage), always use `tryCatch()` to ensure `terminate_session()` is called even if errors occur.
 
 ## Next Steps
 

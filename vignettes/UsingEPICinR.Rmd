@@ -111,7 +111,37 @@ Now that you have installed `epicR`, you can load the library:
 library(epicR)
 ```
 
-### Step 1: Initialize the Session {-}
+### Recommended: Using the `simulate()` Function {-}
+
+The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically and provides progress information:
+
+```{r, eval = FALSE, echo = TRUE}
+# Run with defaults (Canada, 20 year horizon, 60,000 agents)
+results <- simulate()
+print(results$basic)
+
+# Customize parameters
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 100000
+)
+
+# Quick test with fewer agents
+results <- simulate(n_agents = 10000)
+
+# Get extended results
+results <- simulate(return_extended = TRUE)
+print(results$extended)
+
+# Get event history
+results <- simulate(return_events = TRUE, n_agents = 10000)
+head(results$events)
+```
+
+### Advanced: Manual Session Management {-}
+
+For advanced users who need fine-grained control (e.g., running multiple simulations in one session), you can manage sessions manually.
 
 The backend of this package is in C++. In other languages such as R/Python, memory allocation is taken care of for you. However, in C/C++, you need to allocate memory yourself. You also need to deallocate memory when the program is done. Because of this, we have the function `init_session()`.
 
@@ -126,7 +156,11 @@ init_session()
 
 In C++, a program that is successful returns `0`, so you should see this in the R console.
 
-### Step 2: Set the Inputs {-}
+#### Step 1: Initialize the Session {-}
+
+(Already shown above with `init_session()`)
+
+#### Step 2: Set the Inputs {-}
 
 The default input values are created in the file **input.R**. You can retrieve these values using `get_input()`. This function returns a nested list. The returned list contains `values`, `help` and `ref` which each hold further sub-lists. `help` and `ref` contain explanations regarding what each input parameter means. 
 
@@ -157,7 +191,7 @@ input$values$agent$p_female <- 0.6
 ```
 
 
-### Step 3: Run {-}
+#### Step 3: Run {-}
 
 After changing the inputs you can provide them to the `run()` function. The `run()` function has two arguments: **max_n_agents** and **input**. If you created your own input in **Step 2**, you can put it in here; otherwise, you can leave the **input** argument blank. The **max_n_agents** argument is how many people you want in your model. The default is set to the maximum integer your computer will allow. You can set this to a lower number if you like (it might run faster).
 
@@ -168,7 +202,7 @@ run()
 run(max_n_agents = 1000, input = input$values)
 ```
 
-### Step 4: Results {-}
+#### Step 4: Results {-}
 
 Once you have run the model simulation, there are several functions to access the results. 
 
