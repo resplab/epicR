@@ -427,14 +427,16 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
   }
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
-    if (auto_initialized || auto_terminate) {
+    if (auto_terminate) {
       terminate_session()
     }
     stop("Simulation failed")
   }
 
-  # Auto-terminate if requested or if we auto-initialized
-  if (auto_initialized || auto_terminate) {
+  # Auto-terminate only if explicitly requested
+  # Don't auto-terminate just because we auto-initialized
+  # (simulate() needs the session to stay open to get results)
+  if (auto_terminate) {
     terminate_session()
   }
 
