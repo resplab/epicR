@@ -360,21 +360,20 @@ run <- function(max_n_agents = NULL, input = NULL) {
   reset_errors()
 
 
-  # Get default input first to check jurisdiction
+  # Get default input (always needed)
   default_input_full <- get_input()
 
   # Display jurisdiction information
-  # Note: If user provides custom input from a different jurisdiction,
-  # we can't detect it easily, so we show the default jurisdiction
-  jurisdiction <- "canada"  # default
+  jurisdiction <- "canada"  # default fallback
   if (!is.null(default_input_full$config$jurisdiction)) {
     jurisdiction <- default_input_full$config$jurisdiction
   }
 
-  if (is.null(input) || length(input) == 0) {
-    message("Running EPIC model for jurisdiction: ", toupper(jurisdiction))
-  } else {
+  # Show appropriate message based on whether custom input is provided
+  if (!is.null(input) && length(input) > 0) {
     message("Running EPIC model (with custom input parameters)")
+  } else {
+    message("Running EPIC model for jurisdiction: ", toupper(jurisdiction))
   }
 
   # Display record_mode information
