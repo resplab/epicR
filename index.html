@@ -178,9 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level1">
 <div class="page-header"><h1 id="epicr">epicR<a class="anchor" aria-label="anchor" href="#epicr"></a>
 </h1></div>
-<p>R package for Evaluation Platform in COPD (EPIC). Please refer to our published papers for more information:</p>
-<p>Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. <a href="https://doi.org/10.1177/0272989X18824098" class="external-link">https://doi.org/10.1177/0272989X18824098</a></p>
-<p>Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Bryan S. Cost effectiveness of case detection strategies for the early detection of COPD. Applied Health Economics and Health Policy. 2021 Mar;19(2):203-15. <a href="https://doi.org/10.1007/s40258-020-00616-2" class="external-link">https://doi.org/10.1007/s40258-020-00616-2</a></p>
+<p>R package for Evaluation Platform in COPD (EPIC).</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -236,14 +234,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 </li>
 <li>
-<p><strong>Install the remotes package</strong></p>
+<p><strong>Install the pak package</strong></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'pak'</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p><strong>Install epicR from GitHub</strong></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
 </div>
@@ -314,17 +312,17 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 </li>
 <li>
-<p><strong>Install the remotes package</strong></p>
+<p><strong>Install the pak package</strong></p>
 <ul>
 <li>Open R or RStudio and run:</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'pak'</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p><strong>Install epicR from GitHub</strong></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ol>
 </div>
@@ -353,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <p><strong>Solution 1: Install gfortran</strong> (see step 4 above)</p>
 <p>After installation, restart R and try installing the package again:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p><strong>Solution 2: Configure R to use built-in libraries</strong> (if you prefer not to install gfortran):</p>
@@ -386,35 +384,86 @@ document.addEventListener('DOMContentLoaded', function() {
 </ol>
 <div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>  <span class="fu">sudo</span> apt-get install libcurl4-openssl-dev libssl-dev r-base-dev</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
-<li>Using either an R session in Terminal or in R Studio, install the package <code>devtools</code>:</li>
+<li>Using either an R session in Terminal or in R Studio, install the package <code>pak</code>:</li>
 </ol>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span> <span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'pak'</span><span class="op">)</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Install epicR from GitHub:</li>
 </ol>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">'resplab/epicR'</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
 <div class="section level1">
 <h1 id="quick-guide">Quick Guide<a class="anchor" aria-label="anchor" href="#quick-guide"></a>
 </h1>
-<p>To run EPIC with default inputs and settings, use the code snippet below.</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
+<div class="section level2">
+<h2 id="simple-usage-recommended">Simple Usage (Recommended)<a class="anchor" aria-label="anchor" href="#simple-usage-recommended"></a>
+</h2>
+<p>The easiest way to run EPIC is with the <code><a href="reference/simulate.html">simulate()</a></code> function, which handles all session management automatically and provides progress information including a real-time progress bar:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run with defaults (Canada, 20 year horizon, 60,000 agents)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
+<span><span class="co"># Shows configuration, progress bar (10% 20% ... 100%), and elapsed time</span></span>
+<span></span>
+<span><span class="co"># Run for US with custom parameters</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span>, time_horizon <span class="op">=</span> <span class="fl">10</span>, n_agents <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Quick test with fewer agents (faster)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get both basic and extended results</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get event history (automatically enables event recording)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>return_events <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">events</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get everything with custom settings</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"us"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  return_extended <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  return_events <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Returns: results$basic, results$extended, results$events</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
+</h2>
+<p>For advanced users who need more control (e.g., running multiple simulations in one session), you can manage sessions manually:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Initialize session once</span></span>
 <span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run multiple simulations</span></span>
 <span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
-<p>Default inputs can be retrieved with <code><a href="reference/get_input.html">get_input()</a></code>, changed as needed, and resubmitted as a parameter to the run function:</p>
-<pre><code><span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># run again with same session</span></span>
+<span><span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Clean up when done</span></span>
+<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>You can also customize inputs:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">resultsExtra</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="jurisdiction-specific-configuration">Jurisdiction-Specific Configuration<a class="anchor" aria-label="anchor" href="#jurisdiction-specific-configuration"></a>
 </h2>
@@ -422,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-canadian-parameters-default">Using Canadian Parameters (Default)<a class="anchor" aria-label="anchor" href="#using-canadian-parameters-default"></a>
 </h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Canadian parameters are used by default</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or explicitly specify:</span></span>
@@ -431,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-us-parameters">Using US Parameters<a class="anchor" aria-label="anchor" href="#using-us-parameters"></a>
 </h3>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note: US parameters must be configured first (see Configuration section)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -439,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h3 id="parameter-override">Parameter Override<a class="anchor" aria-label="anchor" href="#parameter-override"></a>
 </h3>
 <p>Function parameters still override jurisdiction defaults:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use Canadian defaults but change time horizon</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span>, time_horizon <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -447,13 +496,70 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
 </h2>
-<p>Model parameters are stored in JSON configuration files located in <code>inst/config/</code>:</p>
+<div class="section level3">
+<h3 id="user-customizable-configuration-files">User-Customizable Configuration Files<a class="anchor" aria-label="anchor" href="#user-customizable-configuration-files"></a>
+</h3>
+<p>epicR now supports user-customizable configuration files. When you load the package for the first time, configuration files are automatically copied to your home directory at <code>~/.epicR/config/</code>, allowing you to modify model parameters without changing the package code.</p>
+<div class="section level4">
+<h4 id="key-features">Key Features:<a class="anchor" aria-label="anchor" href="#key-features"></a>
+</h4>
+<ul>
+<li>
+<strong>Automatic Setup</strong>: Config files are copied to your home directory on first load</li>
+<li>
+<strong>Easy Customization</strong>: Edit JSON files in <code>~/.epicR/config/</code> to adjust parameters</li>
+<li>
+<strong>Automatic Detection</strong>: The package automatically uses your custom configs</li>
+<li>
+<strong>Simple Reset</strong>: Return to defaults anytime with <code>reset_user_configs()</code>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="configuration-management-functions">Configuration Management Functions:<a class="anchor" aria-label="anchor" href="#configuration-management-functions"></a>
+</h4>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View config directory location</span></span>
+<span><span class="fu">get_user_config_dir</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Open config directory in file explorer</span></span>
+<span><span class="fu">open_user_config_dir</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># List available jurisdictions</span></span>
+<span><span class="fu">list_available_jurisdictions</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Validate your configuration</span></span>
+<span><span class="fu">validate_config</span><span class="op">(</span><span class="st">"canada"</span>, user <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reset to package defaults</span></span>
+<span><span class="fu">reset_user_configs</span><span class="op">(</span><span class="op">)</span>  <span class="co"># All configs</span></span>
+<span><span class="fu">reset_user_configs</span><span class="op">(</span><span class="st">"canada"</span><span class="op">)</span>  <span class="co"># Specific jurisdiction</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="customizing-parameters">Customizing Parameters:<a class="anchor" aria-label="anchor" href="#customizing-parameters"></a>
+</h4>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1. Open config directory</span></span>
+<span><span class="fu">open_user_config_dir</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Edit config_canada.json or config_us.json with your parameters</span></span>
+<span></span>
+<span><span class="co"># 3. Your changes are automatically used</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span><span class="op">)</span></span></code></pre></div>
+<p>For detailed instructions, see the <a href="USER_CONFIG_GUIDE.html">User Configuration Guide</a>.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="package-configuration-files">Package Configuration Files<a class="anchor" aria-label="anchor" href="#package-configuration-files"></a>
+</h3>
+<p>Default configurations are stored in the package at <code>inst/config/</code>:</p>
 <ul>
 <li>
 <code>config_canada.json</code> - Canadian parameter set (fully configured)</li>
 <li>
 <code>config_us.json</code> - US parameter template (requires configuration)</li>
 </ul>
+</div>
 <div class="section level3">
 <h3 id="configuring-us-parameters">Configuring US Parameters<a class="anchor" aria-label="anchor" href="#configuring-us-parameters"></a>
 </h3>
@@ -465,38 +571,38 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>Disease epidemiology parameters</li>
 </ol>
 <p>Example placeholder format:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>Replace with actual values:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">51</span></span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">51</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="test-values">Test Values<a class="anchor" aria-label="anchor" href="#test-values"></a>
 </h3>
 <p>Configuration files also include jurisdiction-specific test values used for package validation:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">18600000</span><span class="fu">,</span></span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">100000</span><span class="fu">,</span></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">5000</span></span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">18600000</span><span class="fu">,</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">100000</span><span class="fu">,</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">5000</span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>These values represent: - <code>population_over_40_2015</code>: Population over 40 years of age (used for scaling test results) - <code>expected_severe_exacerbations_per_year</code>: Expected number of severe exacerbations per year for validation - <code>expected_severe_exac_tolerance</code>: Tolerance level for test assertions</p>
 <p>For US parameters, replace with appropriate US values:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">130000000</span><span class="fu">,</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">700000</span><span class="fu">,</span></span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">35000</span></span>
-<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">130000000</span><span class="fu">,</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">700000</span><span class="fu">,</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">35000</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by setting <code>record_mode</code> as a <code>setting</code>.</p>
 <pre><code><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -578,23 +684,27 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="fu"><a href="reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <p>You can also combine jurisdiction and closed-cohort parameters:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Canadian closed-cohort analysis</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span>, closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
 <span></span>
 <span><span class="co"># US closed-cohort analysis (once US parameters are configured)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span>, closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="publications-with-epicr">Publications with epicR<a class="anchor" aria-label="anchor" href="#publications-with-epicr"></a>
+</h2>
+<p>The following publications have used epicR for their analyses:</p>
+<p>Yan, K., Duan, K. and Johnson, K.M., 2025. Development and Validation of EPIC-USA: A COPD Policy Model for the United States. American Journal of Respiratory and Critical Care Medicine, 211(Abstracts), pp.A7130-A7130.</p>
+<p>Mountain, R., Kim, D. and Johnson, K.M., 2023. Budget impact analysis of adopting primary care–based case detection of chronic obstructive pulmonary disease in the Canadian general population. Canadian Medical Association Open Access Journal, 11(6), pp.E1048-E1058.</p>
+<p>Mountain, R., Duan, K.I. and Johnson, K.M., 2024. Benefit–harm analysis of earlier initiation of triple therapy for prevention of acute exacerbation in patients with chronic obstructive pulmonary disease. Annals of the American Thoracic Society, 21(8), pp.1139-1146.</p>
+<p>Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin DD, Bryan S. Cost effectiveness of case detection strategies for the early detection of COPD. Applied Health Economics and Health Policy. 2021 Mar;19(2):203-15. <a href="https://doi.org/10.1007/s40258-020-00616-2" class="external-link">https://doi.org/10.1007/s40258-020-00616-2</a></p>
 </div>
-<div class="section level1">
-<h1 id="peer-models-network-epic-on-the-cloud">Peer Models Network: EPIC on the Cloud<a class="anchor" aria-label="anchor" href="#peer-models-network-epic-on-the-cloud"></a>
-</h1>
-<p>The <a href="https://www.peermodelsnetwork.com/" class="external-link">Peer Models Network</a> provides educational material abour the model. It also allows users to access EPIC through the cloud. A MACRO-enabled Excel-file can be used to interact with the model and see the results. To download the PRISM Excel template file for EPIC, or to access EPIC using APIs please refer to the <a href="https://models.peermodelsnetwork.com/#/" class="external-link">PMN model repository</a></p>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>Please cite:</p>
-<p><code>Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., … Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. https://doi.org/10.1177/0272989X18824098</code></p>
+<p>Sadatsafavi, M., Ghanbarian, S., Adibi, A., Johnson, K., Mark FitzGerald, J., Flanagan, W., Sin, D. (2019). Development and Validation of the Evaluation Platform in COPD (EPIC): A Population-Based Outcomes Model of COPD for Canada. Medical Decision Making. <a href="https://doi.org/10.1177/0272989X18824098" class="external-link">https://doi.org/10.1177/0272989X18824098</a></p>
 </div>
 </div>
 

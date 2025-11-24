@@ -27,6 +27,9 @@
 
 - [`Cget_output_ex()`](Cget_output_ex.md) : Extra outputs from the model
 
+- [`Cget_progress()`](Cget_progress.md) : Returns current simulation
+  progress.
+
 - [`Cget_runtime_stats()`](Cget_runtime_stats.md) : Returns run time
   stats.
 
@@ -104,13 +107,16 @@
 
 - [`resume()`](resume.md) : Resumes running of model.
 
-- [`run()`](run.md) : Runs the model, after a session has been
-  initialized.
+- [`run()`](run.md) : Runs the model. Auto-initializes if no session is
+  active.
 
 - [`sanity_COPD()`](sanity_COPD.md) : Basic COPD test.
 
 - [`sanity_check()`](sanity_check.md) : Basic tests of model
   functionality. Serious issues if the test does not pass.
+
+- [`simulate()`](simulate.md) : Convenience function: run simulation and
+  return results
 
 - [`terminate_session()`](terminate_session.md) : Terminates a session
   and releases allocated memory.

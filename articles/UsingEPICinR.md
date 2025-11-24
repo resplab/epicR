@@ -15,16 +15,16 @@ package as per the instructions below:
 3.  Download and Install the latest version of Rtools from
     <https://cran.r-project.org/bin/windows/Rtools/>
 4.  Using either an R session in Terminal or in R Studio, install the
-    package `remotes`:
+    package `pak`:
 
 ``` r
-install.packages('remotes')
+install.packages('pak')
 ```
 
 5.  Install epicR from GitHub:
 
 ``` r
-remotes::install_github('resplab/epicR')
+pak::pkg_install('resplab/epicR')
 ```
 
 ### Mac OS Sierra and Later
@@ -41,16 +41,16 @@ xcode-select --install
 ```
 
 4.  Using either an R session in Terminal or in R Studio, install the
-    package `remotes`:
+    package `pak`:
 
 ``` r
-install.packages('remotes')
+install.packages('pak')
 ```
 
 5.  Install epicR from GitHub:
 
 ``` r
-remotes::install_github('resplab/epicR')
+pak::pkg_install('resplab/epicR')
 ```
 
 ### Ubuntu 22.04 and Later
@@ -88,16 +88,16 @@ If the installation is successful, you should be able to start R:
 ```
 
 4.  Using either an R session in Terminal or in R Studio, install the
-    package `devtools`:
+    package `pak`:
 
 ``` r
-install.packages ('remotes')
+install.packages("pak")
 ```
 
 5.  Install epicR from GitHub:
 
 ``` r
-remotes::install_github('resplab/epicR')
+pak::pkg_install("resplab/epicR")
 ```
 
 ## 2 Running the Model

@@ -169,9 +169,16 @@ input$values$smoking$mortality_factor_former <- t(as.matrix(c(age40to49 = 1.31, 
 run(input = input$values)
 ```
 
-    ## Running model with record_mode: record_mode_none (0)
+    ## Using user config file from: /home/runner/.epicR/config/config_canada.json
+
+    ## Running EPIC model (with custom input parameters)
+
+    ## Record mode: record_mode_none (0)
 
     ## Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
+
+    ## Simulating 100000 base agents: 10% 20% 30% 40% 50%
+    ## 60% 70% 80% 90% 100%
 
     ## [1] 0
 
