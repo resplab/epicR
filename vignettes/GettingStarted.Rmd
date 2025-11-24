@@ -43,7 +43,7 @@ If you haven't already installed epicR:
 
 ```{r installation, eval=FALSE}
 # Install from GitHub
-remotes::install_github('resplab/epicR')
+pak::pkg_install("resplab/epicR")
 ```
 
 ## Quick Start: Your First Simulation

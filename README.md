@@ -41,14 +41,14 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    ```
    - This should return a path to the make executable. If it returns an empty string, Rtools is not properly configured.
 
-5. **Install the remotes package**
+5. **Install the pak package**
    ```r
-   install.packages('remotes')
+   install.packages('pak')
    ```
 
 6. **Install epicR from GitHub**
    ```r
-   remotes::install_github('resplab/epicR')
+   pak::pkg_install('resplab/epicR')
    ```
 
 ### macOS (macOS 11 Big Sur or Later)
@@ -90,15 +90,15 @@ epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    ```
    - Both commands should return version information
 
-6. **Install the remotes package**
+6. **Install the pak package**
    - Open R or RStudio and run:
    ```r
-   install.packages('remotes')
+   install.packages('pak')
    ```
 
 7. **Install epicR from GitHub**
    ```r
-   remotes::install_github('resplab/epicR')
+   pak::pkg_install('resplab/epicR')
    ```
 
 ### Troubleshooting
@@ -120,7 +120,7 @@ This error occurs when gfortran is not properly installed or configured. Try the
 
   After installation, restart R and try installing the package again:
   ```r
-  remotes::install_github('resplab/epicR')
+  pak::pkg_install('resplab/epicR')
   ```
 
 - **Solution 2: Configure R to use built-in libraries** (if you prefer not to install gfortran):
@@ -170,16 +170,16 @@ If the installation is successful, you should be able to start R:
   sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
 ```
 
-4. Using either an R session in Terminal or in R Studio, install the package `devtools`:
+4. Using either an R session in Terminal or in R Studio, install the package `pak`:
 
 ```r
-install.packages ('remotes')
+install.packages('pak')
 ```
-  
+
 5. Install epicR from GitHub:
 
 ```r
-remotes::install_github('resplab/epicR')
+pak::pkg_install('resplab/epicR')
 ```
 
 # Quick Guide
