@@ -50,7 +50,7 @@ pak::pkg_install("resplab/epicR")
 
 ### Simple Approach (Recommended)
 
-The easiest way to run a simulation is using the `simulate()` function, which handles all session management automatically:
+The easiest way to run a simulation is using the `simulate()` function, which handles all session management automatically and provides progress information (configuration summary, elapsed time, and status messages):
 
 ```{r setup}
 library(epicR)

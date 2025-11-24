@@ -450,7 +450,9 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' Convenience function: run simulation and return results
 #'
 #' This is a simplified interface that handles session management automatically
-#' and returns the results directly. Ideal for most users.
+#' and returns the results directly. Ideal for most users. Progress information
+#' is displayed including: configuration summary, simulation progress, elapsed time,
+#' and data collection status.
 #'
 #' @param input customized input criteria (optional)
 #' @param settings customized settings (optional)
@@ -544,7 +546,26 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
   # Run WITHOUT auto-termination (we need to get results first)
   # Use tryCatch to ensure we terminate session even if errors occur
   tryCatch({
+    # Track simulation time and show progress
+    message("\nStarting simulation...")
+    start_time <- Sys.time()
+
     run(input = input, settings = settings, auto_terminate = FALSE)
+
+    # Calculate and display elapsed time
+    end_time <- Sys.time()
+    elapsed <- as.numeric(difftime(end_time, start_time, units = "secs"))
+
+    if (elapsed < 60) {
+      time_msg <- sprintf("%.1f seconds", elapsed)
+    } else if (elapsed < 3600) {
+      time_msg <- sprintf("%.1f minutes", elapsed / 60)
+    } else {
+      time_msg <- sprintf("%.1f hours", elapsed / 3600)
+    }
+
+    message("Simulation completed in ", time_msg)
+    message("Collecting results...")
 
     # Get all results BEFORE terminating session
     results <- list(
@@ -553,16 +574,20 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
 
     # Add extended results if requested (in addition to basic)
     if (return_extended) {
+      message("Collecting extended results...")
       results$extended <- Cget_output_ex()
     }
 
     # Add events if requested
     if (return_events) {
+      message("Collecting event history...")
       results$events <- as.data.frame(Cget_all_events_matrix())
     }
 
     # Now terminate the session
     terminate_session()
+
+    message("Done!\n")
 
     return(results)
 
