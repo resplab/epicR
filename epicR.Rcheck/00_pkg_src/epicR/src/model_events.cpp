@@ -472,15 +472,12 @@ void event_COPD_process(agent *ag)
        double pred_fev1=CALC_PRED_FEV1(ag);
        (*ag)._pred_fev1=pred_fev1;
        if ((*ag).fev1/pred_fev1<0.3) (*ag).gold=4;
-       else
-         if ((*ag).fev1/pred_fev1<0.5) (*ag).gold=3;
-         else
-           if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
-           else (*ag).gold=1;
+       else if ((*ag).fev1/pred_fev1<0.5) (*ag).gold=3;
+       else if ((*ag).fev1/pred_fev1<0.8) (*ag).gold=2;
+       else (*ag).gold=1;
 
-           // FEV Decline
-
-           (*ag).fev1_baseline = (*ag).fev1;
+       // FEV Decline
+       (*ag).fev1_baseline = (*ag).fev1;
 
            // Intercept for FEv1 decline in COPD incidence cases
            // double fev1_mean_bivariate = input.lung_function.fev1_betas_by_sex[0][(*ag).sex]

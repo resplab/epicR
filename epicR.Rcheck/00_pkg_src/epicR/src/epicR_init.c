@@ -8,25 +8,26 @@
  */
 
 /* .Call calls */
-extern SEXP _epicR_Callocate_resources();
-extern SEXP _epicR_Ccreate_agents();
-extern SEXP _epicR_Cdeallocate_resources();
+extern SEXP _epicR_Callocate_resources(void);
+extern SEXP _epicR_Ccreate_agents(void);
+extern SEXP _epicR_Cdeallocate_resources(void);
 extern SEXP _epicR_Cget_agent(SEXP);
 extern SEXP _epicR_Cget_agent_events(SEXP);
-extern SEXP _epicR_Cget_agent_size_bytes();
-extern SEXP _epicR_Cget_all_events();
-extern SEXP _epicR_Cget_all_events_matrix();
+extern SEXP _epicR_Cget_agent_size_bytes(void);
+extern SEXP _epicR_Cget_all_events(void);
+extern SEXP _epicR_Cget_all_events_matrix(void);
 extern SEXP _epicR_Cget_event(SEXP);
 extern SEXP _epicR_Cget_events_by_type(SEXP);
-extern SEXP _epicR_Cget_inputs();
-extern SEXP _epicR_Cget_n_events();
-extern SEXP _epicR_Cget_output();
-extern SEXP _epicR_Cget_output_ex();
-extern SEXP _epicR_Cget_pointers();
-extern SEXP _epicR_Cget_runtime_stats();
-extern SEXP _epicR_Cget_settings();
-extern SEXP _epicR_Cget_smith();
-extern SEXP _epicR_Cinit_session();
+extern SEXP _epicR_Cget_inputs(void);
+extern SEXP _epicR_Cget_n_events(void);
+extern SEXP _epicR_Cget_output(void);
+extern SEXP _epicR_Cget_output_ex(void);
+extern SEXP _epicR_Cget_pointers(void);
+extern SEXP _epicR_Cget_progress(void);
+extern SEXP _epicR_Cget_runtime_stats(void);
+extern SEXP _epicR_Cget_settings(void);
+extern SEXP _epicR_Cget_smith(void);
+extern SEXP _epicR_Cinit_session(void);
 extern SEXP _epicR_Cmodel(SEXP);
 extern SEXP _epicR_Cset_input_var(SEXP, SEXP);
 extern SEXP _epicR_Cset_settings_var(SEXP, SEXP);
@@ -50,6 +51,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_epicR_Cget_output",            (DL_FUNC) &_epicR_Cget_output,            0},
   {"_epicR_Cget_output_ex",         (DL_FUNC) &_epicR_Cget_output_ex,         0},
   {"_epicR_Cget_pointers",          (DL_FUNC) &_epicR_Cget_pointers,          0},
+  {"_epicR_Cget_progress",          (DL_FUNC) &_epicR_Cget_progress,          0},
   {"_epicR_Cget_runtime_stats",     (DL_FUNC) &_epicR_Cget_runtime_stats,     0},
   {"_epicR_Cget_settings",          (DL_FUNC) &_epicR_Cget_settings,          0},
   {"_epicR_Cget_smith",             (DL_FUNC) &_epicR_Cget_smith,             0},

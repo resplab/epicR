@@ -8,16 +8,16 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# install.packages('remotes')
+# install.packages('pak')
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# remotes::install_github('resplab/epicR')
+# pak::pkg_install('resplab/epicR')
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# install.packages('remotes')
+# install.packages('pak')
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# remotes::install_github('resplab/epicR')
+# pak::pkg_install('resplab/epicR')
 
 ## ----eval = FALSE, echo = TRUE------------------------------------------------
 # library(epicR)

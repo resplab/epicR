@@ -19,3 +19,6 @@
 ^R/\.gitignore$
 ^src/\.gitignore$
 ^vignettes/\.gitignore$
+^claude\.md$
+^compare_branches\.qmd$
+^epicR\.Rcheck$

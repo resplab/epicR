@@ -7,7 +7,7 @@ library(knitr)
 # Load EPIC general settings
 settings <- get_default_settings()
 settings$record_mode <- 0
-settings$n_base_agents <- 1e6
+settings$n_base_agents <- 1e5
 init_session(settings = settings)
 
 input <- get_input(jurisdiction = "us")

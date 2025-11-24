@@ -131,7 +131,7 @@ The basic output includes:
 
 Always terminate the session when done to free memory:
 
-```{r terminate}
+```{r terminate-manual}
 terminate_session()
 ```
 

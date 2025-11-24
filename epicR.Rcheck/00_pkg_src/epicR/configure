@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Check if FLIBS causes linking issues (common on macOS without gfortran)
+echo "Checking for Fortran libraries..."
+
+# Get FLIBS from R
+FLIBS=`${R_HOME}/bin/R CMD config FLIBS 2>/dev/null`
+
+if [ -n "${FLIBS}" ]; then
+  echo "R reports FLIBS: ${FLIBS}"
+
+  # Check if the gfortran library paths actually exist
+  FLIBS_VALID=1
+
+  # Extract library paths from FLIBS and check if they exist
+  for token in ${FLIBS}; do
+    case ${token} in
+      -L/opt/gfortran/*)
+        # Check if this gfortran path exists
+        libpath=`echo ${token} | sed 's/^-L//'`
+        if [ ! -d "${libpath}" ]; then
+          echo "Warning: gfortran library path does not exist: ${libpath}"
+          FLIBS_VALID=0
+          break
+        fi
+        ;;
+    esac
+  done
+
+  if [ ${FLIBS_VALID} -eq 0 ]; then
+    echo "gfortran libraries not found on system - using R's internal BLAS/LAPACK instead"
+    FLIBS=""
+  else
+    echo "Using gfortran libraries"
+    # Add leading space if FLIBS is not empty
+    FLIBS=" ${FLIBS}"
+  fi
+else
+  echo "FLIBS not configured in R - using R's internal BLAS/LAPACK"
+  FLIBS=""
+fi
+
+# Substitute into Makevars
+sed -e "s|@FLIBS@|${FLIBS}|" src/Makevars.in > src/Makevars
+
+if [ -z "${FLIBS}" ]; then
+  echo "Configuration complete: Using R's internal BLAS/LAPACK libraries"
+else
+  echo "Configuration complete: Using system gfortran libraries"
+fi

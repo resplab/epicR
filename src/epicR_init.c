@@ -23,6 +23,7 @@ extern SEXP _epicR_Cget_n_events(void);
 extern SEXP _epicR_Cget_output(void);
 extern SEXP _epicR_Cget_output_ex(void);
 extern SEXP _epicR_Cget_pointers(void);
+extern SEXP _epicR_Cget_progress(void);
 extern SEXP _epicR_Cget_runtime_stats(void);
 extern SEXP _epicR_Cget_settings(void);
 extern SEXP _epicR_Cget_smith(void);
@@ -50,6 +51,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_epicR_Cget_output",            (DL_FUNC) &_epicR_Cget_output,            0},
   {"_epicR_Cget_output_ex",         (DL_FUNC) &_epicR_Cget_output_ex,         0},
   {"_epicR_Cget_pointers",          (DL_FUNC) &_epicR_Cget_pointers,          0},
+  {"_epicR_Cget_progress",          (DL_FUNC) &_epicR_Cget_progress,          0},
   {"_epicR_Cget_runtime_stats",     (DL_FUNC) &_epicR_Cget_runtime_stats,     0},
   {"_epicR_Cget_settings",          (DL_FUNC) &_epicR_Cget_settings,          0},
   {"_epicR_Cget_smith",             (DL_FUNC) &_epicR_Cget_smith,             0},

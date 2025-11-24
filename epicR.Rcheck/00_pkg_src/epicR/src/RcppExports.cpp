@@ -53,6 +53,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Cget_progress
+int Cget_progress();
+RcppExport SEXP _epicR_Cget_progress() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(Cget_progress());
+    return rcpp_result_gen;
+END_RCPP
+}
 // Cget_agent
 List Cget_agent(long id);
 RcppExport SEXP _epicR_Cget_agent(SEXP idSEXP) {
