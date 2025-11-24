@@ -454,22 +454,31 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @param settings customized settings (optional)
 #' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
 #' @param time_horizon Model time horizon (default: 20)
-#' @param return_extended whether to return extended results (default: FALSE)
-#' @return list with simulation results
+#' @param return_extended whether to return extended results in addition to basic (default: FALSE)
+#' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
+#' @return list with simulation results (always includes 'basic', optionally 'extended' and 'events')
 #' @export
 #' @examples
 #' \dontrun{
 #' # Simplest usage
 #' results <- simulate()
+#' print(results$basic)
 #'
 #' # With custom parameters
 #' results <- simulate(jurisdiction = "us", time_horizon = 10)
 #'
-#' # With extended output
+#' # With extended output (includes both basic and extended)
 #' results <- simulate(return_extended = TRUE)
+#' print(results$basic)
+#' print(results$extended)
+#'
+#' # With event history
+#' results <- simulate(return_events = TRUE)
+#' print(results$events)  # Event matrix
 #' }
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
-                     time_horizon = 20, return_extended = FALSE) {
+                     time_horizon = 20, return_extended = FALSE,
+                     return_events = FALSE) {
   # If no custom input provided, use get_input with specified parameters
   if (is.null(input)) {
     input_full <- get_input(jurisdiction = jurisdiction,
@@ -477,16 +486,32 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     input <- input_full$values
   }
 
+  # If return_events is TRUE, automatically set record_mode
+  if (return_events) {
+    if (is.null(settings)) {
+      settings <- get_default_settings()
+    }
+    # Set record_mode to record_mode_event (2) to capture all events
+    settings$record_mode <- 2
+    message("Enabling event recording (record_mode = 2) to capture event history")
+  }
+
   # Run with auto-initialization and auto-termination
   run(input = input, settings = settings, auto_terminate = TRUE)
 
-  # Get and return results
+  # Get and return results - always include basic
   results <- list(
     basic = Cget_output()
   )
 
+  # Add extended results if requested (in addition to basic)
   if (return_extended) {
     results$extended <- Cget_output_ex()
+  }
+
+  # Add events if requested
+  if (return_events) {
+    results$events <- as.data.frame(Cget_all_events_matrix())
   }
 
   return(results)

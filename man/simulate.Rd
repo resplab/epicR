@@ -9,7 +9,8 @@ simulate(
   settings = NULL,
   jurisdiction = "canada",
   time_horizon = 20,
-  return_extended = FALSE
+  return_extended = FALSE,
+  return_events = FALSE
 )
 }
 \arguments{
@@ -21,10 +22,12 @@ simulate(
 
 \item{time_horizon}{Model time horizon (default: 20)}
 
-\item{return_extended}{whether to return extended results (default: FALSE)}
+\item{return_extended}{whether to return extended results in addition to basic (default: FALSE)}
+
+\item{return_events}{whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2}
 }
 \value{
-list with simulation results
+list with simulation results (always includes 'basic', optionally 'extended' and 'events')
 }
 \description{
 This is a simplified interface that handles session management automatically
@@ -34,11 +37,18 @@ and returns the results directly. Ideal for most users.
 \dontrun{
 # Simplest usage
 results <- simulate()
+print(results$basic)
 
 # With custom parameters
 results <- simulate(jurisdiction = "us", time_horizon = 10)
 
-# With extended output
+# With extended output (includes both basic and extended)
 results <- simulate(return_extended = TRUE)
+print(results$basic)
+print(results$extended)
+
+# With event history
+results <- simulate(return_events = TRUE)
+print(results$events)  # Event matrix
 }
 }

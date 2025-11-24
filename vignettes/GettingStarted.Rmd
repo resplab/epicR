@@ -62,6 +62,14 @@ results <- simulate()
 
 # Access basic results
 print(results$basic)
+
+# Get extended results (includes both basic and extended)
+results <- simulate(return_extended = TRUE)
+print(results$extended)
+
+# Get event history (automatically sets record_mode)
+results <- simulate(return_events = TRUE)
+head(results$events)
 ```
 
 ### Step-by-Step Approach

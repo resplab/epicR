@@ -193,12 +193,23 @@ library(epicR)
 
 # Run with defaults (Canada, 20 year horizon)
 results <- simulate()
+print(results$basic)
 
 # Run for US with custom time horizon
 results <- simulate(jurisdiction = "us", time_horizon = 10)
 
-# Get extended results
+# Get both basic and extended results
 results <- simulate(return_extended = TRUE)
+print(results$basic)
+print(results$extended)
+
+# Get event history (automatically enables event recording)
+results <- simulate(return_events = TRUE)
+print(head(results$events))
+
+# Get everything
+results <- simulate(return_extended = TRUE, return_events = TRUE)
+# Returns: results$basic, results$extended, results$events
 ```
 
 ## Advanced Usage
