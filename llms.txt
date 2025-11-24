@@ -12,13 +12,13 @@ Chronic Onstructive Pulmonary Disease.
 
 ### Prerequisites
 
-epicR requires R version 4.1.0 or later and uses Rcpp/RcppArmadillo for
+epicR requires R version 4.5.0 or later and uses Rcpp/RcppArmadillo for
 C++ integration, which requires compilation tools to be installed on
 your system.
 
 ### Windows (Windows 10 or Later)
 
-1.  **Install R (version 4.1.0 or later)**
+1.  **Install R (version 4.5.0 or later)**
 
     - Download and install the latest version of R from
       <https://cran.r-project.org/bin/windows/base/>
@@ -63,7 +63,7 @@ your system.
 
 ### macOS (macOS 11 Big Sur or Later)
 
-1.  **Install R (version 4.1.0 or later)**
+1.  **Install R (version 4.5.0 or later)**
 
     - Download and install the latest version of R from
       <https://cran.r-project.org/bin/macosx/>

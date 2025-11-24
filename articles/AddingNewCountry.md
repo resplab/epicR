@@ -239,11 +239,12 @@ input <- get_input(jurisdiction = "germany")
 
 ``` r
 # Run a small simulation to check for errors
-init_session()
-input <- get_input(jurisdiction = "germany")
-run(input = input$values)
-results <- Cget_output()
-terminate_session()
+results <- simulate(
+  jurisdiction = "germany",
+  n_agents = 10000,
+  time_horizon = 5
+)
+print(results$basic)
 ```
 
 #### 6.3 Validate Outputs

@@ -108,7 +108,40 @@ Now that you have installed `epicR`, you can load the library:
 library(epicR)
 ```
 
-### Step 1: Initialize the Session
+### Recommended: Using the `simulate()` Function
+
+The easiest way to run EPIC is with the
+[`simulate()`](../reference/simulate.md) function, which handles all
+session management automatically and provides progress information:
+
+``` r
+# Run with defaults (Canada, 20 year horizon, 60,000 agents)
+results <- simulate()
+print(results$basic)
+
+# Customize parameters
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 100000
+)
+
+# Quick test with fewer agents
+results <- simulate(n_agents = 10000)
+
+# Get extended results
+results <- simulate(return_extended = TRUE)
+print(results$extended)
+
+# Get event history
+results <- simulate(return_events = TRUE, n_agents = 10000)
+head(results$events)
+```
+
+### Advanced: Manual Session Management
+
+For advanced users who need fine-grained control (e.g., running multiple
+simulations in one session), you can manage sessions manually.
 
 The backend of this package is in C++. In other languages such as
 R/Python, memory allocation is taken care of for you. However, in C/C++,
@@ -130,7 +163,12 @@ init_session()
 In C++, a program that is successful returns `0`, so you should see this
 in the R console.
 
-### Step 2: Set the Inputs
+#### Step 1: Initialize the Session
+
+(Already shown above with
+[`init_session()`](../reference/init_session.md))
+
+#### Step 2: Set the Inputs
 
 The default input values are created in the file **input.R**. You can
 retrieve these values using [`get_input()`](../reference/get_input.md).
@@ -144,7 +182,20 @@ For easier notation we will refer the retrieved inputs as `input`:
 input <- get_input()
 ```
 
-Below is a list of the parameters that `input$values` returns.
+Below is a list of the main categories that `input$values` returns:
+
+**Input Value Categories:**
+
+| Category            | Description                                                |
+|---------------------|------------------------------------------------------------|
+| `global_parameters` | Time horizon, age ranges, discount rates                   |
+| `agent`             | Population demographics (sex distribution, etc.)           |
+| `smoking`           | Smoking initiation, cessation, and relapse rates           |
+| `diagnosis`         | COPD diagnosis and case detection parameters               |
+| `cost`              | Healthcare costs (exacerbations, medications, maintenance) |
+| `medication`        | Medication usage and effectiveness parameters              |
+| `exacerbation`      | Exacerbation rates and severity distributions              |
+| `events`            | Event-specific parameters                                  |
 
 `input$values` returns a list of lists, so you can further explore and
 set specific inputs using the `$` operator. An example of how to do this
@@ -159,7 +210,7 @@ input$values$global_parameters$age0 <- 50
 input$values$agent$p_female <- 0.6
 ```
 
-### Step 3: Run
+#### Step 3: Run
 
 After changing the inputs you can provide them to the
 [`run()`](../reference/run.md) function. The
@@ -178,7 +229,7 @@ run()
 run(max_n_agents = 1000, input = input$values)
 ```
 
-### Step 4: Results
+#### Step 4: Results
 
 Once you have run the model simulation, there are several functions to
 access the results.
@@ -190,6 +241,21 @@ which shows some of the overall results:
 results <- Cget_output()
 ```
 
+**Basic Output from [`Cget_output()`](../reference/Cget_output.md):**
+
+| Output               | Description                         |
+|----------------------|-------------------------------------|
+| `n_agents`           | Total number of agents simulated    |
+| `cumul_time`         | Cumulative time in person-years     |
+| `n_deaths`           | Total number of deaths              |
+| `n_COPD`             | Number of agents with COPD          |
+| `n_exac_mild`        | Number of mild exacerbations        |
+| `n_exac_moderate`    | Number of moderate exacerbations    |
+| `n_exac_severe`      | Number of severe exacerbations      |
+| `n_exac_very_severe` | Number of very severe exacerbations |
+| `total_cost`         | Total healthcare costs              |
+| `total_qaly`         | Total quality-adjusted life years   |
+
 The second function [`Cget_output_ex()`](../reference/Cget_output_ex.md)
 returns a very large list of results:
 
@@ -197,9 +263,20 @@ returns a very large list of results:
 resultsExra <- Cget_output_ex()
 ```
 
-**While interpreting the `age` column, it is important to note that EPIC
-only starts simulating patients at age 40. Also comorbidities are not
-implemented in the current version of epicR.**
+**Extended Output from
+[`Cget_output_ex()`](../reference/Cget_output_ex.md):**
+
+The extended output includes detailed breakdowns by: - Year (annual
+results over the time horizon) - Age groups - Sex - COPD severity (GOLD
+stages) - Smoking status
+
+Key tables in the extended output: - `n_death` - Deaths by year, age,
+sex - `n_COPD` - COPD prevalence by year, age, sex - `cost` - Costs by
+year and category - `qaly` - QALYs by year and health state -
+`exacerbation` - Exacerbations by year, severity, and GOLD stage
+
+**Important Notes:** - EPIC only starts simulating patients at age 40 -
+Comorbidities are not implemented in the current version of epicR
 
 The full snippet of the code:
 
@@ -238,18 +315,59 @@ terminate_session()
 
 You can change the record mode of the simulation by accessing
 `settings$record_mode` as shown above. Here are what different record
-modes mean
+modes mean:
+
+**Record Modes:**
+
+| Mode | Description                                               |
+|------|-----------------------------------------------------------|
+| 0    | Aggregate output only (minimal memory)                    |
+| 1    | Agent-level summary statistics                            |
+| 2    | Complete event history for all agents (high memory usage) |
 
 As shown in the code snippet above, you can inspect the event matrix
 [`Cget_all_events_matrix()`](../reference/Cget_all_events_matrix.md) by
 converting it into a data frame using
 `as.data.frame(Cget_all_events_matrix())`. This data frame consists of
-33 columns, as detailed below.
+33 columns, including:
+
+**Key Event Matrix Columns:**
+
+| Column                  | Description                       |
+|-------------------------|-----------------------------------|
+| `agent_id`              | Unique identifier for each agent  |
+| `event`                 | Event type code (see table below) |
+| `time`                  | Time of event occurrence          |
+| `age`                   | Age of agent at event             |
+| `sex`                   | Sex of agent (0=male, 1=female)   |
+| `smoking_status`        | Current smoking status            |
+| `COPD`                  | COPD status (0=no, 1=yes)         |
+| `gold_stage`            | GOLD severity stage (0-4)         |
+| `exacerbation_severity` | Severity of exacerbation event    |
+| `cost`                  | Cost associated with event        |
+| `qaly`                  | QALY impact of event              |
 
 In the events data frame, each type of event has a code corresponding to
 the table below:
 
-Note: Doctor visit and Medication change are not implemented in this
+**Event Type Codes:**
+
+| Event                 | Code |
+|-----------------------|------|
+| Start                 | 0    |
+| Annual                | 1    |
+| Birthday              | 2    |
+| Smoking change        | 3    |
+| COPD incidence        | 4    |
+| Exacerbation          | 5    |
+| Exacerbation end      | 6    |
+| Death by exacerbation | 7    |
+| Doctor visit\*        | 8    |
+| Medication change\*   | 9    |
+| Background death      | 13   |
+| End                   | 14   |
+
+\*Note: Doctor visit and Medication change are not implemented in this
 version of epicR
 
 ### Closed-cohort analysis

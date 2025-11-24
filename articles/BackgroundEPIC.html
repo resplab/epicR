@@ -229,6 +229,43 @@ community-dwelling Canadians.</p>
 <p>As with any real population, the simulated population is constantly
 changing. We define a change in a simulated individual as an
 <strong>event</strong>.</p>
+<p><strong>Events in EPIC:</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>Event Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Birth</td>
+<td>A new individual enters the population</td>
+</tr>
+<tr class="even">
+<td>Death</td>
+<td>An individual exits the population</td>
+</tr>
+<tr class="odd">
+<td>Birthday</td>
+<td>An individual ages by one year</td>
+</tr>
+<tr class="even">
+<td>Smoking status change</td>
+<td>Individual changes smoking behavior</td>
+</tr>
+<tr class="odd">
+<td>COPD incidence</td>
+<td>Individual develops COPD</td>
+</tr>
+<tr class="even">
+<td>Exacerbation</td>
+<td>COPD patient experiences symptom worsening</td>
+</tr>
+<tr class="odd">
+<td>Medical visit</td>
+<td>Healthcare utilization event</td>
+</tr>
+</tbody>
+</table>
 <p>We combined 12 different studies to look at 7 different aspects of
 COPD:</p>
 <ol style="list-style-type: decimal">
@@ -248,6 +285,51 @@ COPD:</p>
 <a href="https://doi.org/10.1186/s12963-015-0057-x" class="external-link">POHEM</a>, which is
 the dynamic microsimulation model we described previously. This is
 basically the background data for the simulation.</p>
+<p><strong>Key Components:</strong></p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="35%">
+<col width="35%">
+</colgroup>
+<thead><tr class="header">
+<th>Component</th>
+<th>Data Source</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Age distribution</td>
+<td>Statistics Canada (2001 Census)</td>
+<td>Initial age pyramid for the Canadian population</td>
+</tr>
+<tr class="even">
+<td>Sex distribution</td>
+<td>Statistics Canada</td>
+<td>Proportion of males and females</td>
+</tr>
+<tr class="odd">
+<td>Birth rates</td>
+<td>Statistics Canada</td>
+<td>Annual birth rates by age group</td>
+</tr>
+<tr class="even">
+<td>Mortality rates</td>
+<td>Canadian Life Tables</td>
+<td>Background mortality rates by age and sex</td>
+</tr>
+<tr class="odd">
+<td>Immigration/Emigration</td>
+<td>Statistics Canada</td>
+<td>Population flow rates</td>
+</tr>
+<tr class="even">
+<td>Initial population</td>
+<td>Canadian Community Health Survey 1.1</td>
+<td>Starting population characteristics (n=105,908)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="occurence">COPD Occurence Module<a class="anchor" aria-label="anchor" href="#occurence"></a>
@@ -255,6 +337,43 @@ basically the background data for the simulation.</p>
 <p>We used data from the Canadian Cohort of Obstructive Lung Disease
 (COLD) to assign a binary COPD status to individuals upon their
 creation.</p>
+<p><strong>COPD Incidence Model:</strong></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="41%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Data Source</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Prevalent COPD at baseline</td>
+<td>CanCOLD study</td>
+<td>Initial COPD status for existing population</td>
+</tr>
+<tr class="even">
+<td>Incident COPD probability</td>
+<td>CanCOLD study</td>
+<td>Annual probability of developing COPD</td>
+</tr>
+<tr class="odd">
+<td>Risk factors</td>
+<td>Literature review</td>
+<td>Smoking status, pack-years, age, sex</td>
+</tr>
+<tr class="even">
+<td>GOLD staging</td>
+<td>Spirometry data</td>
+<td>Severity classification based on FEV₁</td>
+</tr>
+</tbody>
+</table>
+<p><strong>COPD Definition:</strong> Post-bronchodilator FEV₁/FVC ratio
+&lt; 0.70 (GOLD criteria)</p>
 </div>
 <div class="section level3">
 <h3 id="lungfunction">Lung Function Module<a class="anchor" aria-label="anchor" href="#lungfunction"></a>
@@ -265,19 +384,127 @@ rate of FEV₁ decline are assigned. The 3 components of this module are
 the initial FEV₁ value for preexisting (prevalent) COPD cases, initial
 FEV₁ values for incident COPD cases, and the slope of decline in FEV₁
 over time.</p>
+<p><strong>Lung Function Components:</strong></p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="35%">
+<col width="35%">
+</colgroup>
+<thead><tr class="header">
+<th>Component</th>
+<th>Data Source</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Initial FEV₁ (prevalent COPD)</td>
+<td>CanCOLD study</td>
+<td>Starting lung function for existing COPD patients</td>
+</tr>
+<tr class="even">
+<td>Initial FEV₁ (incident COPD)</td>
+<td>CanCOLD study</td>
+<td>Lung function at time of COPD diagnosis</td>
+</tr>
+<tr class="odd">
+<td>FEV₁ decline rate</td>
+<td>Fletcher &amp; Peto curves</td>
+<td>Annual rate of lung function decline (mL/year)</td>
+</tr>
+<tr class="even">
+<td>GOLD stage transitions</td>
+<td>Literature review</td>
+<td>Progression between severity stages</td>
+</tr>
+</tbody>
+</table>
+<p><strong>FEV₁ Decline Factors:</strong> - Current smoking status
+(faster decline in current smokers) - Age and sex - Pack-years of
+smoking history - Baseline FEV₁ level</p>
 </div>
 <div class="section level3">
 <h3 id="exacerbation">Exacerbation Module<a class="anchor" aria-label="anchor" href="#exacerbation"></a>
 </h3>
 <p>In COPD, patients can sometimes experience what are called
 exacerbations.</p>
-<p><strong>exacerbation</strong>: acute worsening of COPD symptoms;
-acute means sudden onset, short in duration; COPD symptoms include
-shortness of breath, wheezing, coughing up mucus, etc.</p>
+<p><strong>Exacerbation Definition:</strong> Acute worsening of COPD
+symptoms (shortness of breath, wheezing, coughing up mucus, etc.)
+requiring medical intervention.</p>
 <div class="section level4">
 <h4 id="exacerbation-severity">Exacerbation Severity<a class="anchor" aria-label="anchor" href="#exacerbation-severity"></a>
 </h4>
-<p><strong>hazard</strong>: instantaneous exacerbation rate</p>
+<table class="table">
+<colgroup>
+<col width="34%">
+<col width="25%">
+<col width="40%">
+</colgroup>
+<thead><tr class="header">
+<th>Severity Level</th>
+<th>Definition</th>
+<th>Treatment Setting</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Mild</td>
+<td>Managed with rescue medications only</td>
+<td>Self-managed at home</td>
+</tr>
+<tr class="even">
+<td>Moderate</td>
+<td>Requires antibiotics and/or oral corticosteroids</td>
+<td>Primary care visit</td>
+</tr>
+<tr class="odd">
+<td>Severe</td>
+<td>Requires hospitalization</td>
+<td>Emergency department/hospital admission</td>
+</tr>
+<tr class="even">
+<td>Very Severe</td>
+<td>Requires ICU admission</td>
+<td>Intensive care unit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exacerbation Model Parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="35%">
+<col width="35%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Data Source</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Baseline exacerbation rate</td>
+<td>TORCH, UPLIFT trials</td>
+<td>Rate by GOLD stage and severity</td>
+</tr>
+<tr class="even">
+<td>Rate multipliers</td>
+<td>Meta-analysis</td>
+<td>Effect of smoking, previous exacerbations</td>
+</tr>
+<tr class="odd">
+<td>Seasonal variation</td>
+<td>Literature review</td>
+<td>Higher rates in winter months</td>
+</tr>
+<tr class="even">
+<td>Case fatality rate</td>
+<td>Canadian administrative data</td>
+<td>Mortality risk during severe exacerbations</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> <em>Hazard</em> refers to the instantaneous
+exacerbation rate at any given time.</p>
 </div>
 </div>
 <div class="section level3">
@@ -285,9 +512,52 @@ shortness of breath, wheezing, coughing up mucus, etc.</p>
 </h3>
 <p>We categorized death into two categories: death from COPD, and death
 not from COPD. More formally:</p>
-<p><strong>COPD-related mortality</strong>: Death due to a severe or
-very severe COPD exacerbation. <strong>Background mortality</strong>:
-Death from all other causes (excluding COPD).</p>
+<ul>
+<li>
+<strong>COPD-related mortality</strong>: Death due to a severe or
+very severe COPD exacerbation</li>
+<li>
+<strong>Background mortality</strong>: Death from all other causes
+(excluding COPD)</li>
+</ul>
+<p><strong>Mortality Model Components:</strong></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="28%">
+<col width="35%">
+</colgroup>
+<thead><tr class="header">
+<th>Mortality Type</th>
+<th>Data Source</th>
+<th>Key Parameters</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Background mortality</td>
+<td>Statistics Canada Life Tables</td>
+<td>Age- and sex-specific mortality rates</td>
+</tr>
+<tr class="even">
+<td>COPD-related mortality</td>
+<td>Administrative data, clinical trials</td>
+<td>Case fatality rates during severe/very severe exacerbations</td>
+</tr>
+<tr class="odd">
+<td>Mortality rate ratios</td>
+<td>Meta-analysis</td>
+<td>Increased mortality risk by GOLD stage</td>
+</tr>
+<tr class="even">
+<td>Smoking impact</td>
+<td>Literature review</td>
+<td>Hazard ratios for current vs. former vs. never smokers</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Case Fatality Rates:</strong> - Severe exacerbations: ~2-5%
+in-hospital mortality - Very severe exacerbations (ICU): ~10-15%
+in-hospital mortality - Rates increase with age and comorbidities</p>
 </div>
 <div class="section level3">
 <h3 id="payoff">Payoff Module<a class="anchor" aria-label="anchor" href="#payoff"></a>
@@ -295,20 +565,142 @@ Death from all other causes (excluding COPD).</p>
 <p>Like any disease, COPD costs money to treat, and is a cost on the
 healthcare system. Additionally, having COPD can reduce quality of life,
 which depends on the severity of the diagnosis and number of
-exacerbations. We define cost and utility, below, and divided each into
-2 categories:</p>
-<div class="section level4">
-<h4 id="module-summary">Module Summary<a class="anchor" aria-label="anchor" href="#module-summary"></a>
-</h4>
-</div>
+exacerbations.</p>
+<p><strong>Cost and Utility Categories:</strong></p>
+<table class="table">
+<colgroup>
+<col width="28%">
+<col width="37%">
+<col width="34%">
+</colgroup>
+<thead><tr class="header">
+<th>Category</th>
+<th>Description</th>
+<th>Components</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Maintenance costs</strong></td>
+<td>Ongoing annual costs of managing stable COPD</td>
+<td>Medications, routine physician visits, diagnostic tests</td>
+</tr>
+<tr class="even">
+<td><strong>Exacerbation costs</strong></td>
+<td>Direct costs of treating exacerbations</td>
+<td>Emergency visits, hospitalizations, ICU care, medications</td>
+</tr>
+<tr class="odd">
+<td><strong>Maintenance utility</strong></td>
+<td>Baseline quality of life with stable COPD</td>
+<td>Health-related quality of life by GOLD stage</td>
+</tr>
+<tr class="even">
+<td><strong>Exacerbation utility</strong></td>
+<td>Temporary reduction in quality of life during exacerbation</td>
+<td>Severity-specific utility decrements</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Payoff Model Parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="41%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Data Source</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Annual maintenance costs</td>
+<td>Canadian costing studies</td>
+<td>Costs by GOLD stage (mild to very severe)</td>
+</tr>
+<tr class="even">
+<td>Exacerbation costs</td>
+<td>Provincial administrative data</td>
+<td>By severity: mild, moderate, severe, very severe</td>
+</tr>
+<tr class="odd">
+<td>Baseline utilities</td>
+<td>EQ-5D studies</td>
+<td>Health state utilities by GOLD stage</td>
+</tr>
+<tr class="even">
+<td>Exacerbation disutility</td>
+<td>Literature review</td>
+<td>Temporary quality of life reduction</td>
+</tr>
+<tr class="odd">
+<td>Discount rate</td>
+<td>Canadian guidelines</td>
+<td>1.5% for both costs and QALYs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost Ranges (CAD, 2015 dollars):</strong> - Mild
+exacerbation: ~$50-100 - Moderate exacerbation: ~$200-400 - Severe
+exacerbation: ~$5,000-10,000 - Very severe exacerbation (ICU):
+~$15,000-30,000</p>
 </div>
 <div class="section level3">
 <h3 id="smoking">Smoking Module<a class="anchor" aria-label="anchor" href="#smoking"></a>
 </h3>
 <p>This module assesses the impact of smoking on the development and
-progression of COPD. Smoking status (e.g., smoker, former smoker,
-non-smoker) is incorporated into the model to account for its effect on
-the individual’s health trajectory.</p>
+progression of COPD. Smoking status (e.g., current smoker, former
+smoker, never smoker) is incorporated into the model to account for its
+effect on the individual’s health trajectory.</p>
+<p><strong>Smoking Model Components:</strong></p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="35%">
+<col width="35%">
+</colgroup>
+<thead><tr class="header">
+<th>Component</th>
+<th>Data Source</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Initial smoking status</td>
+<td>CCHS 1.1</td>
+<td>Proportion of current, former, and never smokers by age/sex</td>
+</tr>
+<tr class="even">
+<td>Pack-years</td>
+<td>CCHS, literature</td>
+<td>Cumulative smoking exposure (packs per day × years)</td>
+</tr>
+<tr class="odd">
+<td>Smoking initiation rates</td>
+<td>Statistics Canada</td>
+<td>Age-specific rates of starting smoking</td>
+</tr>
+<tr class="even">
+<td>Smoking cessation rates</td>
+<td>Statistics Canada</td>
+<td>Age-specific rates of quitting smoking</td>
+</tr>
+<tr class="odd">
+<td>Relapse rates</td>
+<td>Literature review</td>
+<td>Probability of restarting smoking after quitting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Smoking Status Definitions:</strong> - <strong>Never
+smoker</strong>: &lt; 100 cigarettes lifetime - <strong>Former
+smoker</strong>: ≥ 100 cigarettes lifetime, currently quit -
+<strong>Current smoker</strong>: Currently smoking</p>
+<p><strong>Impact on COPD:</strong> - Increased risk of COPD incidence
+(dose-response relationship with pack-years) - Faster FEV₁ decline in
+current smokers - Higher exacerbation rates - Increased mortality risk -
+Reduced effectiveness of some treatments</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
