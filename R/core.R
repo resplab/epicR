@@ -501,8 +501,6 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     # Calculate appropriate event_stack_size if not already set
     if (is.null(settings$event_stack_size) || settings$event_stack_size == 0) {
       settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
-      message("Auto-calculated event_stack_size: ",
-              format(settings$event_stack_size, scientific = FALSE, big.mark = ","))
     }
   }
 
@@ -515,7 +513,19 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
   if (return_events || settings$record_mode > 0) {
     message("Event recording: ENABLED (record_mode = ", settings$record_mode, ")")
     if (!is.null(settings$event_stack_size) && settings$event_stack_size > 0) {
-      message("Event stack size: ", format(settings$event_stack_size, scientific = FALSE, big.mark = ","))
+      # Calculate memory requirement and show in human-readable format
+      agent_size_bytes <- get_agent_size_bytes()
+      memory_bytes <- settings$event_stack_size * agent_size_bytes
+      memory_gb <- memory_bytes / 1e9
+
+      if (memory_gb >= 1) {
+        memory_str <- sprintf("%.2f GB", memory_gb)
+      } else {
+        memory_mb <- memory_bytes / 1e6
+        memory_str <- sprintf("%.1f MB", memory_mb)
+      }
+
+      message("Estimated memory for events: ", memory_str)
     }
   } else {
     message("Event recording: DISABLED")
