@@ -486,15 +486,26 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     input <- input_full$values
   }
 
+  # Get or create settings
+  if (is.null(settings)) {
+    settings <- get_default_settings()
+  }
+
+  # Display configuration summary
+  message("=== EPIC Simulation Configuration ===")
+  message("Jurisdiction: ", toupper(jurisdiction))
+  message("Time horizon: ", time_horizon, " years")
+  message("Number of agents: ", format(settings$n_base_agents, scientific = FALSE, big.mark = ","))
+
   # If return_events is TRUE, automatically set record_mode
   if (return_events) {
-    if (is.null(settings)) {
-      settings <- get_default_settings()
-    }
     # Set record_mode to record_mode_event (2) to capture all events
     settings$record_mode <- 2
-    message("Enabling event recording (record_mode = 2) to capture event history")
+    message("Event recording: ENABLED (record_mode = 2)")
+  } else {
+    message("Event recording: ", ifelse(settings$record_mode == 0, "DISABLED", "ENABLED"))
   }
+  message("=====================================")
 
   # Run with auto-initialization and auto-termination
   run(input = input, settings = settings, auto_terminate = TRUE)
