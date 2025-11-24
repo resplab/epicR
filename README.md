@@ -184,24 +184,53 @@ pak::pkg_install('resplab/epicR')
 
 # Quick Guide
 
-To run EPIC with default inputs and settings, use the code snippet below. 
-```
+## Simple Usage (Recommended)
+
+The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically:
+
+```r
 library(epicR)
+
+# Run with defaults (Canada, 20 year horizon)
+results <- simulate()
+
+# Run for US with custom time horizon
+results <- simulate(jurisdiction = "us", time_horizon = 10)
+
+# Get extended results
+results <- simulate(return_extended = TRUE)
+```
+
+## Advanced Usage
+
+For advanced users who need more control (e.g., running multiple simulations in one session), you can manage sessions manually:
+
+```r
+library(epicR)
+
+# Initialize session once
 init_session()
+
+# Run multiple simulations
 run()
-Cget_output()
+results1 <- Cget_output()
+
+run()  # run again with same session
+results2 <- Cget_output()
+
+# Clean up when done
 terminate_session()
 ```
-Default inputs can be retrieved with `get_input()`, changed as needed, and resubmitted as a parameter to the run function:
-```
+
+You can also customize inputs:
+
+```r
 init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
-run(input=input$values)
+run(input = input$values)
 results <- Cget_output()
-resultsExtra <- Cget_output_ex()
 terminate_session()
-
 ```
 
 ## Jurisdiction-Specific Configuration

@@ -345,17 +345,39 @@ get_all_events <- function() {
 
 
 
-#' Runs the model, after a session has been initialized.
+#' Runs the model. Auto-initializes if no session is active.
 #' @param max_n_agents maximum number of agents
 #' @param input customized input criteria
-#' @return 0 if successful.
+#' @param settings customized settings (only used if auto-initializing)
+#' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
+#' @return simulation results if successful
 #' @export
-run <- function(max_n_agents = NULL, input = NULL) {
+#' @examples
+#' \dontrun{
+#' # Simple usage - everything handled automatically
+#' results <- run()
+#'
+#' # Or with custom input
+#' input <- get_input(jurisdiction = "us", time_horizon = 10)
+#' results <- run(input = input$values)
+#'
+#' # Advanced: manual session management for multiple runs
+#' init_session()
+#' run()
+#' run()  # run again with same session
+#' terminate_session()
+#' }
+run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE) {
 
-  #Cinit_session()
-  #In the updated version (2019.02.21) user can submit partial input. So better first set the input with default values so that partial inputs are incremental.
+  # Auto-initialize if not already initialized
+  auto_initialized <- FALSE
   if (!(session_env$initialized)) {
-    stop("Session not initialized. Please use init_session() to start a new session")
+    message("No active session - initializing automatically")
+    if (is.null(settings)) {
+      settings <- get_default_settings()
+    }
+    init_session(settings = settings)
+    auto_initialized <- TRUE
   }
   reset_errors()
 
@@ -405,6 +427,15 @@ run <- function(max_n_agents = NULL, input = NULL) {
   }
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
+    if (auto_initialized || auto_terminate) {
+      terminate_session()
+    }
+    stop("Simulation failed")
+  }
+
+  # Auto-terminate if requested or if we auto-initialized
+  if (auto_initialized || auto_terminate) {
+    terminate_session()
   }
 
   return(res)
@@ -412,6 +443,54 @@ run <- function(max_n_agents = NULL, input = NULL) {
 }
 
 
+
+
+#' Convenience function: run simulation and return results
+#'
+#' This is a simplified interface that handles session management automatically
+#' and returns the results directly. Ideal for most users.
+#'
+#' @param input customized input criteria (optional)
+#' @param settings customized settings (optional)
+#' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
+#' @param time_horizon Model time horizon (default: 20)
+#' @param return_extended whether to return extended results (default: FALSE)
+#' @return list with simulation results
+#' @export
+#' @examples
+#' \dontrun{
+#' # Simplest usage
+#' results <- simulate()
+#'
+#' # With custom parameters
+#' results <- simulate(jurisdiction = "us", time_horizon = 10)
+#'
+#' # With extended output
+#' results <- simulate(return_extended = TRUE)
+#' }
+simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
+                     time_horizon = 20, return_extended = FALSE) {
+  # If no custom input provided, use get_input with specified parameters
+  if (is.null(input)) {
+    input_full <- get_input(jurisdiction = jurisdiction,
+                            time_horizon = time_horizon)
+    input <- input_full$values
+  }
+
+  # Run with auto-initialization and auto-termination
+  run(input = input, settings = settings, auto_terminate = TRUE)
+
+  # Get and return results
+  results <- list(
+    basic = Cget_output()
+  )
+
+  if (return_extended) {
+    results$extended <- Cget_output_ex()
+  }
+
+  return(results)
+}
 
 
 #' Resumes running of model.
