@@ -85,6 +85,87 @@ int rgamma_fill_NCOPD()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// CONTEXT-AWARE BUFFER FILL FUNCTIONS (Thread-safe)
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Fill uniform buffer in random context (thread-safe)
+ *
+ * @param rctx Random context to fill
+ * @return 0 on success
+ */
+int runif_fill_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return runif_fill(); // Fallback to global
+
+  R_runif(rctx->runif_buffer_size, rctx->runif_buffer);
+  rctx->runif_buffer_pointer = 0;
+  // Note: runtime_stats are not updated in context version
+  // (would require passing simulation_context too)
+  return 0;
+}
+
+/**
+ * @brief Fill normal buffer in random context (thread-safe)
+ *
+ * @param rctx Random context to fill
+ * @return 0 on success
+ */
+int rnorm_fill_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rnorm_fill(); // Fallback to global
+
+  R_rnorm(rctx->rnorm_buffer_size, rctx->rnorm_buffer);
+  rctx->rnorm_buffer_pointer = 0;
+  return 0;
+}
+
+/**
+ * @brief Fill exponential buffer in random context (thread-safe)
+ *
+ * @param rctx Random context to fill
+ * @return 0 on success
+ */
+int rexp_fill_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rexp_fill(); // Fallback to global
+
+  R_rexp(rctx->rexp_buffer_size, rctx->rexp_buffer);
+  rctx->rexp_buffer_pointer = 0;
+  return 0;
+}
+
+/**
+ * @brief Fill COPD gamma buffer in random context (thread-safe)
+ *
+ * @param rctx Random context to fill
+ * @return 0 on success
+ */
+int rgamma_fill_COPD_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rgamma_fill_COPD(); // Fallback to global
+
+  R_rgamma(rctx->rgamma_buffer_size, 1/0.431, 1, rctx->rgamma_buffer_COPD);
+  rctx->rgamma_buffer_pointer_COPD = 0;
+  return 0;
+}
+
+/**
+ * @brief Fill non-COPD gamma buffer in random context (thread-safe)
+ *
+ * @param rctx Random context to fill
+ * @return 0 on success
+ */
+int rgamma_fill_NCOPD_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rgamma_fill_NCOPD(); // Fallback to global
+
+  R_rgamma(rctx->rgamma_buffer_size, 1/0.4093, 1, rctx->rgamma_buffer_NCOPD);
+  rctx->rgamma_buffer_pointer_NCOPD = 0;
+  return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // PUBLIC RANDOM NUMBER FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -169,6 +250,193 @@ int rand_NegBin_COPD(double rate, double dispersion)
 int rand_NegBin_NCOPD(double rate, double dispersion)
 {
   return rand_NegBin(rate, dispersion, false);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// CONTEXT-AWARE RANDOM NUMBER FUNCTIONS (Thread-safe)
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Generate uniform random number using context (thread-safe)
+ *
+ * @param rctx Random context containing buffers
+ * @return Random uniform [0,1]
+ */
+double rand_unif_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rand_unif(); // Fallback to global
+
+  if (rctx->runif_buffer_pointer == rctx->runif_buffer_size) {
+    runif_fill_ctx(rctx);
+  }
+  double temp = rctx->runif_buffer[rctx->runif_buffer_pointer];
+  rctx->runif_buffer_pointer++;
+  return temp;
+}
+
+/**
+ * @brief Generate normal random number using context (thread-safe)
+ *
+ * @param rctx Random context containing buffers
+ * @return Random normal N(0,1)
+ */
+double rand_norm_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rand_norm(); // Fallback to global
+
+  if (rctx->rnorm_buffer_pointer == rctx->rnorm_buffer_size) {
+    rnorm_fill_ctx(rctx);
+  }
+  double temp = rctx->rnorm_buffer[rctx->rnorm_buffer_pointer];
+  rctx->rnorm_buffer_pointer++;
+  return temp;
+}
+
+/**
+ * @brief Generate exponential random number using context (thread-safe)
+ *
+ * @param rctx Random context containing buffers
+ * @return Random exponential Exp(1)
+ */
+double rand_exp_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rand_exp(); // Fallback to global
+
+  if (rctx->rexp_buffer_pointer == rctx->rexp_buffer_size) {
+    rexp_fill_ctx(rctx);
+  }
+  double temp = rctx->rexp_buffer[rctx->rexp_buffer_pointer];
+  rctx->rexp_buffer_pointer++;
+  return temp;
+}
+
+/**
+ * @brief Generate gamma random number (COPD) using context (thread-safe)
+ *
+ * @param rctx Random context containing buffers
+ * @return Random gamma for COPD patients
+ */
+double rand_gamma_COPD_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rand_gamma_COPD(); // Fallback to global
+
+  if (rctx->rgamma_buffer_pointer_COPD == rctx->rgamma_buffer_size) {
+    rgamma_fill_COPD_ctx(rctx);
+  }
+  double temp = rctx->rgamma_buffer_COPD[rctx->rgamma_buffer_pointer_COPD];
+  rctx->rgamma_buffer_pointer_COPD++;
+  return temp;
+}
+
+/**
+ * @brief Generate gamma random number (non-COPD) using context (thread-safe)
+ *
+ * @param rctx Random context containing buffers
+ * @return Random gamma for non-COPD patients
+ */
+double rand_gamma_NCOPD_ctx(random_context* rctx)
+{
+  if (rctx == NULL) return rand_gamma_NCOPD(); // Fallback to global
+
+  if (rctx->rgamma_buffer_pointer_NCOPD == rctx->rgamma_buffer_size) {
+    rgamma_fill_NCOPD_ctx(rctx);
+  }
+  double temp = rctx->rgamma_buffer_NCOPD[rctx->rgamma_buffer_pointer_NCOPD];
+  rctx->rgamma_buffer_pointer_NCOPD++;
+  return temp;
+}
+
+/**
+ * @brief Generate Poisson random number using context (thread-safe)
+ *
+ * @param rate Poisson rate parameter
+ * @param rctx Random context containing buffers
+ * @return Random Poisson(rate)
+ */
+int rand_Poisson_ctx(double rate, random_context* rctx)
+{
+  if (rctx == NULL) return rand_Poisson(rate); // Fallback to global
+
+  double out = 0;
+  double time = 0;
+  while (time < 1)
+  {
+    time = time + rand_exp_ctx(rctx) / rate;
+    out++;
+  }
+  return (int)(out - 1);
+}
+
+/**
+ * @brief Generate bivariate normal using context (thread-safe)
+ *
+ * @param rho Correlation coefficient
+ * @param x Output array [2] for the two normal variates
+ * @param rctx Random context containing buffers
+ */
+void rbvnorm_ctx(double rho, double x[2], random_context* rctx)
+{
+  if (rctx == NULL) {
+    rbvnorm(rho, x); // Fallback to global
+    return;
+  }
+
+  x[0] = rand_norm_ctx(rctx);
+  double mu = rho * x[0];
+  double v = (1 - rho * rho);
+  x[1] = rand_norm_ctx(rctx) * sqrt(v) + mu;
+}
+
+/**
+ * @brief Generate negative binomial using context (thread-safe)
+ *
+ * @param rate NB rate parameter
+ * @param dispersion NB dispersion parameter
+ * @param use_COPD_gamma Whether to use COPD or non-COPD gamma
+ * @param rctx Random context containing buffers
+ * @return Random NB(rate, dispersion)
+ */
+int rand_NegBin_ctx(double rate, double dispersion, bool use_COPD_gamma, random_context* rctx)
+{
+  if (rctx == NULL) return rand_NegBin(rate, dispersion, use_COPD_gamma); // Fallback
+
+  if (dispersion != 1)
+  {
+    double size = 1 / dispersion;
+    double p = size / (size + rate);
+    double beta = (1 - p) / p;
+    double lambda = use_COPD_gamma ?
+                    rand_gamma_COPD_ctx(rctx) * beta :
+                    rand_gamma_NCOPD_ctx(rctx) * beta;
+    return rand_Poisson_ctx(lambda, rctx);
+  }
+  return rand_Poisson_ctx(rate, rctx);
+}
+
+/**
+ * @brief Generate negative binomial (COPD) using context (thread-safe)
+ *
+ * @param rate NB rate parameter
+ * @param dispersion NB dispersion parameter
+ * @param rctx Random context containing buffers
+ * @return Random NB for COPD patients
+ */
+int rand_NegBin_COPD_ctx(double rate, double dispersion, random_context* rctx)
+{
+  return rand_NegBin_ctx(rate, dispersion, true, rctx);
+}
+
+/**
+ * @brief Generate negative binomial (non-COPD) using context (thread-safe)
+ *
+ * @param rate NB rate parameter
+ * @param dispersion NB dispersion parameter
+ * @param rctx Random context containing buffers
+ * @return Random NB for non-COPD patients
+ */
+int rand_NegBin_NCOPD_ctx(double rate, double dispersion, random_context* rctx)
+{
+  return rand_NegBin_ctx(rate, dispersion, false, rctx);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

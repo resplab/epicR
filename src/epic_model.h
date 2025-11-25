@@ -465,6 +465,69 @@ struct output_ex {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// CONTEXT STRUCTURES FOR PARALLELIZATION
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Random number generation context (one per thread)
+ *
+ * Contains all random number buffers and pointers for thread-safe
+ * random number generation. Each thread should have its own random_context.
+ */
+struct random_context {
+  // Random number buffers
+  double *runif_buffer;
+  long runif_buffer_pointer;
+  double *rnorm_buffer;
+  long rnorm_buffer_pointer;
+  double *rexp_buffer;
+  long rexp_buffer_pointer;
+  double *rgamma_buffer_COPD;
+  long rgamma_buffer_pointer_COPD;
+  double *rgamma_buffer_NCOPD;
+  long rgamma_buffer_pointer_NCOPD;
+
+  // Buffer sizes (copied from settings for convenience)
+  int runif_buffer_size;
+  int rnorm_buffer_size;
+  int rexp_buffer_size;
+  int rgamma_buffer_size;
+};
+
+/**
+ * @brief Simulation context (contains all mutable state for one simulation run)
+ *
+ * This structure encapsulates all the mutable state needed for a simulation,
+ * allowing multiple simulations to run in parallel without data races.
+ * In the hybrid approach, the read-only 'input' structure remains global.
+ */
+struct simulation_context {
+  // Simulation state
+  double calendar_time;
+  int last_id;
+
+  // Configuration
+  struct settings settings;
+  // NOTE: In hybrid approach, 'input' remains a global read-only variable
+
+  // Output accumulators
+  struct output output;
+  #ifdef OUTPUT_EX
+  struct output_ex output_ex;
+  #endif
+
+  // Runtime statistics
+  struct runtime_stats runtime_stats;
+
+  // Agent storage
+  agent *agent_stack;
+  long agent_stack_pointer;
+  agent *event_stack;
+  long event_stack_pointer;
+  agent smith;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // EXTERN GLOBAL VARIABLES
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -505,7 +568,7 @@ extern long rgamma_buffer_pointer_NCOPD;
 NumericMatrix array_to_Rmatrix(std::vector<double> x, int nCol);
 NumericMatrix array_to_Rmatrix(std::vector<int> x, int nCol);
 
-// Random number functions
+// Random number functions - Global versions (legacy, use context versions for new code)
 double rand_unif();
 double rand_norm();
 double rand_exp();
@@ -522,6 +585,23 @@ int rnorm_fill();
 int rexp_fill();
 int rgamma_fill_COPD();
 int rgamma_fill_NCOPD();
+
+// Random number functions - Context-aware versions (thread-safe)
+double rand_unif_ctx(random_context* rctx);
+double rand_norm_ctx(random_context* rctx);
+double rand_exp_ctx(random_context* rctx);
+double rand_gamma_COPD_ctx(random_context* rctx);
+double rand_gamma_NCOPD_ctx(random_context* rctx);
+int rand_Poisson_ctx(double rate, random_context* rctx);
+int rand_NegBin_ctx(double rate, double dispersion, bool use_COPD_gamma, random_context* rctx);
+int rand_NegBin_COPD_ctx(double rate, double dispersion, random_context* rctx);
+int rand_NegBin_NCOPD_ctx(double rate, double dispersion, random_context* rctx);
+void rbvnorm_ctx(double rho, double x[2], random_context* rctx);
+int runif_fill_ctx(random_context* rctx);
+int rnorm_fill_ctx(random_context* rctx);
+int rexp_fill_ctx(random_context* rctx);
+int rgamma_fill_COPD_ctx(random_context* rctx);
+int rgamma_fill_NCOPD_ctx(random_context* rctx);
 
 // Reset functions
 void reset_runtime_stats();
@@ -578,5 +658,29 @@ double event_stroke_tte(agent *ag);
 double event_hf_tte(agent *ag);
 double event_bgd_tte(agent *ag);
 double event_doctor_visit_tte(agent *ag);
+
+////////////////////////////////////////////////////////////////////////////////
+// CONTEXT MANAGEMENT FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+// Random context management
+random_context* create_random_context(const struct settings& s);
+void free_random_context(random_context* rctx);
+int allocate_random_buffers(random_context* rctx);
+void reset_random_pointers(random_context* rctx);
+
+// Simulation context management
+simulation_context* create_simulation_context(const struct settings& s);
+void free_simulation_context(simulation_context* ctx);
+int allocate_simulation_resources(simulation_context* ctx);
+void reset_simulation_context(simulation_context* ctx);
+
+// Context initialization helpers
+void init_context_from_globals(simulation_context* ctx);
+void copy_context_to_globals(const simulation_context* ctx);
+
+// Output aggregation (for parallel execution)
+void merge_outputs(simulation_context* dest, const simulation_context* src);
+simulation_context* aggregate_contexts(simulation_context** contexts, int n_contexts);
 
 #endif // EPIC_MODEL_H
