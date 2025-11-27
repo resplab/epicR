@@ -147,15 +147,15 @@
   "COPD": {
     "logit_p_COPD_betas_by_sex": {
       "male": [-4.30190, 0.033070, 0, 0.025049, 0, 0, 0],
-      "female": [-4.40202, 0.027359, 0, 0.030399, 0, 0, 0]
+      "female": [-4.35202, 0.027359, 0, 0.030399, 0, 0, 0]
     },
     "logit_p_COPD_betas_by_sex_metadata": {
       "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
       "ref": "Adapted to US setting (July 22, 2025). CanCold - Shahzad's Derivation."
     },
     "ln_h_COPD_betas_by_sex": {
-      "male": [-7.97107937, 0.03245063, 0, 0.03578899, 0, 0, 0],
-      "female": [-7.78520064, 0.02975571, 0, 0.04087865, 0, 0, 0]
+      "male": [-7.62659032, 0.03116591, 0, 0.0276946, 0, 0, 0],
+      "female": [-8.39537000, 0.03608233, 0, 0.04033863, 0, 0, 0]
     },
     "ln_h_COPD_betas_by_sex_metadata": {
       "help": "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)",

@@ -147,7 +147,7 @@ We now define our initial guess for the parameters and set the bounds for each p
 
 initial_guess <- c(-3.5, 0.0005, -0.00005, 0, -0.025, 0, 0)
 
-lower_bounds <- c(-3.6, 0.0001, -0.0001, -0.0005, -0.0001, -0.0005, -0.0005)
+lower_bounds <- c(-3.65, 0.0001, -0.00001, -0.005, -0.0001, -0.0005, -0.0005)
 upper_bounds <- c(-3.45, 0.01, 0, 0, 0, 0, 0)
 
 
@@ -173,8 +173,7 @@ print(paste("Optimized RMSE:", result_optim$value))
 After running the optimization process, we obtain the optimal values for the parameters. These values minimize the RMSE for the specified age groups (40-59 and 60-79) and exclude the 80+ age group.
 
 ```{r, eval = FALSE, echo = TRUE}
-params <- c(-3.48672063032448, 0.00202274171887977, -4.37035899506131e-05, 
-            0, -1e-04, 0, -0.000132065698144107)
+params <- c(-3.62672063032448, 0.0040274171887977, -4.37035899506131e-05, 0, -1e-02, 0, -0.00532065698144107)
 ```
 
 These are the optimized parameters that yield the lowest RMSE, and they reflect the best possible values for the model in terms of population size predictions for the selected age groups.
@@ -208,13 +207,12 @@ input$values$global_parameters$time_horizon <- time_horizon
 
 
 # input$values$agent$l_inc_betas <- c(-3.5,0.002,0.00001)
-params <- c(-3.48672063032448, 0.00202274171887977, -4.37035899506131e-05, 0, -1e-04, 0, -0.000132065698144107)
+params <- params <- c(-3.62672063032448, 0.0040274171887977, -4.37035899506131e-05, 0, -1e-02, 0, -0.00532065698144107)
 input$values$agent$l_inc_betas <- c(params[1], params[2], params[3])
 
 
 # intercept, y, y2, age
-input$values$agent$ln_h_bgd_betas <- c(params[4], params[5], params[6], params[7], b_mi = 0, n_mi = 0, b_stroke = 0,
-                                       n_stroke = 0, hf = 0)
+input$values$agent$ln_h_bgd_betas <- c(params[4], params[5], params[6], params[7], b_mi = 0, n_mi = 0, b_stroke = 0,n_stroke = 0, hf = 0)
 
 
 
