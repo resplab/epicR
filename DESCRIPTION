@@ -25,7 +25,8 @@ Imports:
     scales,
     tidyr,
     tibble,
-    dplyr
+    dplyr,
+    knitr
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.3
 Suggests:

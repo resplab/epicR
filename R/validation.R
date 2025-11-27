@@ -196,20 +196,18 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 #' Returns plots comparing EPIC population projection vs US population data
 #'
 #' This function validates the population simulation by comparing the EPIC model population
-#' outputs with US population data over a set time horizon. It generate 3 plots for
+#' outputs with US population data over a set time horizon. It generates 3 plots for
 #' the following age groups : 40-59, 60-79, 80+
 #'
 #' @return plots showing population projections vs actual values for 40-59, 60-79, 80+ age groups
 #' @export
 validate_populationUS <- function() {
-  library(tidyverse)
-  library(scales)
 
   USSimulation <- read_csv(system.file("USCensus.csv", package = "epicR"))
 
   settings <- get_default_settings()
   settings$record_mode <- 0
-  settings$n_base_agents <- settings$n_base_agents
+  settings$n_base_agents <-1e+06
   init_session(settings = settings)
 
   input <- get_input(jurisdiction = "us")
@@ -518,7 +516,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
 
   dataS <- Cget_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
-  age_list <- list(a1 = c(40, 64), a2 = c(65, 75), a3 = c(75, 111))
+  age_list <- list(a1 = c(40, 64), a2 = c(65, 74), a3 = c(75, 111))
   tab2 <- numeric(length(age_list))
 
   for (j in 1:length(age_list)) {
@@ -552,7 +550,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   plot(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_prev[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
   lines(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_prev[, 2], type = "l", col = "grey")
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
-  title(cex.main = 0.5, "Annual prevalence of currrent smoking (simulated)")
+  title(cex.main = 0.5, "Annual prevalence of current smoking (simulated)")
 
   plot(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_packyears[, 1], type = "l", ylim = c(0, 30), col = "black", xlab = "Year", ylab = "Average Pack years")
   lines(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_packyears[, 2], type = "l", col = "grey")
@@ -880,8 +878,6 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 }
 
 #' Returns results of validation tests for US COPD Prevalence
-#' @param incident_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
-#' @param return_CI if TRUE, returns 95 percent confidence intervals for the "Year" coefficient
 #' @return validation test results for the US
 #' @export
 #' @importFrom knitr kable
@@ -1707,7 +1703,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_undiagnosed[1:3, 1] <- c("total", "gold1", "gold2+")
 
   Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1],
-                                         Follow_up_GOLD_undiagnosed[2]) #Because CANCold is mostly GOLD2, we comprare to GOLD2 EPIC
+                                         Follow_up_GOLD_undiagnosed[2]) #Because CANCold is mostly GOLD2, we compare to GOLD2 EPIC
   #Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1], sum(Follow_up_GOLD_undiagnosed[2:4]))
   GOLD_counts_undiagnosed   <- as.data.frame(table(exac_events_undiagnosed[, "gold"]))[, 2]
   GOLD_counts_undiagnosed   <- c(GOLD_counts_undiagnosed[1],
