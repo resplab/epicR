@@ -229,6 +229,8 @@ validate_populationUS <- function() {
 
   # Remove columns 2 to 40 (ages < 40)
   epic_popsize_age <- epic_popsize_age[, -(2:40)]
+
+  # Reshape (Long format)
   epic_popsize_age_long <- tidyr::pivot_longer(epic_popsize_age,
                                                cols = -1,
                                                names_to = "age",
@@ -249,10 +251,12 @@ validate_populationUS <- function() {
     validate_pop_size_scaled$US_popsize[validate_pop_size_scaled$year == 2015]
 
   # Calculate Growth Rates
-  total_epic_by_year <- aggregate(EPIC_popsize ~ year,
-                                  data = validate_pop_size_scaled,
-                                  FUN = sum,
-                                  na.rm = TRUE)
+  total_epic_by_year <- aggregate(
+    x = validate_pop_size_scaled["EPIC_popsize"],
+    by = validate_pop_size_scaled["year"],
+    FUN = sum,
+    na.rm = TRUE
+  )
 
   colnames(total_epic_by_year)[2] <- "total_EPIC_output"
 
@@ -260,7 +264,6 @@ validate_populationUS <- function() {
   total_epic_by_year <- total_epic_by_year[order(total_epic_by_year$year), ]
 
   # Calculate growth rate (current / previous)
-  # We construct a lagged vector manually
   prev_vals <- c(NA, total_epic_by_year$total_EPIC_output[-nrow(total_epic_by_year)])
   total_epic_by_year$growth_rate <- total_epic_by_year$total_EPIC_output / prev_vals
 
@@ -302,18 +305,21 @@ validate_populationUS <- function() {
   df_with_growth$age_group[df_with_growth$age >= 80] <- "80+"
 
   # Aggregate Final Data
-  # Sum EPIC and US population by year and age_group
-  df_summed_ranges <- aggregate(cbind(EPIC_output_scaled, US_popsize) ~ year + age_group,
-                                data = df_with_growth,
-                                FUN = sum,
-                                na.rm = TRUE)
+  df_summed_ranges <- aggregate(
+    x = df_with_growth[c("EPIC_output_scaled", "US_popsize")],
+    by = df_with_growth[c("year", "age_group")],
+    FUN = sum,
+    na.rm = TRUE
+  )
 
   colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
 
   # Calculate RMSE
-  rmse_df <- aggregate(cbind(total_EPIC_population, total_US_population) ~ age_group,
-                       data = df_summed_ranges,
-                       FUN = function(x) { NA }) # Placeholder aggregation
+  rmse_df <- aggregate(
+    x = df_summed_ranges[c("total_EPIC_population", "total_US_population")],
+    by = df_summed_ranges["age_group"],
+    FUN = function(x) { NA }
+  )
 
   # Calculate RMSE manually per group
   rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
@@ -337,7 +343,8 @@ validate_populationUS <- function() {
                              value = "Population",
                              "total_EPIC_population", "total_US_population")
 
-    p <- ggplot2::ggplot(df_plot, ggplot2::aes(x = year, y = Population, color = Population_Type)) +
+
+    p <- ggplot2::ggplot(df_plot, ggplot2::aes_string(x = "year", y = "Population", color = "Population_Type")) +
       ggplot2::geom_line(linewidth = 1.2) +
       ggplot2::geom_point(size = 2) +
       ggthemes::theme_tufte(base_size = 14, ticks = FALSE) +
@@ -347,7 +354,9 @@ validate_populationUS <- function() {
       ggplot2::expand_limits(y = 0) +
       ggplot2::theme(
         legend.title = ggplot2::element_blank(),
-        legend.position = "bottom"
+        legend.position = "bottom",
+        plot.background = ggplot2::element_rect(fill = "white", color = NA),
+        panel.background = ggplot2::element_rect(fill = "white", color = NA)
       )
 
     print(p)
@@ -932,7 +941,7 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' Returns results of validation tests for US COPD Prevalence
 #' @return validation test results for the US
 #' @export
-#' @importFrom knitr kable
+
 validate_COPDUS <- function()
 {
   settings <- get_default_settings()
@@ -947,181 +956,185 @@ validate_COPDUS <- function()
   output <- Cget_output_ex()
 
   # Determine overall COPD prevalence
+  COPDprevalence_ctime_age <- as.data.frame(output$n_COPD_by_ctime_age)
+  totalpopulation <- output$n_alive_by_ctime_age
 
-  COPDprevalence_ctime_age<-output$n_COPD_by_ctime_age
-  COPDprevalence_ctime_age<-as.data.frame(output$n_COPD_by_ctime_age)
-  totalpopulation<-output$n_alive_by_ctime_age
-
-  # Overall prevalence of COPD
-
-  alive_age_all <- rowSums(output$n_alive_by_ctime_age[1:26, 40:111])
-  COPD_age_all <- rowSums (output$n_COPD_by_ctime_age[1:26, 40:111])
+  # 1. Overall prevalence of COPD
+  alive_age_all <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:111])
+  COPD_age_all <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:111])
   prevalenceCOPD_age_all <- COPD_age_all / alive_age_all
 
-  # Prevalence by age 40-59
-
-  alive_age_40to59 <- rowSums(output$n_alive_by_ctime_age[1:26, 40:59])
-  COPD_age_40to59 <-rowSums(output$n_COPD_by_ctime_age[1:26, 40:59])
+  # 2. Prevalence by age 40-59
+  alive_age_40to59 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:59])
+  COPD_age_40to59 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:59])
   prevalenceCOPD_age_40to59 <- COPD_age_40to59 / alive_age_40to59
 
-  # Prevalence by age 60-79
-
-  alive_age_60to79 <- rowSums(output$n_alive_by_ctime_age[1:26, 60:79])
-  COPD_age_60to79 <-rowSums(output$n_COPD_by_ctime_age[1:26, 60:79])
+  # 3. Prevalence by age 60-79
+  alive_age_60to79 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 60:79])
+  COPD_age_60to79 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 60:79])
   prevalenceCOPD_age_60to79 <- COPD_age_60to79 / alive_age_60to79
 
-  # Prevalence by age 80+
-
-  alive_age_over80 <- rowSums(output$n_alive_by_ctime_age[1:26, 80:111])
-  COPD_age_over80 <-rowSums(output$n_COPD_by_ctime_age[1:26, 80:111])
+  # 4. Prevalence by age 80+
+  alive_age_over80 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 80:111])
+  COPD_age_over80 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 80:111])
   prevalenceCOPD_age_over80 <- COPD_age_over80 / alive_age_over80
 
-  # Display summary of COPD prevalence by age group
-
+  # Display summary
   COPD_prevalence_summary <- data.frame(
-    Year = 2015:2040,
+    Year = 2015:(2015 + time_horizon - 1),
     Prevalence_all = prevalenceCOPD_age_all,
     Prevalence_40to59 = prevalenceCOPD_age_40to59,
     Prevalence_60to79 = prevalenceCOPD_age_60to79,
     Prevalence_over80 = prevalenceCOPD_age_over80
   )
 
-  kable(COPD_prevalence_summary,
-        caption = "COPD Prevalence by Age Group Over Time",
-        digits = 3)
+  print(knitr::kable(COPD_prevalence_summary,
+                     caption = "COPD Prevalence by Age Group Over Time",
+                     digits = 3))
 
-  # Plot prevalence all ages
+  # --- PLOTTING ---
+
+  # Plot 1: All Ages
   plot_prevalenceCOPD_age_all <- data.frame(
-    Year = 2015:2040,
+    Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_all
   )
 
-  gg_plot_prevalenceCOPD_age_all<- ggplot(plot_prevalenceCOPD_age_all, aes(x = Year, y = Prevalence)) +
-    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
-    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
-    scale_y_continuous(
+  gg_plot_prevalenceCOPD_age_all <- ggplot2::ggplot(plot_prevalenceCOPD_age_all,
+                                                    ggplot2::aes_string(x = "Year", y = "Prevalence")) +
+    ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+    ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+    ggplot2::scale_y_continuous(
       labels = scales::percent_format(accuracy = 1),
       limits = c(0, 0.15),
       breaks = seq(0, 0.15, by = 0.05)
     ) +
-    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
-    labs(
+    ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    ggplot2::labs(
       title = "COPD Prevalence Over Time (All Ages)",
       subtitle = "Estimated proportion of population with COPD from 2016–2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
-    theme_minimal(base_size = 14) +
-    theme(
-      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
-      plot.subtitle = element_text(size = 14, hjust = 0.5),
-      axis.title = element_text(face = "bold"),
-      axis.text = element_text(color = "black"),
-      axis.line = element_line(color = "black", linewidth = 0.8),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank()
+    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+      plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text = ggplot2::element_text(color = "black"),
+      axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
     )
 
-  print (gg_plot_prevalenceCOPD_age_all)
+  print(gg_plot_prevalenceCOPD_age_all)
 
-  # Plot prevalence age 40-59
-  plot_prevalence_40to59<- data.frame (Year = 2015:2040, Prevalence = prevalenceCOPD_age_40to59)
+  # Plot 2: Age 40-59
+  plot_prevalence_40to59 <- data.frame(
+    Year = 2015:(2015 + time_horizon - 1),
+    Prevalence = prevalenceCOPD_age_40to59
+  )
 
-  gg_plot_prevalence_40to59<- ggplot(plot_prevalence_40to59, aes(x = Year, y = Prevalence)) +
-    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
-    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
-    scale_y_continuous(
+  gg_plot_prevalence_40to59 <- ggplot2::ggplot(plot_prevalence_40to59,
+                                               ggplot2::aes_string(x = "Year", y = "Prevalence")) +
+    ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+    ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+    ggplot2::scale_y_continuous(
       labels = scales::percent_format(accuracy = 1),
       limits = c(0, 0.10),
       breaks = seq(0, 0.10, by = 0.05)) +
-    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
-    labs(
+    ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    ggplot2::labs(
       title = "COPD Prevalence Over Time (Age 40–59)",
       subtitle = "Estimated proportion of population with COPD from 2016–2040",
       x = "Year",
       y = "Prevalence (%)") +
-    theme_minimal(base_size = 14) +
-    theme(
-      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
-      plot.subtitle = element_text(size = 14, hjust = 0.5),
-      axis.title = element_text(face = "bold"),
-      axis.text = element_text(color = "black"),
-      axis.line = element_line(color = "black", linewidth = 0.8),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank()
+    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+      plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text = ggplot2::element_text(color = "black"),
+      axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
     )
 
-  print (gg_plot_prevalence_40to59)
+  print(gg_plot_prevalence_40to59)
 
-  # Plot prevalence age 60-79
+  # Plot 3: Age 60-79
   plot_prevalence_60to79 <- data.frame(
-    Year = 2015:2040,
+    Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_60to79
   )
 
-  gg_plot_prevalence_60to79<- ggplot(plot_prevalence_60to79, aes(x = Year, y = Prevalence)) +
-    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
-    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
-    scale_y_continuous(
+  gg_plot_prevalence_60to79 <- ggplot2::ggplot(plot_prevalence_60to79,
+                                               ggplot2::aes_string(x = "Year", y = "Prevalence")) +
+    ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+    ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+    ggplot2::scale_y_continuous(
       labels = scales::percent_format(accuracy = 1),
       limits = c(0, 0.15),
       breaks = seq(0, 0.15, by = 0.05)
     ) +
-    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
-    labs(
+    ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    ggplot2::labs(
       title = "COPD Prevalence Over Time (Age 60–79)",
       subtitle = "Estimated proportion of population with COPD from 2016–2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
-    theme_minimal(base_size = 14) +
-    theme(
-      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
-      plot.subtitle = element_text(size = 14, hjust = 0.5),
-      axis.title = element_text(face = "bold"),
-      axis.text = element_text(color = "black"),
-      axis.line = element_line(color = "black", linewidth = 0.8),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank()
+    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+      plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text = ggplot2::element_text(color = "black"),
+      axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
     )
 
-  print (gg_plot_prevalence_60to79)
+  print(gg_plot_prevalence_60to79)
 
-  # Plot prevalence age 80+
-  plot_prevalence_over80<- data.frame(Year = 2015:2040, Prevalence = prevalenceCOPD_age_over80)
+  # Plot 4: Age 80+
+  plot_prevalence_over80 <- data.frame(
+    Year = 2015:(2015 + time_horizon - 1),
+    Prevalence = prevalenceCOPD_age_over80
+  )
 
-  gg_plot_prevalence_over80<- ggplot(plot_prevalence_over80, aes(x = Year, y = Prevalence)) +
-    geom_line(linewidth = 1.5, color = "#003f5c") +           # Deep navy
-    geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +   # Light blue
-    scale_y_continuous(
+  gg_plot_prevalence_over80 <- ggplot2::ggplot(plot_prevalence_over80,
+                                               ggplot2::aes_string(x = "Year", y = "Prevalence")) +
+    ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+    ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+    ggplot2::scale_y_continuous(
       labels = scales::percent_format(accuracy = 1),
       limits = c(0, 0.30),
       breaks = seq(0, 0.30, by = 0.05)
     ) +
-    scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
-    labs(
+    ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+    ggplot2::labs(
       title = "COPD Prevalence Over Time (Age 80+)",
       subtitle = "Estimated proportion of population with COPD from 2016–2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
-    theme_minimal(base_size = 14) +
-    theme(
-      plot.title = element_text(face = "bold", size = 18, hjust = 0.5, margin = margin(b = 8)),
-      plot.subtitle = element_text(size = 14, hjust = 0.5),
-      axis.title = element_text(face = "bold"),
-      axis.text = element_text(color = "black"),
-      axis.line = element_line(color = "black", linewidth = 0.8),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank()
+    ggplot2::theme_minimal(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+      plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text = ggplot2::element_text(color = "black"),
+      axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
     )
 
-  print (gg_plot_prevalence_over80)
+  print(gg_plot_prevalence_over80)
 
   terminate_session()
   return(COPD_prevalence_summary)
 }
-
 
 #' Returns results of validation tests for mortality rate
 #'
