@@ -200,14 +200,16 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 #' the following age groups : 40-59, 60-79, 80+
 #'
 #' @return plots showing population projections vs actual values for 40-59, 60-79, 80+ age groups
+#' @importFrom readr read_csv
 #' @export
 validate_populationUS <- function() {
 
-  USSimulation <- read_csv(system.file("USCensus.csv", package = "epicR"))
+  USSimulation <- readr::read_csv(system.file("USCensus.csv", package = "epicR"))
 
+  # Setup Simulation
   settings <- get_default_settings()
   settings$record_mode <- 0
-  settings$n_base_agents <-1e+06
+  settings$n_base_agents <- 1e+06
   init_session(settings = settings)
 
   input <- get_input(jurisdiction = "us")
@@ -218,89 +220,140 @@ validate_populationUS <- function() {
   output <- Cget_output_ex()
   terminate_session()
 
-
+  # Create data frame
   epic_popsize_age <- data.frame(year = seq(2015, by = 1, length.out = time_horizon),
                                  output$n_alive_by_ctime_age)
+
+  # Rename columns
   colnames(epic_popsize_age)[2:ncol(epic_popsize_age)] <- 1:(ncol(epic_popsize_age) - 1)
+
+  # Remove columns 2 to 40 (ages < 40)
   epic_popsize_age <- epic_popsize_age[, -(2:40)]
-  epic_popsize_age_long <- epic_popsize_age %>%
-    pivot_longer(!year, names_to = "age", values_to = "EPIC_popsize") %>%
-    mutate(age=as.integer(age))
+  epic_popsize_age_long <- tidyr::pivot_longer(epic_popsize_age,
+                                               cols = -1,
+                                               names_to = "age",
+                                               values_to = "EPIC_popsize")
+  # Convert age to integer
+  epic_popsize_age_long$age <- as.integer(epic_popsize_age_long$age)
 
+  # Join/Merge Data
+  colnames(USSimulation)[colnames(USSimulation) == "value"] <- "US_popsize"
 
-  validate_pop_size_scaled <- USSimulation %>%
-    rename(US_popsize = value) %>%
-    left_join(epic_popsize_age_long, by = c("year", "age")) %>%
-    mutate(EPIC_output_scaled = ifelse(year == 2015, US_popsize, NA))
+  validate_pop_size_scaled <- merge(USSimulation, epic_popsize_age_long,
+                                    by = c("year", "age"),
+                                    all.x = TRUE)
 
+  # Initialize Scaled Column
+  validate_pop_size_scaled$EPIC_output_scaled <- NA
+  validate_pop_size_scaled$EPIC_output_scaled[validate_pop_size_scaled$year == 2015] <-
+    validate_pop_size_scaled$US_popsize[validate_pop_size_scaled$year == 2015]
 
-  total_epic_by_year <- validate_pop_size_scaled %>%
-    group_by(year) %>%
-    summarise(total_EPIC_output = sum(EPIC_popsize, na.rm = TRUE)) %>%
-    arrange(year) %>%
-    mutate(growth_rate = total_EPIC_output / lag(total_EPIC_output))
+  # Calculate Growth Rates
+  total_epic_by_year <- aggregate(EPIC_popsize ~ year,
+                                  data = validate_pop_size_scaled,
+                                  FUN = sum,
+                                  na.rm = TRUE)
 
+  colnames(total_epic_by_year)[2] <- "total_EPIC_output"
 
-  df_with_growth <- validate_pop_size_scaled %>%
-    left_join(total_epic_by_year, by = "year") %>%
-    arrange(year, age) %>%
-    group_by(age) %>%
-    mutate(
-      EPIC_output_scaled = ifelse(year == 2015, US_popsize, NA),
-      EPIC_output_scaled = replace_na(EPIC_output_scaled, first(US_popsize)) *
-        cumprod(replace_na(growth_rate, 1))
-    )
+  # Sort by year
+  total_epic_by_year <- total_epic_by_year[order(total_epic_by_year$year), ]
 
+  # Calculate growth rate (current / previous)
+  # We construct a lagged vector manually
+  prev_vals <- c(NA, total_epic_by_year$total_EPIC_output[-nrow(total_epic_by_year)])
+  total_epic_by_year$growth_rate <- total_epic_by_year$total_EPIC_output / prev_vals
 
-  df_summed_ranges <- df_with_growth %>%
-    mutate(
-      age_group = case_when(
-        age >= 40 & age <= 59 ~ "40-59",
-        age >= 60 & age <= 79 ~ "60-79",
-        age >= 80 ~ "80+"
-      )
-    ) %>%
-    group_by(year, age_group) %>%
-    summarise(total_EPIC_population = sum(EPIC_output_scaled, na.rm = TRUE),
-              total_US_population = sum(US_popsize, na.rm = TRUE))
+  # Merge growth rates back
+  df_with_growth <- merge(validate_pop_size_scaled,
+                          total_epic_by_year[, c("year", "growth_rate")],
+                          by = "year",
+                          all.x = TRUE)
 
-  rmse_per_range <- df_summed_ranges %>%
-    group_by(age_group) %>%
-    summarise(
-      rmse = sqrt(mean((total_EPIC_population - total_US_population)^2, na.rm = TRUE)),
-      .groups = "drop"
-    )
+  # Sort for calculations
+  df_with_growth <- df_with_growth[order(df_with_growth$age, df_with_growth$year), ]
+
+  # Apply Growth Projection
+  df_split <- split(df_with_growth, df_with_growth$age)
+
+  df_split <- lapply(df_split, function(sub_df) {
+    # Ensure sorted by year
+    sub_df <- sub_df[order(sub_df$year), ]
+    rates <- sub_df$growth_rate
+    rates[is.na(rates)] <- 1
+    # Get baseline (2015) US size
+    baseline <- sub_df$US_popsize[sub_df$year == 2015]
+    if(length(baseline) == 0) baseline <- 0
+    else baseline <- baseline[1]
+
+    # Calculate Projection
+    sub_df$EPIC_output_scaled <- baseline * cumprod(rates)
+
+    return(sub_df)
+  })
+
+  # Recombine
+  df_with_growth <- do.call(rbind, df_split)
+
+  # Create Age Groups
+  df_with_growth$age_group <- NA
+  df_with_growth$age_group[df_with_growth$age >= 40 & df_with_growth$age <= 59] <- "40-59"
+  df_with_growth$age_group[df_with_growth$age >= 60 & df_with_growth$age <= 79] <- "60-79"
+  df_with_growth$age_group[df_with_growth$age >= 80] <- "80+"
+
+  # Aggregate Final Data
+  # Sum EPIC and US population by year and age_group
+  df_summed_ranges <- aggregate(cbind(EPIC_output_scaled, US_popsize) ~ year + age_group,
+                                data = df_with_growth,
+                                FUN = sum,
+                                na.rm = TRUE)
+
+  colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
+
+  # Calculate RMSE
+  rmse_df <- aggregate(cbind(total_EPIC_population, total_US_population) ~ age_group,
+                       data = df_summed_ranges,
+                       FUN = function(x) { NA }) # Placeholder aggregation
+
+  # Calculate RMSE manually per group
+  rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
+    sqrt(mean((sub$total_EPIC_population - sub$total_US_population)^2, na.rm = TRUE))
+  })
+
+  rmse_per_range <- data.frame(age_group = names(rmse_results),
+                               rmse = as.numeric(rmse_results))
 
   print(rmse_per_range)
 
-  # Loop through unique age groups and generate a plot for each
-  for(age_grp in unique(df_summed_ranges$age_group)) {
+  # Plotting Loop
+  unique_groups <- unique(df_summed_ranges$age_group)
 
-    df_plot <- df_summed_ranges %>%
-      gather(key = "Population_Type", value = "Population", total_EPIC_population, total_US_population) %>%
-      filter(year <= 2050, age_group == age_grp)
+  for(age_grp in unique_groups) {
 
-    p <- ggplot(df_plot, aes(x = year, y = Population, color = Population_Type)) +
-      geom_line(linewidth = 1.2) +
-      geom_point(size = 2) +
-      theme_tufte(base_size = 14, ticks = FALSE) +
-      ggtitle(paste("Comparison of EPIC vs. US Population Over Time for Age Group", age_grp)) +
-      scale_y_continuous(name = "Population", labels = comma) +
-      scale_x_continuous(name = "Year", breaks = seq(min(df_plot$year), max(df_plot$year), by = 2)) +
-      expand_limits(y = 0) +
-      theme(
-        legend.title = element_blank(),
+    # Plot
+    df_subset <- df_summed_ranges[df_summed_ranges$year <= 2050 & df_summed_ranges$age_group == age_grp, ]
+    df_plot <- tidyr::gather(df_subset,
+                             key = "Population_Type",
+                             value = "Population",
+                             "total_EPIC_population", "total_US_population")
+
+    p <- ggplot2::ggplot(df_plot, ggplot2::aes(x = year, y = Population, color = Population_Type)) +
+      ggplot2::geom_line(linewidth = 1.2) +
+      ggplot2::geom_point(size = 2) +
+      ggthemes::theme_tufte(base_size = 14, ticks = FALSE) +
+      ggplot2::ggtitle(paste("Comparison of EPIC vs. US Population Over Time for Age Group", age_grp)) +
+      ggplot2::scale_y_continuous(name = "Population", labels = scales::comma) +
+      ggplot2::scale_x_continuous(name = "Year", breaks = seq(min(df_plot$year), max(df_plot$year), by = 2)) +
+      ggplot2::expand_limits(y = 0) +
+      ggplot2::theme(
+        legend.title = ggplot2::element_blank(),
         legend.position = "bottom"
       )
 
     print(p)
     Sys.sleep(2)
   }
-
-
 }
-
-
 
 #' Returns results of validation tests for smoking module.
 #'
@@ -309,6 +362,7 @@ validate_populationUS <- function() {
 #' @param intercept_k a number
 #' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
+#' @importFrom readr read_csv
 #' @export
 validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
@@ -496,7 +550,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Starting validation target 1: baseline prevalence of smokers.\n")
   petoc()
 
-  USSmoking2018 <- read_csv(system.file("USSmoking2018.csv", package = "epicR"))
+  USSmoking2018 <-readr::read_csv(system.file("USSmoking2018.csv", package = "epicR"))
   tab1 <- as.numeric(USSmoking2018$value[1:3]) / 100
   message("This is the observed percentage of current smokers in 2018 (m,f)\n")
   barplot(tab1, names.arg = c("40-64", "65-74", "75+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
@@ -1589,7 +1643,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD[1:3, 1] <- c("total", "gold1", "gold2+")
   Exac_per_GOLD[1:3, 2] <- c(total_rate,
                              round(x=GOLD_counts_all/Follow_up_GOLD_all_2level,
-                                   digit = 2))
+                                   digits = 2))
   Exac_per_GOLD[1:3, 3] <- c(0.39, 0.28, 0.53)
 
   df <- as.data.frame(Exac_per_GOLD)
@@ -1627,7 +1681,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
   Exac_per_GOLD_diagnosed[1:4, 2] <- round(
     x=as.data.frame(table(exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digit = 2)
+      Follow_up_GOLD_diagnosed, digits = 2)
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.82, 1.17, 1.61, 2.10)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
@@ -1653,7 +1707,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
   Exac_per_GOLD_diagnosed[1:4, 2] <- round(
     x=as.data.frame(table(mod_sev_exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digit = 2)
+      Follow_up_GOLD_diagnosed, digits = 2)
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.404, 0.489, 0.836, 0.891)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
@@ -1678,7 +1732,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
   Exac_per_GOLD_diagnosed[1:4, 2] <- round(
     x=as.data.frame(table(sev_exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digit = 2)
+      Follow_up_GOLD_diagnosed, digits = 2)
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.12, 0.139, 0.254, 0.422)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
@@ -1709,7 +1763,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
 
 
   Exac_per_GOLD_undiagnosed[1:3, 2] <- c(total_rate_undiagnosed,
-                                         round(x=GOLD_counts_undiagnosed/Follow_up_GOLD_undiagnosed_2level, digit = 2))
+                                         round(x=GOLD_counts_undiagnosed/Follow_up_GOLD_undiagnosed_2level, digits = 2))
   Exac_per_GOLD_undiagnosed[1:3, 3] <- c(0.30, 0.24, 0.40)
 
   df <- as.data.frame(Exac_per_GOLD_undiagnosed)
