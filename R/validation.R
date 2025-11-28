@@ -601,7 +601,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Now we will validate the model on smoking trends")
   petoc()
 
-  message("To model the decline in smoking among adults aged 40 and over beyond 2023, historical trends were analyzed using the 2025 MMWR report (DOI: 10.15585/mmwr.mm7407a3). An Annual Average Percent Change (AAPC) of –1.9% was derived from the observed 2017–2023 decrease in smokers aged 45 and over and applied to future projections\n")
+  message("To model the decline in smoking among adults aged 40 and over beyond 2023, historical trends were analyzed using the 2025 MMWR report (DOI: 10.15585/mmwr.mm7407a3). An Annual Average Percent Change (AAPC) of -1.9% was derived from the observed 2017-2023 decrease in smokers aged 45 and over and applied to future projections\n")
   petoc()
 
   op_ex <- Cget_output_ex()

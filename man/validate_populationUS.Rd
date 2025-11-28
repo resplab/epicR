@@ -11,6 +11,6 @@ plots showing population projections vs actual values for 40-59, 60-79, 80+ age 
 }
 \description{
 This function validates the population simulation by comparing the EPIC model population
-outputs with US population data over a set time horizon. It generate 3 plots for
+outputs with US population data over a set time horizon. It generates 3 plots for
 the following age groups : 40-59, 60-79, 80+
 }
