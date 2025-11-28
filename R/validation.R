@@ -464,8 +464,6 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
 #' Returns results of validation tests for smoking module in the US population.
-#' @param intercept_k a number
-#' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
 #' @export
 validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
