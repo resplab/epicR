@@ -88,12 +88,12 @@
     }
   },
   "smoking": {
-    "logit_p_current_smoker_0_betas": [0.35, -0.4, -0.032, 0, 0, 0, -0.02],
+    "logit_p_current_smoker_0_betas": [0.40, -0.4, -0.032, 0, 0, 0, -0.02],
     "logit_p_current_smoker_0_betas_metadata": {
       "help": "Probability of being a current smoker at the time of creation",
       "ref": "Adapted to US setting (July 21, 2025)"
     },
-    "logit_p_never_smoker_con_not_current_0_betas": [4.9, 0, -0.06, 0, 0, 0, -0.02],
+    "logit_p_never_smoker_con_not_current_0_betas": [4.4, 0, -0.06, 0, 0, 0, -0.02],
     "logit_p_never_smoker_con_not_current_0_betas_metadata": {
       "help": "Probability of being a never-smoker conditional on not being current smoker, at the time of creation",
       "ref": "Adapted to US setting (July 21, 2025)"
@@ -128,7 +128,7 @@
       "help": "Log-hazard of starting smoking (incidence or relapse)",
       "ref": ""
     },
-    "ln_h_ces_betas": [-3.35, 0, 0.02, 0, -0.01, 0.3220835],
+    "ln_h_ces_betas": [-3.38, 0, 0.02, 0, -0.01, 0.3220835],
     "ln_h_ces_betas_metadata": {
       "help": "Log-hazard of smoking cessation",
       "ref": "Diagnosis coefficient from Wu et al. BMC Public Health 2006. Adapted to US setting (July 9, 2025)"
@@ -146,8 +146,8 @@
   },
   "COPD": {
     "logit_p_COPD_betas_by_sex": {
-      "male": [-4.30190, 0.033070, 0, 0.025049, 0, 0, 0],
-      "female": [-4.35202, 0.027359, 0, 0.030399, 0, 0, 0]
+      "male": [-4.35190, 0.033070, 0, 0.025049, 0, 0, 0],
+      "female": [-4.4020, 0.027359, 0, 0.030399, 0, 0, 0]
     },
     "logit_p_COPD_betas_by_sex_metadata": {
       "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
