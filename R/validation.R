@@ -200,7 +200,6 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 #' the following age groups : 40-59, 60-79, 80+
 #'
 #' @return plots showing population projections vs actual values for 40-59, 60-79, 80+ age groups
-#' @importFrom readr read_csv
 #' @export
 validate_populationUS <- function() {
 
@@ -371,7 +370,6 @@ validate_populationUS <- function() {
 #' @param intercept_k a number
 #' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
-#' @importFrom readr read_csv
 #' @export
 validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
@@ -527,6 +525,8 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 
 
 #' Returns results of validation tests for smoking module in the US population.
+#' @param intercept_k a number
+#' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
 #' @return validation test results
 #' @export
 validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
@@ -544,9 +544,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
 
   message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
-    # Note: Ensure 'input$values' structure is respected if modifying deeper lists,
-    # but usually exacerbation parameters are at top level of the list returned by get_input depending on version.
-    # If this fails, it might also need to be input$values$exacerbation...
+    # Note: Ensure 'input$values' structure is respected if modifying deeper lists
     input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * -10000
   }
 
@@ -559,7 +557,7 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Starting validation target 1: baseline prevalence of smokers.\n")
   petoc()
 
-  USSmoking2018 <-readr::read_csv(system.file("USSmoking2018.csv", package = "epicR"))
+  USSmoking2018 <- readr::read_csv(system.file("USSmoking2018.csv", package = "epicR"))
   tab1 <- as.numeric(USSmoking2018$value[1:3]) / 100
   message("This is the observed percentage of current smokers in 2018 (m,f)\n")
   barplot(tab1, names.arg = c("40-64", "65-74", "75+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
@@ -572,7 +570,6 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   petoc()
   message("running the model\n")
 
-  # This was your fix, which is correct
   run(input = input$values)
 
   dataS <- Cget_all_events_matrix()
@@ -941,7 +938,6 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' Returns results of validation tests for US COPD Prevalence
 #' @return validation test results for the US
 #' @export
-
 validate_COPDUS <- function()
 {
   settings <- get_default_settings()
@@ -1012,7 +1008,7 @@ validate_COPDUS <- function()
     ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
     ggplot2::labs(
       title = "COPD Prevalence Over Time (All Ages)",
-      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      subtitle = "Estimated proportion of population with COPD from 2016-2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
@@ -1045,8 +1041,8 @@ validate_COPDUS <- function()
       breaks = seq(0, 0.10, by = 0.05)) +
     ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
     ggplot2::labs(
-      title = "COPD Prevalence Over Time (Age 40–59)",
-      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      title = "COPD Prevalence Over Time (Age 40-59)",
+      subtitle = "Estimated proportion of population with COPD from 2016-2040",
       x = "Year",
       y = "Prevalence (%)") +
     ggplot2::theme_minimal(base_size = 14) +
@@ -1079,8 +1075,8 @@ validate_COPDUS <- function()
     ) +
     ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
     ggplot2::labs(
-      title = "COPD Prevalence Over Time (Age 60–79)",
-      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      title = "COPD Prevalence Over Time (Age 60-79)",
+      subtitle = "Estimated proportion of population with COPD from 2016-2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
@@ -1115,7 +1111,7 @@ validate_COPDUS <- function()
     ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
     ggplot2::labs(
       title = "COPD Prevalence Over Time (Age 80+)",
-      subtitle = "Estimated proportion of population with COPD from 2016–2040",
+      subtitle = "Estimated proportion of population with COPD from 2016-2040",
       x = "Year",
       y = "Prevalence (%)"
     ) +
@@ -1135,6 +1131,7 @@ validate_COPDUS <- function()
   terminate_session()
   return(COPD_prevalence_summary)
 }
+
 
 #' Returns results of validation tests for mortality rate
 #'

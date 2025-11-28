@@ -6,6 +6,11 @@
 \usage{
 validate_smokingUS(remove_COPD = 1, intercept_k = NULL)
 }
+\arguments{
+\item{remove_COPD}{0 or 1. whether to remove COPD-related mortality.}
+
+\item{intercept_k}{a number}
+}
 \value{
 validation test results
 }
