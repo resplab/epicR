@@ -529,8 +529,8 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
 
   settings <- get_default_settings()
   settings$record_mode <- record_mode["record_mode_event"]
-  settings$n_base_agents <- 1e+05
-  settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
+  settings$n_base_agents <- 1e+06
+  settings$event_stack_size <- settings$n_base_agents
 
   init_session(settings = settings)
   input <- get_input(jurisdiction = "us")
