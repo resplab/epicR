@@ -615,7 +615,6 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
 
   terminate_session()
 
-  # RETURN DATA FOR TESTING
   # Preparing dataframe of rates for the test expectations
   n_alive <- rowSums(op_ex$n_alive_by_ctime_sex)
   results_df <- data.frame(
@@ -890,22 +889,22 @@ validate_COPDUS <- function()
   COPDprevalence_ctime_age <- as.data.frame(output$n_COPD_by_ctime_age)
   totalpopulation <- output$n_alive_by_ctime_age
 
-  # 1. Overall prevalence of COPD
+  # Overall prevalence of COPD
   alive_age_all <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:111])
   COPD_age_all <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:111])
   prevalenceCOPD_age_all <- COPD_age_all / alive_age_all
 
-  # 2. Prevalence by age 40-59
+  # Prevalence by age 40-59
   alive_age_40to59 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:59])
   COPD_age_40to59 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:59])
   prevalenceCOPD_age_40to59 <- COPD_age_40to59 / alive_age_40to59
 
-  # 3. Prevalence by age 60-79
+  # Prevalence by age 60-79
   alive_age_60to79 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 60:79])
   COPD_age_60to79 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 60:79])
   prevalenceCOPD_age_60to79 <- COPD_age_60to79 / alive_age_60to79
 
-  # 4. Prevalence by age 80+
+  # Prevalence by age 80+
   alive_age_over80 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 80:111])
   COPD_age_over80 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 80:111])
   prevalenceCOPD_age_over80 <- COPD_age_over80 / alive_age_over80
@@ -923,9 +922,7 @@ validate_COPDUS <- function()
                      caption = "COPD Prevalence by Age Group Over Time",
                      digits = 3))
 
-  # --- PLOTTING ---
-
-  # Plot 1: All Ages
+  # Plot: All Ages
   plot_prevalenceCOPD_age_all <- data.frame(
     Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_all
@@ -960,7 +957,7 @@ validate_COPDUS <- function()
 
   print(gg_plot_prevalenceCOPD_age_all)
 
-  # Plot 2: Age 40-59
+  # Plot: Age 40-59
   plot_prevalence_40to59 <- data.frame(
     Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_40to59
@@ -993,7 +990,7 @@ validate_COPDUS <- function()
 
   print(gg_plot_prevalence_40to59)
 
-  # Plot 3: Age 60-79
+  # Plot: Age 60-79
   plot_prevalence_60to79 <- data.frame(
     Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_60to79
@@ -1028,7 +1025,7 @@ validate_COPDUS <- function()
 
   print(gg_plot_prevalence_60to79)
 
-  # Plot 4: Age 80+
+  # Plot: Age 80+
   plot_prevalence_over80 <- data.frame(
     Year = 2015:(2015 + time_horizon - 1),
     Prevalence = prevalenceCOPD_age_over80

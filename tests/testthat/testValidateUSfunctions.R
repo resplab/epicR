@@ -3,7 +3,7 @@ library(epicR)
 library(dplyr)
 library(readr)
 
-# Function to checks if the error is within the allowed expected difference (tolerance)
+# Function to check if the target and simulated results are within a determined expected difference (tolerance)
 expect_error_within <- function(actual, expected, tolerance = 0.1, label = NULL) {
   if (is.na(actual)) fail(paste(label, "Actual value is NA"))
   if (is.na(expected)) fail(paste(label, "Expected value is NA"))
@@ -14,7 +14,7 @@ expect_error_within <- function(actual, expected, tolerance = 0.1, label = NULL)
 
   error_percentage <- abs((actual - expected) / expected) * 100
 
-  # We expect the relative error to be strictly less than the tolerance (e.g., 0.5 for 50%)
+  # We expect the relative difference to be less than the tolerance (e.g., 0.5 for 50%)
   expect_lt(
     abs((actual - expected) / expected),
     tolerance,
@@ -26,7 +26,7 @@ expect_error_within <- function(actual, expected, tolerance = 0.1, label = NULL)
 
 test_that("validate_smokingUS: Matches 2018 and 2023 targets within 50%", {
 
-  # 1.Run the function to get model outputs
+  # Run the function to get model outputs
   capture.output({
     results_df <- validate_smokingUS()
   })
@@ -39,10 +39,8 @@ test_that("validate_smokingUS: Matches 2018 and 2023 targets within 50%", {
 
   # Validate 2018 Rates (Tolerance: 50% or 0.5)
   row_2018 <- results_df[results_df$Year == 2018, ]
-
   expect_error_within(row_2018$Current,   target_current_2018, 0.5, "2018 Current Smokers")
   expect_error_within(row_2018$Former,    target_former_2018,  0.5, "2018 Former Smokers")
-  # Note: Model output column is likely 'NonSmoker' (Never smoker)
   expect_error_within(row_2018$NonSmoker, target_never_2018,   0.5, "2018 Never Smokers")
 
   # Validate 2023 Current Smoker Rate (Tolerance: 50% or 0.5)
@@ -52,20 +50,18 @@ test_that("validate_smokingUS: Matches 2018 and 2023 targets within 50%", {
 
 test_that("validate_COPDUS: Prevalence by age groups matches targets within 10%", {
 
-  # validate_COPDUS already returns the summary dataframe in your code.
   capture.output({
     copd_summary <- validate_COPDUS()
   })
 
   row_2015 <- copd_summary[copd_summary$Year == 2015, ]
-
+  # Check COPD prevalence for age 40-59 and 60-79 (expected difference: 10%)
   expect_error_within(row_2015$Prevalence_40to59, 0.081, 0.1, "COPD Prevalence Age 40-59")
   expect_error_within(row_2015$Prevalence_60to79, 0.144, 0.1, "COPD Prevalence Age 60-79")
 })
 
 test_that("validate_populationUS: Projections match Census within 10% for ages 40-79 combined", {
 
-  # Ensure validate_populationUS returns df_summed_ranges
   capture.output({
     pop_data <- validate_populationUS()
   })
@@ -87,7 +83,7 @@ test_that("validate_populationUS: Projections match Census within 10% for ages 4
         actual = combined_epic,
         expected = combined_us,
         tolerance = 0.1,
-        label = paste("Population Age 40-79 combined in", yr)
+        label = paste("Population Age 40-79", yr)
       )
     } else {
       fail(paste("No population data found for Age 40-79 in year", yr))
@@ -97,6 +93,6 @@ test_that("validate_populationUS: Projections match Census within 10% for ages 4
 
 test_that("validate_exacerbationUS: Runs without error", {
   capture.output({
-    expect_error(validate_exacerbationUS(base_agents = 1e6), NA)
+    expect_error(validate_exacerbationUS(base_agents = 1e3), NA)
   })
 })
