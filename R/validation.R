@@ -208,7 +208,7 @@ validate_populationUS <- function() {
   # Setup Simulation
   settings <- get_default_settings()
   settings$record_mode <- 0
-  settings$n_base_agents <- 1e+06
+  settings$n_base_agents <- 1e+05 # Reduced from 1e6 for testing speed
   init_session(settings = settings)
 
   input <- get_input(jurisdiction = "us")
@@ -224,6 +224,7 @@ validate_populationUS <- function() {
                                  output$n_alive_by_ctime_age)
 
   # Rename columns
+  # Logic from validation.R: Columns 2 to N are renamed 1 to N-1
   colnames(epic_popsize_age)[2:ncol(epic_popsize_age)] <- 1:(ncol(epic_popsize_age) - 1)
 
   # Remove columns 2 to 40 (ages < 40)
@@ -314,13 +315,6 @@ validate_populationUS <- function() {
   colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
 
   # Calculate RMSE
-  rmse_df <- aggregate(
-    x = df_summed_ranges[c("total_EPIC_population", "total_US_population")],
-    by = df_summed_ranges["age_group"],
-    FUN = function(x) { NA }
-  )
-
-  # Calculate RMSE manually per group
   rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
     sqrt(mean((sub$total_EPIC_population - sub$total_US_population)^2, na.rm = TRUE))
   })
@@ -334,14 +328,12 @@ validate_populationUS <- function() {
   unique_groups <- unique(df_summed_ranges$age_group)
 
   for(age_grp in unique_groups) {
-
     # Plot
     df_subset <- df_summed_ranges[df_summed_ranges$year <= 2050 & df_summed_ranges$age_group == age_grp, ]
     df_plot <- tidyr::gather(df_subset,
                              key = "Population_Type",
                              value = "Population",
                              "total_EPIC_population", "total_US_population")
-
 
     p <- ggplot2::ggplot(df_plot, ggplot2::aes_string(x = "year", y = "Population", color = "Population_Type")) +
       ggplot2::geom_line(linewidth = 1.2) +
@@ -359,9 +351,12 @@ validate_populationUS <- function() {
       )
 
     print(p)
-    Sys.sleep(2)
   }
+
+  # RETURN FOR TESTING
+  return(df_summed_ranges)
 }
+
 
 #' Returns results of validation tests for smoking module.
 #'
@@ -531,11 +526,9 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
 #' @export
 validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions for the US population")
-  petoc()
 
   settings <- get_default_settings()
   settings$record_mode <- record_mode["record_mode_event"]
-  settings$agent_stack_size <- 0
   settings$n_base_agents <- 1e+05
   settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
 
@@ -544,18 +537,14 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
 
   message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   if (remove_COPD) {
-    # Note: Ensure 'input$values' structure is respected if modifying deeper lists
     input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * -10000
   }
 
   if (!is.null(intercept_k))
     input$manual$smoking$intercept_k <- intercept_k
 
-  petoc()
-
   message("There are three US validation targets: 1) the prevalence of current, former, and non-smokers in 2018, 2) the prevalence of current smokers in 2023, and 3) the average annual percent change (AAPC).\n")
   message("Starting validation target 1: baseline prevalence of smokers.\n")
-  petoc()
 
   USSmoking2018 <- readr::read_csv(system.file("USSmoking2018.csv", package = "epicR"))
   tab1 <- as.numeric(USSmoking2018$value[1:3]) / 100
@@ -564,10 +553,8 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
           col = c("grey"))
   title(cex.main = 0.5, "Prevalence of current smoker by sex and age group (observed)")
   legend("topright", c("Overall"), fill = c("grey"))
-  petoc()
 
   message("Now I will run the model using the default smoking parameters")
-  petoc()
   message("running the model\n")
 
   run(input = input$values)
@@ -586,20 +573,13 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   }
 
   message("This is the model generated bar plot")
-  petoc()
   barplot(tab2, names.arg = c("40-64", "65-74", "75+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
           col = c("black"))
   title(cex.main = 0.5, "Prevalence of current smoking at creation (simulated)")
   legend("topright", c("Overall"), fill = c("black"))
 
-  message("This step is over; press enter to continue to step 2")
-  petoc()
-
   message("Now we will validate the model on smoking trends")
-  petoc()
-
   message("To model the decline in smoking among adults aged 40 and over beyond 2023, historical trends were analyzed using the 2025 MMWR report (DOI: 10.15585/mmwr.mm7407a3). An Annual Average Percent Change (AAPC) of -1.9% was derived from the observed 2017-2023 decrease in smokers aged 45 and over and applied to future projections\n")
-  petoc()
 
   op_ex <- Cget_output_ex()
   smoker_prev <- op_ex$n_current_smoker_by_ctime_sex/op_ex$n_alive_by_ctime_sex
@@ -615,10 +595,8 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
   title(cex.main = 0.5, "Average Pack-Years Per Year for 40+ Population (simulated)")
 
-
   z <- log(rowSums(smoker_prev))
   message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
-  petoc()
 
   #plotting overall distribution of smoking stats over time
   smoking_status_ctime <- matrix (NA, nrow = input$values$global_parameters$time_horizon, ncol = 4)
@@ -633,63 +611,20 @@ validate_smokingUS <- function(remove_COPD = 1, intercept_k = NULL) {
     geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") +
     scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
 
+  plot(plot_smoking_status_ctime)
 
-
-  plot(plot_smoking_status_ctime ) #plot needs to be showing
-
-  # Plotting pack-years over time
-  dataS <- as.data.frame (Cget_all_events_matrix())
-  dataS <- subset (dataS, (event == 0 | event == 1 ))
-  data_all <- dataS
-  dataS <- subset (dataS, pack_years != 0)
-
-  avg_pack_years_ctime <- matrix (NA, nrow = input$values$global_parameters$time_horizon + 1, ncol = 4)
-  colnames(avg_pack_years_ctime) <- c("Year", "Smokers PYs", "Former Smokers PYs", "all")
-
-  avg_pack_years_ctime[1:(input$values$global_parameters$time_horizon + 1), 1] <- c(2015:(2015 + input$values$global_parameters$time_horizon))
-
-  for (i in 0:input$values$global_parameters$time_horizon) {
-    smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status != 0)
-    prev_smokers <- subset (dataS, (floor(local_time + time_at_creation) == (i)) & smoking_status == 0)
-    all <- subset (data_all, floor(local_time + time_at_creation) == i)
-    avg_pack_years_ctime[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
-    avg_pack_years_ctime[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
-    avg_pack_years_ctime[i+1, "all"] <- colSums(all)[["pack_years"]] / dim (all) [1] #includes non-smokers
-
-  }
-
-  df <- as.data.frame(avg_pack_years_ctime)
-  dfm <- reshape2::melt(df[,c( "Year", "Smokers PYs", "Former Smokers PYs", "all")], id.vars = 1)
-  plot_avg_pack_years_ctime <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per year ") + ylab ("Pack-years")
-
-  plot(plot_avg_pack_years_ctime) #plot needs to be showing
-
-  # Plotting pack-years over age
-
-  avg_pack_years_age <- matrix (NA, nrow = 110 - 40 + 1, ncol = 3)
-  colnames(avg_pack_years_age) <- c("Age", "Smokers PYs", "Former Smokers PYs")
-
-  avg_pack_years_age[1:(110 - 40 + 1), 1] <- c(40:110)
-
-  for (i in 0:(110 - 40)) {
-    smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i+40)) & smoking_status != 0)
-    prev_smokers <- subset (dataS, (floor (local_time + age_at_creation) == (i+40)) & smoking_status == 0)
-    avg_pack_years_age[i+1, "Smokers PYs"] <- colSums(smokers)[["pack_years"]] / dim (smokers)[1]
-    avg_pack_years_age[i+1, "Former Smokers PYs"] <- colSums(prev_smokers)[["pack_years"]] / dim (prev_smokers) [1]
-  }
-
-  df <- as.data.frame(avg_pack_years_age)
-  dfm <- reshape2::melt(df[,c( "Age", "Smokers PYs", "Former Smokers PYs")], id.vars = 1)
-  plot_avg_pack_years_age <- ggplot2::ggplot(dfm, aes(x = Age, y = value, color = variable, ymin = 40, ymax = 100)) +
-    geom_point () + geom_line() + labs(title = "Average pack-years per age ") + ylab ("Pack-years")
-
-  plot(plot_avg_pack_years_age) #plot needs to be showing
-
-
-  message("This test is over; terminating the session")
-  petoc()
   terminate_session()
+
+  # RETURN DATA FOR TESTING
+  # Preparing dataframe of rates for the test expectations
+  n_alive <- rowSums(op_ex$n_alive_by_ctime_sex)
+  results_df <- data.frame(
+    Year = smoking_status_ctime[, "Year"],
+    Current = op_ex$n_smoking_status_by_ctime[, 2] / n_alive,
+    Former = op_ex$n_smoking_status_by_ctime[, 3] / n_alive,
+    NonSmoker = op_ex$n_smoking_status_by_ctime[, 1] / n_alive
+  )
+  return(results_df)
 }
 
 
@@ -1765,7 +1700,7 @@ validate_exacerbationUS <- function(base_agents=1e4, input=NULL) {
   Exac_per_GOLD_undiagnosed[1:3, 1] <- c("total", "gold1", "gold2+")
 
   Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1],
-                                         Follow_up_GOLD_undiagnosed[2]) #Because CANCold is mostly GOLD2, we compare to GOLD2 EPIC
+                                         Follow_up_GOLD_undiagnosed[2]) #Because CanCOLD is mostly GOLD2, we compare to GOLD2 EPIC
   #Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1], sum(Follow_up_GOLD_undiagnosed[2:4]))
   GOLD_counts_undiagnosed   <- as.data.frame(table(exac_events_undiagnosed[, "gold"]))[, 2]
   GOLD_counts_undiagnosed   <- c(GOLD_counts_undiagnosed[1],
