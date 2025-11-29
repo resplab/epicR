@@ -102,10 +102,6 @@ init_session(settings = settings)
 input <- get_input(jurisdiction = "us")
 time_horizon <- 26
 
-# Modify intercept value to calibrate proportion of COPD exacerbations
-input$values$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.8, female = 0, age = 0.04082 * 0.1, fev1 = -1.5, smoking_status = 0.7, gold1 = 0.15 , gold2 = -0.10 , gold3 = -0.40 , gold4 = -0.75 , diagnosis_effect = 0)))
-input$values$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.309, intercept2 = 2.502, intercept3 = 5.508, female = -0.764, age = -0.007, fev1 = 0.98, smoking_status = 0.348, pack_years = -0.001 , BMI = 0.018)))
-
 # Run the model
 run(input = input$values)
 op <- Cget_output()

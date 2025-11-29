@@ -65,35 +65,14 @@ this, the intercepts that determines the probability of being a never smoker
 and the probability of being a smoker at time of creation 
 in the logistic regression equation were modified.
 
-```{r, eval = TRUE, echo = TRUE}
-
-# Modify smoking rates
-input$values$smoking$logit_p_current_smoker_0_betas <- t(as.matrix(c(Intercept = 0.35, sex = -0.4, age = -0.032, age2 = 0, sex_age = 0, sex_age2 = 0, year = -0.02)))
-  
-input$values$smoking$logit_p_never_smoker_con_not_current_0_betas<-t(as.matrix(c(intercept = 4.9, sex = 0, age = -0.06, age2 = 0, sex_age = 0,sex_age2 = 0, year = -0.02)))
-```
 
 ### Step 3: Modify rate of annual rate of decline in proportion of current smokers
 
 To align the model with validation targets for the proportion of current smokers in 2018 and 2023, the intercept of the log-hazard function for smoking cessation was adjusted to modify the rate of decline in smoking prevalence.
 
-```{r, eval = TRUE, echo = TRUE}
-
-# Modify rate of decline
-input$values$smoking$ln_h_ces_betas <- c(intercept = -3.35,  sex = 0, age = 0.02, age2 = 0, calendar_time = -0.01, diagnosis = log(1.38))
-
-```
-
 ### Step 4: Lower minimum prevalence of smoking 
 
 The U.S. Healthy People initiative aims to reduce adult smoking prevalence to 5%. To reflect this national policy goal and ensure face validity of long-term projections, the minimum threshold for smoking prevalence in the model was adjusted to 5%.
-
-```{r, eval = TRUE, echo = TRUE}
-
-# Modify lower bound prevalence of current smokers
-input$values$smoking$minimum_smoking_prevalence <- 0.05
-
-```
 
 ### Step 5: Modify intercept value to calibrate number of pack-years smoked in current and former smokers
 
@@ -106,12 +85,6 @@ To address this, the intercept in the logistic regression equation that
 determines pack-years of smoking at the time of creation was modified. Increasing the
 intercept to 30 improved alignment with to data from PATH.
 
-```{r, eval = TRUE, echo = TRUE}
-
-# Modify pack years
-input$values$smoking$pack_years_0_betas <- t(as.matrix(c(intercept = 30, sex = -4, age = 0, year = -0.6, current_smoker = 10)))
-```
-
 ### Step 6: Modify mortality ratios for age groups
 
 The mortality rates currently used in EPIC Canada did not include
@@ -123,16 +96,6 @@ and female estimates for each age group was used. For the mortality ratio for
 individuals over the age of 80, the estimates from Gillert et
 al.2012 were retained (DOI: 10.1001/archinternmed.2012.1397), as Cho et al.2024 did
 not report data for this population.
-
-```{r, eval = TRUE, echo = TRUE}
-
-# Modify mortality ratios for current smokers vs. non smokers
-input$values$smoking$mortality_factor_current <- t(as.matrix(c(age40to49 = 2.33, age50to59 = 3.02, age60to69 = 2.44, age70to79 = 2.44, age80p = 1.66)))
-
-# Modify mortality ratios for former smokers vs. non smokers
-input$values$smoking$mortality_factor_former <- t(as.matrix(c(age40to49 = 1.31, age50to59 = 1.85, age60to69 = 1.91, age70to79 = 1.91, age80p = 1.27)))
-  
-```
 
 ### Step 7: Run EPIC
 
