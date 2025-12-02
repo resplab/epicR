@@ -11,7 +11,8 @@ simulate(
   time_horizon = 20,
   n_agents = NULL,
   return_extended = FALSE,
-  return_events = FALSE
+  return_events = FALSE,
+  seed = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ simulate(
 \item{return_extended}{whether to return extended results in addition to basic (default: FALSE)}
 
 \item{return_events}{whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2}
+
+\item{seed}{Random seed for reproducibility (optional). If provided, ensures identical results across runs}
 }
 \value{
 list with simulation results (always includes 'basic', optionally 'extended' and 'events')
@@ -58,5 +61,10 @@ print(results$extended)
 # With event history
 results <- simulate(return_events = TRUE)
 print(results$events)  # Event matrix
+
+# With reproducible results
+results1 <- simulate(seed = 123)
+results2 <- simulate(seed = 123)
+# results1 and results2 will be identical
 }
 }
