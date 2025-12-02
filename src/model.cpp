@@ -270,7 +270,7 @@ List Cget_smith()
 +input.lung_function.pred_fev1_betas_by_sex[3][(*ag).sex]*(*ag).height*(*ag).height)
 
 //////////////////////////////////////////////////////////////////// symptoms/////////////////////////////////////;
-double update_symptoms(agent *ag)
+double update_symptoms(agent *ag, random_context* rctx)
 {
   arma::mat rand_effect_arma;
   NumericVector mu (4); //default is zero
@@ -400,8 +400,11 @@ double update_symptoms(agent *ag)
 
 
 
-void lung_function_LPT(agent *ag)
+void lung_function_LPT(agent *ag, simulation_context* ctx, random_context* rctx)
 {
+  // NULL-safe fallback (for gradual migration)
+  // Note: This function doesn't use ctx or rctx currently, but signature updated for consistency
+
   if((*ag).gold==0)
   {
     //We are not currently modeling lung funciton in non-COPD patients. Everything starts when gold>0;
@@ -438,13 +441,27 @@ void lung_function_LPT(agent *ag)
 }
 
 
-void smoking_LPT(agent *ag)
+void smoking_LPT(agent *ag, simulation_context* ctx, random_context* rctx)
 {
+  // NULL-safe fallback
+  if (ctx == NULL) {
 #ifdef OUTPUT_EX
-  if((*ag).smoking_status==0) output_ex.cumul_time_by_smoking_status[0]+=(*ag).local_time-(*ag).smoking_status_LPT;
+    if((*ag).smoking_status==0) output_ex.cumul_time_by_smoking_status[0]+=(*ag).local_time-(*ag).smoking_status_LPT;
+    else
+      if((*ag).pack_years>0) output_ex.cumul_time_by_smoking_status[2]+=(*ag).local_time-(*ag).smoking_status_LPT;
+      else output_ex.cumul_time_by_smoking_status[1]+=(*ag).local_time-(*ag).smoking_status_LPT;
+#endif
+    (*ag).pack_years+=(*ag).smoking_status*((*ag).local_time-(*ag).smoking_status_LPT);
+    (*ag).smoking_status_LPT=(*ag).local_time;
+    return;
+  }
+
+  // Context-aware implementation
+#ifdef OUTPUT_EX
+  if((*ag).smoking_status==0) ctx->output_ex.cumul_time_by_smoking_status[0]+=(*ag).local_time-(*ag).smoking_status_LPT;
   else
-    if((*ag).pack_years>0) output_ex.cumul_time_by_smoking_status[2]+=(*ag).local_time-(*ag).smoking_status_LPT;
-    else output_ex.cumul_time_by_smoking_status[1]+=(*ag).local_time-(*ag).smoking_status_LPT;
+    if((*ag).pack_years>0) ctx->output_ex.cumul_time_by_smoking_status[2]+=(*ag).local_time-(*ag).smoking_status_LPT;
+    else ctx->output_ex.cumul_time_by_smoking_status[1]+=(*ag).local_time-(*ag).smoking_status_LPT;
 #endif
 
     (*ag).pack_years+=(*ag).smoking_status*((*ag).local_time-(*ag).smoking_status_LPT);
@@ -452,55 +469,98 @@ void smoking_LPT(agent *ag)
 }
 
 
-void exacerbation_LPT(agent *ag)
+void exacerbation_LPT(agent *ag, simulation_context* ctx, random_context* rctx)
 {
+  // NULL-safe fallback
+  // Note: This function doesn't use ctx or rctx currently, but signature updated for consistency
+
   if((*ag).exac_status>0)
     (*ag).cumul_exac_time[(*ag).exac_status-1]+=(*ag).local_time-(*ag).exac_LPT;
   (*ag).exac_LPT=(*ag).local_time;
 }
 
 
-void payoffs_LPT(agent *ag)
+void payoffs_LPT(agent *ag, simulation_context* ctx, random_context* rctx)
 {
-  (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+  // NULL-safe fallback
+  if (ctx == NULL) {
+    (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+    output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+    (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
+    output_ex.cumul_time_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
+    (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+    (*ag).payoffs_LPT=(*ag).local_time;
+    return;
+  }
 
-  output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
+  // Context-aware implementation
+  (*ag).cumul_cost+=input.cost.bg_cost_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+ctx->calendar_time);
+
+  ctx->output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
   (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
 
-  output_ex.cumul_time_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
+  ctx->output_ex.cumul_time_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
 
-  (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+  (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+ctx->calendar_time);
 
   (*ag).payoffs_LPT=(*ag).local_time;
 }
 
 
-void medication_LPT(agent *ag)
+void medication_LPT(agent *ag, simulation_context* ctx, random_context* rctx)
 {
+  // NULL-safe fallback
+  if (ctx == NULL) {
+    #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+    int time=floor((*ag).local_time+(*ag).time_at_creation);
+      for(int i=0;i<N_MED_CLASS;i++)
+        if(((*ag).medication_status >> i) & 1)
+        {
+          output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+          output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
+        }
+    #endif
+      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
+        {
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+        }
+      #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
+      if((*ag).smoking_cessation_count==1)
+      {
+        output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
+        (*ag).smoking_cessation_count=0;
+      }
+      #endif
+      (*ag).medication_LPT=(*ag).local_time;
+    return;
+  }
+
+  // Context-aware implementation
   #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   int time=floor((*ag).local_time+(*ag).time_at_creation);
     for(int i=0;i<N_MED_CLASS;i++)
       if(((*ag).medication_status >> i) & 1)
       {
-        output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
-        output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
+        ctx->output_ex.medication_time_by_class[i]+=((*ag).local_time-(*ag).medication_LPT);
+        ctx->output_ex.medication_time_by_ctime_class[time][i]+=((*ag).local_time-(*ag).medication_LPT);
       }
   #endif
     // costs
     //(*ag).cumul_cost+=1;
-      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
+      (*ag).cumul_cost+=input.medication.medication_costs[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_cost,(*ag).local_time+ctx->calendar_time);
 
     // qaly
       if((*ag).gold>0 && (*ag).diagnosis>0 && (((*ag).cough==1) || ((*ag).phlegm==1) || ((*ag).wheeze==1) || ((*ag).dyspnea==1)))
         {
-          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
+          (*ag).cumul_qaly+=input.medication.medication_utility[(*ag).medication_status]*((*ag).local_time-(*ag).medication_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+ctx->calendar_time);
         }
 
     // smoking cessation count
 
     if((*ag).smoking_cessation_count==1)
     {
-      output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
+      ctx->output_ex.n_smoking_cessation_by_ctime[time]+=(*ag).smoking_cessation_count;
       (*ag).smoking_cessation_count=0;
     }
 
@@ -513,9 +573,37 @@ void medication_LPT(agent *ag)
 
 
 //////////////////////////////////////////////////////////////////// gpvisits/////////////////////////////////////;
-double update_gpvisits(agent *ag)
+double update_gpvisits(agent *ag, random_context* rctx)
 {
+  // NULL-safe fallback
+  if (rctx == NULL) {
+    double gpvisitRate = 0;
+    if ((*ag).gold==0) {
+      gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[0][(*ag).sex] +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[3][(*ag).sex]*((*ag).cough) +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[4][(*ag).sex]*((*ag).phlegm) +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
+          input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
+      double gpvisits=rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      (*ag).gpvisits = gpvisits;
+    } else {
+      gpvisitRate = exp(input.outpatient.ln_rate_gpvisits_COPD_by_sex[0][(*ag).sex] +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[1][(*ag).sex]*((*ag).local_time+(*ag).age_at_creation) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[2][(*ag).sex]*((*ag).smoking_status) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[3][(*ag).sex]*((*ag).fev1) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[4][(*ag).sex]*((*ag).cough) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[5][(*ag).sex]*((*ag).phlegm) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
+         input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
+      double gpvisits=rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      (*ag).gpvisits = gpvisits;
+    }
+    return(0);
+  }
 
+  // Context-aware implementation
   double gpvisitRate = 0;
 
   if ((*ag).gold==0) {
@@ -528,7 +616,7 @@ double update_gpvisits(agent *ag)
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[5][(*ag).sex]*((*ag).wheeze) +
       input.outpatient.ln_rate_gpvisits_nonCOPD_by_sex[6][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin_NCOPD(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD);
+      double gpvisits=rand_NegBin_NCOPD_ctx(gpvisitRate, input.outpatient.dispersion_gpvisits_nonCOPD, rctx);
       (*ag).gpvisits = gpvisits;
 
 
@@ -543,7 +631,7 @@ double update_gpvisits(agent *ag)
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[6][(*ag).sex]*((*ag).wheeze) +
      input.outpatient.ln_rate_gpvisits_COPD_by_sex[7][(*ag).sex]*((*ag).dyspnea));
 
-      double gpvisits=rand_NegBin_COPD(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD);
+      double gpvisits=rand_NegBin_COPD_ctx(gpvisitRate, input.outpatient.dispersion_gpvisits_COPD, rctx);
       (*ag).gpvisits = gpvisits;
 
     }

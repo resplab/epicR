@@ -609,55 +609,55 @@ void reset_output();
 void reset_output_ex();
 
 // Output functions
-void update_output_ex(agent *ag);
+void update_output_ex(agent *ag, simulation_context* ctx);
 
 // Agent functions
-agent *create_agent(agent *ag, int id);
+agent *create_agent(agent *ag, int id, simulation_context* ctx, random_context* rctx);
 List get_agent(agent *ag);
 List get_agent(int id, agent agent_pointer[]);
 
 // Agent update/LPT functions (defined in model.cpp)
-void lung_function_LPT(agent *ag);
-void smoking_LPT(agent *ag);
-void exacerbation_LPT(agent *ag);
-void payoffs_LPT(agent *ag);
-void medication_LPT(agent *ag);
-double update_symptoms(agent *ag);
-double update_gpvisits(agent *ag);
-double update_diagnosis(agent *ag);
+void lung_function_LPT(agent *ag, simulation_context* ctx, random_context* rctx);
+void smoking_LPT(agent *ag, simulation_context* ctx, random_context* rctx);
+void exacerbation_LPT(agent *ag, simulation_context* ctx, random_context* rctx);
+void payoffs_LPT(agent *ag, simulation_context* ctx, random_context* rctx);
+void medication_LPT(agent *ag, simulation_context* ctx, random_context* rctx);
+double update_symptoms(agent *ag, random_context* rctx);
+double update_gpvisits(agent *ag, random_context* rctx);
+double update_diagnosis(agent *ag, simulation_context* ctx, random_context* rctx);
 
 // Event stack functions
-int push_event(agent *ag);
+int push_event(agent *ag, simulation_context* ctx);
 
 // Event handler functions
-agent *event_start_process(agent *ag);
-agent *event_end_process(agent *ag);
-agent *event_fixed_process(agent *ag);
-agent *event_birthday_process(agent *ag);
-void event_smoking_change_process(agent *ag);
-void event_COPD_process(agent *ag);
-void event_exacerbation_process(agent *ag);
-void event_exacerbation_end_process(agent *ag);
-void event_exacerbation_death_process(agent *ag);
-void event_mi_process(agent *ag);
-void event_stroke_process(agent *ag);
-void event_hf_process(agent *ag);
-void event_bgd_process(agent *ag);
-void event_doctor_visit_process(agent *ag);
+agent *event_start_process(agent *ag, simulation_context* ctx, random_context* rctx);
+agent *event_end_process(agent *ag, simulation_context* ctx);
+agent *event_fixed_process(agent *ag, simulation_context* ctx, random_context* rctx);
+agent *event_birthday_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_smoking_change_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_COPD_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_exacerbation_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_exacerbation_end_process(agent *ag, simulation_context* ctx);
+void event_exacerbation_death_process(agent *ag, simulation_context* ctx);
+void event_mi_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_stroke_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_hf_process(agent *ag, simulation_context* ctx, random_context* rctx);
+void event_bgd_process(agent *ag, simulation_context* ctx);
+void event_doctor_visit_process(agent *ag, simulation_context* ctx, random_context* rctx);
 
 // Event time-to-event functions
-double event_fixed_tte(agent *ag);
-double event_birthday_tte(agent *ag);
-double event_smoking_change_tte(agent *ag);
-double event_COPD_tte(agent *ag);
-double event_exacerbation_tte(agent *ag);
-double event_exacerbation_end_tte(agent *ag);
-double event_exacerbation_death_tte(agent *ag);
-double event_mi_tte(agent *ag);
-double event_stroke_tte(agent *ag);
-double event_hf_tte(agent *ag);
-double event_bgd_tte(agent *ag);
-double event_doctor_visit_tte(agent *ag);
+double event_fixed_tte(agent *ag, simulation_context* ctx);
+double event_birthday_tte(agent *ag);  // No context needed - pure calculation
+double event_smoking_change_tte(agent *ag, random_context* rctx);
+double event_COPD_tte(agent *ag, random_context* rctx);
+double event_exacerbation_tte(agent *ag, random_context* rctx);
+double event_exacerbation_end_tte(agent *ag);  // No context needed
+double event_exacerbation_death_tte(agent *ag, random_context* rctx);
+double event_mi_tte(agent *ag, random_context* rctx);
+double event_stroke_tte(agent *ag, random_context* rctx);
+double event_hf_tte(agent *ag, random_context* rctx);
+double event_bgd_tte(agent *ag, random_context* rctx);
+double event_doctor_visit_tte(agent *ag, simulation_context* ctx);
 
 ////////////////////////////////////////////////////////////////////////////////
 // CONTEXT MANAGEMENT FUNCTIONS
