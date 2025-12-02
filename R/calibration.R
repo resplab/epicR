@@ -25,9 +25,9 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
   cat("working...\n")
   res <- run(input = input)
 
-  cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
+  cat("Mortality rate was", get_output()$n_death/get_output()$cumul_time, "\n")
 
-  difference <- (Cget_output_ex()$n_death_by_age_sex/Cget_output_ex()$sum_time_by_age_sex) - input$agent$p_bgd_by_sex
+  difference <- (get_output_ex()$n_death_by_age_sex/get_output_ex()$sum_time_by_age_sex) - input$agent$p_bgd_by_sex
 
   difference <- as.data.frame(t(difference))
   print(difference)
@@ -64,9 +64,9 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
   cat("working...\n")
   res <- run(input = input)
 
-  cat("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
+  cat("Mortality rate was", get_output()$n_death/get_output()$cumul_time, "\n")
 
-  difference <- model_input$agent$p_bgd_by_sex[41:111, ] - (Cget_output_ex()$n_death_by_age_sex[41:111, ]/Cget_output_ex()$sum_time_by_age_sex[41:111,
+  difference <- model_input$agent$p_bgd_by_sex[41:111, ] - (get_output_ex()$n_death_by_age_sex[41:111, ]/get_output_ex()$sum_time_by_age_sex[41:111,
                                                                                                                                                ])
   plot(40:110, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference")
   legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
@@ -189,7 +189,7 @@ calibrate_COPD_inc<-function(nIterations=100,
     input$agent$ln_h_bgd_betas <- t(as.matrix(c(intercept = 0, y = 0, y2 = 0, age = 0, b_mi = 0, n_mi = 0, b_stroke = 0,
                                                 n_stroke = 0, hf = 0)))  #Disabling longevity
     run(input=input)
-    data<-as.data.frame(Cget_all_events_matrix())
+    data<-as.data.frame(get_all_events_matrix())
     terminate_session()
 
     dataF<-data[which(data[,'event']==events["event_fixed"]),]

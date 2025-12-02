@@ -30,7 +30,7 @@ void reset_output()
 //' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 //' @export
 // [[Rcpp::export]]
-List Cget_output()
+List get_output()
 {
   return Rcpp::List::create(
     Rcpp::Named("n_agents")=output.n_agents,
@@ -64,7 +64,7 @@ void reset_output_ex()
 //' @return Extra outputs from the model.
 //' @export
 // [[Rcpp::export]]
-List Cget_output_ex()
+List get_output_ex()
 {
   List out=Rcpp::List::create(
 #ifdef OUTPUT_EX

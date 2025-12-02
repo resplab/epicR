@@ -234,10 +234,10 @@ init_session()
 
 # Run multiple simulations
 run()
-results1 <- Cget_output()
+results1 <- get_output()
 
 run()  # run again with same session
-results2 <- Cget_output()
+results2 <- get_output()
 
 # Clean up when done
 terminate_session()
@@ -250,7 +250,7 @@ init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
 run(input = input$values)
-results <- Cget_output()
+results <- get_output()
 terminate_session()
 ```
 
@@ -395,8 +395,8 @@ settings$record_mode <- 2
 settings$n_base_agents <- 1e4
 init_session(settings = settings)
 run()
-results <- Cget_output()
-events <- as.data.frame(Cget_all_events_matrix())
+results <- get_output()
+events <- as.data.frame(get_all_events_matrix())
 head(events)
 terminate_session()
 
@@ -430,7 +430,7 @@ library(epicR)
 input <- get_input(closed_cohort = 1)$values
 init_session()
 run(input=input)
-Cget_output()
+get_output()
 terminate_session()
 ```
 

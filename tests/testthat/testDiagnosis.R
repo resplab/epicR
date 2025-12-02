@@ -4,8 +4,8 @@ test_that("(1) The average proportion diagnosed in GOLD 1 and 2 is < 40%,
   library(dplyr)
   init_session()
   run()
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   # (1) Average proportion diagnosed in GOLD 1 and GOLD 2
   diag_prop <- data.frame(Year=1:inputs$global_parameters$time_horizon,

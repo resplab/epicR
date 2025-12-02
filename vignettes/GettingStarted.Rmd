@@ -319,10 +319,10 @@ init_session()
 
 # Run multiple simulations with same session
 run()
-results1 <- Cget_output()
+results1 <- get_output()
 
 run()  # run again with same session
-results2 <- Cget_output()
+results2 <- get_output()
 
 # Clean up when done
 terminate_session()
@@ -343,7 +343,7 @@ input$values$agent$p_female <- 0.55
 # Run with custom inputs
 init_session()
 run(input = input$values)
-results <- Cget_output()
+results <- get_output()
 terminate_session()
 ```
 
@@ -355,7 +355,7 @@ Always wrap manual session management in error handling:
 tryCatch({
   init_session()
   run()
-  results <- Cget_output()
+  results <- get_output()
 }, finally = {
   terminate_session()
 })

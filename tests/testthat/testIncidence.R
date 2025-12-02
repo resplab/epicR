@@ -3,7 +3,7 @@ test_that("COPD incidence is set so that prevalence is independent of calendar y
   settings$record_mode <- epicR:::session_env$record_mode["record_mode_event"]
   init_session(settings = settings)
   run()
-  data <- as.data.frame(Cget_all_events_matrix())
+  data <- as.data.frame(get_all_events_matrix())
   terminate_session()
 
   dataF <- data[which(data[, "event"] == 1), ] #1 is event_fixed

@@ -39,7 +39,7 @@ session_env$agent_creation_mode<-c(
 #' @export
 get_agent_size_bytes <- function() {
   tryCatch(
-    Cget_agent_size_bytes(),
+    get_agent_size_bytes(),
     error = function(e) 800  # Fallback estimate if C function not available
   )
 }
@@ -166,8 +166,8 @@ get_available_memory <- function() {
 init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
   message("Working directory: ", getwd())
-  if (exists("Cdeallocate_resources"))
-    Cdeallocate_resources()
+  if (exists("deallocate_resources"))
+    deallocate_resources()
 
   # Get time_horizon from input parameters for memory calculation
   input_params <- get_input()
@@ -201,13 +201,13 @@ init_session <- function(settings = get_default_settings()) {
 
   if (!is.null(settings))
     apply_settings(settings)
-  Cinit_session()
+  init_session_internal()
 
   # Allocate memory and check for errors
-  alloc_result <- Callocate_resources()
+  alloc_result <- allocate_resources()
   if (alloc_result != 0) {
     session_env$initialized <- FALSE
-    current_settings <- Cget_settings()
+    current_settings <- get_settings()
     est_memory_gb <- estimate_memory_required(current_settings$n_base_agents,
                                                current_settings$record_mode, time_horizon) / 1e9
     stop(sprintf(
@@ -227,18 +227,18 @@ init_session <- function(settings = get_default_settings()) {
 terminate_session <- function() {
   message("Terminating the session")
   session_env$initialized <- FALSE
-  return(Cdeallocate_resources())
+  return(deallocate_resources())
 }
 
 
 apply_settings <- function(settings = settings) {
   res <- 0
-  ls <- Cget_settings()
+  ls <- get_settings()
   for (i in 1:length(ls)) {
     nm <- names(ls)[i]
     # message(nm)
     if (!is.null(settings[nm])) {
-      res <- Cset_settings_var(nm, settings[[nm]])
+      res <- set_settings_var(nm, settings[[nm]])
       if (res != 0)
         return(res)
     }
@@ -278,7 +278,7 @@ set_Cmodel_inputs <- function(ls) {
     # important: CPP is column major order but R is row major; all matrices should be tranposed before vectorization;
     if (is.matrix(val))
       val <- as.vector(t(val))
-    res <- Cset_input_var(nms[i], val)
+    res <- set_input_var(nms[i], val)
     if (res != 0) {
       message(last_var)
       set_error(res,paste("Invalid input:",last_var))
@@ -319,7 +319,7 @@ express_matrix <- function(mtx) {
 #' @return dataframe consisting all events specific to agent \code{id}
 #' @export
 get_agent_events <- function(id) {
-  x <- Cget_agent_events(id)
+  x <- get_agent_events(id)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -330,7 +330,7 @@ get_agent_events <- function(id) {
 #' @return dataframe consisting all events of the type \code{event_type}
 #' @export
 get_events_by_type <- function(event_type) {
-  x <- Cget_events_by_type(event_type)
+  x <- get_events_by_type(event_type)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -340,7 +340,7 @@ get_events_by_type <- function(event_type) {
 #' @return dataframe consisting all events.
 #' @export
 get_all_events <- function() {
-  x <- Cget_all_events()
+  x <- get_all_events()
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -412,7 +412,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
   }
 
   # Display record_mode information
-  current_settings <- Cget_settings()
+  current_settings <- get_settings()
   record_mode_value <- current_settings$record_mode
   record_mode_names <- c("record_mode_none", "record_mode_agent", "record_mode_event", "record_mode_some_event")
   record_mode_name <- record_mode_names[record_mode_value + 1]
@@ -436,7 +436,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
   if (res == 0) {
     if (is.null(max_n_agents))
       max_n_agents = .Machine$integer.max
-    res <- Cmodel(max_n_agents)
+    res <- model_run(max_n_agents)
   }
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
@@ -618,19 +618,19 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
 
     # Get all results BEFORE terminating session
     results <- list(
-      basic = Cget_output()
+      basic = get_output()
     )
 
     # Add extended results if requested (in addition to basic)
     if (extended_results) {
       message("Collecting extended results...")
-      results$extended <- Cget_output_ex()
+      results$extended <- get_output_ex()
     }
 
     # Add events if requested
     if (return_events) {
       message("Collecting event history...")
-      results$events <- as.data.frame(Cget_all_events_matrix())
+      results$events <- as.data.frame(get_all_events_matrix())
     }
 
     # Now terminate the session
@@ -657,7 +657,7 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
 resume <- function(max_n_agents = NULL) {
   if (is.null(max_n_agents))
     max_n_agents = settings$n_base_agents
-  res <- Cmodel(max_n_agents)
+  res <- model_run(max_n_agents)
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
   }

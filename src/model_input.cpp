@@ -16,7 +16,7 @@
 //' @return all inputs
 //' @export
 // [[Rcpp::export]]
-List Cget_inputs()
+List get_inputs()
 {
   List out=Rcpp::List::create(
     Rcpp::Named("global_parameters")=Rcpp::List::create(
@@ -152,7 +152,7 @@ List Cget_inputs()
 //' @return 0 if successful
 //' @export
 // [[Rcpp::export]]
-int Cset_input_var(std::string name, NumericVector value)
+int set_input_var(std::string name, NumericVector value)
 {
   if(name=="global_parameters$age0") {input.global_parameters.age0=value[0]; return(0);}
   if(name=="global_parameters$time_horizon")  {input.global_parameters.time_horizon=value[0]; return(0);}

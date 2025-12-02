@@ -6,123 +6,123 @@
 #' @param value a value
 #' @return 0 if successful.
 #' @export
-Cset_settings_var <- function(name, value) {
-    .Call(`_epicR_Cset_settings_var`, name, value)
+set_settings_var <- function(name, value) {
+    .Call(`_epicR_set_settings_var`, name, value)
 }
 
 #' Returns current settings.
 #' @return current settings.
 #' @export
-Cget_settings <- function() {
-    .Call(`_epicR_Cget_settings`)
+get_settings <- function() {
+    .Call(`_epicR_get_settings`)
 }
 
 #' Returns the size of agent struct in bytes
 #' @return size of agent struct in bytes
 #' @export
-Cget_agent_size_bytes <- function() {
-    .Call(`_epicR_Cget_agent_size_bytes`)
+get_agent_size_bytes <- function() {
+    .Call(`_epicR_get_agent_size_bytes`)
 }
 
 #' Returns run time stats.
 #' @return agent size as well as memory and random variable fill stats.
 #' @export
-Cget_runtime_stats <- function() {
-    .Call(`_epicR_Cget_runtime_stats`)
+get_runtime_stats <- function() {
+    .Call(`_epicR_get_runtime_stats`)
 }
 
 #' Returns current simulation progress.
 #' @return Number of agents processed so far (last_id).
 #' @export
-Cget_progress <- function() {
-    .Call(`_epicR_Cget_progress`)
+get_progress <- function() {
+    .Call(`_epicR_get_progress`)
 }
 
-Cget_agent <- function(id) {
-    .Call(`_epicR_Cget_agent`, id)
+get_agent <- function(id) {
+    .Call(`_epicR_get_agent`, id)
 }
 
 #' Returns agent Smith.
 #' @return agent smith.
 #' @export
-Cget_smith <- function() {
-    .Call(`_epicR_Cget_smith`)
+get_smith <- function() {
+    .Call(`_epicR_get_smith`)
 }
 
-Ccreate_agents <- function() {
-    .Call(`_epicR_Ccreate_agents`)
+create_agents <- function() {
+    .Call(`_epicR_create_agents`)
 }
 
-Callocate_resources <- function() {
-    .Call(`_epicR_Callocate_resources`)
+allocate_resources <- function() {
+    .Call(`_epicR_allocate_resources`)
 }
 
 Cget_pointers <- function() {
     .Call(`_epicR_Cget_pointers`)
 }
 
-Cdeallocate_resources <- function() {
-    .Call(`_epicR_Cdeallocate_resources`)
+deallocate_resources <- function() {
+    .Call(`_epicR_deallocate_resources`)
 }
 
-Cinit_session <- function() {
-    .Call(`_epicR_Cinit_session`)
+init_session_internal <- function() {
+    .Call(`_epicR_init_session_internal`)
 }
 
-Cmodel <- function(max_n_agents) {
-    .Call(`_epicR_Cmodel`, max_n_agents)
+model_run <- function(max_n_agents) {
+    .Call(`_epicR_model_run`, max_n_agents)
 }
 
 #' Returns the events stack.
 #' @param i number of event
 #' @return events
 #' @export
-Cget_event <- function(i) {
-    .Call(`_epicR_Cget_event`, i)
+get_event <- function(i) {
+    .Call(`_epicR_get_event`, i)
 }
 
 #' Returns total number of events.
 #' @return number of events
 #' @export
-Cget_n_events <- function() {
-    .Call(`_epicR_Cget_n_events`)
+get_n_events <- function() {
+    .Call(`_epicR_get_n_events`)
 }
 
 #' Returns all events of an agent.
 #' @param id agent ID.
 #' @return all events of agent \code{id}
 #' @export
-Cget_agent_events <- function(id) {
-    .Call(`_epicR_Cget_agent_events`, id)
+get_agent_events <- function(id) {
+    .Call(`_epicR_get_agent_events`, id)
 }
 
 #' Returns all events of a certain type.
 #' @param event_type a number
 #' @return all events of the type \code{event_type}
 #' @export
-Cget_events_by_type <- function(event_type) {
-    .Call(`_epicR_Cget_events_by_type`, event_type)
+get_events_by_type <- function(event_type) {
+    .Call(`_epicR_get_events_by_type`, event_type)
 }
 
 #' Returns all events.
 #' @return all events
 #' @export
-Cget_all_events <- function() {
-    .Call(`_epicR_Cget_all_events`)
+get_all_events <- function() {
+    .Call(`_epicR_get_all_events`)
 }
 
 #' Returns a matrix containing all events
 #' @return a matrix containing all events
 #' @export
-Cget_all_events_matrix <- function() {
-    .Call(`_epicR_Cget_all_events_matrix`)
+get_all_events_matrix <- function() {
+    .Call(`_epicR_get_all_events_matrix`)
 }
 
 #' Returns inputs
 #' @return all inputs
 #' @export
-Cget_inputs <- function() {
-    .Call(`_epicR_Cget_inputs`)
+get_inputs <- function() {
+    .Call(`_epicR_get_inputs`)
 }
 
 #' Sets input variables.
@@ -130,8 +130,8 @@ Cget_inputs <- function() {
 #' @param value a number
 #' @return 0 if successful
 #' @export
-Cset_input_var <- function(name, value) {
-    .Call(`_epicR_Cset_input_var`, name, value)
+set_input_var <- function(name, value) {
+    .Call(`_epicR_set_input_var`, name, value)
 }
 
 #' Returns a sample output for a given year and gender.
@@ -146,15 +146,15 @@ get_sample_output <- function(year, sex) {
 #' Main outputs of the current run.
 #' @return number of agents, cumulative time, number of deaths, number of COPD cases, as well as exacerbation statistics and QALYs.
 #' @export
-Cget_output <- function() {
-    .Call(`_epicR_Cget_output`)
+get_output <- function() {
+    .Call(`_epicR_get_output`)
 }
 
 #' Extra outputs from the model
 #' @return Extra outputs from the model.
 #' @export
-Cget_output_ex <- function() {
-    .Call(`_epicR_Cget_output_ex`)
+get_output_ex <- function() {
+    .Call(`_epicR_get_output_ex`)
 }
 
 #' Samples from a multivariate normal

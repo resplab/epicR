@@ -14,8 +14,8 @@ report_COPD_by_ctime <- function(n_sim = 10^6) {
 
   run()
 
-  op <- Cget_output()
-  opx <- Cget_output_ex()
+  op <- get_output()
+  opx <- get_output_ex()
 
   g1 <- 41:55
   g2 <- 56:70
@@ -99,8 +99,8 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
 
   run()
 
-  op <- Cget_output()
-  opx <- Cget_output_ex()
+  op <- get_output()
+  opx <- get_output_ex()
 
   cat("Annual rate of exacerbation:", sum(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time), "\n")
   cat("Annual rate of exacerbation by severity:", colSums(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time),
@@ -175,7 +175,7 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
   # Calculating Exacerbation Rate by GOLD Stage
   init_session()
   run(n_sim)
-  all_events <- as.data.frame(Cget_all_events_matrix())
+  all_events <- as.data.frame(get_all_events_matrix())
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
 

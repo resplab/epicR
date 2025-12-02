@@ -139,7 +139,7 @@ input$values$smoking$mortality_factor_former <- t(as.matrix(c(age40to49 = 1.31, 
 ```{r, eval = TRUE, echo = TRUE}
 
 run(input = input$values)
-output <- Cget_output_ex()
+output <- get_output_ex()
 terminate_session()
 
 ```

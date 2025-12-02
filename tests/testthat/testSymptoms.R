@@ -2,8 +2,8 @@ test_that("The prevalence of cough, phlegm, wheeze and dyspnea increases by GOLD
   library(dplyr)
   init_session()
   run()
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   cough <- data.frame(1:inputs$global_parameters$time_horizon,
                       output_ex$n_cough_by_ctime_severity/output_ex$n_COPD_by_ctime_severity)
