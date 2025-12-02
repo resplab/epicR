@@ -14,6 +14,9 @@
 #' @import jsonlite
 NULL
 
+# Package environment to store cached model_input
+.epicR_env <- new.env(parent = emptyenv())
+
 .onLoad <- function(libname, pkgname) {
   # Check if user configs exist, if not copy them
   user_dir <- file.path(Sys.getenv("HOME"), ".epicR", "config")
@@ -28,6 +31,20 @@ NULL
     }, error = function(e) {
       packageStartupMessage("epicR: Could not set up user config files. Using package defaults.")
     })
+  }
+
+  # Initialize model_input cache as NULL - will be lazily loaded on first access
+  .epicR_env$model_input <- NULL
+
+  # Create active binding for model_input in package namespace
+  # This provides backward compatibility - accessing model_input will lazily load it
+  ns <- asNamespace(pkgname)
+  if (!exists("model_input", envir = ns, inherits = FALSE)) {
+    makeActiveBinding(
+      "model_input",
+      function() get_default_model_input(),
+      env = ns
+    )
   }
 
   invisible()

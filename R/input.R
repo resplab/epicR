@@ -632,8 +632,31 @@ get_input <- function(age0 = 40,
   return (model_input)
 }
 
-# Default model input for backward compatibility (only when config file exists)
-if (file.exists(system.file("config", "config_canada.json", package = "epicR")) || 
-    file.exists("inst/config/config_canada.json")) {
-  model_input <- get_input()
+#' Get the default model input (lazy initialization)
+#'
+#' This function provides access to the default model_input object.
+#' The model_input is lazily initialized on first access to avoid
+#' embedding paths during package installation.
+#'
+#' @return The default model input list
+#' @keywords internal
+get_default_model_input <- function() {
+  if (is.null(.epicR_env$model_input)) {
+    .epicR_env$model_input <- get_input()
+  }
+  .epicR_env$model_input
 }
+
+#' Reset the cached model input
+#'
+#' Forces the default model_input to be reloaded on next access.
+#' Useful after modifying config files.
+#'
+#' @export
+reset_model_input <- function() {
+  .epicR_env$model_input <- NULL
+  message("Model input cache cleared. It will be reloaded on next access.")
+}
+
+# Create an active binding so that 'model_input' works as before
+# This is done via makeActiveBinding in .onLoad
