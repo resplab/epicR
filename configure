@@ -1,8 +1,9 @@
 #!/bin/sh
 
 # Configure script for epicR
-# This package doesn't use Fortran, so we don't need FLIBS
-# The Makevars file is used directly without substitution
-
 echo "Configuring epicR..."
-echo "Configuration complete: Package uses R's BLAS/LAPACK (no Fortran dependencies)"
+
+# Simply copy Makevars.in to Makevars (no substitution needed)
+cp src/Makevars.in src/Makevars
+
+echo "Configuration complete"
