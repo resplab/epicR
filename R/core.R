@@ -353,6 +353,7 @@ get_all_events <- function() {
 #' @param input customized input criteria
 #' @param settings customized settings (only used if auto-initializing)
 #' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
+#' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
 #' @return simulation results if successful
 #' @export
 #' @examples
@@ -369,8 +370,17 @@ get_all_events <- function() {
 #' run()
 #' run()  # run again with same session
 #' terminate_session()
+#'
+#' # With reproducible results
+#' run(seed = 123)
 #' }
-run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE) {
+run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE, seed = NULL) {
+
+  # Set random seed for reproducibility if provided
+  if (!is.null(seed)) {
+    set.seed(seed)
+    message("Random seed set to: ", seed)
+  }
 
   # Auto-initialize if not already initialized
   auto_initialized <- FALSE
@@ -464,6 +474,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @param n_agents Number of agents to simulate (default: 60,000)
 #' @param return_extended whether to return extended results in addition to basic (default: FALSE)
 #' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
+#' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
 #' @return list with simulation results (always includes 'basic', optionally 'extended' and 'events')
 #' @export
 #' @examples
@@ -486,10 +497,16 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' # With event history
 #' results <- simulate(return_events = TRUE)
 #' print(results$events)  # Event matrix
+#'
+#' # With reproducible results
+#' results1 <- simulate(seed = 123)
+#' results2 <- simulate(seed = 123)
+#' # results1 and results2 will be identical
 #' }
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
                      time_horizon = 20, n_agents = NULL,
-                     return_extended = FALSE, return_events = FALSE) {
+                     return_extended = FALSE, return_events = FALSE,
+                     seed = NULL) {
 
   # Check if config file has been modified since last load
   config_changed <- FALSE
@@ -539,6 +556,12 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     if (is.null(settings$event_stack_size) || settings$event_stack_size == 0) {
       settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
     }
+  }
+
+  # Set random seed for reproducibility if provided
+  if (!is.null(seed)) {
+    set.seed(seed)
+    message("Random seed set to: ", seed)
   }
 
   # Display configuration summary
