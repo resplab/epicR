@@ -36,4 +36,5 @@ Suggests:
     knitr,
     rmarkdown
 Config/testthat/edition: 3
+Config/build/no-staged-install: TRUE
 VignetteBuilder: knitr, rmarkdown
