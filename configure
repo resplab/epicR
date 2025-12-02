@@ -1,17 +1,8 @@
 #!/bin/sh
 
 # Configure script for epicR
-# This script avoids hard-coding library paths by letting R's build system
-# handle FLIBS automatically through the $(FLIBS) variable
+# This package doesn't use Fortran, so we don't need FLIBS
+# The Makevars file is used directly without substitution
 
 echo "Configuring epicR..."
-
-# Don't substitute actual library paths - let R handle it via $(FLIBS)
-# This avoids hard-coded installation paths that cause R CMD check to fail
-FLIBS=""
-
-# Substitute into Makevars (empty FLIBS means use R's automatic detection)
-sed -e "s|@FLIBS@|${FLIBS}|" src/Makevars.in > src/Makevars
-
-echo "Configuration complete: Using R's automatic library detection"
-echo "Note: FLIBS will be resolved by R's build system at compile time"
+echo "Configuration complete: Package uses R's BLAS/LAPACK (no Fortran dependencies)"
