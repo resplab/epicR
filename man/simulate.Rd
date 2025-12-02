@@ -10,7 +10,7 @@ simulate(
   jurisdiction = "canada",
   time_horizon = 20,
   n_agents = NULL,
-  return_extended = FALSE,
+  extended_results = TRUE,
   return_events = FALSE,
   seed = NULL
 )
@@ -26,14 +26,14 @@ simulate(
 
 \item{n_agents}{Number of agents to simulate (default: 60,000)}
 
-\item{return_extended}{whether to return extended results in addition to basic (default: FALSE)}
+\item{extended_results}{whether to return extended results in addition to basic (default: TRUE)}
 
 \item{return_events}{whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2}
 
 \item{seed}{Random seed for reproducibility (optional). If provided, ensures identical results across runs}
 }
 \value{
-list with simulation results (always includes 'basic', optionally 'extended' and 'events')
+list with simulation results (always includes 'basic', includes 'extended' by default, optionally 'events')
 }
 \description{
 This is a simplified interface that handles session management automatically
@@ -43,9 +43,10 @@ percentage completion (10%, 20%, ... 100%), elapsed time, and data collection st
 }
 \examples{
 \dontrun{
-# Simplest usage
+# Simplest usage - includes both basic and extended results
 results <- simulate()
 print(results$basic)
+print(results$extended)
 
 # With custom parameters
 results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
@@ -53,10 +54,9 @@ results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
 # Quick test with fewer agents
 results <- simulate(n_agents = 10000)
 
-# With extended output (includes both basic and extended)
-results <- simulate(return_extended = TRUE)
+# Basic output only (faster, less memory)
+results <- simulate(extended_results = FALSE)
 print(results$basic)
-print(results$extended)
 
 # With event history
 results <- simulate(return_events = TRUE)

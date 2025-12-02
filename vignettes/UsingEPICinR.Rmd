@@ -130,8 +130,8 @@ results <- simulate(
 # Quick test with fewer agents
 results <- simulate(n_agents = 10000)
 
-# Get extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 print(results$extended)
 
 # Get event history

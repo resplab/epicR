@@ -198,10 +198,14 @@ results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
 # Quick test with fewer agents (faster)
 results <- simulate(n_agents = 10000)
 
-# Get both basic and extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 print(results$basic)
-print(results$extended)
+print(results$extended)  # Included by default
+
+# Get basic output only (faster, less memory)
+results <- simulate(extended_results = FALSE)
+print(results$basic)
 
 # Get event history (automatically enables event recording)
 results <- simulate(return_events = TRUE)
@@ -212,7 +216,7 @@ results <- simulate(
   jurisdiction = "us",
   time_horizon = 15,
   n_agents = 50000,
-  return_extended = TRUE,
+  extended_results = TRUE,  # TRUE by default
   return_events = TRUE
 )
 # Returns: results$basic, results$extended, results$events
