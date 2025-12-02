@@ -81,7 +81,9 @@ get_input <- function(age0 = 40,
 
   if (file.exists(user_config_file)) {
     config_file <- user_config_file
-    message(paste("Using user config file from:", config_file))
+    if (interactive()) {
+      message(paste("Using user config file from:", config_file))
+    }
   } else {
     # Fall back to package config
     config_file <- system.file("config", paste0("config_", jurisdiction, ".json"), package = "epicR")
@@ -91,7 +93,7 @@ get_input <- function(age0 = 40,
       config_file <- file.path("inst", "config", paste0("config_", jurisdiction, ".json"))
     }
 
-    if (file.exists(config_file)) {
+    if (file.exists(config_file) && interactive()) {
       message(paste("Using package config file from:", config_file))
     }
   }
