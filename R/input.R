@@ -100,7 +100,13 @@ get_input <- function(age0 = 40,
     stop(paste("Configuration file for jurisdiction", jurisdiction, "not found.",
                "\nTry running copy_configs_to_user() to set up user configs."))
   }
-  
+
+  # Store config file path and modification time in session environment
+  if (exists("session_env")) {
+    session_env$config_file_path <- config_file
+    session_env$config_file_mtime <- file.info(config_file)$mtime
+  }
+
   # Load JSON configuration
   config <- jsonlite::fromJSON(config_file, simplifyVector = FALSE)
   

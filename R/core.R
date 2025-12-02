@@ -2,6 +2,8 @@ session_env<-new.env()
 session_env$global_error_code_chain<-NULL
 session_env$global_error_message_chain<-NULL
 session_env$initialized <- FALSE
+session_env$config_file_path <- NULL
+session_env$config_file_mtime <- NULL
 
 
 session_env$record_mode<-c(
@@ -163,6 +165,7 @@ get_available_memory <- function() {
 #' @export
 init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
+  message("Working directory: ", getwd())
   if (exists("Cdeallocate_resources"))
     Cdeallocate_resources()
 
@@ -487,11 +490,34 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
                      time_horizon = 20, n_agents = NULL,
                      return_extended = FALSE, return_events = FALSE) {
+
+  # Check if config file has been modified since last load
+  config_changed <- FALSE
+  if (!is.null(session_env$config_file_path) &&
+        !is.null(session_env$config_file_mtime) &&
+        file.exists(session_env$config_file_path)) {
+    current_mtime <- file.info(session_env$config_file_path)$mtime
+    if (current_mtime != session_env$config_file_mtime) {
+      config_changed <- TRUE
+      message(
+        ">>> Config file has been modified - reloading automatically <<<"
+      )
+    }
+  }
+
   # If no custom input provided, use get_input with specified parameters
-  if (is.null(input)) {
+  # Also reload if config file has changed
+  if (is.null(input) || config_changed) {
     input_full <- get_input(jurisdiction = jurisdiction,
                             time_horizon = time_horizon)
     input <- input_full$values
+
+    # If config changed, let user know which file was reloaded
+    if (config_changed && !is.null(session_env$config_file_path)) {
+      message(
+        ">>> Reloaded config from: ", session_env$config_file_path, " <<<"
+      )
+    }
   }
 
   # Get or create settings

@@ -894,8 +894,6 @@ void event_doctor_visit_process(agent *ag)
     (*ag).last_doctor_visit_type=0;
   }
 
-  output.total_doctor_visit[(*ag).last_doctor_visit_type]+=1;
-
   output.total_cost+=input.cost.doctor_visit_by_type[(*ag).last_doctor_visit_type]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 
   (*ag).last_doctor_visit_time=(*ag).local_time;

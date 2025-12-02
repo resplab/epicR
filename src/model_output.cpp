@@ -21,7 +21,6 @@ void reset_output()
   output.total_pack_years=0;
   output.total_exac[0]=0;output.total_exac[1]=0;output.total_exac[2]=0;output.total_exac[3]=0;
   output.total_exac_time[0]=0;output.total_exac_time[1]=0;output.total_exac_time[2]=0;output.total_exac_time[3]=0;
-  output.total_doctor_visit[0]=0;output.total_doctor_visit[1]=0;
   output.total_cost=0;
   output.total_qaly=0;
   output.total_diagnosed_time=0;
@@ -41,7 +40,6 @@ List Cget_output()
     Rcpp::Named("total_exac")=AS_VECTOR_INT(output.total_exac),
     Rcpp::Named("total_exac_time")=AS_VECTOR_DOUBLE(output.total_exac_time),
     Rcpp::Named("total_pack_years")=output.total_pack_years,
-    Rcpp::Named("total_doctor_visit")=AS_VECTOR_INT(output.total_doctor_visit),
     Rcpp::Named("total_cost")=output.total_cost,
     Rcpp::Named("total_qaly")=output.total_qaly,
     Rcpp::Named("total_diagnosed_time")=output.total_diagnosed_time
