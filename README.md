@@ -8,7 +8,7 @@
 R package for Evaluation Platform in COPD (EPIC). 
 
 ## Overview
-epicR provides an interface to to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Onstructive Pulmonary Disease.
+epicR provides an interface to interact with the Evaluation Platform in COPD (EPIC), a discrete-event-simulation (DES) whole-disease model of Chronic Obstructive Pulmonary Disease.
 
 ## Installation
 
