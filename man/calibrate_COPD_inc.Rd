@@ -7,7 +7,7 @@
 calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
 }
 \arguments{
-\item{nIterations}{number of iterations for the numberical solution}
+\item{nIterations}{number of iterations for the numerical solution}
 
 \item{nPatients}{number of simulated agents.}
 

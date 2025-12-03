@@ -581,7 +581,7 @@ get_input <- function(age0 = 40,
   input$cost$bg_cost_by_stage <- t(as.matrix(convert_config_value(config$cost$bg_cost_by_stage)))
   input_help$cost$bg_cost_by_stage <- get_metadata("cost", "bg_cost_by_stage", "help", "Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades")
   #  input$cost$ind_bg_cost_by_stage=t(as.matrix(c(N=0, I=40, II=80, III=134, IV=134))) #TODO Not implemented in C yet.
-  #  input_help$cost$ind_bg_cost_by_stage="Annual inddirect costs for non-COPD, and COPD by GOLD grades"
+  #  input_help$cost$ind_bg_cost_by_stage="Annual indirect costs for non-COPD, and COPD by GOLD grades"
   input$cost$exac_dcost <- t(as.matrix(convert_config_value(config$cost$exac_dcost)))
   input_help$cost$exac_dcost <- get_metadata("cost", "exac_dcost", "help", "Incremental direct costs of exacerbations by severity levels")
 

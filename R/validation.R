@@ -41,7 +41,7 @@ sanity_check <- function() {
     message(get_output()$total_qaly)} else message("Test passed!")
   terminate_session()
 
-  message("test 3: one all utilities ad get one QALY without discount\n")
+  message("test 3: set all utilities to 1 and get one QALY without discount\n")
   init_session()
   input <- model_input$values
   input$global_parameters$discount_qaly <- 0
@@ -56,7 +56,7 @@ sanity_check <- function() {
   message("test 4: zero mortality (both bg and exac)\n")
   init_session()
   input <- model_input$values
-  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale'
+  input$exacerbation$logit_p_death_by_sex <- input$exacerbation$logit_p_death_by_sex * 0 - 10000000  # log scale
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(100, input = input)
