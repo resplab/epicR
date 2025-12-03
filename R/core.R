@@ -516,6 +516,8 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     current_mtime <- file.info(session_env$config_file_path)$mtime
     if (current_mtime != session_env$config_file_mtime) {
       config_changed <- TRUE
+      # Clear the model input cache so get_input() loads fresh data
+      .epicR_env$model_input <- NULL
       message(
         ">>> Config file has been modified - reloading automatically <<<"
       )
