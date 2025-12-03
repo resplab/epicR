@@ -74,7 +74,7 @@ calculate_rmse_optim <- function(params) {
 
 
   run(input=input$values)
-  output <- Cget_output_ex()
+  output <- get_output_ex()
   terminate_session()
 
 

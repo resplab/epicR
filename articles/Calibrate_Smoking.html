@@ -345,15 +345,14 @@ did not report data for this population.</p>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Using user config file from: /home/runner/.epicR/config/config_canada.json</span></span></code></pre>
 <pre><code><span><span class="co">## Running EPIC model (with custom input parameters)</span></span></code></pre>
 <pre><code><span><span class="co">## Record mode: record_mode_none (0)</span></span></code></pre>
 <pre><code><span><span class="co">## Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span></code></pre>
 <pre><code><span><span class="co">## Simulating 100000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">## 60% 70% 80% 90% 100%</span></span></code></pre>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Terminating the session</span></span></code></pre>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
@@ -361,7 +360,7 @@ did not report data for this population.</p>
 <div class="section level3">
 <h3 id="step-8-create-data-tables">Step 8: Create data tables<a class="anchor" aria-label="anchor" href="#step-8-create-data-tables"></a>
 </h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Calculate smoking proportions</span></span>
 <span><span class="va">smokingstatus_overall</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">n_smoking_status_by_ctime</span></span>
 <span><span class="va">row_sums</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">smokingstatus_overall</span><span class="op">)</span></span>
@@ -551,7 +550,7 @@ did not report data for this population.</p>
 <div class="section level3">
 <h3 id="step-9-visualize-data">Step 9: Visualize data<a class="anchor" aria-label="anchor" href="#step-9-visualize-data"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Reshape data for plotting</span></span>
 <span><span class="va">smokingstatus_reshaped</span><span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
 <span>  <span class="va">smokingstatus_proportions</span>,</span>
@@ -621,7 +620,7 @@ reasonable. The observed decrease in average pack-years per smoker in
 the model is therefore aligned with empirically documented reductions in
 smoking intensity, supporting the face validity of the simulated
 trend.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate total pack years by year</span></span>
 <span><span class="va">pack_years_total</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">sum_pack_years_by_ctime_sex</span><span class="op">)</span></span>
 <span><span class="va">pack_years_total</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">pack_years_total</span><span class="op">)</span></span>
@@ -651,7 +650,7 @@ trend.</p>
 <div class="section level3">
 <h3 id="step-11-visualize-trend-in-pack-years-per-person">Step 11: Visualize trend in pack years per person<a class="anchor" aria-label="anchor" href="#step-11-visualize-trend-in-pack-years-per-person"></a>
 </h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">pack_year_per_person</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Year</span>, y <span class="op">=</span> <span class="va">AvgPackYearsPerSmoker</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="st">"#003f5c"</span><span class="op">)</span> <span class="op">+</span>           </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span>, color <span class="op">=</span> <span class="st">"#66c2ff"</span>, stroke <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span>  </span>

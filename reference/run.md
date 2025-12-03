@@ -5,7 +5,13 @@ Runs the model. Auto-initializes if no session is active.
 ## Usage
 
 ``` r
-run(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE)
+run(
+  max_n_agents = NULL,
+  input = NULL,
+  settings = NULL,
+  auto_terminate = FALSE,
+  seed = NULL
+)
 ```
 
 ## Arguments
@@ -25,6 +31,11 @@ run(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE)
 - auto_terminate:
 
   whether to automatically terminate session after run (default: FALSE)
+
+- seed:
+
+  Random seed for reproducibility (optional). If provided, ensures
+  identical results across runs
 
 ## Value
 
@@ -46,5 +57,8 @@ init_session()
 run()
 run()  # run again with same session
 terminate_session()
+
+# With reproducible results
+run(seed = 123)
 } # }
 ```

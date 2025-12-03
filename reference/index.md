@@ -2,45 +2,6 @@
 
 ## All functions
 
-- [`Cget_agent_events()`](Cget_agent_events.md) : Returns all events of
-  an agent.
-
-- [`Cget_agent_size_bytes()`](Cget_agent_size_bytes.md) : Returns the
-  size of agent struct in bytes
-
-- [`Cget_all_events()`](Cget_all_events.md) : Returns all events.
-
-- [`Cget_all_events_matrix()`](Cget_all_events_matrix.md) : Returns a
-  matrix containing all events
-
-- [`Cget_event()`](Cget_event.md) : Returns the events stack.
-
-- [`Cget_events_by_type()`](Cget_events_by_type.md) : Returns all events
-  of a certain type.
-
-- [`Cget_inputs()`](Cget_inputs.md) : Returns inputs
-
-- [`Cget_n_events()`](Cget_n_events.md) : Returns total number of
-  events.
-
-- [`Cget_output()`](Cget_output.md) : Main outputs of the current run.
-
-- [`Cget_output_ex()`](Cget_output_ex.md) : Extra outputs from the model
-
-- [`Cget_progress()`](Cget_progress.md) : Returns current simulation
-  progress.
-
-- [`Cget_runtime_stats()`](Cget_runtime_stats.md) : Returns run time
-  stats.
-
-- [`Cget_settings()`](Cget_settings.md) : Returns current settings.
-
-- [`Cget_smith()`](Cget_smith.md) : Returns agent Smith.
-
-- [`Cset_input_var()`](Cset_input_var.md) : Sets input variables.
-
-- [`Cset_settings_var()`](Cset_settings_var.md) : Sets model settings.
-
 - [`calc_event_stack_size()`](calc_event_stack_size.md) : Calculate
   recommended event_stack_size for a given number of agents
 
@@ -55,6 +16,12 @@
 
 - [`calibrate_smoking()`](calibrate_smoking.md) : Calibrates smoking
 
+- [`copy_configs_to_user()`](copy_configs_to_user.md) : Copy default
+  configs to user directory
+
+- [`epicR-config`](epicR-config.md) [`configuration`](epicR-config.md)
+  [`config`](epicR-config.md) : epicR Configuration Management
+
 - [`epicR-package`](epicR-package.md) [`epicR`](epicR-package.md) :
 
   `epicR` package
@@ -67,13 +34,16 @@
 
 - [`express_matrix()`](express_matrix.md) : Express matrix.
 
-- [`get_agent_events()`](get_agent_events.md) : Returns events specific
-  to an agent.
+- [`get_agent_events()`](get_agent_events.md) : Returns all events of an
+  agent.
 
-- [`get_agent_size_bytes()`](get_agent_size_bytes.md) : Get size of
-  agent struct in bytes (from C code)
+- [`get_agent_size_bytes()`](get_agent_size_bytes.md) : Returns the size
+  of agent struct in bytes
 
 - [`get_all_events()`](get_all_events.md) : Returns all events.
+
+- [`get_all_events_matrix()`](get_all_events_matrix.md) : Returns a
+  matrix containing all events
 
 - [`get_available_memory()`](get_available_memory.md) : Get available
   system memory (platform-specific)
@@ -83,27 +53,59 @@
 
 - [`get_errors()`](get_errors.md) : Returns errors
 
-- [`get_events_by_type()`](get_events_by_type.md) : Returns certain
-  events by type
+- [`get_event()`](get_event.md) : Returns the events stack.
+
+- [`get_events_by_type()`](get_events_by_type.md) : Returns all events
+  of a certain type.
 
 - [`get_input()`](get_input.md) : Returns a list of default model input
   values
 
+- [`get_inputs()`](get_inputs.md) : Returns inputs
+
 - [`get_list_elements()`](get_list_elements.md) : Get list elements
+
+- [`get_n_events()`](get_n_events.md) : Returns total number of events.
+
+- [`get_output()`](get_output.md) : Main outputs of the current run.
+
+- [`get_output_ex()`](get_output_ex.md) : Extra outputs from the model
+
+- [`get_progress()`](get_progress.md) : Returns current simulation
+  progress.
+
+- [`get_runtime_stats()`](get_runtime_stats.md) : Returns run time
+  stats.
 
 - [`get_sample_output()`](get_sample_output.md) : Returns a sample
   output for a given year and gender.
 
+- [`get_settings()`](get_settings.md) : Returns current settings.
+
+- [`get_smith()`](get_smith.md) : Returns agent Smith.
+
+- [`get_user_config_dir()`](get_user_config_dir.md) : Get user config
+  directory path
+
 - [`init_session()`](init_session.md) : Initializes a model. Allocates
   memory to the C engine.
 
+- [`list_available_jurisdictions()`](list_available_jurisdictions.md) :
+  List available config jurisdictions
+
 - [`mvrnormArma()`](mvrnormArma.md) : Samples from a multivariate normal
+
+- [`open_user_config_dir()`](open_user_config_dir.md) : Open user config
+  directory in file explorer
 
 - [`report_COPD_by_ctime()`](report_COPD_by_ctime.md) : Reports COPD
   related stats.
 
 - [`report_exacerbation_by_time()`](report_exacerbation_by_time.md) :
   Reports exacerbation-related stats.
+
+- [`reset_user_configs()`](reset_user_configs.md) : Reset user configs
+  to package defaults
 
 - [`resume()`](resume.md) : Resumes running of model.
 
@@ -115,6 +117,10 @@
 - [`sanity_check()`](sanity_check.md) : Basic tests of model
   functionality. Serious issues if the test does not pass.
 
+- [`set_input_var()`](set_input_var.md) : Sets input variables.
+
+- [`set_settings_var()`](set_settings_var.md) : Sets model settings.
+
 - [`simulate()`](simulate.md) : Convenience function: run simulation and
   return results
 
@@ -124,8 +130,13 @@
 - [`test_case_detection()`](test_case_detection.md) : Returns results of
   Case Detection strategies
 
+- [`user_config_exists()`](user_config_exists.md) : Check if user config
+  exists
+
 - [`validate_COPD()`](validate_COPD.md) : Returns results of validation
   tests for COPD
+
+- [`validate_config()`](validate_config.md) : Validate a config file
 
 - [`validate_diagnosis()`](validate_diagnosis.md) : Returns results of
   validation tests for diagnosis

@@ -266,15 +266,14 @@ a 1.4:1 male-to-female ratio.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run EPIC simulation</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Using user config file from: /home/runner/.epicR/config/config_canada.json</span></span></code></pre>
 <pre><code><span><span class="co">## Running EPIC model (with custom input parameters)</span></span></code></pre>
 <pre><code><span><span class="co">## Record mode: record_mode_none (0)</span></span></code></pre>
 <pre><code><span><span class="co">## Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span></code></pre>
 <pre><code><span><span class="co">## Simulating 100000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">## 60% 70% 80% 90% 100%</span></span></code></pre>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Terminating the session</span></span></code></pre>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
@@ -282,7 +281,7 @@ a 1.4:1 male-to-female ratio.</p>
 <div class="section level3">
 <h3 id="step-4-create-data-tables-by-age-category">Step 4: Create data tables by age category<a class="anchor" aria-label="anchor" href="#step-4-create-data-tables-by-age-category"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Determine overall COPD prevalence</span></span>
 <span></span>
 <span><span class="va">COPDprevalence_ctime_age</span><span class="op">&lt;-</span><span class="va">output</span><span class="op">$</span><span class="va">n_COPD_by_ctime_age</span></span>
@@ -552,7 +551,7 @@ population.</p>
 <h3 id="step-6-create-data-tables-by-sex-to-check-if-gender-distribution-matches-tilert-et-al-2013-doi10-11861465-9921-14-103">Step 6: Create data tables by sex to check if gender distribution
 matches Tilert et al 2013 (<a href="doi:10.1186/1465-9921-14-103" class="uri">doi:10.1186/1465-9921-14-103</a>))<a class="anchor" aria-label="anchor" href="#step-6-create-data-tables-by-sex-to-check-if-gender-distribution-matches-tilert-et-al-2013-doi10-11861465-9921-14-103"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate COPD prevalence by sex over time</span></span>
 <span></span>
 <span><span class="va">alive_sex</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">n_alive_by_ctime_sex</span></span>

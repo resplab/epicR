@@ -298,8 +298,8 @@ provides progress information:</p>
 <span><span class="co"># Quick test with fewer agents</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get extended results</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># By default, you get both basic and extended results</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get event history</span></span>
@@ -318,10 +318,10 @@ you need to allocate memory yourself. You also need to deallocate memory
 when the program is done. Because of this, we have the function
 <code><a href="../reference/init_session.html">init_session()</a></code>.</p>
 <p><code><a href="../reference/init_session.html">init_session()</a></code> is in the <strong>core.R</strong> file,
-and calls 3 C functions: <code>Cdeallocate_resources()</code>,
-<code>Callocate_resources()</code>, and <code>Cinit_session()</code>.
-You don’t really need to know how these work, but basically they
-allocate/deallocate memory.</p>
+and calls 3 C functions: <code>deallocate_resources()</code>,
+<code>allocate_resources()</code>, and
+<code>init_session_internal()</code>. You don’t really need to know how
+these work, but basically they allocate/deallocate memory.</p>
 <p>You need to call this before you run anything:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -423,11 +423,11 @@ might run faster).</p>
 </h4>
 <p>Once you have run the model simulation, there are several functions
 to access the results.</p>
-<p>The first function is the <code><a href="../reference/Cget_output.html">Cget_output()</a></code> which shows some
+<p>The first function is the <code><a href="../reference/get_output.html">get_output()</a></code> which shows some
 of the overall results:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Basic Output from <code><a href="../reference/Cget_output.html">Cget_output()</a></code>:</strong></p>
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Basic Output from <code><a href="../reference/get_output.html">get_output()</a></code>:</strong></p>
 <table class="table">
 <thead><tr class="header">
 <th>Output</th>
@@ -476,12 +476,12 @@ of the overall results:</p>
 </tr>
 </tbody>
 </table>
-<p>The second function <code><a href="../reference/Cget_output_ex.html">Cget_output_ex()</a></code> returns a very
-large list of results:</p>
+<p>The second function <code><a href="../reference/get_output_ex.html">get_output_ex()</a></code> returns a very large
+list of results:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">resultsExra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">resultsExra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Extended Output from
-<code><a href="../reference/Cget_output_ex.html">Cget_output_ex()</a></code>:</strong></p>
+<code><a href="../reference/get_output_ex.html">get_output_ex()</a></code>:</strong></p>
 <p>The extended output includes detailed breakdowns by: - Year (annual
 results over the time horizon) - Age groups - Sex - COPD severity (GOLD
 stages) - Smoking status</p>
@@ -499,13 +499,13 @@ version of epicR</p>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">resultsExra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">resultsExra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>For some studies, having access to the entire event history of the
 simulated population might be beneficial. Capturing event history is
 possible by setting record_mode as a setting.</p>
-<p><code><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix()</a></code> function returns the events
+<p><code><a href="../reference/get_all_events_matrix.html">get_all_events_matrix()</a></code> function returns the events
 matrix, with every event for every patient. Note that you might need a
 large amount of memory available, if you want to collect event history
 for a large number of patients.</p>
@@ -517,8 +517,8 @@ for a large number of patients.</p>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span>settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_all_events_matrix.html">get_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>You can change the record mode of the simulation by accessing
@@ -546,8 +546,8 @@ different record modes mean:</p>
 </tbody>
 </table>
 <p>As shown in the code snippet above, you can inspect the event matrix
-<code><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix()</a></code> by converting it into a data frame
-using <code>as.data.frame(Cget_all_events_matrix())</code>. This data
+<code><a href="../reference/get_all_events_matrix.html">get_all_events_matrix()</a></code> by converting it into a data frame
+using <code>as.data.frame(get_all_events_matrix())</code>. This data
 frame consists of 33 columns, including:</p>
 <p><strong>Key Event Matrix Columns:</strong></p>
 <table class="table">
@@ -675,7 +675,7 @@ input parameters:</p>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_input.html">get_input</a></span><span class="op">(</span>closed_cohort <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input<span class="op">=</span><span class="va">input</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

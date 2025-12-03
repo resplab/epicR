@@ -249,7 +249,7 @@ by epicR</p>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="va">time_horizon</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_all_events_matrix.html">get_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># checking to make sure event 7 (death by exacerbation) is not included </span></span>
@@ -308,7 +308,7 @@ our target.</p>
 <span><span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">$</span><span class="va">global_parameters</span><span class="op">$</span><span class="va">time_horizon</span> <span class="op">&lt;-</span> <span class="va">time_horizon</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">events5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">events5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_all_events_matrix.html">get_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">events</span><span class="op">$</span><span class="va">event</span><span class="op">)</span></span>
@@ -527,11 +527,11 @@ the intercept accordingly to achieve this target.</p>
 <span>                sex_age <span class="op">=</span> <span class="fl">0</span>,sex_age2 <span class="op">=</span> <span class="fl">0</span>, year <span class="op">=</span> <span class="op">-</span><span class="fl">0.02</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_all_events_matrix.html">get_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># checking the ratio</span></span>
-<span><span class="va">output</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">output</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">smoking_num</span><span class="op">&lt;-</span><span class="va">output</span><span class="op">$</span><span class="va">n_smoking_status_by_ctime</span></span>
 <span><span class="va">never_smoker_ratio</span> <span class="op">&lt;-</span> <span class="va">smoking_num</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">smoking_num</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">never_smoker_ratio</span></span></code></pre></div>

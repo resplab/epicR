@@ -90,8 +90,6 @@ input$values$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.301
 run(input = input$values)
 ```
 
-    ## Using user config file from: /home/runner/.epicR/config/config_canada.json
-
     ## Running EPIC model (with custom input parameters)
 
     ## Record mode: record_mode_none (0)
@@ -104,7 +102,7 @@ run(input = input$values)
     ## [1] 0
 
 ``` r
-output <- Cget_output_ex()
+output <- get_output_ex()
 terminate_session()
 ```
 

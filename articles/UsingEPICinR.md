@@ -129,8 +129,8 @@ results <- simulate(
 # Quick test with fewer agents
 results <- simulate(n_agents = 10000)
 
-# Get extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 print(results$extended)
 
 # Get event history
@@ -150,9 +150,10 @@ when the program is done. Because of this, we have the function
 [`init_session()`](../reference/init_session.md).
 
 [`init_session()`](../reference/init_session.md) is in the **core.R**
-file, and calls 3 C functions: `Cdeallocate_resources()`,
-`Callocate_resources()`, and `Cinit_session()`. You don’t really need to
-know how these work, but basically they allocate/deallocate memory.
+file, and calls 3 C functions: `deallocate_resources()`,
+`allocate_resources()`, and `init_session_internal()`. You don’t really
+need to know how these work, but basically they allocate/deallocate
+memory.
 
 You need to call this before you run anything:
 
@@ -234,14 +235,14 @@ run(max_n_agents = 1000, input = input$values)
 Once you have run the model simulation, there are several functions to
 access the results.
 
-The first function is the [`Cget_output()`](../reference/Cget_output.md)
+The first function is the [`get_output()`](../reference/get_output.md)
 which shows some of the overall results:
 
 ``` r
-results <- Cget_output()
+results <- get_output()
 ```
 
-**Basic Output from [`Cget_output()`](../reference/Cget_output.md):**
+**Basic Output from [`get_output()`](../reference/get_output.md):**
 
 | Output               | Description                         |
 |----------------------|-------------------------------------|
@@ -256,15 +257,15 @@ results <- Cget_output()
 | `total_cost`         | Total healthcare costs              |
 | `total_qaly`         | Total quality-adjusted life years   |
 
-The second function [`Cget_output_ex()`](../reference/Cget_output_ex.md)
+The second function [`get_output_ex()`](../reference/get_output_ex.md)
 returns a very large list of results:
 
 ``` r
-resultsExra <- Cget_output_ex()
+resultsExra <- get_output_ex()
 ```
 
 **Extended Output from
-[`Cget_output_ex()`](../reference/Cget_output_ex.md):**
+[`get_output_ex()`](../reference/get_output_ex.md):**
 
 The extended output includes detailed breakdowns by: - Year (annual
 results over the time horizon) - Age groups - Sex - COPD severity (GOLD
@@ -285,8 +286,8 @@ init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
 run(input=input$values)
-results <- Cget_output()
-resultsExra <- Cget_output_ex()
+results <- get_output()
+resultsExra <- get_output_ex()
 terminate_session()
 ```
 
@@ -294,7 +295,7 @@ For some studies, having access to the entire event history of the
 simulated population might be beneficial. Capturing event history is
 possible by setting record_mode as a setting.
 
-[`Cget_all_events_matrix()`](../reference/Cget_all_events_matrix.md)
+[`get_all_events_matrix()`](../reference/get_all_events_matrix.md)
 function returns the events matrix, with every event for every patient.
 Note that you might need a large amount of memory available, if you want
 to collect event history for a large number of patients.
@@ -307,8 +308,8 @@ settings$record_mode <- 2
 settings$n_base_agents <- 1e4
 init_session(settings = settings)
 run()
-results <- Cget_output()
-events <- as.data.frame(Cget_all_events_matrix())
+results <- get_output()
+events <- as.data.frame(get_all_events_matrix())
 head(events)
 terminate_session()
 ```
@@ -326,10 +327,10 @@ modes mean:
 | 2    | Complete event history for all agents (high memory usage) |
 
 As shown in the code snippet above, you can inspect the event matrix
-[`Cget_all_events_matrix()`](../reference/Cget_all_events_matrix.md) by
+[`get_all_events_matrix()`](../reference/get_all_events_matrix.md) by
 converting it into a data frame using
-`as.data.frame(Cget_all_events_matrix())`. This data frame consists of
-33 columns, including:
+`as.data.frame(get_all_events_matrix())`. This data frame consists of 33
+columns, including:
 
 **Key Event Matrix Columns:**
 
@@ -380,6 +381,6 @@ library(epicR)
 input <- get_input(closed_cohort = 1)$values
 init_session()
 run(input=input)
-Cget_output()
+get_output()
 terminate_session()
 ```

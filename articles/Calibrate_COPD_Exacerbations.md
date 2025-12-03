@@ -122,10 +122,10 @@ input$values$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.3
 
 # Run the model
 run(input = input$values)
-op <- Cget_output()
-output_ex <- Cget_output_ex()
+op <- get_output()
+output_ex <- get_output_ex()
 
-all_events <- as.data.frame(Cget_all_events_matrix())
+all_events <- as.data.frame(get_all_events_matrix())
 exac_events <- subset(all_events, event == EVENT_EXACERBATION)
 exit_events <- subset(all_events, event == EVENT_END)
 

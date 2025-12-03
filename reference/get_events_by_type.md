@@ -1,10 +1,14 @@
-# Returns certain events by type
+# Returns all events of a certain type.
+
+Returns all events of a certain type.
 
 Returns certain events by type
 
 ## Usage
 
 ``` r
+get_events_by_type(event_type)
+
 get_events_by_type(event_type)
 ```
 
@@ -15,5 +19,7 @@ get_events_by_type(event_type)
   event_type number
 
 ## Value
+
+all events of the type `event_type`
 
 dataframe consisting all events of the type `event_type`

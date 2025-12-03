@@ -248,10 +248,14 @@ results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
 # Quick test with fewer agents (faster)
 results <- simulate(n_agents = 10000)
 
-# Get both basic and extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 print(results$basic)
-print(results$extended)
+print(results$extended)  # Included by default
+
+# Get basic output only (faster, less memory)
+results <- simulate(extended_results = FALSE)
+print(results$basic)
 
 # Get event history (automatically enables event recording)
 results <- simulate(return_events = TRUE)
@@ -262,7 +266,7 @@ results <- simulate(
   jurisdiction = "us",
   time_horizon = 15,
   n_agents = 50000,
-  return_extended = TRUE,
+  extended_results = TRUE,  # TRUE by default
   return_events = TRUE
 )
 # Returns: results$basic, results$extended, results$events
@@ -281,10 +285,10 @@ init_session()
 
 # Run multiple simulations
 run()
-results1 <- Cget_output()
+results1 <- get_output()
 
 run()  # run again with same session
-results2 <- Cget_output()
+results2 <- get_output()
 
 # Clean up when done
 terminate_session()
@@ -297,7 +301,7 @@ init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
 run(input = input$values)
-results <- Cget_output()
+results <- get_output()
 terminate_session()
 ```
 
@@ -350,7 +354,7 @@ modify model parameters without changing the package code.
 - **Automatic Detection**: The package automatically uses your custom
   configs
 - **Simple Reset**: Return to defaults anytime with
-  `reset_user_configs()`
+  [`reset_user_configs()`](reference/reset_user_configs.md)
 
 #### Configuration Management Functions:
 
@@ -466,8 +470,8 @@ possible by setting `record_mode` as a `setting`.
     settings$n_base_agents <- 1e4
     init_session(settings = settings)
     run()
-    results <- Cget_output()
-    events <- as.data.frame(Cget_all_events_matrix())
+    results <- get_output()
+    events <- as.data.frame(get_all_events_matrix())
     head(events)
     terminate_session()
 
@@ -501,7 +505,7 @@ input parameters.
     input <- get_input(closed_cohort = 1)$values
     init_session()
     run(input=input)
-    Cget_output()
+    get_output()
     terminate_session()
 
 You can also combine jurisdiction and closed-cohort parameters:
@@ -551,45 +555,6 @@ Model of COPD for Canada. Medical Decision Making.
 
 ## All functions
 
-- [`Cget_agent_events()`](Cget_agent_events.md) : Returns all events of
-  an agent.
-
-- [`Cget_agent_size_bytes()`](Cget_agent_size_bytes.md) : Returns the
-  size of agent struct in bytes
-
-- [`Cget_all_events()`](Cget_all_events.md) : Returns all events.
-
-- [`Cget_all_events_matrix()`](Cget_all_events_matrix.md) : Returns a
-  matrix containing all events
-
-- [`Cget_event()`](Cget_event.md) : Returns the events stack.
-
-- [`Cget_events_by_type()`](Cget_events_by_type.md) : Returns all events
-  of a certain type.
-
-- [`Cget_inputs()`](Cget_inputs.md) : Returns inputs
-
-- [`Cget_n_events()`](Cget_n_events.md) : Returns total number of
-  events.
-
-- [`Cget_output()`](Cget_output.md) : Main outputs of the current run.
-
-- [`Cget_output_ex()`](Cget_output_ex.md) : Extra outputs from the model
-
-- [`Cget_progress()`](Cget_progress.md) : Returns current simulation
-  progress.
-
-- [`Cget_runtime_stats()`](Cget_runtime_stats.md) : Returns run time
-  stats.
-
-- [`Cget_settings()`](Cget_settings.md) : Returns current settings.
-
-- [`Cget_smith()`](Cget_smith.md) : Returns agent Smith.
-
-- [`Cset_input_var()`](Cset_input_var.md) : Sets input variables.
-
-- [`Cset_settings_var()`](Cset_settings_var.md) : Sets model settings.
-
 - [`calc_event_stack_size()`](calc_event_stack_size.md) : Calculate
   recommended event_stack_size for a given number of agents
 
@@ -604,6 +569,12 @@ Model of COPD for Canada. Medical Decision Making.
 
 - [`calibrate_smoking()`](calibrate_smoking.md) : Calibrates smoking
 
+- [`copy_configs_to_user()`](copy_configs_to_user.md) : Copy default
+  configs to user directory
+
+- [`epicR-config`](epicR-config.md) [`configuration`](epicR-config.md)
+  [`config`](epicR-config.md) : epicR Configuration Management
+
 - [`epicR-package`](epicR-package.md) [`epicR`](epicR-package.md) :
 
   `epicR` package
@@ -616,13 +587,16 @@ Model of COPD for Canada. Medical Decision Making.
 
 - [`express_matrix()`](express_matrix.md) : Express matrix.
 
-- [`get_agent_events()`](get_agent_events.md) : Returns events specific
-  to an agent.
+- [`get_agent_events()`](get_agent_events.md) : Returns all events of an
+  agent.
 
-- [`get_agent_size_bytes()`](get_agent_size_bytes.md) : Get size of
-  agent struct in bytes (from C code)
+- [`get_agent_size_bytes()`](get_agent_size_bytes.md) : Returns the size
+  of agent struct in bytes
 
 - [`get_all_events()`](get_all_events.md) : Returns all events.
+
+- [`get_all_events_matrix()`](get_all_events_matrix.md) : Returns a
+  matrix containing all events
 
 - [`get_available_memory()`](get_available_memory.md) : Get available
   system memory (platform-specific)
@@ -632,27 +606,59 @@ Model of COPD for Canada. Medical Decision Making.
 
 - [`get_errors()`](get_errors.md) : Returns errors
 
-- [`get_events_by_type()`](get_events_by_type.md) : Returns certain
-  events by type
+- [`get_event()`](get_event.md) : Returns the events stack.
+
+- [`get_events_by_type()`](get_events_by_type.md) : Returns all events
+  of a certain type.
 
 - [`get_input()`](get_input.md) : Returns a list of default model input
   values
 
+- [`get_inputs()`](get_inputs.md) : Returns inputs
+
 - [`get_list_elements()`](get_list_elements.md) : Get list elements
+
+- [`get_n_events()`](get_n_events.md) : Returns total number of events.
+
+- [`get_output()`](get_output.md) : Main outputs of the current run.
+
+- [`get_output_ex()`](get_output_ex.md) : Extra outputs from the model
+
+- [`get_progress()`](get_progress.md) : Returns current simulation
+  progress.
+
+- [`get_runtime_stats()`](get_runtime_stats.md) : Returns run time
+  stats.
 
 - [`get_sample_output()`](get_sample_output.md) : Returns a sample
   output for a given year and gender.
 
+- [`get_settings()`](get_settings.md) : Returns current settings.
+
+- [`get_smith()`](get_smith.md) : Returns agent Smith.
+
+- [`get_user_config_dir()`](get_user_config_dir.md) : Get user config
+  directory path
+
 - [`init_session()`](init_session.md) : Initializes a model. Allocates
   memory to the C engine.
 
+- [`list_available_jurisdictions()`](list_available_jurisdictions.md) :
+  List available config jurisdictions
+
 - [`mvrnormArma()`](mvrnormArma.md) : Samples from a multivariate normal
+
+- [`open_user_config_dir()`](open_user_config_dir.md) : Open user config
+  directory in file explorer
 
 - [`report_COPD_by_ctime()`](report_COPD_by_ctime.md) : Reports COPD
   related stats.
 
 - [`report_exacerbation_by_time()`](report_exacerbation_by_time.md) :
   Reports exacerbation-related stats.
+
+- [`reset_user_configs()`](reset_user_configs.md) : Reset user configs
+  to package defaults
 
 - [`resume()`](resume.md) : Resumes running of model.
 
@@ -664,6 +670,10 @@ Model of COPD for Canada. Medical Decision Making.
 - [`sanity_check()`](sanity_check.md) : Basic tests of model
   functionality. Serious issues if the test does not pass.
 
+- [`set_input_var()`](set_input_var.md) : Sets input variables.
+
+- [`set_settings_var()`](set_settings_var.md) : Sets model settings.
+
 - [`simulate()`](simulate.md) : Convenience function: run simulation and
   return results
 
@@ -673,8 +683,13 @@ Model of COPD for Canada. Medical Decision Making.
 - [`test_case_detection()`](test_case_detection.md) : Returns results of
   Case Detection strategies
 
+- [`user_config_exists()`](user_config_exists.md) : Check if user config
+  exists
+
 - [`validate_COPD()`](validate_COPD.md) : Returns results of validation
   tests for COPD
+
+- [`validate_config()`](validate_config.md) : Validate a config file
 
 - [`validate_diagnosis()`](validate_diagnosis.md) : Returns results of
   validation tests for diagnosis

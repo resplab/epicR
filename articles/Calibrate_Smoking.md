@@ -169,8 +169,6 @@ input$values$smoking$mortality_factor_former <- t(as.matrix(c(age40to49 = 1.31, 
 run(input = input$values)
 ```
 
-    ## Using user config file from: /home/runner/.epicR/config/config_canada.json
-
     ## Running EPIC model (with custom input parameters)
 
     ## Record mode: record_mode_none (0)
@@ -183,7 +181,7 @@ run(input = input$values)
     ## [1] 0
 
 ``` r
-output <- Cget_output_ex()
+output <- get_output_ex()
 terminate_session()
 ```
 

@@ -69,9 +69,13 @@ results <- simulate(
 # Quick test with fewer agents (faster for testing)
 results <- simulate(n_agents = 10000)
 
-# Get extended results (includes both basic and extended)
-results <- simulate(return_extended = TRUE)
-print(results$extended)
+# By default, you get both basic and extended results
+results <- simulate()
+print(results$basic)
+print(results$extended)  # Included by default
+
+# Get basic output only (faster, less memory)
+results <- simulate(extended_results = FALSE)
 
 # Get event history (automatically sets record_mode)
 results <- simulate(return_events = TRUE)
@@ -198,8 +202,8 @@ estimate_memory_required(n_agents = 1e6, record_mode = 0, time_horizon = 20)
 For more detailed results by year and demographics:
 
 ``` r
-# Get both basic and extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 
 # Access basic results
 print(results$basic)
@@ -224,10 +228,10 @@ results <- simulate(
 # Access events data frame
 head(results$events)
 
-# Can also get basic and extended results together
+# Get everything including events
 results <- simulate(
   n_agents = 1e4,
-  return_extended = TRUE,
+  extended_results = TRUE,  # TRUE by default
   return_events = TRUE
 )
 # Returns: results$basic, results$extended, results$events
@@ -320,10 +324,10 @@ init_session()
 
 # Run multiple simulations with same session
 run()
-results1 <- Cget_output()
+results1 <- get_output()
 
 run()  # run again with same session
-results2 <- Cget_output()
+results2 <- get_output()
 
 # Clean up when done
 terminate_session()
@@ -345,7 +349,7 @@ input$values$agent$p_female <- 0.55
 # Run with custom inputs
 init_session()
 run(input = input$values)
-results <- Cget_output()
+results <- get_output()
 terminate_session()
 ```
 
@@ -357,7 +361,7 @@ Always wrap manual session management in error handling:
 tryCatch({
   init_session()
   run()
-  results <- Cget_output()
+  results <- get_output()
 }, finally = {
   terminate_session()
 })

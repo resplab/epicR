@@ -332,10 +332,10 @@ visualizations for each validation target.</p>
 <span></span>
 <span><span class="co"># Run the model</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">output_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output_ex.html">Cget_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">output_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output_ex.html">get_output_ex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">all_events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/Cget_all_events_matrix.html">Cget_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">all_events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_all_events_matrix.html">get_all_events_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">exac_events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">all_events</span>, <span class="va">event</span> <span class="op">==</span> <span class="va">EVENT_EXACERBATION</span><span class="op">)</span></span>
 <span><span class="va">exit_events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">all_events</span>, <span class="va">event</span> <span class="op">==</span> <span class="va">EVENT_END</span><span class="op">)</span></span>
 <span></span>

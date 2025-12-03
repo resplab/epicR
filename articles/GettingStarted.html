@@ -256,9 +256,13 @@ real-time progress bar, elapsed time, and status messages):</p>
 <span><span class="co"># Quick test with fewer agents (faster for testing)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>n_agents <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Get extended results (includes both basic and extended)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span></span>
+<span><span class="co"># By default, you get both basic and extended results</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">extended</span><span class="op">)</span>  <span class="co"># Included by default</span></span>
+<span></span>
+<span><span class="co"># Get basic output only (faster, less memory)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>extended_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get event history (automatically sets record_mode)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_events <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -421,8 +425,8 @@ for common customizations:</p>
 </h3>
 <p>For more detailed results by year and demographics:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get both basic and extended results</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span>return_extended <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># By default, you get both basic and extended results</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Access basic results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">basic</span><span class="op">)</span></span>
@@ -447,10 +451,10 @@ for common customizations:</p>
 <span><span class="co"># Access events data frame</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">events</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Can also get basic and extended results together</span></span>
+<span><span class="co"># Get everything including events</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate.html">simulate</a></span><span class="op">(</span></span>
 <span>  n_agents <span class="op">=</span> <span class="fl">1e4</span>,</span>
-<span>  return_extended <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  extended_results <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># TRUE by default</span></span>
 <span>  return_events <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co"># Returns: results$basic, results$extended, results$events</span></span></code></pre></div>
@@ -582,10 +586,10 @@ parameters), you can manage sessions manually:</p>
 <span></span>
 <span><span class="co"># Run multiple simulations with same session</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># run again with same session</span></span>
-<span><span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Clean up when done</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -606,7 +610,7 @@ parameters), you can manage sessions manually:</p>
 <span><span class="co"># Run with custom inputs</span></span>
 <span><span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -617,7 +621,7 @@ parameters), you can manage sessions manually:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/init_session.html">init_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="../reference/run.html">run</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Cget_output.html">Cget_output</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_output.html">get_output</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span>, finally <span class="op">=</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/terminate_session.html">terminate_session</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
