@@ -12,7 +12,7 @@ simulate(
   input = NULL,
   settings = NULL,
   jurisdiction = "canada",
-  time_horizon = 20,
+  time_horizon = NULL,
   n_agents = NULL,
   extended_results = TRUE,
   return_events = FALSE,
@@ -36,7 +36,7 @@ simulate(
 
 - time_horizon:
 
-  Model time horizon in years (default: 20)
+  Model time horizon in years (default: uses config file value)
 
 - n_agents:
 

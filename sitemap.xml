@@ -31,6 +31,7 @@
 <url><loc>/reference/get_all_events.html</loc></url>
 <url><loc>/reference/get_all_events_matrix.html</loc></url>
 <url><loc>/reference/get_available_memory.html</loc></url>
+<url><loc>/reference/get_default_model_input.html</loc></url>
 <url><loc>/reference/get_default_settings.html</loc></url>
 <url><loc>/reference/get_errors.html</loc></url>
 <url><loc>/reference/get_event.html</loc></url>
@@ -54,6 +55,7 @@
 <url><loc>/reference/open_user_config_dir.html</loc></url>
 <url><loc>/reference/report_COPD_by_ctime.html</loc></url>
 <url><loc>/reference/report_exacerbation_by_time.html</loc></url>
+<url><loc>/reference/reset_model_input.html</loc></url>
 <url><loc>/reference/reset_user_configs.html</loc></url>
 <url><loc>/reference/resume.html</loc></url>
 <url><loc>/reference/run.html</loc></url>

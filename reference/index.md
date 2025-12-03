@@ -104,6 +104,9 @@
 - [`report_exacerbation_by_time()`](report_exacerbation_by_time.md) :
   Reports exacerbation-related stats.
 
+- [`reset_model_input()`](reset_model_input.md) : Reset the cached model
+  input
+
 - [`reset_user_configs()`](reset_user_configs.md) : Reset user configs
   to package defaults
 
