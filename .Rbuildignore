@@ -22,3 +22,14 @@
 ^claude\.md$
 ^compare_branches\.qmd$
 ^epicR\.Rcheck$
+^.*_COMPLETE\.md$
+^.*_FEATURE\.md$
+^.*_UPDATE\.md$
+^.*_GUIDE\.md$
+^.*_PLAN\.md$
+^.*_PROGRESS\.md$
+^.*_SUMMARY\.md$
+^QUICK_REFERENCE\.md$
+^SEED_REPRODUCIBILITY\.md$
+^GITHUB_CI_FIX\.md$
+^examples$
