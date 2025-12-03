@@ -4,7 +4,13 @@
 \alias{run}
 \title{Runs the model. Auto-initializes if no session is active.}
 \usage{
-run(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE)
+run(
+  max_n_agents = NULL,
+  input = NULL,
+  settings = NULL,
+  auto_terminate = FALSE,
+  seed = NULL
+)
 }
 \arguments{
 \item{max_n_agents}{maximum number of agents}
@@ -14,6 +20,8 @@ run(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE)
 \item{settings}{customized settings (only used if auto-initializing)}
 
 \item{auto_terminate}{whether to automatically terminate session after run (default: FALSE)}
+
+\item{seed}{Random seed for reproducibility (optional). If provided, ensures identical results across runs}
 }
 \value{
 simulation results if successful
@@ -35,5 +43,8 @@ init_session()
 run()
 run()  # run again with same session
 terminate_session()
+
+# With reproducible results
+run(seed = 123)
 }
 }

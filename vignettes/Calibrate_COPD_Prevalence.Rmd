@@ -68,7 +68,7 @@ input$values$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.301
 
 # Run EPIC simulation
 run(input = input$values)
-output <- Cget_output_ex()
+output <- get_output_ex()
 terminate_session()
 
 ```

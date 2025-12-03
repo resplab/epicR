@@ -381,7 +381,6 @@ struct output {
   double total_pack_years;
   int total_exac[4];
   double total_exac_time[4];
-  int total_doctor_visit[2];
   double total_cost;
   double total_qaly;
   double total_diagnosed_time;

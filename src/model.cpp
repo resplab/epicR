@@ -65,7 +65,7 @@ medication_classes<-c(
 //' @return 0 if successful.
 //' @export
 // [[Rcpp::export]]
-int Cset_settings_var(std::string name,NumericVector value)
+int set_settings_var(std::string name,NumericVector value)
 {
   if(name=="record_mode") {settings.record_mode=value[0]; return(0);}
   if(name=="events_to_record")
@@ -95,7 +95,7 @@ int Cset_settings_var(std::string name,NumericVector value)
 //' @return current settings.
 //' @export
 // [[Rcpp::export]]
-List Cget_settings()
+List get_settings()
 {
   return Rcpp::List::create(
     Rcpp::Named("record_mode")=settings.record_mode,
@@ -117,7 +117,7 @@ List Cget_settings()
 //' @return size of agent struct in bytes
 //' @export
 // [[Rcpp::export]]
-int Cget_agent_size_bytes()
+int get_agent_size_bytes()
 {
   return sizeof(agent);
 }
@@ -126,7 +126,7 @@ int Cget_agent_size_bytes()
 //' @return agent size as well as memory and random variable fill stats.
 //' @export
 // [[Rcpp::export]]
-List Cget_runtime_stats()
+List get_runtime_stats()
 {
   return Rcpp::List::create(
     Rcpp::Named("agent_size")=runtime_stats.agent_size,
@@ -142,7 +142,7 @@ List Cget_runtime_stats()
 //' @return Number of agents processed so far (last_id).
 //' @export
 // [[Rcpp::export]]
-int Cget_progress()
+int get_progress()
 {
   return last_id;
 }
@@ -242,7 +242,7 @@ List get_agent(int id, agent agent_pointer[])
 
 
 // [[Rcpp::export]]
-List Cget_agent(long id)
+List get_agent(long id)
 {
   return(get_agent(id,agent_stack));
 }
@@ -251,7 +251,7 @@ List Cget_agent(long id)
 //' @return agent smith.
 //' @export
 // [[Rcpp::export]]
-List Cget_smith()
+List get_smith()
 {
   return(get_agent(&smith));
 }
@@ -851,7 +851,7 @@ double update_prevalent_diagnosis(agent *ag)
  *       develop COPD during simulation via the event_COPD event.
  *
  * @see event_COPD_tte() for incident COPD handling
- * @see Cmodel() for how agents are created during simulation
+ * @see model_run() for how agents are created during simulation
  */
 agent *create_agent(agent *ag,int id)
 {
@@ -1138,7 +1138,7 @@ if(id<settings.n_base_agents)
 
 
 // [[Rcpp::export]]
-int Ccreate_agents()
+int create_agents()
 {
   if(agent_stack==NULL) return(-1);
   for(int i=0;i<settings.agent_stack_size;i++)
@@ -1184,19 +1184,19 @@ int Ccreate_agents()
  *
  * - Must be called before running the simulation
  * - Called automatically by init_session() in R
- * - Call Cdeallocate_resources() when done to free memory
+ * - Call deallocate_resources() when done to free memory
  * - Can be called multiple times (will realloc if buffers exist)
  *
  * @warning Buffers start with pointers set to trigger immediate refill
  *
- * @see Cdeallocate_resources() for cleanup
- * @see Cinit_session() which calls this function
+ * @see deallocate_resources() for cleanup
+ * @see init_session_internal() which calls this function
  */
 // Forward declaration for use in error cleanup
-int Cdeallocate_resources();
+int deallocate_resources();
 
 // [[Rcpp::export]]
-int Callocate_resources()
+int allocate_resources()
 {
   double *temp_double;
   agent *temp_agent;
@@ -1254,7 +1254,7 @@ int Callocate_resources()
 
 allocation_failed:
   // Clean up all allocated memory on failure
-  Cdeallocate_resources();
+  deallocate_resources();
   return(ERR_MEMORY_ALLOCATION_FAILED);
 }
 
@@ -1279,16 +1279,16 @@ List Cget_pointers()
  *
  * @return 0 on success
  *
- * Frees all memory allocated by Callocate_resources().
+ * Frees all memory allocated by allocate_resources().
  * Safe to call even if resources were not allocated (checks for NULL).
  *
  * @note Called automatically by terminate_session() in R
  * @note Uses try-catch to handle any deallocation errors gracefully
  *
- * @see Callocate_resources() for allocation
+ * @see allocate_resources() for allocation
  */
 // [[Rcpp::export]]
-int Cdeallocate_resources()
+int deallocate_resources()
 {
   try
   {
@@ -1316,13 +1316,13 @@ int Cdeallocate_resources()
  * 4. Sets calendar_time to 0
  * 5. Resets last_id (agent counter) to 0
  *
- * @note Does NOT allocate memory - call Callocate_resources() first
+ * @note Does NOT allocate memory - call allocate_resources() first
  * @note Called by init_session() in R after memory allocation
  *
- * @see init_session() R wrapper that calls Cdeallocate/Callocate/Cinit_session
+ * @see init_session() R wrapper that calls Cdeallocate/Callocate/init_session_internal
  */
 // [[Rcpp::export]]
-int Cinit_session()
+int init_session_internal()
 {
   event_stack_pointer=0;
 
@@ -1408,12 +1408,12 @@ int Cinit_session()
  * @example
  * // Basic usage from R:
  * // init_session()
- * // run()  # which calls Cmodel internally
- * // Cget_output()
+ * // run()  # which calls model_run internally
+ * // get_output()
  * // terminate_session()
  */
 // [[Rcpp::export]]
-int Cmodel(int max_n_agents)
+int model_run(int max_n_agents)
 {
   if(max_n_agents<1) return(0);
 
@@ -1452,7 +1452,7 @@ int Cmodel(int max_n_agents)
         last_percent_reported = milestone;
       }
     }
-    //calendar_time=0; NO! calendar_time is set to zero at init_session. Cmodel should be resumable;
+    //calendar_time=0; NO! calendar_time is set to zero at init_session. model_run should be resumable;
 
 
     if(settings.random_number_agent_refill==1)

@@ -24,7 +24,7 @@ sanity_check <- function() {
   for (el in get_list_elements(input$cost)) input$cost[[el]] <- input$cost[[el]] * 0
   input$medication$medication_costs <- 0 * input$medication$medication_costs
   res <- run(100, input = input)
-  if (Cget_output()$total_cost != 0)
+  if (get_output()$total_cost != 0)
     message("Test failed!") else message("Test passed!")
   terminate_session()
 
@@ -36,9 +36,9 @@ sanity_check <- function() {
   input$medication$medication_utility <- input$medication$medication_utility*0
   input$global_parameters$discount_qaly <- input$global_parameters$discount_qaly*0
   res <- run(100, input = input)
-  if (Cget_output()$total_qaly != 0) {
+  if (get_output()$total_qaly != 0) {
     message("Test failed!")
-    message(Cget_output()$total_qaly)} else message("Test passed!")
+    message(get_output()$total_qaly)} else message("Test passed!")
   terminate_session()
 
   message("test 3: one all utilities ad get one QALY without discount\n")
@@ -49,7 +49,7 @@ sanity_check <- function() {
   for (el in get_list_elements(input$utility)) input$utility[[el]] <- input$utility[[el]] * 0 + 1
   input$utility$exac_dutil = input$utility$exac_dutil * 0
   res <- run(100, input = input)
-  if (Cget_output()$total_qaly/Cget_output()$cumul_time != 1)
+  if (get_output()$total_qaly/get_output()$cumul_time != 1)
     message("Test failed!") else message("Test passed!")
   terminate_session()
 
@@ -60,8 +60,8 @@ sanity_check <- function() {
   input$agent$p_bgd_by_sex <- input$agent$p_bgd_by_sex * 0
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
   res <- run(100, input = input)
-  if (Cget_output()$n_deaths != 0) {
-    message (Cget_output()$n_deaths)
+  if (get_output()$n_deaths != 0) {
+    message (get_output()$n_deaths)
     stop("Test failed!")
   } else message("Test passed!")
   terminate_session()
@@ -119,7 +119,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
     return()
   }
 
-  n_y1_agents <- sum(Cget_output_ex()$n_alive_by_ctime_sex[1, ])
+  n_y1_agents <- sum(get_output_ex()$n_alive_by_ctime_sex[1, ])
   legend("topright", c("Predicted", "Simulated"), lty = c(1, 1), col = c("black", "red"))
 
   message("And the black one is the observed (simulated) growth\n")
@@ -130,7 +130,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   CanSim <- CanSim[, 3:51]
   CanSim <- colSums (CanSim)
 
-  df <- data.frame(Year = c(2015:(2015 + model_input$values$global_parameters$time_horizon-1)), Predicted = CanSim[1:model_input$values$global_parameters$time_horizon] * 1000, Simulated = rowSums(Cget_output_ex()$n_alive_by_ctime_sex)/ settings$n_base_agents * 18179400) #rescaling population. There are about 18.6 million Canadians above 40
+  df <- data.frame(Year = c(2015:(2015 + model_input$values$global_parameters$time_horizon-1)), Predicted = CanSim[1:model_input$values$global_parameters$time_horizon] * 1000, Simulated = rowSums(get_output_ex()$n_alive_by_ctime_sex)/ settings$n_base_agents * 18179400) #rescaling population. There are about 18.6 million Canadians above 40
   message ("Here's simulated vs. predicted population table:")
   print(df)
   dfm <- reshape2::melt(df[,c('Year','Predicted','Simulated')], id.vars = 1)
@@ -145,14 +145,14 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
   if (savePlots) ggsave(paste0("PopulationGrowth",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
 
 
-  pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(Cget_output_ex()$n_alive_by_ctime_age[1, ]) -
+  pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(get_output_ex()$n_alive_by_ctime_age[1, ]) -
                       input$global_parameters$age0)
 
-  for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- Cget_output_ex()$n_alive_by_ctime_age[year +1, -(1:input$global_parameters$age0)]
+  for (year in 0:model_input$values$global_parameters$time_horizon - 1) pyramid[1 + year, ] <- get_output_ex()$n_alive_by_ctime_age[year +1, -(1:input$global_parameters$age0)]
 
 
-  message("Also, the ratio of the expected to observed population in years 10 and 20 are ", sum(Cget_output_ex()$n_alive_by_ctime_sex[10,
-                                                                                                                                  ])/x[10, 2], " and ", sum(Cget_output_ex()$n_alive_by_ctime_sex[20, ])/x[20, 2])
+  message("Also, the ratio of the expected to observed population in years 10 and 20 are ", sum(get_output_ex()$n_alive_by_ctime_sex[10,
+                                                                                                                                  ])/x[10, 2], " and ", sum(get_output_ex()$n_alive_by_ctime_sex[20, ])/x[20, 2])
   petoc()
 
   message("Now evaluating the population pyramid\n")
@@ -245,7 +245,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   message("running the model\n")
 
   run(input = input)
-  dataS <- Cget_all_events_matrix()
+  dataS <- get_all_events_matrix()
   dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
   age_list <- list(a1 = c(35, 45), a2 = c(45, 65), a3 = c(65, 111))
   tab2 <- tab1
@@ -268,7 +268,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   message("According to Table 2.1 of this report (see the extracted data in data folder): http://www.tobaccoreport.ca/2015/TobaccoUseinCanada_2015.pdf, the prevalence of current smoker is declining by around 3.8% per year\n")
   petoc()
 
-  op_ex <- Cget_output_ex()
+  op_ex <- get_output_ex()
   smoker_prev <- op_ex$n_current_smoker_by_ctime_sex/op_ex$n_alive_by_ctime_sex
   smoker_packyears <- op_ex$sum_pack_years_by_ctime_sex/op_ex$n_alive_by_ctime_sex
 
@@ -303,7 +303,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
   plot(plot_smoking_status_ctime ) #plot needs to be showing
 
   # Plotting pack-years over time
-  dataS <- as.data.frame (Cget_all_events_matrix())
+  dataS <- as.data.frame (get_all_events_matrix())
   dataS <- subset (dataS, (event == 0 | event == 1 ))
   data_all <- dataS
   dataS <- subset (dataS, pack_years != 0)
@@ -393,7 +393,7 @@ sanity_COPD <- function() {
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  message("The model is reporting it has got that many COPDs: ", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, " agents.\n")
+  message("The model is reporting it has got that many COPDs: ", get_output()$n_COPD, " out of ", get_output()$n_agents, " agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
@@ -407,7 +407,7 @@ sanity_COPD <- function() {
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs:", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
@@ -421,7 +421,7 @@ sanity_COPD <- function() {
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
 
   run(input = input)
-  message("The model is reporting it has got that many COPDs:", Cget_output()$n_COPD, " out of ", Cget_output()$n_agents, "agents.\n")
+  message("The model is reporting it has got that many COPDs:", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
   dataS <- get_events_by_type(events["event_start"])
   message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
   dataS <- get_events_by_type(events["event_end"])
@@ -464,9 +464,9 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
 
   message("working...\n")
   run(input = input)
-  op <- Cget_output()
-  opx <- Cget_output_ex()
-  data <- as.data.frame(Cget_all_events_matrix())
+  op <- get_output()
+  opx <- get_output_ex()
+  data <- as.data.frame(get_all_events_matrix())
   dataS <- data[which(data[, "event"] == events["event_start"]), ]
   dataE <- data[which(data[, "event"] == events["event_end"]), ]
 
@@ -566,11 +566,11 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
   }
 
   run(input = input)
-  op <- Cget_output()
-  op_ex <- Cget_output_ex()
+  op <- get_output()
+  op_ex <- get_output_ex()
 
-  exac_dutil<-Cget_inputs()$utility$exac_dutil
-  exac_dcost<-Cget_inputs()$cost$exac_dcost
+  exac_dutil<-get_inputs()$utility$exac_dutil
+  exac_dcost<-get_inputs()$cost$exac_dcost
 
 
   total_qaly<-colSums(op_ex$cumul_qaly_gold_ctime)[2:5]
@@ -640,19 +640,19 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
   message("working...\n")
   res <- run(input = input)
 
-  message("Mortality rate was", Cget_output()$n_death/Cget_output()$cumul_time, "\n")
+  message("Mortality rate was", get_output()$n_death/get_output()$cumul_time, "\n")
 
 
-  if (Cget_output()$n_death > 0) {
+  if (get_output()$n_death > 0) {
 
-    ratio<-(Cget_output_ex()$n_death_by_age_sex[41:111,]/Cget_output_ex()$sum_time_by_age_sex[41:111,])/model_input$values$agent$p_bgd_by_sex[41:111,]
+    ratio<-(get_output_ex()$n_death_by_age_sex[41:111,]/get_output_ex()$sum_time_by_age_sex[41:111,])/model_input$values$agent$p_bgd_by_sex[41:111,]
     plot(40:110,ratio[,1],type='l',col='blue',xlab="age",ylab="Ratio", ylim = c(0, 4))
     legend("topright",c("male","female"),lty=c(1,1),col=c("blue","red"))
     lines(40:110,ratio[,2],type='l',col='red')
     title(cex.main=0.5,"Ratio of simulated to expected (life table) mortality, by sex and age")
 
 
-    difference <- (Cget_output_ex()$n_death_by_age_sex[41:91, ]/Cget_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$values$agent$p_bgd_by_sex[41:91,
+    difference <- (get_output_ex()$n_death_by_age_sex[41:91, ]/get_output_ex()$sum_time_by_age_sex[41:91, ]) - model_input$values$agent$p_bgd_by_sex[41:91,
                                                                                                                                                        ]
     plot(40:90, difference[, 1], type = "l", col = "blue", xlab = "age", ylab = "Difference", ylim = c(-.1, .1))
     legend("topright", c("male", "female"), lty = c(1, 1), col = c("blue", "red"))
@@ -692,7 +692,7 @@ validate_lung_function <- function() {
 
   run(input = input)
 
-  all_events <- as.data.frame(Cget_all_events_matrix())
+  all_events <- as.data.frame(get_all_events_matrix())
 
   COPD_events <- which(all_events[, "event"] == events["event_COPD"])
   start_events <- which(all_events[, "event"] == events["event_start"])
@@ -757,11 +757,11 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   if (is.null(input)) {input <- model_input$values}
 
   run(input = input)
-  op <- Cget_output()
-  output_ex <- Cget_output_ex()
+  op <- get_output()
+  output_ex <- get_output_ex()
 
 
-  all_events <- as.data.frame(Cget_all_events_matrix())
+  all_events <- as.data.frame(get_all_events_matrix())
   exac_events <- subset(all_events, event == 5)
   exit_events <- subset(all_events, event == 14)
 
@@ -1030,7 +1030,7 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
   input <- model_input$values  #We can work with local copy more conveniently and submit it to the Run function
 
   run(input = input)
-  events <- as.data.frame(Cget_all_events_matrix())
+  events <- as.data.frame(get_all_events_matrix())
   terminate_session()
 
   cohort <- subset(events, ((event==7) | (event==13) | (event==14)))
@@ -1114,8 +1114,8 @@ validate_diagnosis <- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   message("Here are the proportion of COPD patients diagnosed over model time: \n")
 
@@ -1186,8 +1186,8 @@ validate_gpvisits <- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   message("\n")
   message("Here is the Average number of GP visits by sex:\n")
@@ -1283,8 +1283,8 @@ validate_symptoms <- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   # COUGH
   message("\n")
@@ -1418,8 +1418,8 @@ validate_treatment<- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   message("\n")
   message("Exacerbation rate for undiagnosed COPD patients.\n")
@@ -1472,8 +1472,8 @@ validate_treatment<- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs_nt <- Cget_inputs()
-  output_ex_nt <- Cget_output_ex()
+  inputs_nt <- get_inputs()
+  output_ex_nt <- get_output_ex()
 
   exac.diff <- data.frame(cbind(1:inputs_nt$global_parameters$time_horizon,
                           output_ex_nt$n_exac_by_ctime_severity_diagnosed - output_ex$n_exac_by_ctime_severity_diagnosed))
@@ -1522,7 +1522,7 @@ validate_treatment<- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  output_ex_nd <- Cget_output_ex()
+  output_ex_nd <- get_output_ex()
 
   exac_rate_nodiag <- rowSums(output_ex_nd$n_exac_by_ctime_severity)/rowSums(output_ex_nd$n_COPD_by_ctime_sex)
 
@@ -1555,8 +1555,8 @@ validate_treatment<- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs_d <- Cget_inputs()
-  output_ex_d <- Cget_output_ex()
+  inputs_d <- get_inputs()
+  output_ex_d <- get_output_ex()
 
   exac_rate_diag <- rowSums(output_ex_d$n_exac_by_ctime_severity)/rowSums(output_ex_d$n_COPD_by_ctime_sex)
 
@@ -1643,9 +1643,9 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output <- Cget_output()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output <- get_output()
+  output_ex <- get_output_ex()
 
   # Exacerbations
   exac <- output$total_exac
@@ -1687,9 +1687,9 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs_nocd <- Cget_inputs()
-  output_nocd <- Cget_output()
-  output_ex_nocd <- Cget_output_ex()
+  inputs_nocd <- get_inputs()
+  output_nocd <- get_output()
+  output_ex_nocd <- get_output_ex()
 
   # Exacerbations
   exac_nocd <- output_nocd$total_exac
@@ -1793,8 +1793,8 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
   if (res < 0)
     stop("Execution stopped.\n")
 
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   message("Here are the proportion of non-COPD subjects overdiagnosed over model time: \n")
 
@@ -1850,7 +1850,7 @@ res <- run(input = input)
 if (res < 0)
   stop("Execution stopped.\n")
 
-all_events <- as.data.frame(Cget_all_events_matrix())
+all_events <- as.data.frame(get_all_events_matrix())
 all_annual_events <- all_events[all_events$event==1,] # only annual event
 
 # Prop on each med class over time and by gold

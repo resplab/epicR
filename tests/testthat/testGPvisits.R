@@ -3,8 +3,8 @@ test_that("The mean GP visits (1) increases by GOLD stage, and (2) is higher in 
   library(dplyr)
   init_session()
   run()
-  inputs <- Cget_inputs()
-  output_ex <- Cget_output_ex()
+  inputs <- get_inputs()
+  output_ex <- get_output_ex()
 
   # Average GPvisits by time and GOLD stage
   GPvisits <- data.frame(Year=1:inputs$global_parameters$time_horizon,

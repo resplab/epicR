@@ -22,9 +22,9 @@ export_figures <- function(nPatients = 1e4) {
 
 
   run(input=input)
-  data <- as.data.frame(Cget_all_events_matrix())
-  op <- Cget_output()
-  op_ex <- Cget_output_ex()
+  data <- as.data.frame(get_all_events_matrix())
+  op <- get_output()
+  op_ex <- get_output_ex()
   terminate_session()
 
   ## Create Workbook object and add worksheets

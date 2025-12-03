@@ -2,6 +2,8 @@ session_env<-new.env()
 session_env$global_error_code_chain<-NULL
 session_env$global_error_message_chain<-NULL
 session_env$initialized <- FALSE
+session_env$config_file_path <- NULL
+session_env$config_file_mtime <- NULL
 
 
 session_env$record_mode<-c(
@@ -37,7 +39,7 @@ session_env$agent_creation_mode<-c(
 #' @export
 get_agent_size_bytes <- function() {
   tryCatch(
-    Cget_agent_size_bytes(),
+    get_agent_size_bytes(),
     error = function(e) 800  # Fallback estimate if C function not available
   )
 }
@@ -163,8 +165,9 @@ get_available_memory <- function() {
 #' @export
 init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
-  if (exists("Cdeallocate_resources"))
-    Cdeallocate_resources()
+  message("Working directory: ", getwd())
+  if (exists("deallocate_resources"))
+    deallocate_resources()
 
   # Get time_horizon from input parameters for memory calculation
   input_params <- get_input()
@@ -198,13 +201,13 @@ init_session <- function(settings = get_default_settings()) {
 
   if (!is.null(settings))
     apply_settings(settings)
-  Cinit_session()
+  init_session_internal()
 
   # Allocate memory and check for errors
-  alloc_result <- Callocate_resources()
+  alloc_result <- allocate_resources()
   if (alloc_result != 0) {
     session_env$initialized <- FALSE
-    current_settings <- Cget_settings()
+    current_settings <- get_settings()
     est_memory_gb <- estimate_memory_required(current_settings$n_base_agents,
                                                current_settings$record_mode, time_horizon) / 1e9
     stop(sprintf(
@@ -224,18 +227,18 @@ init_session <- function(settings = get_default_settings()) {
 terminate_session <- function() {
   message("Terminating the session")
   session_env$initialized <- FALSE
-  return(Cdeallocate_resources())
+  return(deallocate_resources())
 }
 
 
 apply_settings <- function(settings = settings) {
   res <- 0
-  ls <- Cget_settings()
+  ls <- get_settings()
   for (i in 1:length(ls)) {
     nm <- names(ls)[i]
     # message(nm)
     if (!is.null(settings[nm])) {
-      res <- Cset_settings_var(nm, settings[[nm]])
+      res <- set_settings_var(nm, settings[[nm]])
       if (res != 0)
         return(res)
     }
@@ -275,7 +278,7 @@ set_Cmodel_inputs <- function(ls) {
     # important: CPP is column major order but R is row major; all matrices should be tranposed before vectorization;
     if (is.matrix(val))
       val <- as.vector(t(val))
-    res <- Cset_input_var(nms[i], val)
+    res <- set_input_var(nms[i], val)
     if (res != 0) {
       message(last_var)
       set_error(res,paste("Invalid input:",last_var))
@@ -316,7 +319,7 @@ express_matrix <- function(mtx) {
 #' @return dataframe consisting all events specific to agent \code{id}
 #' @export
 get_agent_events <- function(id) {
-  x <- Cget_agent_events(id)
+  x <- get_agent_events(id)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -327,7 +330,7 @@ get_agent_events <- function(id) {
 #' @return dataframe consisting all events of the type \code{event_type}
 #' @export
 get_events_by_type <- function(event_type) {
-  x <- Cget_events_by_type(event_type)
+  x <- get_events_by_type(event_type)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -337,7 +340,7 @@ get_events_by_type <- function(event_type) {
 #' @return dataframe consisting all events.
 #' @export
 get_all_events <- function() {
-  x <- Cget_all_events()
+  x <- get_all_events()
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -350,6 +353,7 @@ get_all_events <- function() {
 #' @param input customized input criteria
 #' @param settings customized settings (only used if auto-initializing)
 #' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
+#' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
 #' @return simulation results if successful
 #' @export
 #' @examples
@@ -366,8 +370,17 @@ get_all_events <- function() {
 #' run()
 #' run()  # run again with same session
 #' terminate_session()
+#'
+#' # With reproducible results
+#' run(seed = 123)
 #' }
-run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE) {
+run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE, seed = NULL) {
+
+  # Set random seed for reproducibility if provided
+  if (!is.null(seed)) {
+    set.seed(seed)
+    message("Random seed set to: ", seed)
+  }
 
   # Auto-initialize if not already initialized
   auto_initialized <- FALSE
@@ -399,7 +412,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
   }
 
   # Display record_mode information
-  current_settings <- Cget_settings()
+  current_settings <- get_settings()
   record_mode_value <- current_settings$record_mode
   record_mode_names <- c("record_mode_none", "record_mode_agent", "record_mode_event", "record_mode_some_event")
   record_mode_name <- record_mode_names[record_mode_value + 1]
@@ -423,7 +436,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
   if (res == 0) {
     if (is.null(max_n_agents))
       max_n_agents = .Machine$integer.max
-    res <- Cmodel(max_n_agents)
+    res <- model_run(max_n_agents)
   }
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
@@ -459,15 +472,17 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
 #' @param time_horizon Model time horizon in years (default: 20)
 #' @param n_agents Number of agents to simulate (default: 60,000)
-#' @param return_extended whether to return extended results in addition to basic (default: FALSE)
+#' @param extended_results whether to return extended results in addition to basic (default: TRUE)
 #' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
-#' @return list with simulation results (always includes 'basic', optionally 'extended' and 'events')
+#' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
+#' @return list with simulation results (always includes 'basic', includes 'extended' by default, optionally 'events')
 #' @export
 #' @examples
 #' \dontrun{
-#' # Simplest usage
+#' # Simplest usage - includes both basic and extended results
 #' results <- simulate()
 #' print(results$basic)
+#' print(results$extended)
 #'
 #' # With custom parameters
 #' results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
@@ -475,23 +490,51 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' # Quick test with fewer agents
 #' results <- simulate(n_agents = 10000)
 #'
-#' # With extended output (includes both basic and extended)
-#' results <- simulate(return_extended = TRUE)
+#' # Basic output only (faster, less memory)
+#' results <- simulate(extended_results = FALSE)
 #' print(results$basic)
-#' print(results$extended)
 #'
 #' # With event history
 #' results <- simulate(return_events = TRUE)
 #' print(results$events)  # Event matrix
+#'
+#' # With reproducible results
+#' results1 <- simulate(seed = 123)
+#' results2 <- simulate(seed = 123)
+#' # results1 and results2 will be identical
 #' }
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
                      time_horizon = 20, n_agents = NULL,
-                     return_extended = FALSE, return_events = FALSE) {
+                     extended_results = TRUE, return_events = FALSE,
+                     seed = NULL) {
+
+  # Check if config file has been modified since last load
+  config_changed <- FALSE
+  if (!is.null(session_env$config_file_path) &&
+        !is.null(session_env$config_file_mtime) &&
+        file.exists(session_env$config_file_path)) {
+    current_mtime <- file.info(session_env$config_file_path)$mtime
+    if (current_mtime != session_env$config_file_mtime) {
+      config_changed <- TRUE
+      message(
+        ">>> Config file has been modified - reloading automatically <<<"
+      )
+    }
+  }
+
   # If no custom input provided, use get_input with specified parameters
-  if (is.null(input)) {
+  # Also reload if config file has changed
+  if (is.null(input) || config_changed) {
     input_full <- get_input(jurisdiction = jurisdiction,
                             time_horizon = time_horizon)
     input <- input_full$values
+
+    # If config changed, let user know which file was reloaded
+    if (config_changed && !is.null(session_env$config_file_path)) {
+      message(
+        ">>> Reloaded config from: ", session_env$config_file_path, " <<<"
+      )
+    }
   }
 
   # Get or create settings
@@ -513,6 +556,12 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     if (is.null(settings$event_stack_size) || settings$event_stack_size == 0) {
       settings$event_stack_size <- calc_event_stack_size(settings$n_base_agents, time_horizon)
     }
+  }
+
+  # Set random seed for reproducibility if provided
+  if (!is.null(seed)) {
+    set.seed(seed)
+    message("Random seed set to: ", seed)
   }
 
   # Display configuration summary
@@ -569,19 +618,19 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
 
     # Get all results BEFORE terminating session
     results <- list(
-      basic = Cget_output()
+      basic = get_output()
     )
 
     # Add extended results if requested (in addition to basic)
-    if (return_extended) {
+    if (extended_results) {
       message("Collecting extended results...")
-      results$extended <- Cget_output_ex()
+      results$extended <- get_output_ex()
     }
 
     # Add events if requested
     if (return_events) {
       message("Collecting event history...")
-      results$events <- as.data.frame(Cget_all_events_matrix())
+      results$events <- as.data.frame(get_all_events_matrix())
     }
 
     # Now terminate the session
@@ -608,7 +657,7 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
 resume <- function(max_n_agents = NULL) {
   if (is.null(max_n_agents))
     max_n_agents = settings$n_base_agents
-  res <- Cmodel(max_n_agents)
+  res <- model_run(max_n_agents)
   if (res < 0) {
     message("ERROR:", names(which(errors == res)))
   }

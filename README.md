@@ -198,10 +198,14 @@ results <- simulate(jurisdiction = "us", time_horizon = 10, n_agents = 100000)
 # Quick test with fewer agents (faster)
 results <- simulate(n_agents = 10000)
 
-# Get both basic and extended results
-results <- simulate(return_extended = TRUE)
+# By default, you get both basic and extended results
+results <- simulate()
 print(results$basic)
-print(results$extended)
+print(results$extended)  # Included by default
+
+# Get basic output only (faster, less memory)
+results <- simulate(extended_results = FALSE)
+print(results$basic)
 
 # Get event history (automatically enables event recording)
 results <- simulate(return_events = TRUE)
@@ -212,7 +216,7 @@ results <- simulate(
   jurisdiction = "us",
   time_horizon = 15,
   n_agents = 50000,
-  return_extended = TRUE,
+  extended_results = TRUE,  # TRUE by default
   return_events = TRUE
 )
 # Returns: results$basic, results$extended, results$events
@@ -230,10 +234,10 @@ init_session()
 
 # Run multiple simulations
 run()
-results1 <- Cget_output()
+results1 <- get_output()
 
 run()  # run again with same session
-results2 <- Cget_output()
+results2 <- get_output()
 
 # Clean up when done
 terminate_session()
@@ -246,7 +250,7 @@ init_session()
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
 run(input = input$values)
-results <- Cget_output()
+results <- get_output()
 terminate_session()
 ```
 
@@ -391,8 +395,8 @@ settings$record_mode <- 2
 settings$n_base_agents <- 1e4
 init_session(settings = settings)
 run()
-results <- Cget_output()
-events <- as.data.frame(Cget_all_events_matrix())
+results <- get_output()
+events <- as.data.frame(get_all_events_matrix())
 head(events)
 terminate_session()
 
@@ -426,7 +430,7 @@ library(epicR)
 input <- get_input(closed_cohort = 1)$values
 init_session()
 run(input=input)
-Cget_output()
+get_output()
 terminate_session()
 ```
 

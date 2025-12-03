@@ -187,7 +187,7 @@ int push_event(agent *ag)
 //' @return events
 //' @export
 // [[Rcpp::export]]
-List Cget_event(int i)
+List get_event(int i)
 {
   return(get_agent(i,event_stack));
 }
@@ -196,7 +196,7 @@ List Cget_event(int i)
 //' @return number of events
 //' @export
 // [[Rcpp::export]]
-int Cget_n_events() //number of events, not n events themselves;
+int get_n_events() //number of events, not n events themselves;
   {
   return(event_stack_pointer);
   }
@@ -206,7 +206,7 @@ int Cget_n_events() //number of events, not n events themselves;
 //' @return all events of agent \code{id}
 //' @export
 // [[Rcpp::export]]
-DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
+DataFrame get_agent_events(int id) //Returns ALLva events of an agent;
   {
   DataFrame dfout;
 
@@ -226,7 +226,7 @@ DataFrame Cget_agent_events(int id) //Returns ALLva events of an agent;
 //' @return all events of the type \code{event_type}
 //' @export
 // [[Rcpp::export]]
-DataFrame Cget_events_by_type(int event_type) //Returns all events of a given type for an agent;
+DataFrame get_events_by_type(int event_type) //Returns all events of a given type for an agent;
   {
   DataFrame dfout;
 
@@ -245,7 +245,7 @@ DataFrame Cget_events_by_type(int event_type) //Returns all events of a given ty
 //' @return all events
 //' @export
 // [[Rcpp::export]]
-DataFrame Cget_all_events() //Returns all events from all agents;
+DataFrame get_all_events() //Returns all events from all agents;
   {
   DataFrame dfout;
 
@@ -260,7 +260,7 @@ DataFrame Cget_all_events() //Returns all events from all agents;
 //' @return a matrix containing all events
 //' @export
 // [[Rcpp::export]]
-NumericMatrix Cget_all_events_matrix()
+NumericMatrix get_all_events_matrix()
 {
   NumericMatrix outm(event_stack_pointer,33);
   CharacterVector eventMatrixColNames(33);
@@ -893,8 +893,6 @@ void event_doctor_visit_process(agent *ag)
   {
     (*ag).last_doctor_visit_type=0;
   }
-
-  output.total_doctor_visit[(*ag).last_doctor_visit_type]+=1;
 
   output.total_cost+=input.cost.doctor_visit_by_type[(*ag).last_doctor_visit_type]/pow(1+input.global_parameters.discount_cost,(*ag).local_time+calendar_time);
 

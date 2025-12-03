@@ -71,7 +71,7 @@ calculate_rmse_optim <- function(params) {
 
 
   run(input=input$values)
-  output <- Cget_output_ex()
+  output <- get_output_ex()
   terminate_session()
 
 
@@ -219,7 +219,7 @@ input$values$agent$ln_h_bgd_betas <- c(params[4], params[5], params[6], params[7
 
 
 run(input = input$values)
-output <- Cget_output_ex()
+output <- get_output_ex()
 terminate_session()
 
 
