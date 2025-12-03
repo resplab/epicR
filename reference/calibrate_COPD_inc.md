@@ -12,7 +12,7 @@ calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
 
 - nIterations:
 
-  number of iterations for the numberical solution
+  number of iterations for the numerical solution
 
 - nPatients:
 
