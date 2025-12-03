@@ -8,7 +8,7 @@ simulate(
   input = NULL,
   settings = NULL,
   jurisdiction = "canada",
-  time_horizon = 20,
+  time_horizon = NULL,
   n_agents = NULL,
   extended_results = TRUE,
   return_events = FALSE,
@@ -22,7 +22,7 @@ simulate(
 
 \item{jurisdiction}{Jurisdiction for model parameters ("canada" or "us")}
 
-\item{time_horizon}{Model time horizon in years (default: 20)}
+\item{time_horizon}{Model time horizon in years (default: uses config file value)}
 
 \item{n_agents}{Number of agents to simulate (default: 60,000)}
 
