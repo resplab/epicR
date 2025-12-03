@@ -66,14 +66,9 @@ epicR requires R version 4.5.0 or later and uses Rcpp/RcppArmadillo for C++ inte
    - Follow the prompts to complete the installation
 
 4. **Install gfortran**
-   - **For Apple Silicon (M1/M2/M3):**
-     ```bash
-     curl -O https://mac.r-project.org/tools/gfortran-12.2-universal.pkg
-     sudo installer -pkg gfortran-12.2-universal.pkg -target /
-     ```
-   - **For Intel Macs:**
-     - Download from [https://github.com/fxcoudert/gfortran-for-macOS/releases](https://github.com/fxcoudert/gfortran-for-macOS/releases)
-     - Choose the installer that matches your macOS version
+   - Download the appropriate gfortran installer from [https://cran.r-project.org/bin/macosx/tools/](https://cran.r-project.org/bin/macosx/tools/)
+   - Choose the version that matches your macOS and architecture (Apple Silicon or Intel)
+   - Run the installer package
 
 5. **Verify Compiler Installation**
    - Open Terminal and run:
@@ -112,21 +107,12 @@ epicR requires R version 4.5.0 or later and uses Rcpp/RcppArmadillo for C++ inte
 
 This error occurs when gfortran is not properly installed or configured. Try these solutions:
 
-- **Solution 1: Install gfortran** (see step 4 above)
+- **Solution: Install gfortran** from [https://cran.r-project.org/bin/macosx/tools/](https://cran.r-project.org/bin/macosx/tools/)
 
   After installation, restart R and try installing the package again:
   ```r
   pak::pkg_install('resplab/epicR')
   ```
-
-- **Solution 2: Configure R to use built-in libraries** (if you prefer not to install gfortran):
-  ```bash
-  mkdir -p ~/.R
-  cat > ~/.R/Makevars << 'EOF'
-  FLIBS=-L$(R_HOME)/lib -lRblas -lRlapack
-  EOF
-  ```
-  Then try installing the package again in R.
 
 **Other Common Issues:**
 - If you encounter errors related to missing compilers after installation, try restarting your R session or computer.

@@ -470,7 +470,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @param input customized input criteria (optional)
 #' @param settings customized settings (optional)
 #' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
-#' @param time_horizon Model time horizon in years (default: 20)
+#' @param time_horizon Model time horizon in years (default: uses config file value)
 #' @param n_agents Number of agents to simulate (default: 60,000)
 #' @param extended_results whether to return extended results in addition to basic (default: TRUE)
 #' @param return_events whether to return event matrix (default: FALSE). If TRUE, automatically sets record_mode=2
@@ -504,7 +504,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' # results1 and results2 will be identical
 #' }
 simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
-                     time_horizon = 20, n_agents = NULL,
+                     time_horizon = NULL, n_agents = NULL,
                      extended_results = TRUE, return_events = FALSE,
                      seed = NULL) {
 
@@ -516,6 +516,8 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     current_mtime <- file.info(session_env$config_file_path)$mtime
     if (current_mtime != session_env$config_file_mtime) {
       config_changed <- TRUE
+      # Clear the model input cache so get_input() loads fresh data
+      .epicR_env$model_input <- NULL
       message(
         ">>> Config file has been modified - reloading automatically <<<"
       )
@@ -525,15 +527,28 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
   # If no custom input provided, use get_input with specified parameters
   # Also reload if config file has changed
   if (is.null(input) || config_changed) {
-    input_full <- get_input(jurisdiction = jurisdiction,
-                            time_horizon = time_horizon)
+    # Only pass time_horizon if explicitly specified, otherwise use config file value
+    if (!is.null(time_horizon)) {
+      input_full <- get_input(jurisdiction = jurisdiction,
+                              time_horizon = time_horizon)
+    } else {
+      input_full <- get_input(jurisdiction = jurisdiction)
+    }
     input <- input_full$values
+    # Get the actual time_horizon being used (from config or parameter)
+    time_horizon <- input_full$values$global_parameters$time_horizon
 
     # If config changed, let user know which file was reloaded
     if (config_changed && !is.null(session_env$config_file_path)) {
       message(
         ">>> Reloaded config from: ", session_env$config_file_path, " <<<"
       )
+    }
+  } else {
+    # Custom input provided - extract time_horizon from it if not specified
+    if (is.null(time_horizon)) {
+      time_horizon <- input$global_parameters$time_horizon
+      if (is.null(time_horizon)) time_horizon <- 20  # fallback default
     }
   }
 
