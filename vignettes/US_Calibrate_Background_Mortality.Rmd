@@ -1,8 +1,8 @@
 ---
-title: "Reproducing Background Mortality"
+title: "US_Calibrate Background Mortality"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Reproducing Background Mortality}
+  %\VignetteIndexEntry{US_Calibrate Background Mortality}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

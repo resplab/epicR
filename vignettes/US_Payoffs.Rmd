@@ -1,8 +1,8 @@
 ---
-title: "Payoffs"
+title: "US_Payoffs"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Payoffs}
+  %\VignetteIndexEntry{US_Payoffs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

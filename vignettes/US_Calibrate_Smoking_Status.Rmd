@@ -1,8 +1,8 @@
 ---
-title: "Calibrate Smoking Status"
+title: "US_Calibrate Smoking Status"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate Smoking Status}
+  %\VignetteIndexEntry{US_Calibrate Smoking Status}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

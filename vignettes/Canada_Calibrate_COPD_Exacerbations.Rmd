@@ -1,8 +1,8 @@
 ---
-title: "RecalibratingEPIC"
+title: "Canada_Calibrate COPD Exacerbations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{RecalibratingEPIC}
+  %\VignetteIndexEntry{Canada_Calibrate COPD Exacerbations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

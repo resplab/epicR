@@ -1,8 +1,8 @@
 ---
-title: "Calibrate Demographics"
+title: "US_Calibrate Demographics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate Demographics}
+  %\VignetteIndexEntry{US_Calibrate Demographics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

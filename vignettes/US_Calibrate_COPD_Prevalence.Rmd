@@ -1,8 +1,8 @@
 ---
-title: "Calibrate COPD Prevalence"
+title: "US_Calibrate COPD Prevalence"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate COPD Prevalence}
+  %\VignetteIndexEntry{US_Calibrate COPD Prevalence}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
