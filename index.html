@@ -424,10 +424,43 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="co"># Returns: results$basic, results$extended, results$events</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="setting-seeds-for-reproducibility">Setting Seeds for Reproducibility<a class="anchor" aria-label="anchor" href="#setting-seeds-for-reproducibility"></a>
+</h2>
+<p>EPIC uses a custom seed mechanism (different from R’s native <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>) to ensure reproducible results. Use the <code>seed</code> parameter in the <code><a href="reference/simulate.html">simulate()</a></code> function:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run with a specific seed for reproducible results</span></span>
+<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
+<span><span class="co"># Results will be identical!</span></span>
+<span></span>
+<span><span class="co"># Different seeds give different results</span></span>
+<span><span class="va">results_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">results_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">99</span><span class="op">)</span></span>
+<span><span class="co"># These will differ due to different random sequences</span></span>
+<span></span>
+<span><span class="co"># Combine seed with other parameters</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span></span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"us"</span>,</span>
+<span>  time_horizon <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n_agents <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">12345</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use seeds for comparing interventions</span></span>
+<span><span class="va">baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Modify input parameters here...</span></span>
+<span><span class="va">intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
+<span><span class="co"># Compare with identical random variation removed</span></span></code></pre></div>
+<p><strong>Important</strong>: Do NOT use R’s native <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> function before calling <code><a href="reference/simulate.html">simulate()</a></code>. The <code>seed</code> parameter handles reproducibility correctly within EPIC’s simulation framework.</p>
+<p>For detailed information on seed usage, best practices, and technical details, see <a href="SEED_REPRODUCIBILITY.html">SEED_REPRODUCIBILITY.md</a>.</p>
+</div>
+<div class="section level2">
 <h2 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
 </h2>
 <p>For advanced customization of input parameters:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get and modify inputs</span></span>
@@ -444,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-canadian-parameters-default">Using Canadian Parameters (Default)<a class="anchor" aria-label="anchor" href="#using-canadian-parameters-default"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Canadian parameters are used by default</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or explicitly specify:</span></span>
@@ -453,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level3">
 <h3 id="using-us-parameters">Using US Parameters<a class="anchor" aria-label="anchor" href="#using-us-parameters"></a>
 </h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note: US parameters must be configured first (see Configuration section)</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -461,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h3 id="parameter-override">Parameter Override<a class="anchor" aria-label="anchor" href="#parameter-override"></a>
 </h3>
 <p>Function parameters still override jurisdiction defaults:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use Canadian defaults but change time horizon</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span>, time_horizon <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -491,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level4">
 <h4 id="configuration-management-functions">Configuration Management Functions:<a class="anchor" aria-label="anchor" href="#configuration-management-functions"></a>
 </h4>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># View config directory location</span></span>
 <span><span class="fu"><a href="reference/get_user_config_dir.html">get_user_config_dir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -511,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="section level4">
 <h4 id="customizing-parameters">Customizing Parameters:<a class="anchor" aria-label="anchor" href="#customizing-parameters"></a>
 </h4>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Open config directory</span></span>
 <span><span class="fu"><a href="reference/open_user_config_dir.html">open_user_config_dir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -544,40 +577,40 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>Disease epidemiology parameters</li>
 </ol>
 <p>Example placeholder format:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>Replace with actual values:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">51</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="st">"PLACEHOLDER_US_P_FEMALE"</span></span>
 <span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Replace with actual values:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>  <span class="dt">"agent"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>    <span class="dt">"p_female"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">51</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="test-values">Test Values<a class="anchor" aria-label="anchor" href="#test-values"></a>
 </h3>
 <p>Configuration files also include jurisdiction-specific test values used for package validation:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">18600000</span><span class="fu">,</span></span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">100000</span><span class="fu">,</span></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">5000</span></span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>These values represent: - <code>population_over_40_2015</code>: Population over 40 years of age (used for scaling test results) - <code>expected_severe_exacerbations_per_year</code>: Expected number of severe exacerbations per year for validation - <code>expected_severe_exac_tolerance</code>: Tolerance level for test assertions</p>
-<p>For US parameters, replace with appropriate US values:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">130000000</span><span class="fu">,</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">700000</span><span class="fu">,</span></span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">35000</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">18600000</span><span class="fu">,</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">100000</span><span class="fu">,</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">5000</span></span>
 <span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>These values represent: - <code>population_over_40_2015</code>: Population over 40 years of age (used for scaling test results) - <code>expected_severe_exacerbations_per_year</code>: Expected number of severe exacerbations per year for validation - <code>expected_severe_exac_tolerance</code>: Tolerance level for test assertions</p>
+<p>For US parameters, replace with appropriate US values:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>  <span class="dt">"test_values"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>    <span class="dt">"population_over_40_2015"</span><span class="fu">:</span> <span class="dv">130000000</span><span class="fu">,</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>    <span class="dt">"expected_severe_exacerbations_per_year"</span><span class="fu">:</span> <span class="dv">700000</span><span class="fu">,</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>    <span class="dt">"expected_severe_exac_tolerance"</span><span class="fu">:</span> <span class="dv">35000</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>For some studies, having access to the entire event history of the simulated population might be beneficial. Capturing event history is possible by using the <code>return_events</code> parameter in <code><a href="reference/simulate.html">simulate()</a></code>:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get events along with other results</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span></span>
 <span>  n_agents <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -588,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="va">events</span> <span class="op">&lt;-</span> <span class="va">results</span><span class="op">$</span><span class="va">events</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, you can set <code>record_mode</code> as a <code>setting</code>:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_default_settings.html">get_default_settings</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">record_mode</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="va">settings</span><span class="op">$</span><span class="va">n_base_agents</span> <span class="op">&lt;-</span> <span class="fl">1e4</span></span>
@@ -658,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 id="closed-cohort-analysis">Closed-cohort analysis<a class="anchor" aria-label="anchor" href="#closed-cohort-analysis"></a>
 </h2>
 <p>Closed-cohort analysis can be specified by changing the appropriate input parameters.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">epicR</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Simple closed-cohort analysis</span></span>

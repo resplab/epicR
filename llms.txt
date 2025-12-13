@@ -254,6 +254,49 @@ results <- simulate(
 # Returns: results$basic, results$extended, results$events
 ```
 
+## Setting Seeds for Reproducibility
+
+EPIC uses a custom seed mechanism (different from R’s native
+[`set.seed()`](https://rdrr.io/r/base/Random.html)) to ensure
+reproducible results. Use the `seed` parameter in the
+[`simulate()`](reference/simulate.md) function:
+
+``` r
+# Run with a specific seed for reproducible results
+results1 <- simulate(seed = 123)
+results2 <- simulate(seed = 123)
+# Results will be identical!
+
+# Different seeds give different results
+results_a <- simulate(seed = 42)
+results_b <- simulate(seed = 99)
+# These will differ due to different random sequences
+
+# Combine seed with other parameters
+results <- simulate(
+  jurisdiction = "us",
+  time_horizon = 10,
+  n_agents = 50000,
+  seed = 12345
+)
+
+# Use seeds for comparing interventions
+baseline <- simulate(seed = 42)
+
+input <- get_input()
+# Modify input parameters here...
+intervention <- simulate(input = input, seed = 42)
+# Compare with identical random variation removed
+```
+
+**Important**: Do NOT use R’s native
+[`set.seed()`](https://rdrr.io/r/base/Random.html) function before
+calling [`simulate()`](reference/simulate.md). The `seed` parameter
+handles reproducibility correctly within EPIC’s simulation framework.
+
+For detailed information on seed usage, best practices, and technical
+details, see [SEED_REPRODUCIBILITY.md](SEED_REPRODUCIBILITY.md).
+
 ## Advanced Usage
 
 For advanced customization of input parameters:
