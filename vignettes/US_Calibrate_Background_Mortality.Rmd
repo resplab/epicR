@@ -65,16 +65,14 @@ settings <- get_default_settings()
 settings$record_mode <- 2
 settings$n_base_agents <- 3.5e5
 
-init_session(settings = settings)
 # input <- get_input(jurisdiction = "us")
 
 # set time horizon as 1 initially 
 time_horizon <- 1
 input$values$global_parameters$time_horizon <- time_horizon
 
-run(input = input$values)
-events <- as.data.frame(get_all_events_matrix())
-terminate_session()
+results <- simulate(settings = settings, input = input$values, return_events = TRUE)
+events <- results$events
 
 # checking to make sure event 7 (death by exacerbation) is not included 
 # because we shut that off in the model
@@ -129,15 +127,12 @@ to 5 years will bring the results closer to our target.
 
 ```{r, eval = FALSE, echo = TRUE}
 
-init_session(settings = settings)
-
 # set time horizon to 5
 time_horizon <- 6
 input$values$global_parameters$time_horizon <- time_horizon
 
-run(input = input$values)
-events5 <- as.data.frame(get_all_events_matrix())
-terminate_session()
+results5 <- simulate(settings = settings, input = input$values, return_events = TRUE)
+events5 <- results5$events
 
 table(events$event)
 
@@ -347,13 +342,11 @@ input$values$smoking$mortality_factor_current<- c(age40to49=1,age50to59=1,
 
 ```{r, eval=FALSE, echo =FALSE, fig.width=8, fig.height=5}
 
-init_session(settings = settings)
 time_horizon <- 1
 input$values$global_parameters$time_horizon <- time_horizon
 
-run(input = input$values)
-events_smoking <- as.data.frame(get_all_events_matrix())
-terminate_session()
+results_smoking <- simulate(settings = settings, input = input$values, return_events = TRUE)
+events_smoking <- results_smoking$events
 
 # we will group by age so we convert ages into whole numbers.
 events_smoking <- events_smoking %>%
@@ -434,8 +427,6 @@ settings <- get_default_settings()
 settings$record_mode <- 2
 settings$n_base_agents <- 1e6
 
-init_session(settings = settings)
-
 input<-get_input(jurisdiction = "us")
 
 time_horizon <- 1
@@ -468,12 +459,11 @@ input$values$smoking$logit_p_never_smoker_con_not_current_0_betas <-
   t(as.matrix(c(intercept = 4.85, sex = 0, age = -0.06, age2 = 0,
                 sex_age = 0,sex_age2 = 0, year = -0.02)))
 
-run(input = input$values)
-events <- as.data.frame(get_all_events_matrix())
-terminate_session()
+results <- simulate(settings = settings, input = input$values, return_events = TRUE)
+events <- results$events
+output <- results$extended
 
 # checking the ratio
-output<-get_output_ex()
 smoking_num<-output$n_smoking_status_by_ctime
 never_smoker_ratio <- smoking_num[1, 3] / sum(smoking_num[1, ])
 never_smoker_ratio

@@ -96,9 +96,8 @@ EVENT_END <- 11  # Updated event_end code after MI/stroke/HF removal
 settings <- get_default_settings()
 settings$record_mode <- 2
 settings$n_base_agents <- 3.5e6
-init_session(settings = settings)
 
-# Load input with US config (change to "canada" for Canadian parameters)
+# Load input with US config
 input <- get_input(jurisdiction = "us")
 time_horizon <- 26
 
@@ -107,11 +106,8 @@ input$values$exacerbation$ln_rate_betas <- t(as.matrix(c(intercept = 1.8, female
 input$values$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.309, intercept2 = 2.502, intercept3 = 5.508, female = -0.764, age = -0.007, fev1 = 0.98, smoking_status = 0.348, pack_years = -0.001 , BMI = 0.018)))
 
 # Run the model
-run(input = input$values)
-op <- get_output()
-output_ex <- get_output_ex()
-
-all_events <- as.data.frame(get_all_events_matrix())
+results <- simulate(settings = settings, input = input$values, return_events = TRUE)
+all_events <- results$events
 exac_events <- subset(all_events, event == EVENT_EXACERBATION)
 exit_events <- subset(all_events, event == EVENT_END)
 
@@ -178,8 +174,6 @@ for (i in 2:dim(all_events_undiagnosed)[1]) {
     Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] + (all_events_undiagnosed[i, "local_time"]-all_events_undiagnosed[i, "time_at_diagnosis"]) -
       last_GOLD_transition_time_undiagnosed
 }
-
-terminate_session()
 
 #----------------------------All ------------------------------------
 #-------------------------------------------------------------------------
