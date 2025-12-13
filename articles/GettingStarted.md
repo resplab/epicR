@@ -312,26 +312,7 @@ For more complex scenarios requiring custom input modifications, see the
 
 ## Advanced Usage
 
-For advanced users who need fine-grained control (e.g., running multiple
-simulations in one session or modifying complex input parameters), you
-can manage sessions manually:
-
-### Manual Session Management
-
-``` r
-# Initialize session once
-init_session()
-
-# Run multiple simulations with same session
-run()
-results1 <- get_output()
-
-run()  # run again with same session
-results2 <- get_output()
-
-# Clean up when done
-terminate_session()
-```
+For advanced users who need fine-grained control over input parameters:
 
 ### Custom Input Modifications
 
@@ -347,23 +328,38 @@ input$values$global_parameters$time_horizon <- 5
 input$values$agent$p_female <- 0.55
 
 # Run with custom inputs
-init_session()
-run(input = input$values)
-results <- get_output()
-terminate_session()
+results <- simulate(input = input$values)
+```
+
+### Running Multiple Simulations
+
+To run multiple simulations with different parameters:
+
+``` r
+# Simulation 1
+results1 <- simulate(n_agents = 50000, time_horizon = 10, seed = 123)
+
+# Simulation 2 with different parameters
+results2 <- simulate(n_agents = 50000, time_horizon = 20, seed = 123)
+
+# Compare results
+comparison <- data.frame(
+  time_horizon = c(10, 20),
+  n_deaths = c(results1$basic$n_deaths, results2$basic$n_deaths)
+)
 ```
 
 ### Error Handling
 
-Always wrap manual session management in error handling:
+The [`simulate()`](../reference/simulate.md) function includes automatic
+error handling and cleanup. For additional safety:
 
 ``` r
-tryCatch({
-  init_session()
-  run()
-  results <- get_output()
-}, finally = {
-  terminate_session()
+results <- tryCatch({
+  simulate(n_agents = 50000)
+}, error = function(e) {
+  message("Simulation failed: ", e$message)
+  NULL
 })
 ```
 
@@ -379,25 +375,19 @@ needed (omit `return_events`) 3. Check available memory with
 ### Session Issues
 
 The [`simulate()`](../reference/simulate.md) function handles session
-management automatically and includes error handling. If you’re using
-manual session management (see Advanced Usage), always use
-[`tryCatch()`](https://rdrr.io/r/base/conditions.html) to ensure
-[`terminate_session()`](../reference/terminate_session.md) is called
-even if errors occur.
+management automatically and includes error handling.
 
 ## Next Steps
 
 - **Model Background**: See
   [`vignette("BackgroundEPIC")`](../articles/BackgroundEPIC.md) for
   model structure details
-- **Calibration**: See
-  [`vignette("Calibrate_COPD_Prevalence")`](../articles/Calibrate_COPD_Prevalence.md)
-  for calibration methods
+- **Calibration**: See `vignette("Calibrate_COPD_Prevalence")` for
+  calibration methods
 - **Validation**: Explore the `validate_*()` functions for model
   validation
-- **US Model**: See
-  [`vignette("Calibrate_Smoking")`](../articles/Calibrate_Smoking.md)
-  for US-specific calibration
+- **US Model**: See `vignette("Calibrate_Smoking")` for US-specific
+  calibration
 
 ## References
 

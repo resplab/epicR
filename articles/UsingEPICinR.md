@@ -138,38 +138,12 @@ results <- simulate(return_events = TRUE, n_agents = 10000)
 head(results$events)
 ```
 
-### Advanced: Manual Session Management
+### Advanced: Custom Input Parameters
 
-For advanced users who need fine-grained control (e.g., running multiple
-simulations in one session), you can manage sessions manually.
+For advanced users who need fine-grained control over input parameters,
+you can modify inputs before simulation.
 
-The backend of this package is in C++. In other languages such as
-R/Python, memory allocation is taken care of for you. However, in C/C++,
-you need to allocate memory yourself. You also need to deallocate memory
-when the program is done. Because of this, we have the function
-[`init_session()`](../reference/init_session.md).
-
-[`init_session()`](../reference/init_session.md) is in the **core.R**
-file, and calls 3 C functions: `deallocate_resources()`,
-`allocate_resources()`, and `init_session_internal()`. You don’t really
-need to know how these work, but basically they allocate/deallocate
-memory.
-
-You need to call this before you run anything:
-
-``` r
-init_session()
-```
-
-In C++, a program that is successful returns `0`, so you should see this
-in the R console.
-
-#### Step 1: Initialize the Session
-
-(Already shown above with
-[`init_session()`](../reference/init_session.md))
-
-#### Step 2: Set the Inputs
+#### Understanding Input Structure
 
 The default input values are created in the file **input.R**. You can
 retrieve these values using [`get_input()`](../reference/get_input.md).
@@ -203,46 +177,34 @@ set specific inputs using the `$` operator. An example of how to do this
 is shown below:
 
 ``` r
-#changing time_horizon which can be accessed through global_parameters
+# Changing time_horizon which can be accessed through global_parameters
 input$values$global_parameters$time_horizon <- 5
-#changing age0, which can be accessed through global_parameters, from the default value of 40 to 50
+# Changing age0, which can be accessed through global_parameters, from the default value of 40 to 50
 input$values$global_parameters$age0 <- 50
-#changing p_females, which can be accessed through agent, from the default value 0.5 to 0.6.
+# Changing p_females, which can be accessed through agent, from the default value 0.5 to 0.6
 input$values$agent$p_female <- 0.6
+
+# Run simulation with custom inputs
+results <- simulate(input = input$values)
 ```
 
-#### Step 3: Run
+#### Getting Results
 
-After changing the inputs you can provide them to the
-[`run()`](../reference/run.md) function. The
-[`run()`](../reference/run.md) function has two arguments:
-**max_n_agents** and **input**. If you created your own input in **Step
-2**, you can put it in here; otherwise, you can leave the **input**
-argument blank. The **max_n_agents** argument is how many people you
-want in your model. The default is set to the maximum integer your
-computer will allow. You can set this to a lower number if you like (it
-might run faster).
+The [`simulate()`](../reference/simulate.md) function returns a
+comprehensive list of results. By default, it includes both basic and
+extended results:
 
 ``` r
-#to run the simulation with default parameters
-run()
-#to run the simulation with custom parameters
-run(max_n_agents = 1000, input = input$values)
+# Run simulation
+results <- simulate(n_agents = 50000)
+
+# Access basic results
+basic <- results$basic
+# Access extended results  
+extended <- results$extended
 ```
 
-#### Step 4: Results
-
-Once you have run the model simulation, there are several functions to
-access the results.
-
-The first function is the [`get_output()`](../reference/get_output.md)
-which shows some of the overall results:
-
-``` r
-results <- get_output()
-```
-
-**Basic Output from [`get_output()`](../reference/get_output.md):**
+**Basic Output from `results$basic`:**
 
 | Output               | Description                         |
 |----------------------|-------------------------------------|
@@ -257,15 +219,14 @@ results <- get_output()
 | `total_cost`         | Total healthcare costs              |
 | `total_qaly`         | Total quality-adjusted life years   |
 
-The second function [`get_output_ex()`](../reference/get_output_ex.md)
-returns a very large list of results:
+Extended results are included by default in `results$extended`:
 
 ``` r
-resultsExra <- get_output_ex()
+# Extended results are available automatically
+extended <- results$extended
 ```
 
-**Extended Output from
-[`get_output_ex()`](../reference/get_output_ex.md):**
+**Extended Output from `results$extended`:**
 
 The extended output includes detailed breakdowns by: - Year (annual
 results over the time horizon) - Age groups - Sex - COPD severity (GOLD
@@ -279,40 +240,41 @@ year and category - `qaly` - QALYs by year and health state -
 **Important Notes:** - EPIC only starts simulating patients at age 40 -
 Comorbidities are not implemented in the current version of epicR
 
-The full snippet of the code:
-
-``` r
-init_session()
-input <- get_input()
-input$values$global_parameters$time_horizon <- 5
-run(input=input$values)
-results <- get_output()
-resultsExra <- get_output_ex()
-terminate_session()
-```
+#### Event History
 
 For some studies, having access to the entire event history of the
-simulated population might be beneficial. Capturing event history is
-possible by setting record_mode as a setting.
+simulated population might be beneficial. You can capture event history
+using the `return_events` parameter:
 
-[`get_all_events_matrix()`](../reference/get_all_events_matrix.md)
-function returns the events matrix, with every event for every patient.
-Note that you might need a large amount of memory available, if you want
-to collect event history for a large number of patients.
+``` r
+# Get event history along with results
+results <- simulate(
+  n_agents = 10000,
+  return_events = TRUE
+)
+
+# Access the events
+events <- results$events
+head(events)
+```
+
+Alternatively, you can set `record_mode` as a `setting`:
 
 ``` r
 settings <- get_default_settings()
 # record_mode = 2 indicates recording every event that occurs
 settings$record_mode <- 2
-#n_base_agents is the number of people at time 0.
+# n_base_agents is the number of people at time 0
 settings$n_base_agents <- 1e4
-init_session(settings = settings)
-run()
-results <- get_output()
-events <- as.data.frame(get_all_events_matrix())
+
+# Run simulation with settings
+results <- simulate(settings = settings, return_events = TRUE)
+events <- results$events
 head(events)
-terminate_session()
 ```
+
+Note that you might need a large amount of memory available if you want
+to collect event history for a large number of patients.
 
 You can change the record mode of the simulation by accessing
 `settings$record_mode` as shown above. Here are what different record
@@ -326,11 +288,7 @@ modes mean:
 | 1    | Agent-level summary statistics                            |
 | 2    | Complete event history for all agents (high memory usage) |
 
-As shown in the code snippet above, you can inspect the event matrix
-[`get_all_events_matrix()`](../reference/get_all_events_matrix.md) by
-converting it into a data frame using
-`as.data.frame(get_all_events_matrix())`. This data frame consists of 33
-columns, including:
+The event matrix consists of 33 columns, including:
 
 **Key Event Matrix Columns:**
 
@@ -378,9 +336,10 @@ input parameters:
 
 ``` r
 library(epicR)
+
+# Get input with closed cohort enabled
 input <- get_input(closed_cohort = 1)$values
-init_session()
-run(input=input)
-get_output()
-terminate_session()
+
+# Run simulation
+results <- simulate(input = input)
 ```

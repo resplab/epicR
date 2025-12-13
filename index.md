@@ -256,35 +256,17 @@ results <- simulate(
 
 ## Advanced Usage
 
-For advanced users who need more control (e.g., running multiple
-simulations in one session), you can manage sessions manually:
+For advanced customization of input parameters:
 
 ``` r
 library(epicR)
 
-# Initialize session once
-init_session()
-
-# Run multiple simulations
-run()
-results1 <- get_output()
-
-run()  # run again with same session
-results2 <- get_output()
-
-# Clean up when done
-terminate_session()
-```
-
-You can also customize inputs:
-
-``` r
-init_session()
+# Get and modify inputs
 input <- get_input()
 input$values$global_parameters$time_horizon <- 5
-run(input = input$values)
-results <- get_output()
-terminate_session()
+
+# Run with custom inputs
+results <- simulate(input = input$values)
 ```
 
 ## Jurisdiction-Specific Configuration
@@ -445,17 +427,30 @@ For US parameters, replace with appropriate US values:
 
 For some studies, having access to the entire event history of the
 simulated population might be beneficial. Capturing event history is
-possible by setting `record_mode` as a `setting`.
+possible by using the `return_events` parameter in
+[`simulate()`](reference/simulate.md):
 
-    settings <- get_default_settings()
-    settings$record_mode <- 2
-    settings$n_base_agents <- 1e4
-    init_session(settings = settings)
-    run()
-    results <- get_output()
-    events <- as.data.frame(get_all_events_matrix())
-    head(events)
-    terminate_session()
+``` r
+# Get events along with other results
+results <- simulate(
+  n_agents = 10000,
+  return_events = TRUE
+)
+
+# Access the events
+events <- results$events
+head(events)
+```
+
+Alternatively, you can set `record_mode` as a `setting`:
+
+``` r
+settings <- get_default_settings()
+settings$record_mode <- 2
+settings$n_base_agents <- 1e4
+results <- simulate(settings = settings, return_events = TRUE)
+events <- results$events
+```
 
 Note that you might need a large amount of memory available, if you want
 to collect event history for a large number of patients.
@@ -483,21 +478,21 @@ the table below:
 Closed-cohort analysis can be specified by changing the appropriate
 input parameters.
 
-    library(epicR)
-    input <- get_input(closed_cohort = 1)$values
-    init_session()
-    run(input=input)
-    get_output()
-    terminate_session()
-
-You can also combine jurisdiction and closed-cohort parameters:
-
 ``` r
+library(epicR)
+
+# Simple closed-cohort analysis
+input <- get_input(closed_cohort = 1)$values
+results <- simulate(input = input)
+
+# You can also combine jurisdiction and closed-cohort parameters:
 # Canadian closed-cohort analysis
 input <- get_input(jurisdiction = "canada", closed_cohort = 1)$values
+results <- simulate(input = input)
 
-# US closed-cohort analysis (once US parameters are configured)
+# US closed-cohort analysis
 input <- get_input(jurisdiction = "us", closed_cohort = 1)$values
+results <- simulate(input = input)
 ```
 
 ## Publications with epicR
