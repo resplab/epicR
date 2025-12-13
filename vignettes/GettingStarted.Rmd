@@ -309,24 +309,7 @@ For more complex scenarios requiring custom input modifications, see the "Advanc
 
 ## Advanced Usage
 
-For advanced users who need fine-grained control (e.g., running multiple simulations in one session or modifying complex input parameters), you can manage sessions manually:
-
-### Manual Session Management
-
-```{r advanced_manual}
-# Initialize session once
-init_session()
-
-# Run multiple simulations with same session
-run()
-results1 <- get_output()
-
-run()  # run again with same session
-results2 <- get_output()
-
-# Clean up when done
-terminate_session()
-```
+For advanced users who need fine-grained control over input parameters:
 
 ### Custom Input Modifications
 
@@ -341,23 +324,37 @@ input$values$global_parameters$time_horizon <- 5
 input$values$agent$p_female <- 0.55
 
 # Run with custom inputs
-init_session()
-run(input = input$values)
-results <- get_output()
-terminate_session()
+results <- simulate(input = input$values)
+```
+
+### Running Multiple Simulations
+
+To run multiple simulations with different parameters:
+
+```{r multiple_sims}
+# Simulation 1
+results1 <- simulate(n_agents = 50000, time_horizon = 10, seed = 123)
+
+# Simulation 2 with different parameters
+results2 <- simulate(n_agents = 50000, time_horizon = 20, seed = 123)
+
+# Compare results
+comparison <- data.frame(
+  time_horizon = c(10, 20),
+  n_deaths = c(results1$basic$n_deaths, results2$basic$n_deaths)
+)
 ```
 
 ### Error Handling
 
-Always wrap manual session management in error handling:
+The `simulate()` function includes automatic error handling and cleanup. For additional safety:
 
 ```{r error_handling_advanced}
-tryCatch({
-  init_session()
-  run()
-  results <- get_output()
-}, finally = {
-  terminate_session()
+results <- tryCatch({
+  simulate(n_agents = 50000)
+}, error = function(e) {
+  message("Simulation failed: ", e$message)
+  NULL
 })
 ```
 
@@ -372,7 +369,7 @@ If you get memory allocation errors:
 
 ### Session Issues
 
-The `simulate()` function handles session management automatically and includes error handling. If you're using manual session management (see Advanced Usage), always use `tryCatch()` to ensure `terminate_session()` is called even if errors occur.
+The `simulate()` function handles session management automatically and includes error handling.
 
 ## Next Steps
 

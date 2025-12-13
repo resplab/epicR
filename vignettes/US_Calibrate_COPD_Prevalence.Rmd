@@ -1,8 +1,8 @@
 ---
-title: "Calibrate COPD Prevalence"
+title: "US_Calibrate COPD Prevalence"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate COPD Prevalence}
+  %\VignetteIndexEntry{US_Calibrate COPD Prevalence}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -44,7 +44,6 @@ library(knitr)
 settings <- get_default_settings()
 settings$record_mode <- 0
 settings$n_base_agents <- 1e5
-init_session(settings = settings)
 
 input <- get_input(jurisdiction = "us")
 time_horizon <- 26
@@ -67,9 +66,8 @@ input$values$COPD$logit_p_COPD_betas_by_sex <- cbind(male = c(intercept = -4.301
 ```{r, eval = TRUE, echo = TRUE}
 
 # Run EPIC simulation
-run(input = input$values)
-output <- get_output_ex()
-terminate_session()
+results <- simulate(settings = settings, input = input$values, extended_results = TRUE)
+output <- results$extended
 
 ```
 

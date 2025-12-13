@@ -102,18 +102,11 @@ Each config must have a `"jurisdiction"` field at the top level.
 
 ### Session Management
 
-The package has two APIs:
-1. **Simple**: `simulate()` - handles sessions automatically
-2. **Advanced**: Manual `init_session()` + `run()` + `terminate_session()`
-
-Keep both working for backward compatibility.
+The package uses `simulate()` which handles sessions automatically, including initialization, running the simulation, and cleanup.
 
 ### Memory Management
 
-The C++ engine allocates memory for simulations. Always:
-- Test memory cleanup with `terminate_session()`
-- Check for memory leaks in long-running sessions
-- Verify auto-cleanup works in `simulate()`
+The C++ engine allocates memory for simulations. The `simulate()` function handles all memory management automatically, including cleanup even if errors occur.
 
 ### Compilation
 

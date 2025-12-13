@@ -1,8 +1,8 @@
 ---
-title: "Calibrate Smoking Status"
+title: "US_Calibrate Smoking Status"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate Smoking Status}
+  %\VignetteIndexEntry{US_Calibrate Smoking Status}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -47,7 +47,6 @@ library(knitr)
 settings <- get_default_settings()
 settings$record_mode <- 0
 settings$n_base_agents <- 1e5
-init_session(settings = settings)
 
 input <- get_input(jurisdiction = "us")
 time_horizon <- 26
@@ -138,9 +137,8 @@ input$values$smoking$mortality_factor_former <- t(as.matrix(c(age40to49 = 1.31, 
 
 ```{r, eval = TRUE, echo = TRUE}
 
-run(input = input$values)
-output <- get_output_ex()
-terminate_session()
+results <- simulate(settings = settings, input = input$values, extended_results = TRUE)
+output <- results$extended
 
 ```
 

@@ -162,7 +162,6 @@ get_available_memory <- function() {
 #' Initializes a model. Allocates memory to the C engine.
 #' @param settings customized settings.
 #' @return 0 if successful.
-#' @export
 init_session <- function(settings = get_default_settings()) {
   message("Initializing the session")
   message("Working directory: ", getwd())
@@ -223,7 +222,6 @@ init_session <- function(settings = get_default_settings()) {
 
 #' Terminates a session and releases allocated memory.
 #' @return 0 if successful.
-#' @export
 terminate_session <- function() {
   message("Terminating the session")
   session_env$initialized <- FALSE
@@ -355,7 +353,6 @@ get_all_events <- function() {
 #' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
 #' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
 #' @return simulation results if successful
-#' @export
 #' @examples
 #' \dontrun{
 #' # Simple usage - everything handled automatically

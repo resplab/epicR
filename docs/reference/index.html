@@ -132,14 +132,14 @@ document.addEventListener('DOMContentLoaded', function() {
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/AddingNewCountry.html">Adding a New Country to epicR</a></li>
     <li><a class="dropdown-item" href="../articles/BackgroundEPIC.html">EPIC Background</a></li>
-    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Exacerbations.html">Calibrate COPD Exacerbations</a></li>
-    <li><a class="dropdown-item" href="../articles/Calibrate_COPD_Prevalence.html">Calibrate COPD Prevalence</a></li>
-    <li><a class="dropdown-item" href="../articles/Calibrate_Demographics.html">Calibrate Demographics</a></li>
-    <li><a class="dropdown-item" href="../articles/Calibrate_Smoking.html">Calibrate Smoking Status</a></li>
+    <li><a class="dropdown-item" href="../articles/Canada_Calibrate_COPD_Exacerbations.html">Canada_Calibrate COPD Exacerbations</a></li>
     <li><a class="dropdown-item" href="../articles/GettingStarted.html">Getting Started with EPIC</a></li>
-    <li><a class="dropdown-item" href="../articles/Payoffs.html">Payoffs</a></li>
-    <li><a class="dropdown-item" href="../articles/RecalibratingEPIC.html">RecalibratingEPIC</a></li>
-    <li><a class="dropdown-item" href="../articles/Reproducing_bgd.html">Reproducing Background Mortality</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Calibrate_Background_Mortality.html">US_Calibrate Background Mortality</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Calibrate_COPD_Exacerbations.html">US_Calibrate COPD Exacerbations</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Calibrate_COPD_Prevalence.html">US_Calibrate COPD Prevalence</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Calibrate_Demographics.html">US_Calibrate Demographics</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Calibrate_Smoking_Status.html">US_Calibrate Smoking Status</a></li>
+    <li><a class="dropdown-item" href="../articles/US_Payoffs.html">US_Payoffs</a></li>
     <li><a class="dropdown-item" href="../articles/UsingEPICinR.html">Using EPIC in R</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -166,118 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
       <dl><dt>
-
-          <code><a href="Cget_agent_events.html">Cget_agent_events()</a></code>
-
-        </dt>
-        <dd>Returns all events of an agent.</dd>
-
-        <dt>
-
-          <code><a href="Cget_agent_size_bytes.html">Cget_agent_size_bytes()</a></code>
-
-        </dt>
-        <dd>Returns the size of agent struct in bytes</dd>
-
-        <dt>
-
-          <code><a href="Cget_all_events.html">Cget_all_events()</a></code>
-
-        </dt>
-        <dd>Returns all events.</dd>
-
-        <dt>
-
-          <code><a href="Cget_all_events_matrix.html">Cget_all_events_matrix()</a></code>
-
-        </dt>
-        <dd>Returns a matrix containing all events</dd>
-
-        <dt>
-
-          <code><a href="Cget_event.html">Cget_event()</a></code>
-
-        </dt>
-        <dd>Returns the events stack.</dd>
-
-        <dt>
-
-          <code><a href="Cget_events_by_type.html">Cget_events_by_type()</a></code>
-
-        </dt>
-        <dd>Returns all events of a certain type.</dd>
-
-        <dt>
-
-          <code><a href="Cget_inputs.html">Cget_inputs()</a></code>
-
-        </dt>
-        <dd>Returns inputs</dd>
-
-        <dt>
-
-          <code><a href="Cget_n_events.html">Cget_n_events()</a></code>
-
-        </dt>
-        <dd>Returns total number of events.</dd>
-
-        <dt>
-
-          <code><a href="Cget_output.html">Cget_output()</a></code>
-
-        </dt>
-        <dd>Main outputs of the current run.</dd>
-
-        <dt>
-
-          <code><a href="Cget_output_ex.html">Cget_output_ex()</a></code>
-
-        </dt>
-        <dd>Extra outputs from the model</dd>
-
-        <dt>
-
-          <code><a href="Cget_progress.html">Cget_progress()</a></code>
-
-        </dt>
-        <dd>Returns current simulation progress.</dd>
-
-        <dt>
-
-          <code><a href="Cget_runtime_stats.html">Cget_runtime_stats()</a></code>
-
-        </dt>
-        <dd>Returns run time stats.</dd>
-
-        <dt>
-
-          <code><a href="Cget_settings.html">Cget_settings()</a></code>
-
-        </dt>
-        <dd>Returns current settings.</dd>
-
-        <dt>
-
-          <code><a href="Cget_smith.html">Cget_smith()</a></code>
-
-        </dt>
-        <dd>Returns agent Smith.</dd>
-
-        <dt>
-
-          <code><a href="Cset_input_var.html">Cset_input_var()</a></code>
-
-        </dt>
-        <dd>Sets input variables.</dd>
-
-        <dt>
-
-          <code><a href="Cset_settings_var.html">Cset_settings_var()</a></code>
-
-        </dt>
-        <dd>Sets model settings.</dd>
-
-        <dt>
 
           <code><a href="calc_event_stack_size.html">calc_event_stack_size()</a></code>
 
@@ -314,6 +202,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="copy_configs_to_user.html">copy_configs_to_user()</a></code>
+
+        </dt>
+        <dd>Copy default configs to user directory</dd>
+
+        <dt>
+
+          <code><a href="epicR-config.html">epicR-config</a></code> <code><a href="epicR-config.html">configuration</a></code> <code><a href="epicR-config.html">config</a></code>
+
+        </dt>
+        <dd>epicR Configuration Management</dd>
+
+        <dt>
+
           <code><a href="epicR-package.html">epicR-package</a></code> <code><a href="epicR-package.html">epicR</a></code>
 
         </dt>
@@ -345,14 +247,14 @@ document.addEventListener('DOMContentLoaded', function() {
           <code><a href="get_agent_events.html">get_agent_events()</a></code>
 
         </dt>
-        <dd>Returns events specific to an agent.</dd>
+        <dd>Returns all events of an agent.</dd>
 
         <dt>
 
           <code><a href="get_agent_size_bytes.html">get_agent_size_bytes()</a></code>
 
         </dt>
-        <dd>Get size of agent struct in bytes (from C code)</dd>
+        <dd>Returns the size of agent struct in bytes</dd>
 
         <dt>
 
@@ -360,6 +262,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         </dt>
         <dd>Returns all events.</dd>
+
+        <dt>
+
+          <code><a href="get_all_events_matrix.html">get_all_events_matrix()</a></code>
+
+        </dt>
+        <dd>Returns a matrix containing all events</dd>
 
         <dt>
 
@@ -384,10 +293,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="get_event.html">get_event()</a></code>
+
+        </dt>
+        <dd>Returns the events stack.</dd>
+
+        <dt>
+
           <code><a href="get_events_by_type.html">get_events_by_type()</a></code>
 
         </dt>
-        <dd>Returns certain events by type</dd>
+        <dd>Returns all events of a certain type.</dd>
 
         <dt>
 
@@ -398,10 +314,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="get_inputs.html">get_inputs()</a></code>
+
+        </dt>
+        <dd>Returns inputs</dd>
+
+        <dt>
+
           <code><a href="get_list_elements.html">get_list_elements()</a></code>
 
         </dt>
         <dd>Get list elements</dd>
+
+        <dt>
+
+          <code><a href="get_n_events.html">get_n_events()</a></code>
+
+        </dt>
+        <dd>Returns total number of events.</dd>
+
+        <dt>
+
+          <code><a href="get_output.html">get_output()</a></code>
+
+        </dt>
+        <dd>Main outputs of the current run.</dd>
+
+        <dt>
+
+          <code><a href="get_output_ex.html">get_output_ex()</a></code>
+
+        </dt>
+        <dd>Extra outputs from the model</dd>
+
+        <dt>
+
+          <code><a href="get_progress.html">get_progress()</a></code>
+
+        </dt>
+        <dd>Returns current simulation progress.</dd>
+
+        <dt>
+
+          <code><a href="get_runtime_stats.html">get_runtime_stats()</a></code>
+
+        </dt>
+        <dd>Returns run time stats.</dd>
 
         <dt>
 
@@ -412,6 +370,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="get_settings.html">get_settings()</a></code>
+
+        </dt>
+        <dd>Returns current settings.</dd>
+
+        <dt>
+
+          <code><a href="get_smith.html">get_smith()</a></code>
+
+        </dt>
+        <dd>Returns agent Smith.</dd>
+
+        <dt>
+
+          <code><a href="get_user_config_dir.html">get_user_config_dir()</a></code>
+
+        </dt>
+        <dd>Get user config directory path</dd>
+
+        <dt>
+
           <code><a href="init_session.html">init_session()</a></code>
 
         </dt>
@@ -419,10 +398,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="list_available_jurisdictions.html">list_available_jurisdictions()</a></code>
+
+        </dt>
+        <dd>List available config jurisdictions</dd>
+
+        <dt>
+
           <code><a href="mvrnormArma.html">mvrnormArma()</a></code>
 
         </dt>
         <dd>Samples from a multivariate normal</dd>
+
+        <dt>
+
+          <code><a href="open_user_config_dir.html">open_user_config_dir()</a></code>
+
+        </dt>
+        <dd>Open user config directory in file explorer</dd>
 
         <dt>
 
@@ -437,6 +430,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         </dt>
         <dd>Reports exacerbation-related stats.</dd>
+
+        <dt>
+
+          <code><a href="reset_model_input.html">reset_model_input()</a></code>
+
+        </dt>
+        <dd>Reset the cached model input</dd>
+
+        <dt>
+
+          <code><a href="reset_user_configs.html">reset_user_configs()</a></code>
+
+        </dt>
+        <dd>Reset user configs to package defaults</dd>
 
         <dt>
 
@@ -468,6 +475,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="set_input_var.html">set_input_var()</a></code>
+
+        </dt>
+        <dd>Sets input variables.</dd>
+
+        <dt>
+
+          <code><a href="set_settings_var.html">set_settings_var()</a></code>
+
+        </dt>
+        <dd>Sets model settings.</dd>
+
+        <dt>
+
           <code><a href="simulate.html">simulate()</a></code>
 
         </dt>
@@ -489,10 +510,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <dt>
 
+          <code><a href="user_config_exists.html">user_config_exists()</a></code>
+
+        </dt>
+        <dd>Check if user config exists</dd>
+
+        <dt>
+
           <code><a href="validate_COPD.html">validate_COPD()</a></code>
 
         </dt>
         <dd>Returns results of validation tests for COPD</dd>
+
+        <dt>
+
+          <code><a href="validate_config.html">validate_config()</a></code>
+
+        </dt>
+        <dd>Validate a config file</dd>
 
         <dt>
 

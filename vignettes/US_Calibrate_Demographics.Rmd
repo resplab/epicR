@@ -1,8 +1,8 @@
 ---
-title: "Calibrate Demographics"
+title: "US_Calibrate Demographics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calibrate Demographics}
+  %\VignetteIndexEntry{US_Calibrate Demographics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -50,9 +50,6 @@ The `calculate_rmse_optim` function calculates the RMSE for each iteration of pa
 # RMSE function for optimization
 calculate_rmse_optim <- function(params) {
 
-
-  init_session(settings = settings)
-
   #assigning first 3 values to l_inc_betas
   input$values$agent$l_inc_betas <- params[1:3]
 
@@ -69,10 +66,8 @@ calculate_rmse_optim <- function(params) {
     hf = 0
   )
 
-
-  run(input=input$values)
-  output <- get_output_ex()
-  terminate_session()
+  results <- simulate(settings = settings, input = input$values, extended_results = TRUE)
+  output <- results$extended
 
 
   epic_popsize_age <- data.frame(year = seq(2015, by = 1, length.out = time_horizon),
@@ -200,7 +195,6 @@ USSimulation <- read_csv(system.file("USCensus.csv", package = "epicR"))
 settings <- get_default_settings()
 settings$record_mode <- 0
 settings$n_base_agents <- settings$n_base_agents
-init_session(settings = settings)
 
 input <- get_input(jurisdiction = "us")
 time_horizon <- 56
@@ -217,10 +211,8 @@ input$values$agent$ln_h_bgd_betas <- c(params[4], params[5], params[6], params[7
                                        n_stroke = 0, hf = 0)
 
 
-
-run(input = input$values)
-output <- get_output_ex()
-terminate_session()
+results <- simulate(settings = settings, input = input$values, extended_results = TRUE)
+output <- results$extended
 
 
 epic_popsize_age <- data.frame(year = seq(2015, by = 1, length.out = time_horizon),

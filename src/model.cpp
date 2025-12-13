@@ -1654,7 +1654,7 @@ int model_run(int max_n_agents)
       if(_res<0) return(_res);
     }
 
-    if (output.n_agents>settings.n_base_agents)  //now we are done with prevalent cases and are creating incident cases;
+    if (output.n_agents>=settings.n_base_agents)  //now we are done with prevalent cases and are creating incident cases;
       {
       double incidence = exp(input.agent.l_inc_betas[0]+input.agent.l_inc_betas[1]*calendar_time+input.agent.l_inc_betas[2]*calendar_time*calendar_time);
       if(incidence<0.000000000000001) calendar_time=input.global_parameters.time_horizon; else {
