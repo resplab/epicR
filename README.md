@@ -1,6 +1,5 @@
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/resplab/epicR/workflows/R-CMD-check/badge.svg)](https://github.com/resplab/epicR/actions)
-[![Codecov test coverage](https://codecov.io/gh/resplab/epicR/graph/badge.svg)](https://app.codecov.io/gh/resplab/epicR)
+[![R-CMD-check.yaml](https://github.com/resplab/epicR/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/resplab/epicR/actions/workflows/R-CMD-check.yaml)]
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
