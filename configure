@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Configure script for epicR
-echo "Configuring epicR..."
-
-# Simply copy Makevars.in to Makevars (no substitution needed)
-cp src/Makevars.in src/Makevars
-
-echo "Configuration complete"

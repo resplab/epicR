@@ -366,66 +366,75 @@ sanity_COPD <- function() {
   settings <- default_settings
 
   settings$record_mode <- session_env$record_mode["record_mode_agent"]
-  # settings$agent_stack_size<-0
-  # settings$n_base_agents <- 10000
-  # settings$event_stack_size <- settings$n_base_agents * 10
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- 20000
+  settings$event_stack_size <- settings$n_base_agents * 10
 
   init_session(settings = settings)
 
-  message("Welcome! I am going to check EPIC's sanity with regard to modeling COPD\n ")
-  petoc()
+  # Load input parameters
+  inp <- get_input()
 
   message("COPD incidence and prevalence parameters are as follows\n")
 
   message("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
-  print(model_input$values$COPD$logit_p_COPD_betas_by_sex)
+  print(inp$values$COPD$logit_p_COPD_betas_by_sex)
   petoc()
   message("model_input$values$COPD$p_prevalent_COPD_stage:\n")
-  print(model_input$values$COPD$p_prevalent_COPD_stage)
+  print(inp$values$COPD$p_prevalent_COPD_stage)
   petoc()
   message("model_input$values$COPD$ln_h_COPD_betas_by_sex:\n")
-  print(model_input$values$COPD$ln_h_COPD_betas_by_sex)
+  print(inp$values$COPD$ln_h_COPD_betas_by_sex)
   petoc()
 
   message("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
   petoc()
-  input <- model_input$values
+  input <- inp$values
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  message("The model is reporting it has got that many COPDs: ", get_output()$n_COPD, " out of ", get_output()$n_agents, " agents.\n")
-  dataS <- get_events_by_type(events["event_start"])
-  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
-  dataS <- get_events_by_type(events["event_end"])
-  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The model is reporting it has got this many COPDs cases: ", get_output()$n_COPD, " out of ", get_output()$n_agents, " agents.\n")
+  all_events <- as.data.frame(get_all_events_matrix())
+  dataS <- all_events[all_events$event == events["event_start"], ]
+  message("The prevalence of COPD in Start event dump is: ", mean(dataS[, "gold"] > 0), "\n")
+  dataS <- all_events[all_events$event == events["event_end"], ]
+  message("The prevalence of COPD in End event dump is: ", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
-  message("Now I am going to switch off incidence and create COPD patients only through prevalence (set at 0.5)")
+  message("Now I am going to switch off incidence and create COPD patients only through prevalence (using natural prevalence)")
   petoc()
-  get_input()
-  input <- model_input$values
-  input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0
+  terminate_session()
+  init_session(settings = settings)
+  inp <- get_input()
+  input <- inp$values
+  # Keep prevalence at natural values (don't multiply by 0)
+  # Turn off incidence completely
   input$COPD$ln_h_COPD_betas_by_sex <- input$COPD$ln_h_COPD_betas_by_sex * 0 - 100
   run(input = input)
-  message("The model is reporting it has got that many COPDs:", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
-  dataS <- get_events_by_type(events["event_start"])
-  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
-  dataS <- get_events_by_type(events["event_end"])
-  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The model is reporting it has got this many COPDs: ", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
+  all_events <- as.data.frame(get_all_events_matrix())
+  dataS <- all_events[all_events$event == events["event_start"], ]
+  message("The prevalence of COPD in Start event dump is: ", mean(dataS[, "gold"] > 0), "\n")
+  dataS <- all_events[all_events$event == events["event_end"], ]
+  message("The prevalence of COPD in End event dump is: ", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
   message("Now I am going to switch off prevalence and create COPD patients only through incidence\n")
   petoc()
-  get_input()
-  input <- model_input$values
+  terminate_session()
+  init_session(settings = settings)
+  inp <- get_input()
+  input <- inp$values
+  # Turn off prevalence completely
   input$COPD$logit_p_COPD_betas_by_sex <- input$COPD$logit_p_COPD_betas_by_sex * 0 - 100
-
+  # Keep incidence at natural values (don't set to negative)
   run(input = input)
-  message("The model is reporting it has got that many COPDs:", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
-  dataS <- get_events_by_type(events["event_start"])
-  message("The prevalence of COPD in Start event dump is:", mean(dataS[, "gold"] > 0), "\n")
-  dataS <- get_events_by_type(events["event_end"])
-  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The model is reporting it has got this many COPDs: ", get_output()$n_COPD, " out of ", get_output()$n_agents, "agents.\n")
+  all_events <- as.data.frame(get_all_events_matrix())
+  dataS <- all_events[all_events$event == events["event_start"], ]
+  message("The prevalence of COPD in Start event dump is: ", mean(dataS[, "gold"] > 0), "\n")
+  dataS <- all_events[all_events$event == events["event_end"], ]
+  message("The prevalence of COPD in End event dump is: ", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
 
@@ -1887,5 +1896,65 @@ med.plotted <- ggplot2::ggplot(data=med.plot, aes(x=time, y=prop, col=medication
 plot(med.plotted)
 
 terminate_session()
+}
+
+
+#' Validates exacerbation trends by sex over time
+#' @param n_sim number of simulated agents (default=1e4)
+#' @return a plot showing exacerbation counts by sex over time
+#' @export
+validate_exacerbation_by_sex <- function(n_sim = 1e4) {
+  message("Validate_exacerbation_by_sex(...) produces a plot of exacerbation counts by sex over time.\n")
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 1
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  output_ex <- get_output_ex()
+
+  # Extract n_exac_by_ctime_sex data
+  # This is a matrix with dimensions [time_horizon][2] where columns are sex (0=male, 1=female)
+  exac_data <- as.data.frame(output_ex$n_exac_by_ctime_sex)
+  colnames(exac_data) <- c("Male", "Female")
+  exac_data$Year <- 1:nrow(exac_data)
+
+  # Reshape data for ggplot
+  exac_data_long <- reshape2::melt(exac_data, id.vars = "Year",
+                                   variable.name = "Sex",
+                                   value.name = "Exacerbations")
+
+  # Create the plot
+  plot <- ggplot2::ggplot(exac_data_long, aes(x = Year, y = Exacerbations, color = Sex)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    theme_bw(base_size = 14) +
+    labs(title = "Number of Exacerbations by Sex Over Time",
+         x = "Year",
+         y = "Number of Exacerbations",
+         color = "Sex") +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5))
+
+  print(plot)
+
+  # Print summary statistics
+  message("\nSummary statistics:")
+  message("Total exacerbations (Male): ", sum(exac_data$Male))
+  message("Total exacerbations (Female): ", sum(exac_data$Female))
+  message("Mean annual exacerbations (Male): ", round(mean(exac_data$Male), 2))
+  message("Mean annual exacerbations (Female): ", round(mean(exac_data$Female), 2))
+
+  terminate_session()
+
+  return(invisible(exac_data))
 
 }
