@@ -123,6 +123,7 @@ List get_output_ex()
     out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_severity_undiagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_undiagnosed,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_severity_diagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_diagnosed,input.global_parameters.time_horizon);
+    out["n_exac_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_sex,input.global_parameters.time_horizon);
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
@@ -205,7 +206,7 @@ void update_output_ex(agent *ag)
       output_ex.n_COPD_by_ctime_sex[time][(*ag).sex]+=((*ag).gold>0)*1;
       output_ex.n_COPD_by_ctime_age[time][age-1]+=((*ag).gold>0)*1;
       output_ex.n_COPD_by_ctime_severity[time][((*ag).gold)]+=1;
-      output_ex.n_COPD_by_age_sex[age-1][(*ag).sex]+=1;
+      output_ex.n_COPD_by_age_sex[age-1][(*ag).sex]+=((*ag).gold>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold==0) output_ex.n_Overdiagnosed_by_ctime_sex[time][(*ag).sex]+=((*ag).diagnosis>0)*1;
       if((*ag).gold>0) output_ex.n_Diagnosed_by_ctime_severity[time][(*ag).gold]+=((*ag).diagnosis>0)*1;
