@@ -147,6 +147,9 @@
 - [`validate_exacerbation()`](validate_exacerbation.md) : Returns
   results of validation tests for exacerbation rates
 
+- [`validate_exacerbation_by_sex()`](validate_exacerbation_by_sex.md) :
+  Validates exacerbation trends by sex over time
+
 - [`validate_gpvisits()`](validate_gpvisits.md) : Returns results of
   validation tests for GP visits
 
