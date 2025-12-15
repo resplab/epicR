@@ -39,7 +39,7 @@ session_env$agent_creation_mode<-c(
 #' @export
 get_agent_size_bytes <- function() {
   tryCatch(
-    get_agent_size_bytes(),
+    .Call(`_epicR_get_agent_size_bytes`),
     error = function(e) 800  # Fallback estimate if C function not available
   )
 }
@@ -317,7 +317,7 @@ express_matrix <- function(mtx) {
 #' @return dataframe consisting all events specific to agent \code{id}
 #' @export
 get_agent_events <- function(id) {
-  x <- get_agent_events(id)
+  x <- .Call(`_epicR_get_agent_events`, id)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -328,7 +328,7 @@ get_agent_events <- function(id) {
 #' @return dataframe consisting all events of the type \code{event_type}
 #' @export
 get_events_by_type <- function(event_type) {
-  x <- get_events_by_type(event_type)
+  x <- .Call(`_epicR_get_events_by_type`, event_type)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
@@ -338,7 +338,7 @@ get_events_by_type <- function(event_type) {
 #' @return dataframe consisting all events.
 #' @export
 get_all_events <- function() {
-  x <- get_all_events()
+  x <- .Call(`_epicR_get_all_events`)
   data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
   names(data) <- names(x[[1]])
   return(data)
