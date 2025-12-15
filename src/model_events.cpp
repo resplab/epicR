@@ -101,10 +101,10 @@ agent *event_end_process(agent *ag)
   //If it falls after that still we ignore as it is a partially observed year.
 #endif
 #if OUTPUT_EX>1
-  //  output_ex.cumul_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost; // accounting for residual last year, for consistency with output.total_qaly and   output.total_cost
-  //  output_ex.cumul_cost_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_cost;
-  //  output_ex.cumul_qaly_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_qaly;
-  //  output_ex.cumul_qaly_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_qaly;
+  output_ex.cumul_cost_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_cost; // accounting for residual last year, for consistency with output.total_qaly and   output.total_cost
+  output_ex.cumul_cost_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_cost;
+  output_ex.cumul_qaly_ctime[input.global_parameters.time_horizon-1]+=(*ag).cumul_qaly;
+  output_ex.cumul_qaly_gold_ctime[input.global_parameters.time_horizon-1][(*ag).gold]+=(*ag).cumul_qaly;
 
   int age=floor((*ag).local_time+(*ag).age_at_creation);
   //Rprintf("age at death=%f\n",age);
