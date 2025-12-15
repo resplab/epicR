@@ -123,6 +123,7 @@ List get_output_ex()
     out["n_exac_by_ctime_GOLD"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_GOLD,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_severity_undiagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_undiagnosed,input.global_parameters.time_horizon);
     out["n_exac_by_ctime_severity_diagnosed"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_severity_diagnosed,input.global_parameters.time_horizon);
+    out["n_exac_by_ctime_sex"]=AS_MATRIX_INT_SIZE(output_ex.n_exac_by_ctime_sex,input.global_parameters.time_horizon);
 #endif
 
 #if (OUTPUT_EX & OUTPUT_EX_GPSYMPTOMS)>0
