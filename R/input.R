@@ -31,10 +31,6 @@ events<-c(
   event_doctor_visit=8,
   event_medication_change=9,
 
-  event_mi=10,
-  event_stroke=11,
-  event_hf=12,
-
   event_bgd=13,
   event_end=14
 )

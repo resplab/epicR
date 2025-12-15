@@ -32,8 +32,8 @@ events<-c(
     event_exacerbation_death=7,
     event_doctor_visit=8,
     event_medication_change=9,
-    event_bgd=10,
-    event_end=11
+    event_bgd=13,
+    event_end=14
 )
   */
 

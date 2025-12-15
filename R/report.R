@@ -185,9 +185,9 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
     if (all_events[i, "id"] != all_events[i - 1, "id"])
       last_GOLD_transition_time <- 0
     if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
-      Follow_up_Gold[all_events[i - 1, "gold"]] = Follow_up_Gold[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
+      Follow_up_Gold[all_events[i - 1, "gold"]] = Follow_up_Gold[all_events[i - 1, "gold"]] + all_events[i, "followup_after_COPD"] -
         last_GOLD_transition_time
-      last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
+      last_GOLD_transition_time <- all_events[i, "followup_after_COPD"]
     }
     if (all_events[i, "event"] == 14)
       Follow_up_Gold[all_events[i, "gold"]] = Follow_up_Gold[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
