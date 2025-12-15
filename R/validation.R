@@ -434,7 +434,7 @@ sanity_COPD <- function() {
   dataS <- all_events[all_events$event == events["event_start"], ]
   message("The prevalence of COPD in Start event dump is: ", mean(dataS[, "gold"] > 0), "\n")
   dataS <- all_events[all_events$event == events["event_end"], ]
-  message("The prevalence of COPD in End event dump is:", mean(dataS[, "gold"] > 0), "\n")
+  message("The prevalence of COPD in End event dump is: ", mean(dataS[, "gold"] > 0), "\n")
   petoc()
 
 
@@ -1896,5 +1896,65 @@ med.plotted <- ggplot2::ggplot(data=med.plot, aes(x=time, y=prop, col=medication
 plot(med.plotted)
 
 terminate_session()
+}
+
+
+#' Validates exacerbation trends by sex over time
+#' @param n_sim number of simulated agents (default=1e4)
+#' @return a plot showing exacerbation counts by sex over time
+#' @export
+validate_exacerbation_by_sex <- function(n_sim = 1e4) {
+  message("Validate_exacerbation_by_sex(...) produces a plot of exacerbation counts by sex over time.\n")
+
+  settings <- default_settings
+  settings$record_mode <- record_mode["record_mode_none"]
+  settings$agent_stack_size <- 0
+  settings$n_base_agents <- n_sim
+  settings$event_stack_size <- 1
+  init_session(settings = settings)
+
+  input <- model_input$values
+
+  res <- run(input = input)
+  if (res < 0)
+    stop("Execution stopped.\n")
+
+  output_ex <- get_output_ex()
+
+  # Extract n_exac_by_ctime_sex data
+  # This is a matrix with dimensions [time_horizon][2] where columns are sex (0=male, 1=female)
+  exac_data <- as.data.frame(output_ex$n_exac_by_ctime_sex)
+  colnames(exac_data) <- c("Male", "Female")
+  exac_data$Year <- 1:nrow(exac_data)
+
+  # Reshape data for ggplot
+  exac_data_long <- reshape2::melt(exac_data, id.vars = "Year",
+                                   variable.name = "Sex",
+                                   value.name = "Exacerbations")
+
+  # Create the plot
+  plot <- ggplot2::ggplot(exac_data_long, aes(x = Year, y = Exacerbations, color = Sex)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    theme_bw(base_size = 14) +
+    labs(title = "Number of Exacerbations by Sex Over Time",
+         x = "Year",
+         y = "Number of Exacerbations",
+         color = "Sex") +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5))
+
+  print(plot)
+
+  # Print summary statistics
+  message("\nSummary statistics:")
+  message("Total exacerbations (Male): ", sum(exac_data$Male))
+  message("Total exacerbations (Female): ", sum(exac_data$Female))
+  message("Mean annual exacerbations (Male): ", round(mean(exac_data$Male), 2))
+  message("Mean annual exacerbations (Female): ", round(mean(exac_data$Female), 2))
+
+  terminate_session()
+
+  return(invisible(exac_data))
 
 }

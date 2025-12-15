@@ -1,0 +1,96 @@
+calc_event_stack_size   Calculate recommended event_stack_size for a
+                        given number of agents
+calibrate_COPD_inc      Solves stochastically for COPD incidence rate
+                        equation.
+calibrate_explicit_mortality
+                        Calibrates explicit mortality
+calibrate_explicit_mortality2
+                        Calibrates explicit mortality by Amin
+calibrate_smoking       Calibrates smoking
+copy_configs_to_user    Copy default configs to user directory
+epicR-config            epicR Configuration Management
+epicR-package           'epicR' package
+estimate_memory_required
+                        Estimate memory required for simulation
+export_figures          Runs the model and exports an excel file with
+                        all output data
+express_matrix          Express matrix.
+get_agent_events        Returns all events of an agent.
+get_agent_size_bytes    Returns the size of agent struct in bytes
+get_all_events          Returns all events.
+get_all_events_matrix   Returns a matrix containing all events
+get_available_memory    Get available system memory (platform-specific)
+get_default_settings    Exports default settings
+get_errors              Returns errors
+get_event               Returns the events stack.
+get_events_by_type      Returns all events of a certain type.
+get_input               Returns a list of default model input values
+get_inputs              Returns inputs
+get_list_elements       Get list elements
+get_n_events            Returns total number of events.
+get_output              Main outputs of the current run.
+get_output_ex           Extra outputs from the model
+get_progress            Returns current simulation progress.
+get_runtime_stats       Returns run time stats.
+get_sample_output       Returns a sample output for a given year and
+                        gender.
+get_settings            Returns current settings.
+get_smith               Returns agent Smith.
+get_user_config_dir     Get user config directory path
+init_session            Initializes a model. Allocates memory to the C
+                        engine.
+list_available_jurisdictions
+                        List available config jurisdictions
+mvrnormArma             Samples from a multivariate normal
+open_user_config_dir    Open user config directory in file explorer
+report_COPD_by_ctime    Reports COPD related stats.
+report_exacerbation_by_time
+                        Reports exacerbation-related stats.
+reset_model_input       Reset the cached model input
+reset_user_configs      Reset user configs to package defaults
+resume                  Resumes running of model.
+run                     Runs the model. Auto-initializes if no session
+                        is active.
+sanity_COPD             Basic COPD test.
+sanity_check            Basic tests of model functionality. Serious
+                        issues if the test does not pass.
+set_input_var           Sets input variables.
+set_settings_var        Sets model settings.
+simulate                Convenience function: run simulation and return
+                        results
+terminate_session       Terminates a session and releases allocated
+                        memory.
+test_case_detection     Returns results of Case Detection strategies
+user_config_exists      Check if user config exists
+validate_COPD           Returns results of validation tests for COPD
+validate_config         Validate a config file
+validate_diagnosis      Returns results of validation tests for
+                        diagnosis
+validate_exacerbation   Returns results of validation tests for
+                        exacerbation rates
+validate_exacerbation_by_sex
+                        Validates exacerbation trends by sex over time
+validate_gpvisits       Returns results of validation tests for GP
+                        visits
+validate_lung_function
+                        Returns results of validation tests for lung
+                        function
+validate_medication     Returns results of validation tests for
+                        medication module.
+validate_mortality      Returns results of validation tests for
+                        mortality rate
+validate_overdiagnosis
+                        Returns results of validation tests for
+                        overdiagnosis
+validate_payoffs        Returns results of validation tests for
+                        payoffs, costs and QALYs
+validate_population     Returns simulated vs. predicted population
+                        table and a plot
+validate_smoking        Returns results of validation tests for smoking
+                        module.
+validate_survival       Returns the Kaplan Meier curve comparing COPD
+                        and non-COPD
+validate_symptoms       Returns results of validation tests for
+                        Symptoms
+validate_treatment      Returns results of validation tests for
+                        Treatment

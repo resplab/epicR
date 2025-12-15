@@ -1,0 +1,651 @@
+{
+  "jurisdiction": "canada",
+  "global_parameters": {
+    "age0": 40,
+    "age0_metadata": {
+      "help": "Starting age in the model",
+      "ref": ""
+    },
+    "time_horizon": 20,
+    "time_horizon_metadata": {
+      "help": "Model time horizon",
+      "ref": ""
+    },
+    "discount_cost": 0,
+    "discount_cost_metadata": {
+      "help": "Discounting for cost outcomes",
+      "ref": ""
+    },
+    "discount_qaly": 0.03,
+    "discount_qaly_metadata": {
+      "help": "Discounting for QALY outcomes",
+      "ref": ""
+    },
+    "closed_cohort": 0,
+    "closed_cohort_metadata": {
+      "help": "Whether the model should run as closed_cohort, open-population by default",
+      "ref": ""
+    }
+  },
+  "agent": {
+    "p_female": 0.5,
+    "p_female_metadata": {
+      "help": "Proportion of females in the population",
+      "ref": "Model assumption"
+    },
+    "height_0_betas": [1.82657, -0.13093, -0.00125, 2.31e-06, -0.0001651],
+    "height_0_betas_metadata": {
+      "help": "Regression coefficients for estimating height (in meters) at baseline",
+      "ref": ""
+    },
+    "height_0_sd": 0.06738,
+    "height_0_sd_metadata": {
+      "help": "SD representing heterogeneity in baseline height",
+      "ref": ""
+    },
+    "weight_0_betas": [50, -5, 0.1, 0, 0, 1, 0.01],
+    "weight_0_betas_metadata": {
+      "help": "Regression coefficients for estimating weight (in Kg) at baseline",
+      "ref": ""
+    },
+    "weight_0_sd": 5,
+    "weight_0_sd_metadata": {
+      "help": "SD representing heterogeneity in baseline weight",
+      "ref": ""
+    },
+    "height_weight_rho": 0,
+    "height_weight_rho_metadata": {
+      "help": "Correlation coefficient between weight and height at baseline",
+      "ref": ""
+    },
+    "p_prevalence_age": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 473.9, 462.7, 463, 469.3, 489.9, 486.3, 482.7, 479, 483.7, 509, 542.8, 557.7, 561.4, 549.7, 555.3, 544.6, 531.6, 523.9, 510.2, 494.1, 486.5, 465.6, 442.8, 424.6, 414.9, 404.3, 394.4, 391.5, 387.3, 330.9, 304.5, 292.2, 277.4, 255.1, 241.1, 223.2, 211.4, 198.8, 185.6, 178, 166.7, 155.2, 149.1, 140.6, 131.9, 119.7, 105.8, 95.4, 83.4, 73.2, 62.4, 52.3, 42.7, 34.7, 27, 19.9, 13.2, 8.8, 5.9, 3.8, 6.8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "p_prevalence_age_metadata": {
+      "help": "Age pyramid at baseline",
+      "ref": "From config for canada"
+    },
+    "p_incidence_age": "calculated",
+    "p_incidence_age_metadata": {
+      "help": "Discrete distribution of age for the incidence population (population arriving after the first date) - generally estimated through calibration",
+      "ref": ""
+    },
+    "p_bgd_by_sex": {
+      "male": [0.00522, 3e-04, 0.00022, 0.00017, 0.00013, 0.00011, 1e-04, 9e-05, 8e-05, 8e-05, 9e-05, 1e-04, 0.00012, 0.00015, 2e-04, 0.00028, 0.00039, 0.00051, 0.00059, 0.00066, 0.00071, 0.00075, 0.00076, 0.00076, 0.00074, 0.00071, 7e-04, 0.00069, 7e-04, 0.00071, 0.00074, 0.00078, 0.00082, 0.00086, 0.00091, 0.00096, 0.00102, 0.00108, 0.00115, 0.00123, 0.00132, 0.00142, 0.00153, 0.00165, 0.00179, 0.00194, 0.00211, 0.00229, 0.00251, 0.00275, 0.00301, 0.00331, 0.00364, 0.00401, 0.00441, 0.00484, 0.00533, 0.00586, 0.00645, 0.00709, 0.0078, 0.00859, 0.00945, 0.0104, 0.01145, 0.0126, 0.01387, 0.01528, 0.01682, 0.01852, 0.0204, 0.02247, 0.02475, 0.02726, 0.03004, 0.0331, 0.03647, 0.04019, 0.0443, 0.04883, 0.05383, 0.05935, 0.06543, 0.07215, 0.07957, 0.08776, 0.0968, 0.10678, 0.1178, 0.12997, 0.14341, 0.15794, 0.17326, 0.18931, 0.20604, 0.21839, 0.23536, 0.2529, 0.27092, 0.28933, 0.30802, 0.32687, 0.34576, 0.36457, 0.38319, 0.40149, 0.41937, 0.43673, 0.4535, 0.4696, 1],
+      "female": [0.00449, 0.00021, 0.00016, 0.00013, 1e-04, 9e-05, 8e-05, 7e-05, 7e-05, 7e-05, 8e-05, 8e-05, 9e-05, 0.00011, 0.00014, 0.00018, 0.00022, 0.00026, 0.00028, 0.00029, 3e-04, 3e-04, 0.00031, 0.00031, 3e-04, 3e-04, 3e-04, 0.00031, 0.00032, 0.00034, 0.00037, 4e-04, 0.00043, 0.00047, 0.00051, 0.00056, 6e-04, 0.00066, 0.00071, 0.00077, 0.00084, 0.00092, 0.001, 0.00109, 0.00118, 0.00129, 0.0014, 0.00153, 0.00166, 0.00181, 0.00197, 0.00215, 0.00235, 0.00257, 0.0028, 0.00307, 0.00336, 0.00368, 0.00403, 0.00442, 0.00485, 0.00533, 0.00586, 0.00645, 0.0071, 0.00782, 0.00862, 0.00951, 0.01051, 0.01161, 0.01284, 0.0142, 0.01573, 0.01743, 0.01934, 0.02146, 0.02384, 0.02649, 0.02947, 0.0328, 0.03654, 0.04074, 0.04545, 0.05074, 0.05669, 0.06338, 0.07091, 0.0794, 0.08897, 0.09977, 0.11196, 0.12542, 0.13991, 0.15541, 0.1719, 0.18849, 0.20653, 0.22549, 0.24526, 0.26571, 0.28671, 0.3081, 0.3297, 0.35132, 0.3728, 0.39395, 0.41461, 0.43462, 0.45386, 0.47222, 1]
+    },
+    "p_bgd_by_sex_metadata": {
+      "help": "Life table",
+      "ref": "Life table for canada"
+    },
+    "l_inc_betas": [-3.55, 0.01, 0],
+    "l_inc_betas_metadata": {
+      "help": "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration",
+      "ref": "If closed cohort is enabled, incidence population will be turned off."
+    },
+    "ln_h_bgd_betas": [0, -0.025, 0, 0, 0, 0, 0, 0, 0],
+    "ln_h_bgd_betas_metadata": {
+      "help": "Increased Longevity Over time and effect of other variables",
+      "ref": ""
+    }
+  },
+  "smoking": {
+    "logit_p_current_smoker_0_betas": [-0.2, -1, -0.02, 0, 0, 0, -0.02],
+    "logit_p_current_smoker_0_betas_metadata": {
+      "help": "Probability of being a current smoker at the time of creation",
+      "ref": ""
+    },
+    "logit_p_never_smoker_con_not_current_0_betas": [3.7, 0, -0.06, 0, 0, 0, -0.02],
+    "logit_p_never_smoker_con_not_current_0_betas_metadata": {
+      "help": "Probability of being a never-smoker conditional on not being current smoker, at the time of creation",
+      "ref": ""
+    },
+    "minimum_smoking_prevalence": 0.10,
+    "minimum_smoking_prevalence_metadata": {
+      "help": "Minimum Smoking Prevalence",
+      "ref": ""
+    },
+    "mortality_factor_current": [1, 1, 1.94, 1.86, 1.66],
+    "mortality_factor_current_metadata": {
+      "help": "Mortality ratio for current smokers vs. non-smokers by sex and age group",
+      "ref": "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+    },
+    "mortality_factor_former": [1, 1, 1.54, 1.36, 1.27],
+    "mortality_factor_former_metadata": {
+      "help": "Mortality ratio for former smokers vs. non-smokers by sex and age group",
+      "ref": "Meta-analysis. doi:10.1001/archinternmed.2012.1397"
+    },
+    "pack_years_0_betas": [22, -4, 0, -0.6, 10],
+    "pack_years_0_betas_metadata": {
+      "help": "Regression equations for determining the pack-years of smoking at the time of creation (for smokers)",
+      "ref": ""
+    },
+    "pack_years_0_sd": 5,
+    "pack_years_0_sd_metadata": {
+      "help": "Standard deviation for variation in pack-years among individuals (current or former smokers)",
+      "ref": ""
+    },
+    "ln_h_inc_betas": [-4, -0.15, -0.02, 0, -0.01],
+    "ln_h_inc_betas_metadata": {
+      "help": "Log-hazard of starting smoking (incidence or relapse)",
+      "ref": ""
+    },
+    "ln_h_ces_betas": [-3.7, 0, 0.02, 0, -0.01, 0.3293],
+    "ln_h_ces_betas_metadata": {
+      "help": "Log-hazard of smoking cessation",
+      "ref": "Diagnosis coefficient from Wu et al. BMC Public Health 2006"
+    },
+    "smoking_ces_coefficient": 100,
+    "smoking_ces_coefficient_metadata": {
+      "help": "Coefficient for the decay rate of smoking cessaton treatment, default is 100",
+      "ref": ""
+    },
+    "smoking_cessation_adherence": 0.7,
+    "smoking_cessation_adherence_metadata": {
+      "help": "Proportion adherent to smoking cessation treatment",
+      "ref": ""
+    }
+  },
+  "COPD": {
+    "logit_p_COPD_betas_by_sex": {
+      "male": [-4.522189, 0.033070, 0, 0.025049, 0, 0, 0],
+      "female": [-4.074861, 0.027359, 0, 0.030399, 0, 0, 0]
+    },
+    "logit_p_COPD_betas_by_sex_metadata": {
+      "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
+      "ref": "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term"
+    },
+    "ln_h_COPD_betas_by_sex": {
+      "male": [-7.97107937, 0.03245063, 0, 0.03578899, 0, 0, 0],
+      "female": [-7.78520064, 0.02975571, 0, 0.04087865, 0, 0, 0]
+    },
+    "ln_h_COPD_betas_by_sex_metadata": {
+      "help": "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)",
+      "ref": "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)"
+    }
+  },
+  "lung_function": {
+    "fev1_0_prev_betas_by_sex": {
+      "male": [1.546161, -0.031296, 1.012579, -0.006925, 0, 0],
+      "female": [1.329805, -0.031296, 1.012579, -0.006925, 0, 0]
+    },
+    "fev1_0_prev_betas_by_sex_metadata": {
+      "help": "Regression (OLS) coefficients for mean of FEV1 at time of creation for those with COPD (separately by sex)",
+      "ref": "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
+    },
+    "fev1_0_prev_sd_by_sex": {
+      "male": 0.6148,
+      "female": 0.4242
+    },
+    "fev1_0_prev_sd_by_sex_metadata": {
+      "help": "SD of FEV1 at time of creation for those with COPD (separately by sex)",
+      "ref": ""
+    },
+    "fev1_0_inc_betas_by_sex": {
+      "male": [0.8064, -0.0322, 1.27, -0.00428, 0, 0],
+      "female": [1.1487, -0.0275, 0.97, -0.00465, 0, 0]
+    },
+    "fev1_0_inc_betas_by_sex_metadata": {
+      "help": "Regression (OLS) coefficients for mean of FEV1 at time of development of COPD(separately by sex)",
+      "ref": "for LLN based on Shahzad's calculations. Last Updated on 2017-04-19. See https://github.com/aminadibi/epicR/issues/8"
+    },
+    "fev1_0_inc_sd_by_sex": {
+      "male": 0.54,
+      "female": 0.36
+    },
+    "fev1_0_inc_sd_by_sex_metadata": {
+      "help": "SD of FEV1 at time of development of COPD (separately by sex)",
+      "ref": ""
+    },
+    "fev1_0_ZafarCMAJ_by_sex": {
+      "male": [1.91, -0.00508, -0.00049, -1.8725, 1.9513, -0.09221, -0.00832, 0],
+      "female": [1.4275, -0.00508, -0.00049, -1.8725, 1.9513, -0.09221, -0.00832, 0]
+    },
+    "fev1_0_ZafarCMAJ_by_sex_metadata": {
+      "help": "Regression coefficients for mean of FEV1 at time of creation with COPD or development of COPD based on Zafar's CMAJ. Used for conditional normal distribution in FEV1 decline equations.  (separately by sex)",
+      "ref": "Zafari Z, Sin DD, Postma DS, Lofdahl CG, Vonk J, Bryan S, Lam S, Tammemagi CM, Khakban R, Man SP, Tashkin D. Individualized prediction of lung-function decline in chronic obstructive pulmonary disease. Canadian Medical Association Journal. 2016 Oct 4;188(14):1004-11."
+    },
+    "pred_fev1_betas_by_sex": {
+      "male": [0.5536, -0.01303, -0.000172, 1.4098],
+      "female": [0.4333, -0.00361, -0.000194, 1.1496]
+    },
+    "pred_fev1_betas_by_sex_metadata": {
+      "help": "Coefficients for calculation of predicted FEV1 based on individual characteristics",
+      "ref": ""
+    },
+    "fev1_betas_by_sex": {
+      "male": [-0.16192, 0.002344, 0.000126, 0.05835, 0.01807, -0.03074, -0.00093, -0.00146],
+      "female": [-0.1543, 0.002344, 0.000126, 0.05835, 0.01807, -0.03074, -0.00093, -0.00146]
+    },
+    "fev1_betas_by_sex_metadata": {
+      "help": "Regression equations (mixed-effects model) for rate of FEV1 decline",
+      "ref": ""
+    },
+    "dfev1_sigmas": [0.3171, 0.02754],
+    "dfev1_sigmas_metadata": {
+      "help": "Sigmas in G Matrix for FEV1 decline",
+      "ref": ""
+    },
+    "dfev1_re_rho": 0.09956332,
+    "dfev1_re_rho_metadata": {
+      "help": "Correlation coefficient between random-effect terms in the mixed-effects model of FEV1 decline",
+      "ref": "G Matrix Zafari CMAJ 2016 - Modified"
+    }
+  },
+  "exacerbation": {
+    "ln_rate_betas": [1.4, 0, 0.004082, -1.5, 0.7, 0.3, -0.3, 0.08, -0.35, 0],
+    "ln_rate_betas_metadata": {
+      "help": "Regression coefficients for the random-effects log-hazard model of exacerbation (of any severity)",
+      "ref": "Rates from DOI: 10.2147/COPD.S13826, adjusted to account for diganosis bias. Adjusted on 2018-10-02 to match manuscript. Recalibrated on 2022-11-04, see validate_exacerbations()"
+    },
+    "ln_rate_intercept_sd": 0.7416,
+    "ln_rate_intercept_sd_metadata": {
+      "help": "SD of the random intercept for log-hazard of exacerbation",
+      "ref": ""
+    },
+    "logit_severity_betas": [-3.609, 2.202, 5.208, -0.764, -0.007, 0.98, 0.348, -0.001, 0.018],
+    "logit_severity_betas_metadata": {
+      "help": "Regression coefficients for the proportional odds model of exacerbation severity",
+      "ref": "Shahzad's regression on MACRO with adjusted intercepts to match severity levels reported by Hoogendoorn et al. Last updated on manuscript submission"
+    },
+    "logit_severity_intercept_sd": 1.4403,
+    "logit_severity_intercept_sd_metadata": {
+      "help": "SD of the random intercept for proportional odds model of exacerbation severity",
+      "ref": ""
+    },
+    "rate_severity_intercept_rho": 0,
+    "rate_severity_intercept_rho_metadata": {
+      "help": "Correlation coefficient between the random effect terms of rate and severity",
+      "ref": ""
+    },
+    "exac_end_rate": [73, 73, 73, 73],
+    "exac_end_rate_metadata": {
+      "help": "Rate of ending of an exacerbation (inversely realted to exacerbation duration) according to severity level",
+      "ref": ""
+    },
+    "logit_p_death_by_sex": {
+      "male": [-13, 0.04879, 0, 0, 7.4, 8, 0],
+      "female": [-13, 0.04879, 0, 0, 7.4, 8, 0]
+    },
+    "logit_p_death_by_sex_metadata": {
+      "help": "Probability of death due to exacerbation according to its severity level",
+      "ref": ""
+    }
+  },
+  "symptoms": {
+    "logit_p_cough_COPD_by_sex": {
+      "male": [4.4006, -0.0412, 0.6036, 0, -0.9564],
+      "female": [3.4534, -0.0412, 0.6036, 0, -0.9564]
+    },
+    "logit_p_cough_COPD_by_sex_metadata": {
+      "help": "Probability of having cough for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_cough_nonCOPD_by_sex": {
+      "male": [-5.2872, 0.03429, 0.3786, 0],
+      "female": [-5.0694, 0.03429, 0.3786, 0]
+    },
+    "logit_p_cough_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having cough for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_phlegm_COPD_by_sex": {
+      "male": [3.5726, -0.02422, 1.0754, 0, -1.6443],
+      "female": [1.4836, -0.02422, 1.0754, 0, -1.6443]
+    },
+    "logit_p_phlegm_COPD_by_sex_metadata": {
+      "help": "Probability of having phlegm for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_phlegm_nonCOPD_by_sex": {
+      "male": [-10.3164, 0.02771, 0.5865, 0],
+      "female": [-10.6623, 0.02771, 0.5865, 0]
+    },
+    "logit_p_phlegm_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having phlegm for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_dyspnea_COPD_by_sex": {
+      "male": [4.8358, -0.00891, 0.4177, 0, -1.9942],
+      "female": [4.2012, -0.00891, 0.4177, 0, -1.9942]
+    },
+    "logit_p_dyspnea_COPD_by_sex_metadata": {
+      "help": "Probability of having dyspnea for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_dyspnea_nonCOPD_by_sex": {
+      "male": [-7.1802, 0.07002, 0.8388, 0],
+      "female": [-6.2459, 0.07002, 0.8388, 0]
+    },
+    "logit_p_dyspnea_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having dyspnea for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_wheeze_COPD_by_sex": {
+      "male": [14.2686, -0.1408, 0.1345, 0, -2.3122],
+      "female": [12.7691, -0.1408, 0.1345, 0, -2.3122]
+    },
+    "logit_p_wheeze_COPD_by_sex_metadata": {
+      "help": "Probability of having wheeze for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "logit_p_wheeze_nonCOPD_by_sex": {
+      "male": [-6.6284, -0.02051, 0.2332, 0],
+      "female": [-6.1613, -0.02051, 0.2332, 0]
+    },
+    "logit_p_wheeze_nonCOPD_by_sex_metadata": {
+      "help": "Probability of having wheeze for non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "covariance_COPD": [
+      [2.7934, 2.11077, 1.1737, 0.64573],
+      [2.11077, 7.0945, 1.45258, 0.89548],
+      [1.1737, 1.45258, 7.4793, 1.48313],
+      [0.64573, 0.89548, 1.48313, 3.6357]
+    ],
+    "covariance_COPD_metadata": {
+      "help": "Covariance matrix for symptoms random effects in COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    },
+    "covariance_nonCOPD": [
+      [10.4693, 17.10328, 9.39833, 1.04549],
+      [17.10328, 138.8000, 36.8647, 4.67073],
+      [9.39833, 36.86470, 107.09, 5.78527],
+      [1.04549, 4.67073, 5.78527, 5.1828]
+    ],
+    "covariance_nonCOPD_metadata": {
+      "help": "Covariance matrix for symptoms random effects in non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-22"
+    }
+  },
+  "outpatient": {
+    "ln_rate_gpvisits_COPD_by_sex": {
+      "male": [0.4472, 0.012, 0.0669, -0.1414, -0.0037, -0.0108, 0.0553, 0.0947],
+      "female": [0.3747, 0.012, 0.0669, -0.1414, -0.0037, -0.0108, 0.0553, 0.0947]
+    },
+    "ln_rate_gpvisits_COPD_by_sex_metadata": {
+      "help": "Rate of GP visits for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "dispersion_gpvisits_COPD": 0.431,
+    "dispersion_gpvisits_COPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in COPD patients",
+      "ref": ""
+    },
+    "ln_rate_gpvisits_nonCOPD_by_sex": {
+      "male": [-0.3596, 0.0169, 0.0722, 0.181, -0.0275, 0.2262, 0.0807],
+      "female": [-0.3501, 0.0169, 0.0722, 0.181, -0.0275, 0.2262, 0.0807]
+    },
+    "ln_rate_gpvisits_nonCOPD_by_sex_metadata": {
+      "help": "Rate of GP visits for Non-COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "dispersion_gpvisits_nonCOPD": 0.4093,
+    "dispersion_gpvisits_nonCOPD_metadata": {
+      "help": "Dispersion parameter for GP visits model in non-COPD patients",
+      "ref": ""
+    },
+    "rate_doctor_visit": 0.1,
+    "rate_doctor_visit_metadata": {
+      "help": "Rate of doctor visits",
+      "ref": ""
+    },
+    "p_specialist": 0.1,
+    "p_specialist_metadata": {
+      "help": "Probability of specialist visit",
+      "ref": ""
+    }
+  },
+  "diagnosis": {
+    "p_case_detection": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "p_case_detection_metadata": {
+      "help": "Probability of recieving case detection in each year given they meet the selection criteria",
+      "ref": "Only applies if case_detection_start_year less than time_horizon."
+    },
+    "case_detection_start_end_yrs": [100, 100],
+    "case_detection_start_end_yrs_metadata": {
+      "help": "Years in which case detection programme is to begin and end, respectively.",
+      "ref": "Acts as on on/off switch for case detection. Default is 100 i.e. case detection is off. To apply case detection, start year must be less than the time horizon. If case detection is to be administered for entire time horizon then start year would be zero and end year >= time horizon."
+    },
+    "years_btw_case_detection": 5,
+    "years_btw_case_detection_metadata": {
+      "help": "Number of years between case detection",
+      "ref": ""
+    },
+    "min_cd_age": 40,
+    "min_cd_age_metadata": {
+      "help": "Minimum age for recieving case detection",
+      "ref": ""
+    },
+    "min_cd_pack_years": 0,
+    "min_cd_pack_years_metadata": {
+      "help": "Minimum pack-years smoking to recieve case detection",
+      "ref": ""
+    },
+    "min_cd_symptoms": 0,
+    "min_cd_symptoms_metadata": {
+      "help": "Set to 1 if only patients with symptoms should recieve case detection at baseline",
+      "ref": ""
+    },
+    "case_detection_methods": {
+      "None": [0, 0, 0],
+      "CDQ17": [4.1013, 4.394, 11.56],
+      "FlowMeter": [3.174, 1.6025, 30.46],
+      "FlowMeter_CDQ": [2.7321, 0.8779, 42.37]
+    },
+    "case_detection_methods_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods in the total population",
+      "ref": "Sichletidis et al 2011"
+    },
+    "case_detection_methods_eversmokers": {
+      "None": [0, 0, 0],
+      "CDQ195": [2.3848, 3.7262, 11.56],
+      "CDQ165": [3.7336, 4.8098, 11.56],
+      "FlowMeter": [3.1677, 2.6657, 24.33],
+      "FlowMeter_CDQ": [2.8545, 0.8779, 42.37]
+    },
+    "case_detection_methods_eversmokers_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods among ever smokers",
+      "ref": "Haroon et al. BMJ Open 2015"
+    },
+    "case_detection_methods_symptomatic": {
+      "None": [0, 0, 0],
+      "FlowMeter": [3.2705, 2.2735, 24.33]
+    },
+    "case_detection_methods_symptomatic_metadata": {
+      "help": "Sensitivity, specificity, and cost of case detection methods among ever smokers",
+      "ref": "CanCOLD analysed on Sept 9, 2019"
+    },
+    "logit_p_prevalent_diagnosis_by_sex": {
+      "male": [1.0543, -0.0152, 0.1068, -0.6146, 0.075, 0.283, -0.0275, 0.5414, 0],
+      "female": [0.8905, -0.0152, 0.1068, -0.6146, 0.075, 0.283, -0.0275, 0.5414, 0]
+    },
+    "logit_p_prevalent_diagnosis_by_sex_metadata": {
+      "help": "Probability of being diagnosed for patients with prevalent COPD",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-08-09"
+    },
+    "logit_p_diagnosis_by_sex": {
+      "male": [-2, -0.0324, 0.3711, -0.8032, 0.0087, 0.208, 0.4088, 0.0321, 0.722, 0],
+      "female": [-2.4873, -0.0324, 0.3711, -0.8032, 0.0087, 0.208, 0.4088, 0.0321, 0.722, 0]
+    },
+    "logit_p_diagnosis_by_sex_metadata": {
+      "help": "Probability of being diagnosed for COPD patients",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-05-29"
+    },
+    "p_hosp_diagnosis": 1,
+    "p_hosp_diagnosis_metadata": {
+      "help": "Probability of hospital diagnosis",
+      "ref": ""
+    },
+    "logit_p_overdiagnosis_by_sex": {
+      "male": [-5.2169, 0.0025, 0.6911, 0.0075, 0.7264, 0.7956, 0.66, 0.8798, 0],
+      "female": [-4.9572, 0.0025, 0.6911, 0.0075, 0.7264, 0.7956, 0.66, 0.8798, 0]
+    },
+    "logit_p_overdiagnosis_by_sex_metadata": {
+      "help": "Probability of being overdiagnosed for non-COPD subjects",
+      "ref": "Kate's regression on CanCOLD, provided on 2019-07-16"
+    },
+    "p_correct_overdiagnosis": 0.5,
+    "p_correct_overdiagnosis_metadata": {
+      "help": "Probability of correcting overdiagnosis",
+      "ref": ""
+    }
+  },
+  "medication": {
+    "medication_adherence": 0.7,
+    "medication_adherence_metadata": {
+      "help": "Proportion adherent to medication",
+      "ref": ""
+    },
+    "medication_ln_hr_exac": {
+      "None": 0,
+      "SABA": 0,
+      "LABA": -0.15415068,
+      "SABA_LABA": -0.15415068,
+      "LAMA": -0.17435339,
+      "LAMA_SABA": -0.17435339,
+      "LAMA_LABA": -0.18633229,
+      "LAMA_LABA_SABA": -0.18633229,
+      "ICS": -0.14842691,
+      "ICS_SABA": -0.14842691,
+      "ICS_LABA": -0.20273255,
+      "ICS_LABA_SABA": -0.20273255,
+      "ICS_LAMA": -0.20273255,
+      "ICS_LAMA_SABA": -0.20273255,
+      "ICS_LAMA_LABA": -0.28768207,
+      "ICS_LAMA_LABA_SABA": -0.28768207
+    },
+    "medication_ln_hr_exac_metadata": {
+      "help": "Rate reduction in exacerbations due to treatment",
+      "ref": "ICS/LABA: Annual Rate Ratio of Comibation Therapy (Salmeterol and Fluticasone Propionate) vs. Placebo from TORCH (doi: 10.1056/NEJMoa063070), ICS: Annual Rate Ratio between Fluticasone vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2), LABA: Annual Rate Ratio between Salmeterol vs. Placebo from TRISTAN Trial (doi:10.1016/S0140-6736(03)12459-2), LAMA-Zhou et al. 2017, LAMA/LABA-UPLIFT 2008, ICS/LAMA/LABA-KRONOS 2018"
+    },
+    "medication_costs": {
+      "None": 0,
+      "SABA": 53.172,
+      "LABA": 0,
+      "SABA_LABA": 0,
+      "LAMA": 353.262,
+      "LAMA_SABA": 0,
+      "LAMA_LABA": 646.142,
+      "LAMA_LAMA_SABA": 0,
+      "ICS": 0,
+      "ICS_SABA": 0,
+      "ICS_LABA": 0,
+      "ICS_LABA_SABA": 0,
+      "ICS_LAMA": 0,
+      "ICS_LAMA_SABA": 0,
+      "ICS_LAMA_LABA": 1142.267,
+      "ICS_LAMA_LABA_SABA": 0
+    },
+    "medication_costs_metadata": {
+      "help": "Costs of treatment",
+      "ref": "BC administrative data"
+    },
+    "medication_utility": {
+      "None": 0,
+      "SABA": 0.0367,
+      "LABA": 0,
+      "SABA_LABA": 0,
+      "LAMA": 0.0367,
+      "LAMA_SABA": 0,
+      "LAMA_LABA": 0.0367,
+      "LAMA_LAMA_SABA": 0,
+      "ICS": 0,
+      "ICS_SABA": 0,
+      "ICS_LABA": 0,
+      "ICS_LABA_SABA": 0,
+      "ICS_LAMA": 0,
+      "ICS_LAMA_SABA": 0,
+      "ICS_LAMA_LABA": 0.0367,
+      "ICS_LAMA_LABA_SABA": 0
+    },
+    "medication_utility_metadata": {
+      "help": "Utility addition from treatment",
+      "ref": "Lambe et al. Thorax 2019"
+    }
+  },
+  "cost": {
+    "bg_cost_by_stage": [0, 142.128, 347.424, 909.6192, 1239.8784],
+    "bg_cost_by_stage_metadata": {
+      "help": "Annual direct (NON-TREATMENT) maintenance costs for non-COPD and COPD by GOLD grades",
+      "ref": ""
+    },
+    "exac_dcost": [30.5312, 764.2128, 9699.2256, 21226.896],
+    "exac_dcost_metadata": {
+      "help": "Incremental direct costs of exacerbations by severity levels",
+      "ref": ""
+    },
+    "cost_case_detection": 0,
+    "cost_case_detection_metadata": {
+      "help": "Cost of case detection",
+      "ref": ""
+    },
+    "cost_outpatient_diagnosis": 61.18,
+    "cost_outpatient_diagnosis_metadata": {
+      "help": "Cost of diagnostic spirometry",
+      "ref": ""
+    },
+    "cost_gp_visit": 35.27,
+    "cost_gp_visit_metadata": {
+      "help": "Cost of GP visit",
+      "ref": ""
+    },
+    "cost_smoking_cessation": 368.76,
+    "cost_smoking_cessation_metadata": {
+      "help": "Cost of 12 weeks Nicotine Replacement Therapy from Mullen BMJ Tobacco Control 2014",
+      "ref": ""
+    }
+  },
+  "utility": {
+    "bg_util_by_stage": [0.86, 0.81, 0.72, 0.68, 0.58],
+    "bg_util_by_stage_metadata": {
+      "help": "Background utilities for non-COPD, and COPD by GOLD grades",
+      "ref": ""
+    },
+    "exac_dutil": {
+      "gold1": [-0.0225, -0.0225, -0.0728, -0.0728],
+      "gold2": [-0.0155, -0.0155, -0.0683, -0.0683],
+      "gold3": [-0.0488, -0.0488, -0.0655, -0.0655],
+      "gold4": [-0.0488, -0.0488, -0.0655, -0.0655]
+    },
+    "exac_dutil_metadata": {
+      "help": "Incremental change in utility during exacerbations by severity level",
+      "ref": ""
+    }
+  },
+  "manual": {
+    "MORT_COEFF": 1,
+    "MORT_COEFF_metadata": {
+      "help": "Mortality coefficient",
+      "ref": ""
+    },
+    "smoking_intercept_k": 1,
+    "smoking_intercept_k_metadata": {
+      "help": "Smoking intercept coefficient",
+      "ref": ""
+    },
+    "explicit_mortality_by_age_sex": {
+      "male": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000403539, -0.000146157, -2.02E-06, 2.86E-05, -3.44E-05, -4.23E-05, 4.11E-05, 6.17E-07, -0.000153637, -8.66E-05, -0.000164969, -0.000196571, -0.000187843, -0.000258444, -0.000313082, -0.000450107, -0.000503461, -0.000507455, -0.000685443, -0.000778368, 0.000174258, 0.001290859, 0.001312415, 0.001563206, 0.001702653, 0.001801797, 0.001963438, 0.002204392, 0.002453385, 0.002698432, 0.002205324, 0.0014888, 0.001848938, 0.001817781, 0.002134294, 0.002514315, 0.00259607, 0.003111937, 0.003895328, 0.004266737, 0.003600876, 0.002149508, 0.003656, 0.003476187, 0.004743609, 0.005217777, 0.00717833, 0.009193578, 0.011745021, 0.013994564, 0.016918953, 0.01972724, 0.024327132, 0.029473222, 0.0333568, 0.034382221, 0.043683632, 0.046918264, 0.05015422, 0.056785037, 0.067912998, 0.089136952, 0.084619065, 0.087049684, 0.071382935, 0.113123173, 0.056760747, 0.131580432, 0.102958338, 0.121878112, -0.173197386, -1],
+      "female": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000259844, 0.000101718, -3.40E-05, 5.93E-05, 8.02E-05, -1.50E-05, 5.27E-05, -3.42E-05, -2.48E-05, -1.31E-05, -8.41E-05, -6.79E-05, -5.84E-05, -0.00019066, -0.000102213, -0.000117037, -0.000177858, -0.000220223, -0.000265341, -0.000330637, 0.000229625, 0.000747219, 0.000783642, 0.000885681, 0.001036908, 0.001221667, 0.001263684, 0.001488539, 0.001609789, 0.001895704, 0.001446215, 0.001285518, 0.001500222, 0.001575942, 0.001798989, 0.001964052, 0.002175782, 0.002460083, 0.002847027, 0.003243588, 0.002699441, 0.002155372, 0.002928563, 0.003010949, 0.003689935, 0.004178407, 0.00548861, 0.006334125, 0.008011011, 0.009087395, 0.011673741, 0.012943067, 0.017208392, 0.018224239, 0.022955536, 0.026702058, 0.030114256, 0.035733502, 0.03965046, 0.047085019, 0.052203521, 0.058999658, 0.070092134, 0.068989349, 0.05458069, 0.074344634, 0.05941906, 0.105553297, 0.050910243, 0.136369534, -0.107299339, -1]
+    },
+    "explicit_mortality_by_age_sex_metadata": {
+      "help": "Explicit mortality rates by age and sex",
+      "ref": ""
+    }
+  },
+  "test_values": {
+    "population_over_40_2015": 18.6e6,
+    "population_over_40_2015_metadata": {
+      "help": "Population over 40 in 2015",
+      "ref": ""
+    },
+    "expected_severe_exacerbations_per_year": 100000,
+    "expected_severe_exacerbations_per_year_metadata": {
+      "help": "Expected severe exacerbations per year",
+      "ref": ""
+    },
+    "expected_severe_exac_tolerance": 5e3,
+    "expected_severe_exac_tolerance_metadata": {
+      "help": "Expected severe exacerbation tolerance",
+      "ref": ""
+    }
+  }
+}
