@@ -73,9 +73,10 @@ List get_output_ex()
     Rcpp::Named("n_smoking_status_by_ctime")=AS_MATRIX_INT_SIZE(output_ex.n_smoking_status_by_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("n_current_smoker_by_ctime_sex")=AS_MATRIX_INT_SIZE(output_ex.n_current_smoker_by_ctime_sex,input.global_parameters.time_horizon),
     Rcpp::Named("annual_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.annual_cost_ctime,input.global_parameters.time_horizon),
-    //Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
-    //Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
-    //Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("cumul_cost_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_cost_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("cumul_cost_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_gold_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("cumul_qaly_ctime")=AS_VECTOR_DOUBLE_SIZE(output_ex.cumul_qaly_ctime,input.global_parameters.time_horizon),
+    Rcpp::Named("cumul_qaly_gold_ctime")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_gold_ctime,input.global_parameters.time_horizon),
     Rcpp::Named("sum_fev1_ltime")=AS_VECTOR_DOUBLE_SIZE(output_ex.sum_fev1_ltime,input.global_parameters.time_horizon),
     Rcpp::Named("cumul_time_by_smoking_status")=AS_VECTOR_DOUBLE(output_ex.cumul_time_by_smoking_status),
     Rcpp::Named("cumul_non_COPD_time")=output_ex.cumul_non_COPD_time,
@@ -179,10 +180,10 @@ void update_output_ex(agent *ag)
         output_ex.n_smoking_status_by_ctime[time][0]+=1;
 
 
-      //output_ex.cumul_cost_ctime[time]+=(*ag).annual_cost;
-      //output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).annual_cost;
-      //output_ex.cumul_qaly_ctime[time]+=(*ag).annual_qaly;
-      //output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).annual_qaly;
+      output_ex.cumul_cost_ctime[time]+=(*ag).cumul_cost;
+      output_ex.cumul_cost_gold_ctime[time][(*ag).gold]+=(*ag).cumul_cost;
+      output_ex.cumul_qaly_ctime[time]+=(*ag).cumul_qaly;
+      output_ex.cumul_qaly_gold_ctime[time][(*ag).gold]+=(*ag).cumul_qaly;
 
         output_ex.sum_fev1_ltime[local_time]+=(*ag).fev1;
 
