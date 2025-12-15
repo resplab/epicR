@@ -780,9 +780,9 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
     if (all_events[i, "id"] != all_events[i - 1, "id"])
       last_GOLD_transition_time <- 0
     if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
-      Follow_up_GOLD[all_events[i - 1, "gold"]] = Follow_up_GOLD[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
+      Follow_up_GOLD[all_events[i - 1, "gold"]] = Follow_up_GOLD[all_events[i - 1, "gold"]] + all_events[i, "followup_after_COPD"] -
         last_GOLD_transition_time
-      last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
+      last_GOLD_transition_time <- all_events[i, "followup_after_COPD"]
     }
     if (all_events[i, "event"] == 14)
       Follow_up_GOLD[all_events[i, "gold"]] = Follow_up_GOLD[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
@@ -805,9 +805,9 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
     if ((all_events_diagnosed[i, "id"] != all_events_diagnosed[i - 1, "id"]))
       last_GOLD_transition_time_diagnosed <- 0
     if ((all_events_diagnosed[i, "id"] == all_events_diagnosed[i - 1, "id"]) & (all_events_diagnosed[i, "gold"] != all_events_diagnosed[i - 1, "gold"])) {
-      Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] = Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] + (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"]) -
+      Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] = Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] + (all_events_diagnosed[i, "local_time"]-all_events_diagnosed[i, "time_at_diagnosis"]) -
         last_GOLD_transition_time_diagnosed
-      last_GOLD_transition_time_diagnosed <- (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"])
+      last_GOLD_transition_time_diagnosed <- (all_events_diagnosed[i, "local_time"]-all_events_diagnosed[i, "time_at_diagnosis"])
     }
     if (all_events_diagnosed[i, "event"] == 14)
       Follow_up_GOLD_diagnosed[all_events_diagnosed[i, "gold"]] = Follow_up_GOLD_diagnosed[all_events_diagnosed[i, "gold"]] + (all_events_diagnosed[i, "local_time"]-all_events_diagnosed[i, "time_at_diagnosis"]) -
@@ -829,9 +829,9 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
     if ((all_events_undiagnosed[i, "id"] != all_events_undiagnosed[i - 1, "id"]))
       last_GOLD_transition_time_undiagnosed <- 0
     if ((all_events_undiagnosed[i, "id"] == all_events_undiagnosed[i - 1, "id"]) & (all_events_undiagnosed[i, "gold"] != all_events_undiagnosed[i - 1, "gold"])) {
-      Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] + (all_events_undiagnosed[i - 1, "local_time"]-all_events_undiagnosed[i - 1, "time_at_diagnosis"]) -
+      Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] + (all_events_undiagnosed[i, "local_time"]-all_events_undiagnosed[i, "time_at_diagnosis"]) -
         last_GOLD_transition_time_undiagnosed
-      last_GOLD_transition_time_undiagnosed <- (all_events_undiagnosed[i - 1, "local_time"]-all_events_undiagnosed[i - 1, "time_at_diagnosis"])
+      last_GOLD_transition_time_undiagnosed <- (all_events_undiagnosed[i, "local_time"]-all_events_undiagnosed[i, "time_at_diagnosis"])
     }
     if (all_events_undiagnosed[i, "event"] == 14)
       Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] + (all_events_undiagnosed[i, "local_time"]-all_events_undiagnosed[i, "time_at_diagnosis"]) -
@@ -845,10 +845,27 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
 
   message("Exacerbation Rates per GOLD stages for all patients:")
 
-  GOLD_I   <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_GOLD[1])
-  GOLD_II  <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_GOLD[2])
-  GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_GOLD[3])
-  GOLD_IV  <- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_GOLD[4])
+  # Count exacerbations by GOLD stage - use named vector to avoid indexing errors
+  exac_counts_by_gold <- table(exac_events[, "gold"])
+
+  GOLD_I   <- ifelse(Follow_up_GOLD[1] > 0,
+                     as.numeric(exac_counts_by_gold["1"]) / Follow_up_GOLD[1],
+                     0)
+  GOLD_II  <- ifelse(Follow_up_GOLD[2] > 0,
+                     as.numeric(exac_counts_by_gold["2"]) / Follow_up_GOLD[2],
+                     0)
+  GOLD_III <- ifelse(Follow_up_GOLD[3] > 0,
+                     as.numeric(exac_counts_by_gold["3"]) / Follow_up_GOLD[3],
+                     0)
+  GOLD_IV  <- ifelse(Follow_up_GOLD[4] > 0,
+                     as.numeric(exac_counts_by_gold["4"]) / Follow_up_GOLD[4],
+                     0)
+
+  # Replace NA with 0 (happens when there are no exacerbations for that GOLD stage)
+  GOLD_I   <- ifelse(is.na(GOLD_I), 0, GOLD_I)
+  GOLD_II  <- ifelse(is.na(GOLD_II), 0, GOLD_II)
+  GOLD_III <- ifelse(is.na(GOLD_III), 0, GOLD_III)
+  GOLD_IV  <- ifelse(is.na(GOLD_IV), 0, GOLD_IV)
 
   message(paste0("exacRateGOLDI   = ", round(GOLD_I  , 2)))
   message(paste0("exacRateGOLDII  = ", round(GOLD_II , 2)))
@@ -865,8 +882,15 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
 
   Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], Follow_up_GOLD[2]) # Because CanCOLD is mostly GOLD2, here we compare EPIC's GOLD2 only instead of GOLD2+
 #  Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], sum(Follow_up_GOLD[2:4]))
-  GOLD_counts_all       <- as.data.frame(table(exac_events[, "gold"]))[, 2]
-  GOLD_counts_all       <- c(GOLD_counts_all[1], sum(GOLD_counts_all[2:4]))
+
+  # Use named access to avoid indexing errors
+  exac_table <- table(exac_events[, "gold"])
+  GOLD_counts_all <- c(
+    as.numeric(exac_table["1"]),
+    sum(as.numeric(exac_table[c("2", "3", "4")]), na.rm = TRUE)
+  )
+  # Replace NA with 0
+  GOLD_counts_all[is.na(GOLD_counts_all)] <- 0
 
   Exac_per_GOLD[1:3, 1] <- c("total", "gold1", "gold2+")
   Exac_per_GOLD[1:3, 2] <- c(total_rate,
@@ -907,9 +931,19 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "Hoogendoorn")
   # ACCEPT data is rates from a join of ECLIPSE, MACRO, OPTIMAL and STATCOPE.
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
-  Exac_per_GOLD_diagnosed[1:4, 2] <- round(
-    x=as.data.frame(table(exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digits = 2)
+
+  # Use named access to avoid indexing errors
+  exac_diag_table <- table(exac_events_diagnosed[, "gold"])
+  exac_diag_rates <- sapply(1:4, function(i) {
+    count <- as.numeric(exac_diag_table[as.character(i)])
+    if (is.na(count)) count <- 0
+    if (Follow_up_GOLD_diagnosed[i] > 0) {
+      return(count / Follow_up_GOLD_diagnosed[i])
+    } else {
+      return(0)
+    }
+  })
+  Exac_per_GOLD_diagnosed[1:4, 2] <- round(exac_diag_rates, digits = 2)
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.82, 1.17, 1.61, 2.10)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
@@ -932,9 +966,19 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "ACCEPT")
   # ACCEPT data is rates from a join of ECLIPSE, MACRO, OPTIMAL and STATCOPE.
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
-  Exac_per_GOLD_diagnosed[1:4, 2] <- round(
-    x=as.data.frame(table(mod_sev_exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digits = 2)
+
+  # Use named access to avoid indexing errors
+  mod_sev_diag_table <- table(mod_sev_exac_events_diagnosed[, "gold"])
+  mod_sev_diag_rates <- sapply(1:4, function(i) {
+    count <- as.numeric(mod_sev_diag_table[as.character(i)])
+    if (is.na(count)) count <- 0
+    if (Follow_up_GOLD_diagnosed[i] > 0) {
+      return(count / Follow_up_GOLD_diagnosed[i])
+    } else {
+      return(0)
+    }
+  })
+  Exac_per_GOLD_diagnosed[1:4, 2] <- round(mod_sev_diag_rates, digits = 2)
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.58, 0.91, 1.41, 1.69)
 
   df <- as.data.frame(Exac_per_GOLD_diagnosed)
@@ -957,9 +1001,19 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "Hoogendoorn", "ACCEPT")
   # ACCEPT data is rates from a join of ECLIPSE, MACRO, OPTIMAL and STATCOPE.
   Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
-  Exac_per_GOLD_diagnosed[1:4, 2] <- round(
-    x=as.data.frame(table(sev_exac_events_diagnosed[, "gold"]))[, 2]/
-      Follow_up_GOLD_diagnosed, digits = 2)
+
+  # Use named access to avoid indexing errors
+  sev_diag_table <- table(sev_exac_events_diagnosed[, "gold"])
+  sev_diag_rates <- sapply(1:4, function(i) {
+    count <- as.numeric(sev_diag_table[as.character(i)])
+    if (is.na(count)) count <- 0
+    if (Follow_up_GOLD_diagnosed[i] > 0) {
+      return(count / Follow_up_GOLD_diagnosed[i])
+    } else {
+      return(0)
+    }
+  })
+  Exac_per_GOLD_diagnosed[1:4, 2] <- round(sev_diag_rates, digits = 2)
 
   Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.11, 0.16, 0.22, 0.28)
   Exac_per_GOLD_diagnosed[1:4, 4] <- c(0.10, 0.14, 0.32, 0.42)
@@ -986,9 +1040,15 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1],
                                          Follow_up_GOLD_undiagnosed[2]) #Because CANCold is mostly GOLD2, we comprare to GOLD2 EPIC
   #Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1], sum(Follow_up_GOLD_undiagnosed[2:4]))
-  GOLD_counts_undiagnosed   <- as.data.frame(table(exac_events_undiagnosed[, "gold"]))[, 2]
-  GOLD_counts_undiagnosed   <- c(GOLD_counts_undiagnosed[1],
-                                 GOLD_counts_undiagnosed[2])
+
+  # Use named access to avoid indexing errors
+  exac_undiag_table <- table(exac_events_undiagnosed[, "gold"])
+  GOLD_counts_undiagnosed <- c(
+    as.numeric(exac_undiag_table["1"]),
+    as.numeric(exac_undiag_table["2"])
+  )
+  # Replace NA with 0
+  GOLD_counts_undiagnosed[is.na(GOLD_counts_undiagnosed)] <- 0
 
 
   Exac_per_GOLD_undiagnosed[1:3, 2] <- c(total_rate_undiagnosed,
