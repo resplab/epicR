@@ -161,15 +161,16 @@ get_available_memory <- function() {
 
 #' Initializes a model. Allocates memory to the C engine.
 #' @param settings customized settings.
+#' @param jurisdiction The jurisdiction for which to load input parameters (default: "canada").
 #' @return 0 if successful.
-init_session <- function(settings = get_default_settings()) {
+init_session <- function(settings = get_default_settings(), jurisdiction = "canada") {
   message("Initializing the session")
   message("Working directory: ", getwd())
   if (exists("deallocate_resources"))
     deallocate_resources()
 
   # Get time_horizon from input parameters for memory calculation
-  input_params <- get_input()
+  input_params <- get_input(jurisdiction = jurisdiction)
   time_horizon <- input_params$values$global_parameters$time_horizon
   if (is.null(time_horizon)) time_horizon <- 20  # default
 
@@ -371,7 +372,7 @@ get_all_events <- function() {
 #' # With reproducible results
 #' run(seed = 123)
 #' }
-run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE, seed = NULL) {
+run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE, seed = NULL, jurisdiction = "canada") {
 
   # Set random seed for reproducibility if provided
   if (!is.null(seed)) {
@@ -386,14 +387,14 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
     if (is.null(settings)) {
       settings <- get_default_settings()
     }
-    init_session(settings = settings)
+    init_session(settings = settings, jurisdiction = jurisdiction)
     auto_initialized <- TRUE
   }
   reset_errors()
 
 
-  # Get default input (always needed)
-  default_input_full <- get_input()
+  # Get default input (always needed), using the specified jurisdiction
+  default_input_full <- get_input(jurisdiction = jurisdiction)
 
   # Display jurisdiction information
   jurisdiction <- "canada"  # default fallback
@@ -611,7 +612,7 @@ simulate <- function(input = NULL, settings = NULL, jurisdiction = "canada",
     message("\nStarting simulation...")
     start_time <- Sys.time()
 
-    run(input = input, settings = settings, auto_terminate = FALSE)
+    run(input = input, settings = settings, auto_terminate = FALSE, jurisdiction = jurisdiction)
 
     # Calculate and display elapsed time
     end_time <- Sys.time()

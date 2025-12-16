@@ -78,10 +78,174 @@ sanity_check <- function() {
 #' @param incidence_k a number (default=1) by which the incidence rate of population will be multiplied.
 #' @param remove_COPD 0 or 1, indicating whether COPD-caused mortality should be removed
 #' @param savePlots 0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
-#' @return returns a table showing predicted (StatsCan) and simulated population values
+#' @param jurisdiction character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".
+#' @return For Canada: returns a table showing predicted (StatsCan) and simulated population values. For US: returns a data frame with population comparisons by age group and year.
 #' @export
-validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0) {
+validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0, jurisdiction = "canada") {
   message("Validate_population(...) is responsible for producing output that can be used to test if the population module is properly calibrated.\n")
+
+  # Handle US jurisdiction
+  if (tolower(jurisdiction) == "us") {
+    USSimulation <- readr::read_csv(system.file("USCensus.csv", package = "epicR"))
+
+    # Setup and run simulation
+    settings <- get_default_settings()
+    settings$record_mode <- 0
+    settings$n_base_agents <- 1e+05 # Reduced from 1e6 for testing speed
+
+    time_horizon <- 56
+    results <- simulate(settings = settings, jurisdiction = "us", time_horizon = time_horizon, extended_results = TRUE)
+    output <- results$extended
+
+    # Create data frame
+    epic_popsize_age <- data.frame(year = seq(2015, by = 1, length.out = time_horizon),
+                                   output$n_alive_by_ctime_age)
+
+    # Rename columns
+    # Logic from validation.R: Columns 2 to N are renamed 1 to N-1
+    colnames(epic_popsize_age)[2:ncol(epic_popsize_age)] <- 1:(ncol(epic_popsize_age) - 1)
+
+    # Remove columns 2 to 40 (ages < 40)
+    epic_popsize_age <- epic_popsize_age[, -(2:40)]
+
+    # Reshape (Long format)
+    epic_popsize_age_long <- tidyr::pivot_longer(epic_popsize_age,
+                                                 cols = -1,
+                                                 names_to = "age",
+                                                 values_to = "EPIC_popsize")
+    # Convert age to integer
+    epic_popsize_age_long$age <- as.integer(epic_popsize_age_long$age)
+
+    # Join/Merge Data
+    colnames(USSimulation)[colnames(USSimulation) == "value"] <- "US_popsize"
+
+    validate_pop_size_scaled <- merge(USSimulation, epic_popsize_age_long,
+                                      by = c("year", "age"),
+                                      all.x = TRUE)
+
+    # Initialize Scaled Column
+    validate_pop_size_scaled$EPIC_output_scaled <- NA
+    validate_pop_size_scaled$EPIC_output_scaled[validate_pop_size_scaled$year == 2015] <-
+      validate_pop_size_scaled$US_popsize[validate_pop_size_scaled$year == 2015]
+
+    # Calculate Growth Rates
+    total_epic_by_year <- aggregate(
+      x = validate_pop_size_scaled["EPIC_popsize"],
+      by = validate_pop_size_scaled["year"],
+      FUN = sum,
+      na.rm = TRUE
+    )
+
+    colnames(total_epic_by_year)[2] <- "total_EPIC_output"
+
+    # Sort by year
+    total_epic_by_year <- total_epic_by_year[order(total_epic_by_year$year), ]
+
+    # Calculate growth rate (current / previous)
+    prev_vals <- c(NA, total_epic_by_year$total_EPIC_output[-nrow(total_epic_by_year)])
+    total_epic_by_year$growth_rate <- total_epic_by_year$total_EPIC_output / prev_vals
+
+    # Merge growth rates back
+    df_with_growth <- merge(validate_pop_size_scaled,
+                            total_epic_by_year[, c("year", "growth_rate")],
+                            by = "year",
+                            all.x = TRUE)
+
+    # Sort for calculations
+    df_with_growth <- df_with_growth[order(df_with_growth$age, df_with_growth$year), ]
+
+    # Apply Growth Projection
+    df_split <- split(df_with_growth, df_with_growth$age)
+
+    df_split <- lapply(df_split, function(sub_df) {
+      # Ensure sorted by year
+      sub_df <- sub_df[order(sub_df$year), ]
+      rates <- sub_df$growth_rate
+      rates[is.na(rates)] <- 1
+      # Get baseline (2015) US size
+      baseline <- sub_df$US_popsize[sub_df$year == 2015]
+      if(length(baseline) == 0) baseline <- 0
+      else baseline <- baseline[1]
+
+      # Calculate Projection
+      sub_df$EPIC_output_scaled <- baseline * cumprod(rates)
+
+      return(sub_df)
+    })
+
+    # Recombine
+    df_with_growth <- do.call(rbind, df_split)
+
+    # Create Age Groups
+    df_with_growth$age_group <- NA
+    df_with_growth$age_group[df_with_growth$age >= 40 & df_with_growth$age <= 59] <- "40-59"
+    df_with_growth$age_group[df_with_growth$age >= 60 & df_with_growth$age <= 79] <- "60-79"
+    df_with_growth$age_group[df_with_growth$age >= 80] <- "80+"
+
+    # Aggregate Final Data
+    df_summed_ranges <- aggregate(
+      x = df_with_growth[c("EPIC_output_scaled", "US_popsize")],
+      by = df_with_growth[c("year", "age_group")],
+      FUN = sum,
+      na.rm = TRUE
+    )
+
+    colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
+
+    # Calculate RMSE
+    rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
+      sqrt(mean((sub$total_EPIC_population - sub$total_US_population)^2, na.rm = TRUE))
+    })
+
+    rmse_per_range <- data.frame(age_group = names(rmse_results),
+                                 rmse = as.numeric(rmse_results))
+
+    print(rmse_per_range)
+
+    # Plotting Loop
+    unique_groups <- unique(df_summed_ranges$age_group)
+
+    for(age_grp in unique_groups) {
+      # Plot
+      df_subset <- df_summed_ranges[df_summed_ranges$year <= 2050 & df_summed_ranges$age_group == age_grp, ]
+      df_plot <- tidyr::gather(df_subset,
+                               key = "Population_Type",
+                               value = "Population",
+                               "total_EPIC_population", "total_US_population")
+
+      p <- ggplot2::ggplot(
+        df_plot,
+        ggplot2::aes(x = .data$year,
+                     y = .data$Population,
+                     color = .data$Population_Type)
+      ) +
+        ggplot2::geom_line(linewidth = 1.2) +
+        ggplot2::geom_point(size = 2) +
+        ggthemes::theme_tufte(base_size = 14, ticks = FALSE) +
+        ggplot2::ggtitle(paste("Comparison of EPIC vs. US Population Over Time for Age Group", age_grp)) +
+        ggplot2::scale_y_continuous(name = "Population", labels = scales::comma) +
+        ggplot2::scale_x_continuous(name = "Year", breaks = seq(min(df_plot$year), max(df_plot$year), by = 2)) +
+        ggplot2::expand_limits(y = 0) +
+        ggplot2::theme(
+          legend.title = ggplot2::element_blank(),
+          legend.position = "bottom",
+          plot.background = ggplot2::element_rect(fill = "white", color = NA),
+          panel.background = ggplot2::element_rect(fill = "white", color = NA)
+        )
+
+      print(p)
+    }
+
+    # RETURN FOR TESTING
+    return(df_summed_ranges)
+  }
+
+  # Check for unsupported jurisdictions
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' and 'us' are supported.")
+  }
+
+  # Canada implementation (existing code)
   petoc()
 
   settings <- default_settings
@@ -202,10 +366,135 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 #' assess the model's accuracy.
 #' @param intercept_k a number
 #' @param remove_COPD 0 or 1. whether to remove COPD-related mortality.
-#' @return validation test results
+#' @param jurisdiction character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".
+#' @return For Canada: validation test results (invisible). For US: data frame with smoking status rates by year.
 #' @export
-validate_smoking <- function(remove_COPD = 1, intercept_k = NULL) {
+validate_smoking <- function(remove_COPD = 1, intercept_k = NULL, jurisdiction = "canada") {
+
+  # Handle US jurisdiction
+  if (tolower(jurisdiction) == "us") {
+    message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions for the US population")
+
+    settings <- get_default_settings()
+    settings$record_mode <- record_mode["record_mode_event"]
+    settings$n_base_agents <- 1e+04
+    settings$event_stack_size <- settings$n_base_agents * 1.7 * 30
+
+    # Prepare custom input modifications
+    input_modifications <- list()
+
+    message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
+    if (remove_COPD) {
+      input_modifications$exacerbation_logit_p_death_by_sex_modifier <- -10000
+    }
+
+    if (!is.null(intercept_k)) {
+      input_modifications$manual_smoking_intercept_k <- intercept_k
+    }
+
+    message("There are three US validation targets: 1) the prevalence of current, former, and non-smokers in 2018, 2) the prevalence of current smokers in 2023, and 3) the average annual percent change (AAPC).\n")
+    message("Starting validation target 1: baseline prevalence of smokers.\n")
+
+    USSmoking2018 <- readr::read_csv(system.file("USSmoking2018.csv", package = "epicR"))
+    tab1 <- as.numeric(USSmoking2018$value[1:3]) / 100
+    message("This is the observed percentage of current smokers in 2018 (m,f)\n")
+    barplot(tab1, names.arg = c("40-64", "65-74", "75+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
+            col = c("grey"))
+    title(cex.main = 0.5, "Prevalence of current smoker by sex and age group (observed)")
+    legend("topright", c("Overall"), fill = c("grey"))
+
+    message("Now I will run the model using the default smoking parameters")
+    message("running the model\n")
+
+    # Run with jurisdiction and settings
+    # Note: Input modifications for remove_COPD and intercept_k would need to be handled differently
+    # For now, we'll modify after getting input from simulate
+    input <- get_input(jurisdiction = "us")
+    if (remove_COPD) {
+      input$values$exacerbation$logit_p_death_by_sex <- input$values$exacerbation$logit_p_death_by_sex * -10000
+    }
+    if (!is.null(intercept_k)) {
+      input$values$manual$smoking$intercept_k <- intercept_k
+    }
+
+    # Run with modified input - pass jurisdiction to ensure consistency
+    results <- simulate(input = input$values, settings = settings, jurisdiction = "us", extended_results = TRUE, return_events = TRUE)
+
+    dataS <- as.matrix(results$events)
+    dataS <- dataS[which(dataS[, "event"] == events["event_start"]), ]
+    age_list <- list(a1 = c(40, 64), a2 = c(65, 74), a3 = c(75, 111))
+    tab2 <- numeric(length(age_list))
+
+    for (j in 1:length(age_list)) {
+      tab2[j] <- mean(dataS[
+        dataS[, "age_at_creation"] > age_list[[j]][1] &
+          dataS[, "age_at_creation"] <= age_list[[j]][2],
+        "smoking_status"
+      ])
+    }
+
+    message("This is the model generated bar plot")
+    barplot(tab2, names.arg = c("40-64", "65-74", "75+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
+            col = c("black"))
+    title(cex.main = 0.5, "Prevalence of current smoking at creation (simulated)")
+    legend("topright", c("Overall"), fill = c("black"))
+
+    message("Now we will validate the model on smoking trends")
+    message("To model the decline in smoking among adults aged 40 and over beyond 2023, historical trends were analyzed using the 2025 MMWR report (DOI: 10.15585/mmwr.mm7407a3). An Annual Average Percent Change (AAPC) of -1.9% was derived from the observed 2017-2023 decrease in smokers aged 45 and over and applied to future projections\n")
+
+    op_ex <- results$extended
+    smoker_prev <- op_ex$n_current_smoker_by_ctime_sex/op_ex$n_alive_by_ctime_sex
+    smoker_packyears <- op_ex$sum_pack_years_by_ctime_sex/op_ex$n_alive_by_ctime_sex
+
+    plot(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_prev[, 1], type = "l", ylim = c(0, 0.25), col = "black", xlab = "Year", ylab = "Prevalence of current smoking")
+    lines(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_prev[, 2], type = "l", col = "grey")
+    legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
+    title(cex.main = 0.5, "Annual prevalence of current smoking (simulated)")
+
+    plot(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_packyears[, 1], type = "l", ylim = c(0, 30), col = "black", xlab = "Year", ylab = "Average Pack years")
+    lines(2015:(2015+input$values$global_parameters$time_horizon-1), smoker_packyears[, 2], type = "l", col = "grey")
+    legend("topright", c("male", "female"), lty = c(1, 1), col = c("black", "grey"))
+    title(cex.main = 0.5, "Average Pack-Years Per Year for 40+ Population (simulated)")
+
+    z <- log(rowSums(smoker_prev))
+    message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
+
+    #plotting overall distribution of smoking stats over time
+    smoking_status_ctime <- matrix (NA, nrow = input$values$global_parameters$time_horizon, ncol = 4)
+    colnames(smoking_status_ctime) <- c("Year", "Non-Smoker", "Smoker", "Former smoker")
+
+    smoking_status_ctime[1:(input$values$global_parameters$time_horizon), 1] <- c(2015:(2015 + input$values$global_parameters$time_horizon-1))
+
+    smoking_status_ctime [, 2:4] <- op_ex$n_smoking_status_by_ctime / rowSums(as.data.frame (op_ex$n_alive_by_ctime_sex)) * 100
+    df <- as.data.frame(smoking_status_ctime)
+    dfm <- reshape2::melt(df[,c("Year", "Non-Smoker", "Smoker", "Former smoker")], id.vars = 1)
+    plot_smoking_status_ctime  <- ggplot2::ggplot(dfm, aes(x = Year, y = value, color = variable)) +
+      geom_point () + geom_line() + labs(title = "Smoking Status per year") + ylab ("%") +
+      scale_colour_manual(values = c("#66CC99", "#CC6666", "#56B4E9")) + scale_y_continuous(breaks = scales::pretty_breaks(n = 12))
+
+    plot(plot_smoking_status_ctime)
+
+    terminate_session()
+
+    # Preparing dataframe of rates for the test expectations
+    n_alive <- rowSums(op_ex$n_alive_by_ctime_sex)
+    results_df <- data.frame(
+      Year = smoking_status_ctime[, "Year"],
+      Current = op_ex$n_smoking_status_by_ctime[, 2] / n_alive,
+      Former = op_ex$n_smoking_status_by_ctime[, 3] / n_alive,
+      NonSmoker = op_ex$n_smoking_status_by_ctime[, 1] / n_alive
+    )
+    return(results_df)
+  }
+
+  # Check for unsupported jurisdictions
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' and 'us' are supported.")
+  }
+
+  # Canada implementation (existing code)
   message("Welcome to EPIC validator! Today we will see if the model make good smoking predictions")
+
   petoc()
 
   settings <- default_settings
@@ -454,10 +743,206 @@ sanity_COPD <- function() {
 #'
 #' @param incident_COPD_k a number (default=1) by which the incidence rate of COPD will be multiplied.
 #' @param return_CI if TRUE, returns 95 percent confidence intervals for the "Year" coefficient
-#' @return validation test results
+#' @param jurisdiction character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".
+#' @return For Canada: list with validation test results. For US: data frame with COPD prevalence by age group over time.
 #' @export
-validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidence rate is multiplied by K
+validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE, jurisdiction = "canada") # The incidence rate is multiplied by K
 {
+  # Handle US jurisdiction
+  if (tolower(jurisdiction) == "us") {
+    settings <- get_default_settings()
+    settings$record_mode <- 0
+    settings$n_base_agents <- 1e6
+
+    time_horizon <- 26
+    results <- simulate(settings = settings, jurisdiction = "us", time_horizon = time_horizon, extended_results = TRUE)
+    output <- results$extended
+
+    # Determine overall COPD prevalence
+    COPDprevalence_ctime_age <- as.data.frame(output$n_COPD_by_ctime_age)
+    totalpopulation <- output$n_alive_by_ctime_age
+
+    # Overall prevalence of COPD
+    alive_age_all <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:111])
+    COPD_age_all <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:111])
+    prevalenceCOPD_age_all <- COPD_age_all / alive_age_all
+
+    # Prevalence by age 40-59
+    alive_age_40to59 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 40:59])
+    COPD_age_40to59 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 40:59])
+    prevalenceCOPD_age_40to59 <- COPD_age_40to59 / alive_age_40to59
+
+    # Prevalence by age 60-79
+    alive_age_60to79 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 60:79])
+    COPD_age_60to79 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 60:79])
+    prevalenceCOPD_age_60to79 <- COPD_age_60to79 / alive_age_60to79
+
+    # Prevalence by age 80+
+    alive_age_over80 <- rowSums(output$n_alive_by_ctime_age[1:time_horizon, 80:111])
+    COPD_age_over80 <- rowSums(output$n_COPD_by_ctime_age[1:time_horizon, 80:111])
+    prevalenceCOPD_age_over80 <- COPD_age_over80 / alive_age_over80
+
+    # Display summary
+    COPD_prevalence_summary <- data.frame(
+      Year = 2015:(2015 + time_horizon - 1),
+      Prevalence_all = prevalenceCOPD_age_all,
+      Prevalence_40to59 = prevalenceCOPD_age_40to59,
+      Prevalence_60to79 = prevalenceCOPD_age_60to79,
+      Prevalence_over80 = prevalenceCOPD_age_over80
+    )
+
+    print(knitr::kable(COPD_prevalence_summary,
+                       caption = "COPD Prevalence by Age Group Over Time",
+                       digits = 3))
+
+    # Plot: All Ages
+    plot_prevalenceCOPD_age_all <- data.frame(
+      Year = 2015:(2015 + time_horizon - 1),
+      Prevalence = prevalenceCOPD_age_all
+    )
+
+    gg_plot_prevalenceCOPD_age_all <- ggplot2::ggplot(plot_prevalenceCOPD_age_all,
+                                                      ggplot2::aes(x = .data$Year, y = .data$Prevalence)) +
+      ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+      ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+      ggplot2::scale_y_continuous(
+        labels = scales::percent_format(accuracy = 1),
+        limits = c(0, 0.15),
+        breaks = seq(0, 0.15, by = 0.05)
+      ) +
+      ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+      ggplot2::labs(
+        title = "COPD Prevalence Over Time (All Ages)",
+        subtitle = "Estimated proportion of population with COPD from 2016-2040",
+        x = "Year",
+        y = "Prevalence (%)"
+      ) +
+      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+        plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+        axis.title = ggplot2::element_text(face = "bold"),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+
+    print(gg_plot_prevalenceCOPD_age_all)
+
+    # Plot: Age 40-59
+    plot_prevalence_40to59 <- data.frame(
+      Year = 2015:(2015 + time_horizon - 1),
+      Prevalence = prevalenceCOPD_age_40to59
+    )
+
+    gg_plot_prevalence_40to59 <- ggplot2::ggplot(plot_prevalence_40to59,
+                                                 ggplot2::aes(x = .data$Year, y = .data$Prevalence)) +
+      ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+      ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+      ggplot2::scale_y_continuous(
+        labels = scales::percent_format(accuracy = 1),
+        limits = c(0, 0.10),
+        breaks = seq(0, 0.10, by = 0.05)) +
+      ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+      ggplot2::labs(
+        title = "COPD Prevalence Over Time (Age 40-59)",
+        subtitle = "Estimated proportion of population with COPD from 2016-2040",
+        x = "Year",
+        y = "Prevalence (%)") +
+      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+        plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+        axis.title = ggplot2::element_text(face = "bold"),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+
+    print(gg_plot_prevalence_40to59)
+
+    # Plot: Age 60-79
+    plot_prevalence_60to79 <- data.frame(
+      Year = 2015:(2015 + time_horizon - 1),
+      Prevalence = prevalenceCOPD_age_60to79
+    )
+
+    gg_plot_prevalence_60to79 <- ggplot2::ggplot(plot_prevalence_60to79,
+                                                 ggplot2::aes(x = .data$Year, y = .data$Prevalence)) +
+      ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+      ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+      ggplot2::scale_y_continuous(
+        labels = scales::percent_format(accuracy = 1),
+        limits = c(0, 0.15),
+        breaks = seq(0, 0.15, by = 0.05)
+      ) +
+      ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+      ggplot2::labs(
+        title = "COPD Prevalence Over Time (Age 60-79)",
+        subtitle = "Estimated proportion of population with COPD from 2016-2040",
+        x = "Year",
+        y = "Prevalence (%)"
+      ) +
+      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+        plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+        axis.title = ggplot2::element_text(face = "bold"),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+
+    print(gg_plot_prevalence_60to79)
+
+    # Plot: Age 80+
+    plot_prevalence_over80 <- data.frame(
+      Year = 2015:(2015 + time_horizon - 1),
+      Prevalence = prevalenceCOPD_age_over80
+    )
+
+    gg_plot_prevalence_over80 <- ggplot2::ggplot(plot_prevalence_over80,
+                                                 ggplot2::aes(x = .data$Year, y = .data$Prevalence)) +
+      ggplot2::geom_line(linewidth = 1.5, color = "#003f5c") +
+      ggplot2::geom_point(size = 3, color = "#66c2ff", stroke = 0.8) +
+      ggplot2::scale_y_continuous(
+        labels = scales::percent_format(accuracy = 1),
+        limits = c(0, 0.30),
+        breaks = seq(0, 0.30, by = 0.05)
+      ) +
+      ggplot2::scale_x_continuous(breaks = seq(2015, 2040, by = 5)) +
+      ggplot2::labs(
+        title = "COPD Prevalence Over Time (Age 80+)",
+        subtitle = "Estimated proportion of population with COPD from 2016-2040",
+        x = "Year",
+        y = "Prevalence (%)"
+      ) +
+      ggplot2::theme_minimal(base_size = 14) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", size = 18, hjust = 0.5, margin = ggplot2::margin(b = 8)),
+        plot.subtitle = ggplot2::element_text(size = 14, hjust = 0.5),
+        axis.title = ggplot2::element_text(face = "bold"),
+        axis.text = ggplot2::element_text(color = "black"),
+        axis.line = ggplot2::element_line(color = "black", linewidth = 0.8),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank()
+      )
+
+    print(gg_plot_prevalence_over80)
+
+    terminate_session()
+    return(COPD_prevalence_summary)
+  }
+
+  # Check for unsupported jurisdictions
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' and 'us' are supported.")
+  }
+
+  # Canada implementation (existing code)
   out <- list()
 
   settings <- default_settings
@@ -551,10 +1036,16 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE) # The incidenc
 #' @param nPatient number of simulated patients. Default is 1e6.
 #' @param disableDiscounting if TRUE, discounting will be disabled for cost and QALY calculations. Default: TRUE
 #' @param disableExacMortality if TRUE, mortality due to exacerbations will be disabled for cost and QALY calculations. Default: TRUE
+#' @param jurisdiction character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada". Currently only "canada" is implemented.
 #' @return validation test results
 #' @export
-validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableExacMortality = TRUE)
+validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableExacMortality = TRUE, jurisdiction = "canada")
 {
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   out <- list()
 
   settings <- default_settings
@@ -623,8 +1114,14 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' @param exacerbation a number
 #' @return validation test results
 #' @export
-validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1) {
+validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1, jurisdiction = "canada") {
   message("Hello from EPIC! I am going to test mortality rate and how it is affected by input parameters\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -683,8 +1180,14 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 #' and GOLD stage distributions to assess lung function in simulated patients.
 #' @return validation test results
 #' @export
-validate_lung_function <- function() {
+validate_lung_function <- function(jurisdiction = "canada") {
   message("This function examines FEV1 values\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -753,10 +1256,268 @@ validate_lung_function <- function() {
 #' diagnosed vs. undiagnosed patients.
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
 #' @param input EPIC inputs
-#' @return validation test results
+#' @param jurisdiction character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".
+#' @return For Canada: validation test results (invisible). For US: invisible NULL (results displayed via messages and plots).
 #' @export
-validate_exacerbation <- function(base_agents=1e4, input=NULL) {
+validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "canada") {
 
+  # Handle US jurisdiction
+  if (tolower(jurisdiction) == "us") {
+    settings <- get_default_settings()
+    settings$record_mode <- record_mode["record_mode_event"]
+    settings$n_base_agents <- base_agents
+
+    results <- simulate(settings = settings, jurisdiction = "us", extended_results = TRUE, return_events = TRUE)
+    op <- results$basic
+    output_ex <- results$extended
+
+    all_events <- results$events
+    exac_events <- subset(all_events, event == 5)
+    exit_events <- subset(all_events, event == 14)
+
+    Follow_up_GOLD <- c(0, 0, 0, 0)
+    last_GOLD_transition_time <- 0
+    for (i in 2:dim(all_events)[1]) {
+      if (all_events[i, "id"] != all_events[i - 1, "id"])
+        last_GOLD_transition_time <- 0
+      if ((all_events[i, "id"] == all_events[i - 1, "id"]) & (all_events[i, "gold"] != all_events[i - 1, "gold"])) {
+        Follow_up_GOLD[all_events[i - 1, "gold"]] = Follow_up_GOLD[all_events[i - 1, "gold"]] + all_events[i - 1, "followup_after_COPD"] -
+          last_GOLD_transition_time
+        last_GOLD_transition_time <- all_events[i - 1, "followup_after_COPD"]
+      }
+      if (all_events[i, "event"] == 14)
+        Follow_up_GOLD[all_events[i, "gold"]] = Follow_up_GOLD[all_events[i, "gold"]] + all_events[i, "followup_after_COPD"] -
+          last_GOLD_transition_time
+    }
+
+
+    #----------------------------DIAGNOSED ------------------------------------
+    #-------------------------------------------------------------------------
+
+    all_events_diagnosed          <- subset(all_events, diagnosis > 0 & gold > 0 )
+    exac_events_diagnosed         <- subset(all_events_diagnosed, event == 5 )
+    sev_exac_events_diagnosed    <- subset(all_events_diagnosed, event == 5 & (exac_status == 3 | exac_status == 4) )
+    mod_sev_exac_events_diagnosed <- subset(all_events_diagnosed, event == 5 & (exac_status == 3 | exac_status == 4 | exac_status == 2) )
+    exit_events_diagnosed         <- subset(all_events_diagnosed, event == 14)
+
+    Follow_up_GOLD_diagnosed <- c(0, 0, 0, 0)
+    last_GOLD_transition_time_diagnosed <- 0
+    for (i in 2:dim(all_events_diagnosed)[1]) {
+      if ((all_events_diagnosed[i, "id"] != all_events_diagnosed[i - 1, "id"]))
+        last_GOLD_transition_time_diagnosed <- 0
+      if ((all_events_diagnosed[i, "id"] == all_events_diagnosed[i - 1, "id"]) & (all_events_diagnosed[i, "gold"] != all_events_diagnosed[i - 1, "gold"])) {
+        Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] = Follow_up_GOLD_diagnosed[all_events_diagnosed[i - 1, "gold"]] + (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"]) -
+          last_GOLD_transition_time_diagnosed
+        last_GOLD_transition_time_diagnosed <- (all_events_diagnosed[i - 1, "local_time"]-all_events_diagnosed[i - 1, "time_at_diagnosis"])
+      }
+      if (all_events_diagnosed[i, "event"] == 14)
+        Follow_up_GOLD_diagnosed[all_events_diagnosed[i, "gold"]] = Follow_up_GOLD_diagnosed[all_events_diagnosed[i, "gold"]] + (all_events_diagnosed[i, "local_time"]-all_events_diagnosed[i, "time_at_diagnosis"]) -
+          last_GOLD_transition_time_diagnosed
+    }
+
+    #----------------------------UNDIAGNOSED ------------------------------------
+    #-------------------------------------------------------------------------
+
+    all_events_undiagnosed          <- subset(all_events, diagnosis == 0 & gold > 0 & gold < 3) #CanCOLD is only GOLD 1 and 2
+    exac_events_undiagnosed         <- subset(all_events_undiagnosed, event == 5 )
+    sev_exac_events_undiagnosed     <- subset(all_events_undiagnosed, event == 5 & (exac_status == 3 | exac_status == 4) )
+    mod_sev_exac_events_undiagnosed <- subset(all_events_undiagnosed, event == 5 & (exac_status == 3 | exac_status == 4 | exac_status == 2) )
+    exit_events_undiagnosed         <- subset(all_events_undiagnosed, event == 14)
+
+    Follow_up_GOLD_undiagnosed <- c(0, 0, 0, 0)
+    last_GOLD_transition_time_undiagnosed <- 0
+    for (i in 2:dim(all_events_undiagnosed)[1]) {
+      if ((all_events_undiagnosed[i, "id"] != all_events_undiagnosed[i - 1, "id"]))
+        last_GOLD_transition_time_undiagnosed <- 0
+      if ((all_events_undiagnosed[i, "id"] == all_events_undiagnosed[i - 1, "id"]) & (all_events_undiagnosed[i, "gold"] != all_events_undiagnosed[i - 1, "gold"])) {
+        Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i - 1, "gold"]] + (all_events_undiagnosed[i - 1, "local_time"]-all_events_undiagnosed[i - 1, "time_at_diagnosis"]) -
+          last_GOLD_transition_time_undiagnosed
+        last_GOLD_transition_time_undiagnosed <- (all_events_undiagnosed[i - 1, "local_time"]-all_events_undiagnosed[i - 1, "time_at_diagnosis"])
+      }
+      if (all_events_undiagnosed[i, "event"] == 14)
+        Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] = Follow_up_GOLD_undiagnosed[all_events_undiagnosed[i, "gold"]] + (all_events_undiagnosed[i, "local_time"]-all_events_undiagnosed[i, "time_at_diagnosis"]) -
+          last_GOLD_transition_time_undiagnosed
+    }
+
+    terminate_session()
+
+    #----------------------------All ------------------------------------
+    #-------------------------------------------------------------------------
+
+    message("Exacerbation Rates per GOLD stages for all patients:")
+
+    GOLD_I   <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_GOLD[1])
+    GOLD_II  <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_GOLD[2])
+    GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_GOLD[3])
+    GOLD_IV  <- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_GOLD[4])
+
+    message(paste0("exacRateGOLDI   = ", round(GOLD_I  , 2)))
+    message(paste0("exacRateGOLDII  = ", round(GOLD_II , 2)))
+    message(paste0("exacRateGOLDIII = ", round(GOLD_III, 2)))
+    message(paste0("exacRateGOLDIV  = ", round(GOLD_IV , 2)))
+
+
+    #----------------------------All ------------------------------------
+    #-------------------------------------------------------------------------
+    total_rate <- round(nrow(exac_events)/sum(Follow_up_GOLD), 2)
+    Exac_per_GOLD <- matrix (NA, nrow = 3, ncol =3)
+    colnames(Exac_per_GOLD) <- c("GOLD", "EPIC", "CanCOLD")
+    # CanCOLD only available for GOLD 1 and 2. See doi: 10.1164/rccm.201509-1795OC
+
+    Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], Follow_up_GOLD[2]) # Because CanCOLD is mostly GOLD2, here we compare EPIC's GOLD2 only instead of GOLD2+
+    #  Follow_up_GOLD_all_2level <- c(Follow_up_GOLD[1], sum(Follow_up_GOLD[2:4]))
+    GOLD_counts_all       <- as.data.frame(table(exac_events[, "gold"]))[, 2]
+    GOLD_counts_all       <- c(GOLD_counts_all[1], sum(GOLD_counts_all[2:4]))
+
+    Exac_per_GOLD[1:3, 1] <- c("total", "gold1", "gold2+")
+    Exac_per_GOLD[1:3, 2] <- c(total_rate,
+                               round(x=GOLD_counts_all/Follow_up_GOLD_all_2level,
+                                     digits = 2))
+    Exac_per_GOLD[1:3, 3] <- c(0.39, 0.28, 0.53)
+
+    df <- as.data.frame(Exac_per_GOLD)
+    dfm <- melt(df[,c("GOLD", "EPIC", "CanCOLD")],id.vars = 1)
+    plot <-
+      ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+      scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+      theme_tufte(base_size=14, ticks=F)  +
+      geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+      ylab ("Rate") +
+      labs(caption = "Total rate of exacerbations per year for all patients")
+
+    print(plot)
+    message("Total rate of exacerbation in all patients (0.39 per year in CanCOLD): ", total_rate)
+
+    #--------------------------- total number of severe exacerbations:
+
+    message("Is the rate of severe and very severe exacerbations around 510 per Ford et al. 2015?")
+    n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (output_ex$n_exac_by_ctime_severity[,3]+output_ex$n_exac_by_ctime_severity[,4])* (100000/rowSums(output_ex$n_alive_by_ctime_sex)))
+    avgRate_sevExac <- mean(n_exac$Severe_Exacerbations[round(nrow(n_exac)/2,0):nrow(n_exac)])
+    avgRate_sevExac <- round(avgRate_sevExac, 2)
+    message(paste0("Average rate during 20 years: ", avgRate_sevExac))
+
+    rate2017_sevExac <-(output_ex$n_exac_by_ctime_severity[3,3]+output_ex$n_exac_by_ctime_severity[3,4])*(100000/sum(output_ex$n_alive_by_ctime_sex[3,]))
+    rate2017_sevExac <- round(rate2017_sevExac, 2)
+    message(paste0("Rate in 2017: ", rate2017_sevExac))
+
+
+    #----------------------------Diagnosed ------------------------------------
+    #-------------------------------------------------------------------------
+
+    Exac_per_GOLD_diagnosed <- matrix (NA, nrow = 4, ncol = 3)
+    colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "Hoogendoorn")
+    # ACCEPT data is rates from a join of ECLIPSE, MACRO, OPTIMAL and STATCOPE.
+    Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
+    Exac_per_GOLD_diagnosed[1:4, 2] <- round(
+      x=as.data.frame(table(exac_events_diagnosed[, "gold"]))[, 2]/
+        Follow_up_GOLD_diagnosed, digits = 2)
+    Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.82, 1.17, 1.61, 2.10)
+
+    df <- as.data.frame(Exac_per_GOLD_diagnosed)
+    dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
+    plot <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+      scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+      theme_tufte(base_size=14, ticks=F)  +
+      geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+      ylab ("Rate") +
+      labs(caption = "Total rate of exacerbations per year for diagnosed patients")
+    print(plot)
+
+    message("Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): ", round(nrow(exac_events_diagnosed)/sum(Follow_up_GOLD_diagnosed), 2))
+
+
+    #----------------------------Diagnosed Moderate and Severe------------------------------------
+    #-------------------------------------------------------------------------
+
+    # Updated October 14, 2025
+    Exac_per_GOLD_diagnosed <- matrix (NA, nrow = 4, ncol = 3)
+    colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "Wallace 2019")
+
+    Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
+    Exac_per_GOLD_diagnosed[1:4, 2] <- round(
+      x=as.data.frame(table(mod_sev_exac_events_diagnosed[, "gold"]))[, 2]/
+        Follow_up_GOLD_diagnosed, digits = 2)
+    Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.404, 0.489, 0.836, 0.891)
+
+    df <- as.data.frame(Exac_per_GOLD_diagnosed)
+    dfm <- melt(df[,c("GOLD", "EPIC", "Wallace 2019")],id.vars = 1)
+    plot <-
+      ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+      scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+      theme_tufte(base_size=14, ticks=F)  +
+      geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+      ylab ("Rate") +
+      labs(caption = "Total rate of moderate/severe exacerbations per year for diagnosed patients")
+
+    print(plot)
+
+
+    #----------------------------Diagnosed Severe------------------------------------
+    #-------------------------------------------------------------------------
+
+    Exac_per_GOLD_diagnosed <- matrix (NA, nrow = 4, ncol = 3)
+    colnames(Exac_per_GOLD_diagnosed) <- c("GOLD", "EPIC", "Wallace 2019")
+
+    Exac_per_GOLD_diagnosed[1:4, 1] <- c("gold1", "gold2", "gold3", "gold4")
+    Exac_per_GOLD_diagnosed[1:4, 2] <- round(
+      x=as.data.frame(table(sev_exac_events_diagnosed[, "gold"]))[, 2]/
+        Follow_up_GOLD_diagnosed, digits = 2)
+    Exac_per_GOLD_diagnosed[1:4, 3] <- c(0.12, 0.139, 0.254, 0.422)
+
+    df <- as.data.frame(Exac_per_GOLD_diagnosed)
+    dfm <- melt(df[,c("GOLD", "EPIC", "Wallace 2019")],id.vars = 1)
+    plot <-
+      ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+      scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+      theme_tufte(base_size=14, ticks=F)  +
+      geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+      ylab ("Rate") +
+      labs(caption = "Total rate of severe exacerbations per year for diagnosed patients")
+
+    print(plot)
+
+    #----------------------------Undiagnosed ------------------------------------
+    #----------------------------------------------------------------------------
+    total_rate_undiagnosed <- round(nrow(exac_events_undiagnosed)/sum(Follow_up_GOLD_undiagnosed), 2)
+    Exac_per_GOLD_undiagnosed <- matrix (NA, nrow = 3, ncol = 3)
+    colnames(Exac_per_GOLD_undiagnosed) <- c("GOLD", "EPIC", "CanCOLD")
+    Exac_per_GOLD_undiagnosed[1:3, 1] <- c("total", "gold1", "gold2+")
+
+    Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1],
+                                           Follow_up_GOLD_undiagnosed[2]) #Because CanCOLD is mostly GOLD2, we compare to GOLD2 EPIC
+    #Follow_up_GOLD_undiagnosed_2level <- c(Follow_up_GOLD_undiagnosed[1], sum(Follow_up_GOLD_undiagnosed[2:4]))
+    GOLD_counts_undiagnosed   <- as.data.frame(table(exac_events_undiagnosed[, "gold"]))[, 2]
+    GOLD_counts_undiagnosed   <- c(GOLD_counts_undiagnosed[1],
+                                   GOLD_counts_undiagnosed[2])
+
+
+    Exac_per_GOLD_undiagnosed[1:3, 2] <- c(total_rate_undiagnosed,
+                                           round(x=GOLD_counts_undiagnosed/Follow_up_GOLD_undiagnosed_2level, digits = 2))
+    Exac_per_GOLD_undiagnosed[1:3, 3] <- c(0.30, 0.24, 0.40)
+
+    df <- as.data.frame(Exac_per_GOLD_undiagnosed)
+    dfm <- melt(df[,c("GOLD", "EPIC", "CanCOLD")],id.vars = 1)
+    plot <-
+      ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
+      scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
+      theme_tufte(base_size=14, ticks=F)  +
+      geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
+      ylab ("Rate") +
+      labs(caption = "Total rate of exacerbations per year for undiagnosed patients")
+    print(plot)
+
+    message("Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): ",
+            total_rate_undiagnosed)
+
+    return(invisible(NULL))
+  }
+
+  # Check for unsupported jurisdictions
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' and 'us' are supported.")
+  }
+
+  # Canada implementation (existing code)
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_event"]
   #settings$agent_stack_size <- 0
@@ -1125,7 +1886,12 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
 #' @return validation test results
 #' @export
-validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
+validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction = "canada") {
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
 
   if (!requireNamespace("survival", quietly = TRUE)) {
     stop("Package \"survival\" needed for this function to work. Please install it.",
@@ -1214,8 +1980,14 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4) {
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
-validate_diagnosis <- function(n_sim = 1e+04) {
+validate_diagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
   message("Let's take a look at diagnosis\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -1286,8 +2058,14 @@ validate_diagnosis <- function(n_sim = 1e+04) {
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
-validate_gpvisits <- function(n_sim = 1e+04) {
+validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
   message("Let's take a look at GP visits\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -1383,8 +2161,14 @@ validate_gpvisits <- function(n_sim = 1e+04) {
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
-validate_symptoms <- function(n_sim = 1e+04) {
+validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
   message("Let's take a look at symptoms\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -1518,8 +2302,14 @@ validate_symptoms <- function(n_sim = 1e+04) {
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
-validate_treatment<- function(n_sim = 1e+04) {
+validate_treatment<- function(n_sim = 1e+04, jurisdiction = "canada") {
   message("Let's make sure that treatment (which is initiated at diagnosis) is affecting the exacerbation rate.\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -1893,8 +2683,14 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 #' @param n_sim number of agents
 #' @return validation test results
 #' @export
-validate_overdiagnosis <- function(n_sim = 1e+04) {
+validate_overdiagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
   message("Let's take a look at overdiagnosis\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings
@@ -1948,10 +2744,16 @@ validate_overdiagnosis <- function(n_sim = 1e+04) {
 #' @return validation test results for medication
 #' @export
 
-validate_medication <- function(n_sim = 5e+04) {
+validate_medication <- function(n_sim = 5e+04, jurisdiction = "canada") {
   message("\n")
   message("Plotting medication usage over time:")
   message("\n")
+
+  # Check jurisdiction
+  if (tolower(jurisdiction) != "canada") {
+    stop("Validation for jurisdiction '", jurisdiction, "' has not been implemented yet. Currently only 'canada' is supported.")
+  }
+
   petoc()
 
   settings <- default_settings

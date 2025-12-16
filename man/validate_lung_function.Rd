@@ -4,7 +4,7 @@
 \alias{validate_lung_function}
 \title{Returns results of validation tests for lung function}
 \usage{
-validate_lung_function()
+validate_lung_function(jurisdiction = "canada")
 }
 \value{
 validation test results

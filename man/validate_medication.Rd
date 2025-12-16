@@ -4,7 +4,7 @@
 \alias{validate_medication}
 \title{Returns results of validation tests for medication module.}
 \usage{
-validate_medication(n_sim = 50000)
+validate_medication(n_sim = 50000, jurisdiction = "canada")
 }
 \arguments{
 \item{n_sim}{number of agents}
