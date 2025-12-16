@@ -4,15 +4,21 @@
 \alias{validate_exacerbation}
 \title{Returns results of validation tests for exacerbation rates}
 \usage{
-validate_exacerbation(base_agents = 10000, input = NULL)
+validate_exacerbation(
+  base_agents = 10000,
+  input = NULL,
+  jurisdiction = "canada"
+)
 }
 \arguments{
 \item{base_agents}{Number of agents in the simulation. Default is 1e4.}
 
 \item{input}{EPIC inputs}
+
+\item{jurisdiction}{character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".}
 }
 \value{
-validation test results
+For Canada: validation test results (invisible). For US: invisible NULL (results displayed via messages and plots).
 }
 \description{
 This function runs validation tests for COPD exacerbation rates by GOLD stage

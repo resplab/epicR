@@ -4,7 +4,12 @@
 \alias{validate_population}
 \title{Returns simulated vs. predicted population table and a plot}
 \usage{
-validate_population(remove_COPD = 0, incidence_k = 1, savePlots = 0)
+validate_population(
+  remove_COPD = 0,
+  incidence_k = 1,
+  savePlots = 0,
+  jurisdiction = "canada"
+)
 }
 \arguments{
 \item{remove_COPD}{0 or 1, indicating whether COPD-caused mortality should be removed}
@@ -12,9 +17,11 @@ validate_population(remove_COPD = 0, incidence_k = 1, savePlots = 0)
 \item{incidence_k}{a number (default=1) by which the incidence rate of population will be multiplied.}
 
 \item{savePlots}{0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}
+
+\item{jurisdiction}{character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".}
 }
 \value{
-returns a table showing predicted (StatsCan) and simulated population values
+For Canada: returns a table showing predicted (StatsCan) and simulated population values. For US: returns a data frame with population comparisons by age group and year.
 }
 \description{
 Returns simulated vs. predicted population table and a plot

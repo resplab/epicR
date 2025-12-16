@@ -4,10 +4,12 @@
 \alias{init_session}
 \title{Initializes a model. Allocates memory to the C engine.}
 \usage{
-init_session(settings = get_default_settings())
+init_session(settings = get_default_settings(), jurisdiction = "canada")
 }
 \arguments{
 \item{settings}{customized settings.}
+
+\item{jurisdiction}{The jurisdiction for which to load input parameters (default: "canada").}
 }
 \value{
 0 if successful.

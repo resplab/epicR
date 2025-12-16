@@ -4,7 +4,11 @@
 \alias{validate_survival}
 \title{Returns the Kaplan Meier curve comparing COPD and non-COPD}
 \usage{
-validate_survival(savePlots = FALSE, base_agents = 10000)
+validate_survival(
+  savePlots = FALSE,
+  base_agents = 10000,
+  jurisdiction = "canada"
+)
 }
 \arguments{
 \item{savePlots}{TRUE or FALSE (default), exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}

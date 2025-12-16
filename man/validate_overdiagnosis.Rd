@@ -4,7 +4,7 @@
 \alias{validate_overdiagnosis}
 \title{Returns results of validation tests for overdiagnosis}
 \usage{
-validate_overdiagnosis(n_sim = 10000)
+validate_overdiagnosis(n_sim = 10000, jurisdiction = "canada")
 }
 \arguments{
 \item{n_sim}{number of agents}

@@ -9,7 +9,8 @@ run(
   input = NULL,
   settings = NULL,
   auto_terminate = FALSE,
-  seed = NULL
+  seed = NULL,
+  jurisdiction = "canada"
 )
 }
 \arguments{

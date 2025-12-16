@@ -4,15 +4,17 @@
 \alias{validate_COPD}
 \title{Returns results of validation tests for COPD}
 \usage{
-validate_COPD(incident_COPD_k = 1, return_CI = FALSE)
+validate_COPD(incident_COPD_k = 1, return_CI = FALSE, jurisdiction = "canada")
 }
 \arguments{
 \item{incident_COPD_k}{a number (default=1) by which the incidence rate of COPD will be multiplied.}
 
 \item{return_CI}{if TRUE, returns 95 percent confidence intervals for the "Year" coefficient}
+
+\item{jurisdiction}{character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".}
 }
 \value{
-validation test results
+For Canada: list with validation test results. For US: data frame with COPD prevalence by age group over time.
 }
 \description{
 This function runs validation tests for COPD model outputs. It estimates the baseline
