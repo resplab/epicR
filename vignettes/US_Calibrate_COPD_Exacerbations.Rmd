@@ -1,5 +1,5 @@
 ---
-title: "US Calibrate COPD Exacerbations"
+title: "US_Calibrate COPD Exacerbations"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{US_Calibrate COPD Exacerbations}
@@ -79,13 +79,9 @@ The calibration code below performs the relevant calculations and visualizations
 
 ```{r, eval = TRUE, echo = TRUE}
 
-library(tidyverse)
 library(epicR)
-library(ggthemes)
-library(scales)
 library(ggplot2)
-library(dplyr)
-library(tidyr)
+library(ggthemes)
 library(reshape2)
 
 # Define event codes

@@ -1,5 +1,5 @@
 ---
-title: "Canada Calibrate COPD Exacerbations"
+title: "Canada_Calibrate COPD Exacerbations"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Canada_Calibrate COPD Exacerbations}
