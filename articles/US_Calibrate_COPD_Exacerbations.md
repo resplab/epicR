@@ -93,23 +93,32 @@ visualizations for each validation target.
 ### Step 1: Load libraries and setup
 
 ``` r
-library(tidyverse)
 library(epicR)
-library(ggthemes)
-library(scales)
+```
+
+    ## epicR: Using config files from: /home/runner/.epicR/config
+
+    ## To reset configs to defaults, use: reset_user_configs()
+
+    ## 
+    ## Attaching package: 'epicR'
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     simulate
+
+``` r
 library(ggplot2)
-library(dplyr)
-library(tidyr)
+library(ggthemes)
 library(reshape2)
 
 # Define event codes
 EVENT_EXACERBATION <- 5
-EVENT_END <- 11  # Updated event_end code after MI/stroke/HF removal
-
+EVENT_END <- 14 
 # Load EPIC general settings
 settings <- get_default_settings()
 settings$record_mode <- 2
-settings$n_base_agents <- 3.5e6
+settings$n_base_agents <- 1e4
 
 # Load input with US config
 input <- get_input(jurisdiction = "us")
@@ -121,6 +130,51 @@ input$values$exacerbation$logit_severity_betas = t(as.matrix(c(intercept1 = -0.3
 
 # Run the model
 results <- simulate(settings = settings, input = input$values, return_events = TRUE)
+```
+
+    ## === EPIC Simulation Configuration ===
+
+    ## Jurisdiction: CANADA
+
+    ## Time horizon: 20 years
+
+    ## Number of agents: 10,000
+
+    ## Event recording: ENABLED (record_mode = 2)
+
+    ## Estimated memory for events: 236.6 MB
+
+    ## =====================================
+
+    ## 
+    ## Starting simulation...
+
+    ## No active session - initializing automatically
+
+    ## Initializing the session
+
+    ## Working directory: /home/runner/work/epicR/epicR/vignettes
+
+    ## Running EPIC model (with custom input parameters)
+
+    ## Record mode: record_mode_event (2)
+
+    ## Simulating 10000 base agents: 10% 20% 30% 40% 50%
+    ## 60% 70% 80% 90% 100%
+
+    ## Simulation completed in 0.5 seconds
+
+    ## Collecting results...
+
+    ## Collecting extended results...
+
+    ## Collecting event history...
+
+    ## Terminating the session
+
+    ## Done!
+
+``` r
 all_events <- results$events
 exac_events <- subset(all_events, event == EVENT_EXACERBATION)
 exit_events <- subset(all_events, event == EVENT_END)
@@ -193,18 +247,40 @@ for (i in 2:dim(all_events_undiagnosed)[1]) {
 #-------------------------------------------------------------------------
 
 message("Exacerbation Rates per GOLD stages for all patients:")
+```
 
+    ## Exacerbation Rates per GOLD stages for all patients:
+
+``` r
 GOLD_I   <- (as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_GOLD[1])
 GOLD_II  <- (as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_GOLD[2])
 GOLD_III <- (as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_GOLD[3])
 GOLD_IV  <- (as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_GOLD[4])
 
 message(paste0("exacRateGOLDI   = ", round(GOLD_I  , 2)))
+```
+
+    ## exacRateGOLDI   = 0.39
+
+``` r
 message(paste0("exacRateGOLDII  = ", round(GOLD_II , 2)))
+```
+
+    ## exacRateGOLDII  = 0.72
+
+``` r
 message(paste0("exacRateGOLDIII = ", round(GOLD_III, 2)))
+```
+
+    ## exacRateGOLDIII = 1.25
+
+``` r
 message(paste0("exacRateGOLDIV  = ", round(GOLD_IV , 2)))
+```
 
+    ## exacRateGOLDIV  = 1.86
 
+``` r
 #----------------------------All ------------------------------------
 #-------------------------------------------------------------------------
 total_rate <- round(nrow(exac_events)/sum(Follow_up_GOLD), 2)
@@ -234,19 +310,30 @@ plot <-
   labs(caption = "Total rate of exacerbations per year for all patients")
 
 print(plot)
+```
 
+![](US_Calibrate_COPD_Exacerbations_files/figure-html/unnamed-chunk-1-1.png)
+
+``` r
 #--------------------------- total number of severe exacerbations:
 
-n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (output_ex$n_exac_by_ctime_severity[,3]+output_ex$n_exac_by_ctime_severity[,4])* (100000/rowSums(output_ex$n_alive_by_ctime_sex)))
+n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (results$extended$n_exac_by_ctime_severity[,3]+results$extended$n_exac_by_ctime_severity[,4])* (100000/rowSums(results$extended$n_alive_by_ctime_sex)))
 avgRate_sevExac <- mean(n_exac$Severe_Exacerbations[round(nrow(n_exac)/2,0):nrow(n_exac)])
 avgRate_sevExac <- round(avgRate_sevExac, 2)
 message(paste0("Average rate during 20 years: ", avgRate_sevExac))
+```
 
-rate2017_sevExac <-(output_ex$n_exac_by_ctime_severity[3,3]+output_ex$n_exac_by_ctime_severity[3,4])*(100000/sum(output_ex$n_alive_by_ctime_sex[3,]))
+    ## Average rate during 20 years: 552.47
+
+``` r
+rate2017_sevExac <-(results$extended$n_exac_by_ctime_severity[3,3]+results$extended$n_exac_by_ctime_severity[3,4])*(100000/sum(results$extended$n_alive_by_ctime_sex[3,]))
 rate2017_sevExac <- round(rate2017_sevExac, 2)
 message(paste0("Rate in 2017: ", rate2017_sevExac))
+```
 
+    ## Rate in 2017: 422.65
 
+``` r
 #----------------------------Diagnosed ------------------------------------
 #-------------------------------------------------------------------------
 
@@ -268,10 +355,17 @@ plot <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
   ylab ("Rate") +
   labs(caption = "Total rate of exacerbations per year for diagnosed patients")
 print(plot)
+```
 
+![](US_Calibrate_COPD_Exacerbations_files/figure-html/unnamed-chunk-1-2.png)
+
+``` r
 message("Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): ", round(nrow(exac_events_diagnosed)/sum(Follow_up_GOLD_diagnosed), 2))
+```
 
+    ## Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 1.03
 
+``` r
 #----------------------------Diagnosed Moderate and Severe------------------------------------
 #-------------------------------------------------------------------------
 
@@ -295,8 +389,11 @@ plot <-
   labs(caption = "Total rate of moderate/severe exacerbations per year for diagnosed patients")
 
 print(plot)
+```
 
+![](US_Calibrate_COPD_Exacerbations_files/figure-html/unnamed-chunk-1-3.png)
 
+``` r
 #----------------------------Diagnosed Severe------------------------------------
 #-------------------------------------------------------------------------
 
@@ -320,7 +417,11 @@ plot <-
   labs(caption = "Total rate of severe exacerbations per year for diagnosed patients")
 
 print(plot)
+```
 
+![](US_Calibrate_COPD_Exacerbations_files/figure-html/unnamed-chunk-1-4.png)
+
+``` r
 #----------------------------Undiagnosed ------------------------------------
 #----------------------------------------------------------------------------
 total_rate_undiagnosed <- round(nrow(exac_events_undiagnosed)/sum(Follow_up_GOLD_undiagnosed), 2)
@@ -350,7 +451,13 @@ plot <-
   ylab ("Rate") +
   labs(caption = "Total rate of exacerbations per year for undiagnosed patients")
 print(plot)
+```
 
+![](US_Calibrate_COPD_Exacerbations_files/figure-html/unnamed-chunk-1-5.png)
+
+``` r
 message("Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): ",
         total_rate_undiagnosed)
 ```
+
+    ## Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.42
