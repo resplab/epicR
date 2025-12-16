@@ -225,7 +225,20 @@ equations:</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.42</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.26</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.26</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 5060</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 4784</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13903</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 14257</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.3625</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.3365</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.364</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.3356</span></span></code></pre>
 <p>This equation for exacerbations included a term for diagnosis. As a
 result, whether a person was diagnosed or not would affect the
 exacerbation rates, which does not have causal face validity, and is
@@ -233,7 +246,7 @@ particularly undesirable for case detection studies that assess
 diagnosis.</p>
 <p>If we remove the diagnosis term and go back to the previous
 calibration, it will look like this:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0</span>, gold1 <span class="op">=</span> <span class="fl">0.6</span> , gold2 <span class="op">=</span> <span class="fl">0.35</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -256,7 +269,20 @@ calibration, it will look like this:</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 1.15</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.49</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.49</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 7793</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 12918</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13102</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 13294</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.5878</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.9722</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.5948</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.9717</span></span></code></pre>
 <p>The following recalibrations were assesses and Recalibration 5 was
 implemented in <code>epicR v0.35.0</code></p>
 </div>
@@ -264,7 +290,7 @@ implemented in <code>epicR v0.35.0</code></p>
 <h3 id="recalibration-1">Recalibration 1:<a class="anchor" aria-label="anchor" href="#recalibration-1"></a>
 </h3>
 <p>Let’s try to improve that by lowering GOLD coefficients:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="fl">0.1</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -287,7 +313,20 @@ implemented in <code>epicR v0.35.0</code></p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.95</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.37</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.37</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 6699</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 10851</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 12745</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 14070</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.5211</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.7708</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.5256</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.7712</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="recalibration-2">Recalibration 2:<a class="anchor" aria-label="anchor" href="#recalibration-2"></a>
@@ -295,7 +334,7 @@ implemented in <code>epicR v0.35.0</code></p>
 <p>We can now lower GOLD2 coefficient even more and perhaps increase
 smoking coefficient to compensate for the loss in the diagnosed
 patients.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0.5</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="fl">0.05</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -318,13 +357,26 @@ patients.</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 1.01</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.42</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.42</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 6554</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 12656</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 12287</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 14762</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.5302</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.8574</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.5334</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.8573</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="recalibration-3">Recalibration 3:<a class="anchor" aria-label="anchor" href="#recalibration-3"></a>
 </h3>
 <p>Let’s lower GOLD2 dramatically:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0.5</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -347,13 +399,26 @@ patients.</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.76</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.3</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 6071</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 8390</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13012</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 13069</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.46</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.6385</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.4666</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.642</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="recalibration-4">Recalibration 4:<a class="anchor" aria-label="anchor" href="#recalibration-4"></a>
 </h3>
 <p>Bring GOLD2 up a bit:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0.5</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -376,13 +441,26 @@ patients.</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.97</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.36</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.36</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 6566</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 10781</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13471</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 13378</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.4827</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.8062</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.4874</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.8059</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="recalibration-5">Recalibration 5:<a class="anchor" aria-label="anchor" href="#recalibration-5"></a>
 </h3>
 <p>GOLD2 back a bit again.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.7</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0.5</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -405,13 +483,26 @@ patients.</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.84</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.32</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.32</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 5690</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 10132</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13307</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 13722</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.4219</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.7352</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.4276</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.7384</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="recalibration-6">Recalibration 6:<a class="anchor" aria-label="anchor" href="#recalibration-6"></a>
 </h3>
 <p>Reducing intercept and adding to the smoking term.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs</span><span class="op">$</span><span class="va">exacerbation</span><span class="op">$</span><span class="va">ln_rate_betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1.4</span>, female <span class="op">=</span> <span class="fl">0</span>, age <span class="op">=</span> <span class="fl">0.04082</span> <span class="op">*</span> <span class="fl">0.1</span>, fev1 <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, smoking_status <span class="op">=</span> <span class="fl">0.7</span>, gold1 <span class="op">=</span> <span class="fl">0.3</span> , gold2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span> , gold3 <span class="op">=</span> <span class="fl">0.08</span> , gold4 <span class="op">=</span> <span class="op">-</span><span class="fl">0.35</span> , diagnosis_effect <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/validate_exacerbation.html">validate_exacerbation</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="va">inputs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing the session</span></span>
@@ -434,7 +525,20 @@ patients.</p>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-2.png" class="r-plt" width="700"></p>
 <pre><code><span><span class="co">#&gt; Total rate of exacerbation in diagnosed patients (1.5 per year in Hoogendoorn): 0.69</span></span></code></pre>
 <p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-3.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-4.png" class="r-plt" width="700"><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-5.png" class="r-plt" width="700"></p>
-<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.27</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.27</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Exacerbation rates (per COPD patient-year) by sex over time:</span></span></code></pre>
+<p><img src="Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-6.png" class="r-plt" width="700"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Summary statistics:</span></span>
+<span><span class="co">#&gt; Total exacerbations (Male): 5204</span></span>
+<span><span class="co">#&gt; Total exacerbations (Female): 7866</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Male): 13837</span></span>
+<span><span class="co">#&gt; Total COPD patient-years (Female): 14038</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Male): 0.3725</span></span>
+<span><span class="co">#&gt; Mean exacerbation rate per COPD patient-year (Female): 0.5595</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Male): 0.3761</span></span>
+<span><span class="co">#&gt; Overall exacerbation rate per COPD patient-year (Female): 0.5603</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -48,6 +48,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.26
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validation-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 5060
+    #> Total exacerbations (Female): 4784
+    #> Total COPD patient-years (Male): 13903
+    #> Total COPD patient-years (Female): 14257
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.3625
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.3365
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.364
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.3356
 
 This equation for exacerbations included a term for diagnosis. As a
 result, whether a person was diagnosed or not would affect the
@@ -89,6 +104,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.49
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 7793
+    #> Total exacerbations (Female): 12918
+    #> Total COPD patient-years (Male): 13102
+    #> Total COPD patient-years (Female): 13294
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.5878
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.9722
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.5948
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.9717
 
 The following recalibrations were assesses and Recalibration 5 was
 implemented in `epicR v0.35.0`
@@ -128,6 +158,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.37
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation1-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 6699
+    #> Total exacerbations (Female): 10851
+    #> Total COPD patient-years (Male): 12745
+    #> Total COPD patient-years (Female): 14070
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.5211
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.7708
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.5256
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.7712
 
 ### Recalibration 2:
 
@@ -166,6 +211,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.42
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation2-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 6554
+    #> Total exacerbations (Female): 12656
+    #> Total COPD patient-years (Male): 12287
+    #> Total COPD patient-years (Female): 14762
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.5302
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.8574
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.5334
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.8573
 
 ### Recalibration 3:
 
@@ -202,6 +262,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.3
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation3-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 6071
+    #> Total exacerbations (Female): 8390
+    #> Total COPD patient-years (Male): 13012
+    #> Total COPD patient-years (Female): 13069
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.46
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.6385
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.4666
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.642
 
 ### Recalibration 4:
 
@@ -238,6 +313,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.36
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation4-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 6566
+    #> Total exacerbations (Female): 10781
+    #> Total COPD patient-years (Male): 13471
+    #> Total COPD patient-years (Female): 13378
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.4827
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.8062
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.4874
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.8059
 
 ### Recalibration 5:
 
@@ -274,6 +364,21 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.32
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation5-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 5690
+    #> Total exacerbations (Female): 10132
+    #> Total COPD patient-years (Male): 13307
+    #> Total COPD patient-years (Female): 13722
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.4219
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.7352
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.4276
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.7384
 
 ### Recalibration 6:
 
@@ -310,3 +415,18 @@ validate_exacerbation(1e4, inputs)
 ![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-3.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-4.png)![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-5.png)
 
     #> Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): 0.27
+    #> 
+    #> Exacerbation rates (per COPD patient-year) by sex over time:
+
+![](Canada_Calibrate_COPD_Exacerbations_files/figure-html/validationNewEquation6-6.png)
+
+    #> 
+    #> Summary statistics:
+    #> Total exacerbations (Male): 5204
+    #> Total exacerbations (Female): 7866
+    #> Total COPD patient-years (Male): 13837
+    #> Total COPD patient-years (Female): 14038
+    #> Mean exacerbation rate per COPD patient-year (Male): 0.3725
+    #> Mean exacerbation rate per COPD patient-year (Female): 0.5595
+    #> Overall exacerbation rate per COPD patient-year (Male): 0.3761
+    #> Overall exacerbation rate per COPD patient-year (Female): 0.5603
