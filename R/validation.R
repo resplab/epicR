@@ -1069,6 +1069,54 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL) {
   message("Total rate of exacerbation in undiagnosed patients (0.30 per year in CanCOLD): ",
           total_rate_undiagnosed)
 
+  #----------------------------By Sex ------------------------------------
+  #-----------------------------------------------------------------------
+
+  message("\n")
+  message("Exacerbation rates (per COPD patient-year) by sex over time:\n")
+
+  # Extract n_exac_by_ctime_sex data (number of exacerbations)
+  # This is a matrix with dimensions [time_horizon][2] where columns are sex (0=male, 1=female)
+  n_exac <- as.data.frame(output_ex$n_exac_by_ctime_sex)
+
+  # Extract n_COPD_by_ctime_sex data (COPD patient-years at risk)
+  n_COPD <- as.data.frame(output_ex$n_COPD_by_ctime_sex)
+
+  # Calculate rate per COPD patient-year
+  exac_rate <- n_exac / n_COPD
+  colnames(exac_rate) <- c("Male", "Female")
+  exac_rate$Year <- 1:nrow(exac_rate)
+
+  # Reshape data for ggplot
+  exac_rate_long <- reshape2::melt(exac_rate, id.vars = "Year",
+                                   variable.name = "Sex",
+                                   value.name = "Exacerbation_Rate")
+
+  # Create the plot
+  plot <- ggplot2::ggplot(exac_rate_long, aes(x = Year, y = Exacerbation_Rate, color = Sex)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    theme_bw(base_size = 14) +
+    labs(title = "Exacerbation Rate by Sex Over Time",
+         x = "Year",
+         y = "Exacerbation Rate (per COPD patient-year)",
+         color = "Sex") +
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5))
+
+  print(plot)
+
+  # Print summary statistics
+  message("\nSummary statistics:")
+  message("Total exacerbations (Male): ", sum(n_exac[, 1]))
+  message("Total exacerbations (Female): ", sum(n_exac[, 2]))
+  message("Total COPD patient-years (Male): ", round(sum(n_COPD[, 1]), 2))
+  message("Total COPD patient-years (Female): ", round(sum(n_COPD[, 2]), 2))
+  message("Mean exacerbation rate per COPD patient-year (Male): ", round(mean(exac_rate$Male, na.rm = TRUE), 4))
+  message("Mean exacerbation rate per COPD patient-year (Female): ", round(mean(exac_rate$Female, na.rm = TRUE), 4))
+  message("Overall exacerbation rate per COPD patient-year (Male): ", round(sum(n_exac[, 1]) / sum(n_COPD[, 1]), 4))
+  message("Overall exacerbation rate per COPD patient-year (Female): ", round(sum(n_exac[, 2]) / sum(n_COPD[, 2]), 4))
+
 }
 
 
@@ -1959,62 +2007,3 @@ terminate_session()
 }
 
 
-#' Validates exacerbation trends by sex over time
-#' @param n_sim number of simulated agents (default=1e4)
-#' @return a plot showing exacerbation counts by sex over time
-#' @export
-validate_exacerbation_by_sex <- function(n_sim = 1e4) {
-  message("Validate_exacerbation_by_sex(...) produces a plot of exacerbation counts by sex over time.\n")
-
-  settings <- default_settings
-  settings$record_mode <- record_mode["record_mode_none"]
-  settings$agent_stack_size <- 0
-  settings$n_base_agents <- n_sim
-  settings$event_stack_size <- 1
-  init_session(settings = settings)
-
-  input <- model_input$values
-
-  res <- run(input = input)
-  if (res < 0)
-    stop("Execution stopped.\n")
-
-  output_ex <- get_output_ex()
-
-  # Extract n_exac_by_ctime_sex data
-  # This is a matrix with dimensions [time_horizon][2] where columns are sex (0=male, 1=female)
-  exac_data <- as.data.frame(output_ex$n_exac_by_ctime_sex)
-  colnames(exac_data) <- c("Male", "Female")
-  exac_data$Year <- 1:nrow(exac_data)
-
-  # Reshape data for ggplot
-  exac_data_long <- reshape2::melt(exac_data, id.vars = "Year",
-                                   variable.name = "Sex",
-                                   value.name = "Exacerbations")
-
-  # Create the plot
-  plot <- ggplot2::ggplot(exac_data_long, aes(x = Year, y = Exacerbations, color = Sex)) +
-    geom_line(linewidth = 1) +
-    geom_point(size = 2) +
-    theme_bw(base_size = 14) +
-    labs(title = "Number of Exacerbations by Sex Over Time",
-         x = "Year",
-         y = "Number of Exacerbations",
-         color = "Sex") +
-    theme(legend.position = "bottom",
-          plot.title = element_text(hjust = 0.5))
-
-  print(plot)
-
-  # Print summary statistics
-  message("\nSummary statistics:")
-  message("Total exacerbations (Male): ", sum(exac_data$Male))
-  message("Total exacerbations (Female): ", sum(exac_data$Female))
-  message("Mean annual exacerbations (Male): ", round(mean(exac_data$Male), 2))
-  message("Mean annual exacerbations (Female): ", round(mean(exac_data$Female), 2))
-
-  terminate_session()
-
-  return(invisible(exac_data))
-
-}

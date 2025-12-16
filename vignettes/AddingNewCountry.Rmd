@@ -7,7 +7,7 @@ output:
     toc_depth: 4
 
 vignette: >
-  %\VignetteIndexEntry{AddingNewCountry}
+  %\VignetteIndexEntry{Adding a New Country to epicR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
