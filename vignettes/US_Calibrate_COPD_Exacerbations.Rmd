@@ -1,5 +1,5 @@
 ---
-title: "US_Calibrate COPD Exacerbations"
+title: "US Calibrate COPD Exacerbations"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{US_Calibrate COPD Exacerbations}
@@ -77,7 +77,7 @@ The calibration code below performs the relevant calculations and visualizations
 
 ### Step 1: Load libraries and setup
 
-```{r, eval = FALSE, echo = TRUE}
+```{r, eval = TRUE, echo = TRUE}
 
 library(tidyverse)
 library(epicR)
@@ -90,12 +90,11 @@ library(reshape2)
 
 # Define event codes
 EVENT_EXACERBATION <- 5
-EVENT_END <- 11  # Updated event_end code after MI/stroke/HF removal
-
+EVENT_END <- 14 
 # Load EPIC general settings
 settings <- get_default_settings()
 settings$record_mode <- 2
-settings$n_base_agents <- 3.5e6
+settings$n_base_agents <- 1e4
 
 # Load input with US config
 input <- get_input(jurisdiction = "us")
@@ -223,12 +222,12 @@ print(plot)
 
 #--------------------------- total number of severe exacerbations:
 
-n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (output_ex$n_exac_by_ctime_severity[,3]+output_ex$n_exac_by_ctime_severity[,4])* (100000/rowSums(output_ex$n_alive_by_ctime_sex)))
+n_exac <- data.frame(year= 1:20,Severe_Exacerbations = (results$extended$n_exac_by_ctime_severity[,3]+results$extended$n_exac_by_ctime_severity[,4])* (100000/rowSums(results$extended$n_alive_by_ctime_sex)))
 avgRate_sevExac <- mean(n_exac$Severe_Exacerbations[round(nrow(n_exac)/2,0):nrow(n_exac)])
 avgRate_sevExac <- round(avgRate_sevExac, 2)
 message(paste0("Average rate during 20 years: ", avgRate_sevExac))
 
-rate2017_sevExac <-(output_ex$n_exac_by_ctime_severity[3,3]+output_ex$n_exac_by_ctime_severity[3,4])*(100000/sum(output_ex$n_alive_by_ctime_sex[3,]))
+rate2017_sevExac <-(results$extended$n_exac_by_ctime_severity[3,3]+results$extended$n_exac_by_ctime_severity[3,4])*(100000/sum(results$extended$n_alive_by_ctime_sex[3,]))
 rate2017_sevExac <- round(rate2017_sevExac, 2)
 message(paste0("Rate in 2017: ", rate2017_sevExac))
 
