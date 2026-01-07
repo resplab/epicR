@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="co"># Use seeds for comparing interventions</span></span>
 <span><span class="va">baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">values</span></span>
 <span><span class="co"># Modify input parameters here...</span></span>
 <span><span class="va">intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
 <span><span class="co"># Compare with identical random variation removed</span></span></code></pre></div>

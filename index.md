@@ -283,7 +283,7 @@ results <- simulate(
 # Use seeds for comparing interventions
 baseline <- simulate(seed = 42)
 
-input <- get_input()
+input <- get_input()$values
 # Modify input parameters here...
 intervention <- simulate(input = input, seed = 42)
 # Compare with identical random variation removed
