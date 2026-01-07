@@ -4,15 +4,17 @@
 \alias{validate_smoking}
 \title{Returns results of validation tests for smoking module.}
 \usage{
-validate_smoking(remove_COPD = 1, intercept_k = NULL)
+validate_smoking(remove_COPD = 1, intercept_k = NULL, jurisdiction = "canada")
 }
 \arguments{
 \item{remove_COPD}{0 or 1. whether to remove COPD-related mortality.}
 
 \item{intercept_k}{a number}
+
+\item{jurisdiction}{character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".}
 }
 \value{
-validation test results
+For Canada: validation test results (invisible). For US: data frame with smoking status rates by year.
 }
 \description{
 It compares simulated smoking prevalence and trends against observed data to

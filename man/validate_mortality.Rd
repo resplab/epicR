@@ -9,7 +9,8 @@ validate_mortality(
   bgd = 1,
   bgd_h = 1,
   manual = 1,
-  exacerbation = 1
+  exacerbation = 1,
+  jurisdiction = "canada"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ validate_mortality(
 \item{manual}{a number}
 
 \item{exacerbation}{a number}
+
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
 }
 \value{
 validation test results

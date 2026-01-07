@@ -4,10 +4,12 @@
 \alias{validate_diagnosis}
 \title{Returns results of validation tests for diagnosis}
 \usage{
-validate_diagnosis(n_sim = 10000)
+validate_diagnosis(n_sim = 10000, jurisdiction = "canada")
 }
 \arguments{
 \item{n_sim}{number of agents}
+
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
 }
 \value{
 validation test results
