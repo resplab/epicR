@@ -5,7 +5,11 @@ Returns the Kaplan Meier curve comparing COPD and non-COPD
 ## Usage
 
 ``` r
-validate_survival(savePlots = FALSE, base_agents = 10000)
+validate_survival(
+  savePlots = FALSE,
+  base_agents = 10000,
+  jurisdiction = "canada"
+)
 ```
 
 ## Arguments
@@ -18,6 +22,11 @@ validate_survival(savePlots = FALSE, base_agents = 10000)
 - base_agents:
 
   Number of agents in the simulation. Default is 1e4.
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

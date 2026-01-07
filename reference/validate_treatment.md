@@ -8,7 +8,7 @@ assesses the impact of treatment.
 ## Usage
 
 ``` r
-validate_treatment(n_sim = 10000)
+validate_treatment(n_sim = 10000, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -16,6 +16,11 @@ validate_treatment(n_sim = 10000)
 - n_sim:
 
   number of agents
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

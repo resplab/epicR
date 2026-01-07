@@ -163,7 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_population</span><span class="op">(</span>remove_COPD <span class="op">=</span> <span class="fl">0</span>, incidence_k <span class="op">=</span> <span class="fl">1</span>, savePlots <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_population</span><span class="op">(</span></span>
+<span>  remove_COPD <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  incidence_k <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  savePlots <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  jurisdiction <span class="op">=</span> <span class="st">"canada"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -181,10 +186,14 @@ document.addEventListener('DOMContentLoaded', function() {
 <dt id="arg-saveplots">savePlots<a class="anchor" aria-label="anchor" href="#arg-saveplots"></a></dt>
 <dd><p>0 or 1, exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population</p></dd>
 
+
+<dt id="arg-jurisdiction">jurisdiction<a class="anchor" aria-label="anchor" href="#arg-jurisdiction"></a></dt>
+<dd><p>character string specifying the jurisdiction for validation ("canada" or "us"). Default is "canada".</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>returns a table showing predicted (StatsCan) and simulated population values</p>
+    <p>For Canada: returns a table showing predicted (StatsCan) and simulated population values. For US: returns a data frame with population comparisons by age group and year.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

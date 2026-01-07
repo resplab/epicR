@@ -10,7 +10,8 @@ run(
   input = NULL,
   settings = NULL,
   auto_terminate = FALSE,
-  seed = NULL
+  seed = NULL,
+  jurisdiction = "canada"
 )
 ```
 
@@ -36,6 +37,11 @@ run(
 
   Random seed for reproducibility (optional). If provided, ensures
   identical results across runs
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

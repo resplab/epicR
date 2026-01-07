@@ -6,7 +6,7 @@ over time and by GOLD stage.
 ## Usage
 
 ``` r
-validate_symptoms(n_sim = 10000)
+validate_symptoms(n_sim = 10000, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -14,6 +14,11 @@ validate_symptoms(n_sim = 10000)
 - n_sim:
 
   number of agents
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

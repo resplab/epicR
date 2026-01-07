@@ -10,7 +10,7 @@ pack-years, smoking status, and the prevalence of COPD.
 ## Usage
 
 ``` r
-validate_COPD(incident_COPD_k = 1, return_CI = FALSE)
+validate_COPD(incident_COPD_k = 1, return_CI = FALSE, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -25,6 +25,12 @@ validate_COPD(incident_COPD_k = 1, return_CI = FALSE)
   if TRUE, returns 95 percent confidence intervals for the "Year"
   coefficient
 
+- jurisdiction:
+
+  character string specifying the jurisdiction for validation ("canada"
+  or "us"). Default is "canada".
+
 ## Value
 
-validation test results
+For Canada: list with validation test results. For US: data frame with
+COPD prevalence by age group over time.

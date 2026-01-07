@@ -6,7 +6,7 @@ data to assess the model's accuracy.
 ## Usage
 
 ``` r
-validate_smoking(remove_COPD = 1, intercept_k = NULL)
+validate_smoking(remove_COPD = 1, intercept_k = NULL, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -19,6 +19,12 @@ validate_smoking(remove_COPD = 1, intercept_k = NULL)
 
   a number
 
+- jurisdiction:
+
+  character string specifying the jurisdiction for validation ("canada"
+  or "us"). Default is "canada".
+
 ## Value
 
-validation test results
+For Canada: validation test results (invisible). For US: data frame with
+smoking status rates by year.

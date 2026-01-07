@@ -8,7 +8,8 @@ Returns results of validation tests for payoffs, costs and QALYs
 validate_payoffs(
   nPatient = 1e+06,
   disableDiscounting = TRUE,
-  disableExacMortality = TRUE
+  disableExacMortality = TRUE,
+  jurisdiction = "canada"
 )
 ```
 
@@ -27,6 +28,11 @@ validate_payoffs(
 
   if TRUE, mortality due to exacerbations will be disabled for cost and
   QALY calculations. Default: TRUE
+
+- jurisdiction:
+
+  character string specifying the jurisdiction for validation ("canada"
+  or "us"). Default is "canada". Currently only "canada" is implemented.
 
 ## Value
 

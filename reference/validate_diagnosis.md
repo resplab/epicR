@@ -9,7 +9,7 @@ distribution of diagnoses over time.
 ## Usage
 
 ``` r
-validate_diagnosis(n_sim = 10000)
+validate_diagnosis(n_sim = 10000, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -17,6 +17,11 @@ validate_diagnosis(n_sim = 10000)
 - n_sim:
 
   number of agents
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

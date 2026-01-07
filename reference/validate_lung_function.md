@@ -7,8 +7,15 @@ patients.
 ## Usage
 
 ``` r
-validate_lung_function()
+validate_lung_function(jurisdiction = "canada")
 ```
+
+## Arguments
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

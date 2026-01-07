@@ -9,7 +9,11 @@ stage, and rates in diagnosed vs. undiagnosed patients.
 ## Usage
 
 ``` r
-validate_exacerbation(base_agents = 10000, input = NULL)
+validate_exacerbation(
+  base_agents = 10000,
+  input = NULL,
+  jurisdiction = "canada"
+)
 ```
 
 ## Arguments
@@ -22,6 +26,12 @@ validate_exacerbation(base_agents = 10000, input = NULL)
 
   EPIC inputs
 
+- jurisdiction:
+
+  character string specifying the jurisdiction for validation ("canada"
+  or "us"). Default is "canada".
+
 ## Value
 
-validation test results
+For Canada: validation test results (invisible). For US: invisible NULL
+(results displayed via messages and plots).

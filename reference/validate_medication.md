@@ -5,7 +5,7 @@ This function returns plots showing medication usage over time
 ## Usage
 
 ``` r
-validate_medication(n_sim = 50000)
+validate_medication(n_sim = 50000, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -13,6 +13,11 @@ validate_medication(n_sim = 50000)
 - n_sim:
 
   number of agents
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

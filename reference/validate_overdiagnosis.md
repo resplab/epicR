@@ -6,7 +6,7 @@ over model time.
 ## Usage
 
 ``` r
-validate_overdiagnosis(n_sim = 10000)
+validate_overdiagnosis(n_sim = 10000, jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -14,6 +14,11 @@ validate_overdiagnosis(n_sim = 10000)
 - n_sim:
 
   number of agents
+
+- jurisdiction:
+
+  character string specifying the jurisdiction ("canada" or "us").
+  Default is "canada"
 
 ## Value
 

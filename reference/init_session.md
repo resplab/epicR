@@ -5,7 +5,7 @@ Initializes a model. Allocates memory to the C engine.
 ## Usage
 
 ``` r
-init_session(settings = get_default_settings())
+init_session(settings = get_default_settings(), jurisdiction = "canada")
 ```
 
 ## Arguments
@@ -13,6 +13,11 @@ init_session(settings = get_default_settings())
 - settings:
 
   customized settings.
+
+- jurisdiction:
+
+  The jurisdiction for which to load input parameters (default:
+  "canada").
 
 ## Value
 
