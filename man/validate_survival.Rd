@@ -14,6 +14,8 @@ validate_survival(
 \item{savePlots}{TRUE or FALSE (default), exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population}
 
 \item{base_agents}{Number of agents in the simulation. Default is 1e4.}
+
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
 }
 \value{
 validation test results

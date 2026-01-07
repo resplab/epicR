@@ -6,6 +6,9 @@
 \usage{
 validate_lung_function(jurisdiction = "canada")
 }
+\arguments{
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
+}
 \value{
 validation test results
 }

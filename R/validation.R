@@ -1112,6 +1112,7 @@ validate_payoffs <- function(nPatient = 1e6, disableDiscounting = TRUE, disableE
 #' @param bgd_h a number
 #' @param manual a number
 #' @param exacerbation a number
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, exacerbation = 1, jurisdiction = "canada") {
@@ -1178,6 +1179,7 @@ validate_mortality <- function(n_sim = 5e+05, bgd = 1, bgd_h = 1, manual = 1, ex
 #'
 #' This function evaluates FEV1 (Forced Expiratory Volume in 1 second) values
 #' and GOLD stage distributions to assess lung function in simulated patients.
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_lung_function <- function(jurisdiction = "canada") {
@@ -1854,9 +1856,9 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
                                    value.name = "Exacerbation_Rate")
 
   # Create the plot
-  plot <- ggplot2::ggplot(exac_rate_long, aes(x = Year, y = Exacerbation_Rate, color = Sex)) +
-    geom_line(linewidth = 1) +
-    geom_point(size = 2) +
+  plot <- ggplot2::ggplot(exac_rate_long, ggplot2::aes(x = .data$Year, y = .data$Exacerbation_Rate, color = .data$Sex)) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_point(size = 2) +
     theme_bw(base_size = 14) +
     labs(title = "Exacerbation Rate by Sex Over Time",
          x = "Year",
@@ -1884,6 +1886,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
 #' Returns the Kaplan Meier curve comparing COPD and non-COPD
 #' @param savePlots TRUE or FALSE (default), exports 300 DPI population growth and pyramid plots comparing simulated vs. predicted population
 #' @param base_agents Number of agents in the simulation. Default is 1e4.
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction = "canada") {
@@ -1978,6 +1981,7 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction =
 #' to visualize the distribution of diagnoses over time.
 #'
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_diagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
@@ -2056,6 +2060,7 @@ validate_diagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
 #' This function returns Average number of GP visits by sex, COPD severity and
 #' COPD diagnosis status along with their plots.
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
@@ -2159,6 +2164,7 @@ validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
 #' This function plots the prevalence of cough, dyspnea, phlegm and wheeze
 #' over time and by GOLD stage.
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
@@ -2300,6 +2306,7 @@ validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
 #' influences exacerbation rates in COPD patients. It compares exacerbation rates between
 #' diagnosed and undiagnosed patients and assesses the impact of treatment.
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_treatment<- function(n_sim = 1e+04, jurisdiction = "canada") {
@@ -2681,6 +2688,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 #' This function returns the proportion of non-COPD subjects overdiagnosed
 #' over model time.
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results
 #' @export
 validate_overdiagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
@@ -2741,6 +2749,7 @@ validate_overdiagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
 #'
 #' This function returns plots showing medication usage over time
 #' @param n_sim number of agents
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return validation test results for medication
 #' @export
 

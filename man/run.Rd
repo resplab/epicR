@@ -23,6 +23,8 @@ run(
 \item{auto_terminate}{whether to automatically terminate session after run (default: FALSE)}
 
 \item{seed}{Random seed for reproducibility (optional). If provided, ensures identical results across runs}
+
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
 }
 \value{
 simulation results if successful

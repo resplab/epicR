@@ -353,6 +353,7 @@ get_all_events <- function() {
 #' @param settings customized settings (only used if auto-initializing)
 #' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
 #' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
+#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
 #' @return simulation results if successful
 #' @examples
 #' \dontrun{

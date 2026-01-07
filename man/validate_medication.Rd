@@ -8,6 +8,8 @@ validate_medication(n_sim = 50000, jurisdiction = "canada")
 }
 \arguments{
 \item{n_sim}{number of agents}
+
+\item{jurisdiction}{character string specifying the jurisdiction ("canada" or "us"). Default is "canada"}
 }
 \value{
 validation test results for medication
