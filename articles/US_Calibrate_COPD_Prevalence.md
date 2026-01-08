@@ -115,7 +115,7 @@ results <- simulate(settings = settings, input = input$values, extended_results 
     ## Simulating 100000 base agents: 10% 20% 30% 40% 50%
     ## 60% 70% 80% 90% 100%
 
-    ## Simulation completed in 6.0 seconds
+    ## Simulation completed in 6.4 seconds
 
     ## Collecting results...
 
