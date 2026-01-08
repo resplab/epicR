@@ -4,13 +4,6 @@ pkgdown_sha: ~
 articles:
   AddingNewCountry: AddingNewCountry.html
   BackgroundEPIC: BackgroundEPIC.html
-  Canada_Calibrate_COPD_Exacerbations: Canada_Calibrate_COPD_Exacerbations.html
   GettingStarted: GettingStarted.html
-  US_Calibrate_Background_Mortality: US_Calibrate_Background_Mortality.html
-  US_Calibrate_COPD_Exacerbations: US_Calibrate_COPD_Exacerbations.html
-  US_Calibrate_COPD_Prevalence: US_Calibrate_COPD_Prevalence.html
-  US_Calibrate_Demographics: US_Calibrate_Demographics.html
-  US_Calibrate_Smoking_Status: US_Calibrate_Smoking_Status.html
-  US_Payoffs: US_Payoffs.html
-  UsingEPICinR: UsingEPICinR.html
-last_built: 2025-12-16T00:21Z
+  InputsOutputsStructure: InputsOutputsStructure.html
+last_built: 2026-01-08T18:08Z
