@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/CLAUDE.html</loc></url>
 <url><loc>/CONFIG_RELOAD_FEATURE.html</loc></url>
 <url><loc>/EXTENDED_RESULTS_UPDATE.html</loc></url>
 <url><loc>/FUNCTION_RENAMING_SUMMARY.html</loc></url>
@@ -21,6 +22,7 @@
 <url><loc>/articles/Calibrate_Smoking.html</loc></url>
 <url><loc>/articles/Canada_Calibrate_COPD_Exacerbations.html</loc></url>
 <url><loc>/articles/GettingStarted.html</loc></url>
+<url><loc>/articles/InputsOutputsStructure.html</loc></url>
 <url><loc>/articles/Payoffs.html</loc></url>
 <url><loc>/articles/RecalibratingEPIC.html</loc></url>
 <url><loc>/articles/Reproducing_bgd.html</loc></url>
