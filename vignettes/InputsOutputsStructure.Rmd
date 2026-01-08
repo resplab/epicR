@@ -1,5 +1,5 @@
 ---
-title: "Using EPIC in R"
+title: "Inputs and Outputs Structure"
 output:
   html_document:
     toc: true
@@ -21,123 +21,6 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ```
 
-## 1 Installation
-
-If you do not have R installed on your computer, please go to [Appendix 1](#appendix1). Once you have R installed, you can install the **epicR** package as per the instructions below:
-
-### Windows 7 or Later {-}
-1. Download and Install the latest version of R from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
-2. Download and Install R Studio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
-3. Download and Install the latest version of Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/)
-4. Using either an R session in Terminal or in R Studio, install the package `pak`:
-
-```{r, eval=FALSE, echo=TRUE}
-install.packages('pak')
-```
-
-5. Install epicR from GitHub:
-
-```{r, eval=FALSE, echo=TRUE}
-pak::pkg_install('resplab/epicR')
-```
-
-### Mac OS Sierra and Later {-}
-
-1. Download and Install the latest version of R from [https://cran.r-project.org/bin/macosx/](https://cran.r-project.org/bin/macosx/)
-2. Download and Install R Studio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
-3. Install Xcode Command Line Tools by running the following in Terminal:
-
-```bash
-xcode-select --install
-```
-
-4. Using either an R session in Terminal or in R Studio, install the package `pak`:
-
-```{r, eval=FALSE, echo=TRUE}
-install.packages('pak')
-```
-
-5. Install epicR from GitHub:
-
-```{r, eval=FALSE, echo=TRUE}
-pak::pkg_install('resplab/epicR')
-```
-
-### Ubuntu 22.04 and Later {-}
-
-1. Install R by executing the following commands in Terminal:
-
-```bash
-  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-```
-```bash
-  sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
-```
-```bash
-  sudo apt-get update
-```
-```bash
-  sudo apt-get install r-base
-```
-If the installation is successful, you should be able to start R:
-```bash
-  sudo -i R
-```
-
-2. Download and Install R Studio from [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
-3. Install `libcurl` from Terminal: 
-
-```bash
-  sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
-```
-
-4. Using either an R session in Terminal or in R Studio, install the package `pak`:
-
-```r
-install.packages("pak")
-```
-
-5. Install epicR from GitHub:
-
-```r
-pak::pkg_install("resplab/epicR")
-```
-
-## 2 Running the Model
-
-Now that you have installed `epicR`, you can load the library:
-
-```{r, eval = FALSE, echo = TRUE}
-library(epicR)
-```
-
-### Recommended: Using the `simulate()` Function {-}
-
-The easiest way to run EPIC is with the `simulate()` function, which handles all session management automatically and provides progress information:
-
-```{r, eval = FALSE, echo = TRUE}
-# Run with defaults (Canada, 20 year horizon, 60,000 agents)
-results <- simulate()
-print(results$basic)
-
-# Customize parameters
-results <- simulate(
-  jurisdiction = "us",
-  time_horizon = 10,
-  n_agents = 100000
-)
-
-# Quick test with fewer agents
-results <- simulate(n_agents = 10000)
-
-# By default, you get both basic and extended results
-results <- simulate()
-print(results$extended)
-
-# Get event history
-results <- simulate(return_events = TRUE, n_agents = 10000)
-head(results$events)
-```
 
 ### Advanced: Custom Input Parameters {-}
 
@@ -145,7 +28,7 @@ For advanced users who need fine-grained control over input parameters, you can 
 
 #### Understanding Input Structure {-}
 
-The default input values are created in the file **input.R**. You can retrieve these values using `get_input()`. This function returns a nested list. The returned list contains `values`, `help` and `ref` which each hold further sub-lists. `help` and `ref` contain explanations regarding what each input parameter means. 
+The default input values are created in the config file. You can retrieve these values using `get_input()`. This function returns a nested list. The returned list contains `values`, `help` and `ref` which each hold further sub-lists. `help` and `ref` contain explanations regarding what each input parameter means. 
 
 For easier notation we will refer the retrieved inputs as `input`:
 
@@ -320,18 +203,3 @@ In the events data frame, each type of event has a code corresponding to the tab
 | End | 14 |
 
 *Note: Doctor visit and Medication change are not implemented in this version of epicR
-
-
-### Closed-cohort analysis {-}
-
-Closed-cohort analysis can be specified by changing the appropriate input parameters:
-
-```{r, eval=FALSE, echo=TRUE}
-library(epicR)
-
-# Get input with closed cohort enabled
-input <- get_input(closed_cohort = 1)$values
-
-# Run simulation
-results <- simulate(input = input)
-```
