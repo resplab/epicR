@@ -443,7 +443,7 @@ sex</td>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 60000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 3.0 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 3.1 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -533,7 +533,7 @@ sex</td>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 60000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 3.0 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 3.1 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -721,7 +721,7 @@ sex</td>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 60000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 3.0 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 3.1 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -815,14 +815,6 @@ sex</td>
 <tr class="even">
 <td><code>dispersion_gpvisits_nonCOPD</code></td>
 <td>Dispersion parameter for non-COPD GP visits</td>
-</tr>
-<tr class="odd">
-<td><code>rate_doctor_visit</code></td>
-<td>General doctor visit rate (currently disabled)</td>
-</tr>
-<tr class="even">
-<td><code>p_specialist</code></td>
-<td>Probability of specialist visit (currently disabled)</td>
 </tr>
 </tbody>
 </table>
@@ -923,7 +915,7 @@ sex</td>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 60000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 3.0 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 3.1 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -964,6 +956,11 @@ sex</td>
 </table>
 <p><strong>Medication Classes:</strong></p>
 <table class="table">
+<colgroup>
+<col width="26%">
+<col width="23%">
+<col width="50%">
+</colgroup>
 <thead><tr class="header">
 <th>Class</th>
 <th>Code</th>
@@ -971,14 +968,14 @@ sex</td>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td><code>none</code></td>
+<td>0</td>
+<td>No medication</td>
+</tr>
+<tr class="even">
 <td><code>SABA</code></td>
 <td>1</td>
 <td>Short-acting beta-agonist</td>
-</tr>
-<tr class="even">
-<td><code>LABA</code></td>
-<td>2</td>
-<td>Long-acting beta-agonist</td>
 </tr>
 <tr class="odd">
 <td><code>LAMA</code></td>
@@ -986,14 +983,14 @@ sex</td>
 <td>Long-acting muscarinic antagonist</td>
 </tr>
 <tr class="even">
-<td><code>ICS</code></td>
-<td>8</td>
-<td>Inhaled corticosteroid</td>
+<td><code>LAMA/LABA</code></td>
+<td>6</td>
+<td>Long-acting muscarinic antagonist/Long-acting beta-agonist</td>
 </tr>
 <tr class="odd">
-<td><code>MACRO</code></td>
-<td>16</td>
-<td>Macrolide</td>
+<td><code>ICS/LAMA/LABA</code></td>
+<td>14</td>
+<td>Triple Therapy</td>
 </tr>
 </tbody>
 </table>
@@ -1030,7 +1027,7 @@ stages)</td>
 </tr>
 <tr class="even">
 <td><code>cost_outpatient_diagnosis</code></td>
-<td>Cost of diagnostic spirometry</td>
+<td>Cost of outpatient diagnosis</td>
 </tr>
 <tr class="odd">
 <td><code>cost_gp_visit</code></td>
@@ -1072,7 +1069,7 @@ stages)</td>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 60000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 3.1 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 3.2 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -1325,7 +1322,7 @@ results.</p>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 50000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 2.5 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 2.6 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -1355,7 +1352,8 @@ results.</p>
 <h3 id="extended-output-resultsextended">Extended Output (<code>results$extended</code>)<a class="anchor" aria-label="anchor" href="#extended-output-resultsextended"></a>
 </h3>
 <p>Detailed breakdowns by time, age, sex, and disease stage. Extended
-results are included by default.</p>
+results are included by default. Note:
+<code>ctime = calendar time</code>, <code>ltime = local time</code></p>
 <div class="section level4">
 <h4 id="population-counts-by-time">Population Counts by Time<a class="anchor" aria-label="anchor" href="#population-counts-by-time"></a>
 </h4>
@@ -1470,7 +1468,7 @@ results are included by default.</p>
 <tr class="odd">
 <td><code>cumul_time_by_ctime_GOLD</code></td>
 <td>time_horizon x 5</td>
-<td>Person-years by time and GOLD stage</td>
+<td>Person-years by time and GOLD stage. GOLD0 = no COPD</td>
 </tr>
 </tbody>
 </table>
@@ -1576,7 +1574,7 @@ results are included by default.</p>
 <tr class="odd">
 <td><code>n_severep_exac_by_ctime_age</code></td>
 <td>time_horizon x 111</td>
-<td>Severe+ exacerbations by time and age</td>
+<td>Severe and very severe exacerbations by time and age</td>
 </tr>
 <tr class="even">
 <td><code>n_exac_by_ctime_severity_undiagnosed</code></td>
@@ -1763,22 +1761,22 @@ results are included by default.</p>
 <tr class="even">
 <td><code>n_cough_by_ctime_severity</code></td>
 <td>time_horizon x 5</td>
-<td>Cough prevalence by time and GOLD</td>
+<td>Number with cough by time and GOLD</td>
 </tr>
 <tr class="odd">
 <td><code>n_phlegm_by_ctime_severity</code></td>
 <td>time_horizon x 5</td>
-<td>Phlegm prevalence by time and GOLD</td>
+<td>Number with phlegm by time and GOLD</td>
 </tr>
 <tr class="even">
 <td><code>n_wheeze_by_ctime_severity</code></td>
 <td>time_horizon x 5</td>
-<td>Wheeze prevalence by time and GOLD</td>
+<td>Number with wheeze by time and GOLD</td>
 </tr>
 <tr class="odd">
 <td><code>n_dyspnea_by_ctime_severity</code></td>
 <td>time_horizon x 5</td>
-<td>Dyspnea prevalence by time and GOLD</td>
+<td>Number with dyspnea by time and GOLD</td>
 </tr>
 </tbody>
 </table>
@@ -1838,7 +1836,7 @@ results are included by default.</p>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 50000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 2.5 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 2.6 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -1954,6 +1952,10 @@ Use with caution for large simulations.</p>
 <h3 id="event-matrix-columns-33-columns">Event Matrix Columns (33 columns)<a class="anchor" aria-label="anchor" href="#event-matrix-columns-33-columns"></a>
 </h3>
 <table class="table">
+<colgroup>
+<col width="38%">
+<col width="61%">
+</colgroup>
 <thead><tr class="header">
 <th>Column</th>
 <th>Description</th>
@@ -2057,7 +2059,7 @@ Use with caution for large simulations.</p>
 </tr>
 <tr class="odd">
 <td><code>gpvisits</code></td>
-<td>Number of GP visits</td>
+<td>Annual number of GP visits</td>
 </tr>
 <tr class="even">
 <td><code>diagnosis</code></td>
@@ -2069,7 +2071,7 @@ Use with caution for large simulations.</p>
 </tr>
 <tr class="even">
 <td><code>case_detection</code></td>
-<td>Case detection received (0/1/2/3 by method)</td>
+<td>Case detection received (0/1)</td>
 </tr>
 <tr class="odd">
 <td><code>cumul_cost</code></td>
@@ -2085,11 +2087,11 @@ Use with caution for large simulations.</p>
 </tr>
 <tr class="even">
 <td><code>exac_history_n_moderate</code></td>
-<td>Count of moderate exacerbations</td>
+<td>Cumulative count of moderate exacerbations</td>
 </tr>
 <tr class="odd">
 <td><code>exac_history_n_severe_plus</code></td>
-<td>Count of severe+ exacerbations</td>
+<td>Cumulative count of severe and very severe exacerbations</td>
 </tr>
 </tbody>
 </table>
@@ -2367,7 +2369,7 @@ captured.</p>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 50000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 2.5 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 2.6 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>
@@ -2400,7 +2402,7 @@ captured.</p>
 <span><span class="co">#&gt; Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.</span></span>
 <span><span class="co">#&gt; Simulating 50000 base agents: 10% 20% 30% 40% 50%</span></span>
 <span><span class="co">#&gt; 60% 70% 80% 90% 100%</span></span>
-<span><span class="co">#&gt; Simulation completed in 2.4 seconds</span></span>
+<span><span class="co">#&gt; Simulation completed in 2.5 seconds</span></span>
 <span><span class="co">#&gt; Collecting results...</span></span>
 <span><span class="co">#&gt; Collecting extended results...</span></span>
 <span><span class="co">#&gt; Terminating the session</span></span>

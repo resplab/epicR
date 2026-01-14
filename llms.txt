@@ -546,15 +546,21 @@ Yan, K., Duan, K. and Johnson, K.M., 2025. Development and Validation of
 EPIC-USA: A COPD Policy Model for the United States. American Journal of
 Respiratory and Critical Care Medicine, 211(Abstracts), pp.A7130-A7130.
 
+Mountain, R., Duan, K.I. and Johnson, K.M., 2024. Benefit–harm analysis
+of earlier initiation of triple therapy for prevention of acute
+exacerbation in patients with chronic obstructive pulmonary disease.
+Annals of the American Thoracic Society, 21(8), pp.1139-1146.
+
 Mountain, R., Kim, D. and Johnson, K.M., 2023. Budget impact analysis of
 adopting primary care–based case detection of chronic obstructive
 pulmonary disease in the Canadian general population. Canadian Medical
 Association Open Access Journal, 11(6), pp.E1048-E1058.
 
-Mountain, R., Duan, K.I. and Johnson, K.M., 2024. Benefit–harm analysis
-of earlier initiation of triple therapy for prevention of acute
-exacerbation in patients with chronic obstructive pulmonary disease.
-Annals of the American Thoracic Society, 21(8), pp.1139-1146.
+Ahmadian, S., Johnson, K.M., Ho, J.K., Sin, D.D., Lynd, L.D., Harrison,
+M. and Sadatsafavi, M., 2023. A cost-effectiveness analysis of
+azithromycin for the prevention of acute exacerbations of chronic
+obstructive pulmonary disease. Annals of the American Thoracic Society,
+20(12), pp.1735-1742.
 
 Johnson KM, Sadatsafavi M, Adibi A, Lynd L, Harrison M, Tavakoli H, Sin
 DD, Bryan S. Cost effectiveness of case detection strategies for the

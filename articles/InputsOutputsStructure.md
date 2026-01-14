@@ -139,7 +139,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.0 seconds
+#> Simulation completed in 3.1 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -189,7 +189,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.0 seconds
+#> Simulation completed in 3.1 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -282,7 +282,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.0 seconds
+#> Simulation completed in 3.1 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -314,14 +314,12 @@ Controls respiratory symptoms.
 
 Controls GP visit frequency.
 
-| Parameter                         | Description                                          |
-|-----------------------------------|------------------------------------------------------|
-| `ln_rate_gpvisits_COPD_by_sex`    | GP visit rate for COPD patients                      |
-| `dispersion_gpvisits_COPD`        | Dispersion parameter for COPD GP visits              |
-| `ln_rate_gpvisits_nonCOPD_by_sex` | GP visit rate for non-COPD                           |
-| `dispersion_gpvisits_nonCOPD`     | Dispersion parameter for non-COPD GP visits          |
-| `rate_doctor_visit`               | General doctor visit rate (currently disabled)       |
-| `p_specialist`                    | Probability of specialist visit (currently disabled) |
+| Parameter                         | Description                                 |
+|-----------------------------------|---------------------------------------------|
+| `ln_rate_gpvisits_COPD_by_sex`    | GP visit rate for COPD patients             |
+| `dispersion_gpvisits_COPD`        | Dispersion parameter for COPD GP visits     |
+| `ln_rate_gpvisits_nonCOPD_by_sex` | GP visit rate for non-COPD                  |
+| `dispersion_gpvisits_nonCOPD`     | Dispersion parameter for non-COPD GP visits |
 
 ------------------------------------------------------------------------
 
@@ -369,7 +367,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.0 seconds
+#> Simulation completed in 3.1 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -391,13 +389,13 @@ Controls medication use and effects.
 
 **Medication Classes:**
 
-| Class   | Code | Description                       |
-|---------|------|-----------------------------------|
-| `SABA`  | 1    | Short-acting beta-agonist         |
-| `LABA`  | 2    | Long-acting beta-agonist          |
-| `LAMA`  | 4    | Long-acting muscarinic antagonist |
-| `ICS`   | 8    | Inhaled corticosteroid            |
-| `MACRO` | 16   | Macrolide                         |
+| Class           | Code | Description                                                |
+|-----------------|------|------------------------------------------------------------|
+| `none`          | 0    | No medication                                              |
+| `SABA`          | 1    | Short-acting beta-agonist                                  |
+| `LAMA`          | 4    | Long-acting muscarinic antagonist                          |
+| `LAMA/LABA`     | 6    | Long-acting muscarinic antagonist/Long-acting beta-agonist |
+| `ICS/LAMA/LABA` | 14   | Triple Therapy                                             |
 
 Combinations are represented as sums (e.g., ICS+LAMA+LABA = 8+4+2 = 14).
 
@@ -412,7 +410,7 @@ All costs are in local currency (CAD for Canada, USD for US).
 | `bg_cost_by_stage`          | Annual maintenance costs by GOLD stage (0=no COPD, 1-4=GOLD stages) |
 | `exac_dcost`                | Incremental cost per exacerbation by severity (4 values)            |
 | `cost_case_detection`       | Cost of case detection procedure                                    |
-| `cost_outpatient_diagnosis` | Cost of diagnostic spirometry                                       |
+| `cost_outpatient_diagnosis` | Cost of outpatient diagnosis                                        |
 | `cost_gp_visit`             | Cost per GP visit                                                   |
 | `cost_smoking_cessation`    | Cost of smoking cessation treatment                                 |
 
@@ -446,7 +444,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.1 seconds
+#> Simulation completed in 3.2 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -631,7 +629,7 @@ results <- simulate(n_agents = 50000)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.5 seconds
+#> Simulation completed in 2.6 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -662,7 +660,8 @@ cat("Total QALYs:", basic$total_qaly, "\n")
 ### Extended Output (`results$extended`)
 
 Detailed breakdowns by time, age, sex, and disease stage. Extended
-results are included by default.
+results are included by default. Note: `ctime = calendar time`,
+`ltime = local time`
 
 #### Population Counts by Time
 
@@ -682,15 +681,15 @@ results are included by default.
 
 #### COPD Outcomes by Time
 
-| Output                     | Dimensions         | Description                             |
-|----------------------------|--------------------|-----------------------------------------|
-| `n_COPD_by_ctime_sex`      | time_horizon x 2   | COPD cases by time and sex              |
-| `n_COPD_by_ctime_age`      | time_horizon x 111 | COPD cases by time and age              |
-| `n_COPD_by_ctime_severity` | time_horizon x 5   | COPD cases by time and GOLD stage (0-4) |
-| `n_COPD_by_age_sex`        | 111 x 2            | COPD cases by age and sex (total)       |
-| `n_inc_COPD_by_ctime_age`  | time_horizon x 111 | Incident COPD cases by time and age     |
-| `cumul_non_COPD_time`      | scalar             | Total person-years without COPD         |
-| `cumul_time_by_ctime_GOLD` | time_horizon x 5   | Person-years by time and GOLD stage     |
+| Output                     | Dimensions         | Description                                          |
+|----------------------------|--------------------|------------------------------------------------------|
+| `n_COPD_by_ctime_sex`      | time_horizon x 2   | COPD cases by time and sex                           |
+| `n_COPD_by_ctime_age`      | time_horizon x 111 | COPD cases by time and age                           |
+| `n_COPD_by_ctime_severity` | time_horizon x 5   | COPD cases by time and GOLD stage (0-4)              |
+| `n_COPD_by_age_sex`        | 111 x 2            | COPD cases by age and sex (total)                    |
+| `n_inc_COPD_by_ctime_age`  | time_horizon x 111 | Incident COPD cases by time and age                  |
+| `cumul_non_COPD_time`      | scalar             | Total person-years without COPD                      |
+| `cumul_time_by_ctime_GOLD` | time_horizon x 5   | Person-years by time and GOLD stage. GOLD0 = no COPD |
 
 #### Diagnosis Outcomes
 
@@ -706,18 +705,18 @@ results are included by default.
 
 #### Exacerbation Outcomes
 
-| Output                                 | Dimensions         | Description                              |
-|----------------------------------------|--------------------|------------------------------------------|
-| `n_exac_by_ctime_age`                  | time_horizon x 111 | Exacerbations by time and age            |
-| `n_exac_by_ctime_severity`             | time_horizon x 4   | Exacerbations by time and severity       |
-| `n_exac_by_ctime_sex`                  | time_horizon x 2   | Exacerbations by time and sex            |
-| `n_exac_by_ctime_GOLD`                 | time_horizon x 4   | Exacerbations by time and GOLD stage     |
-| `n_exac_by_gold_severity`              | 4 x 4              | Exacerbations by GOLD stage and severity |
-| `n_exac_by_gold_severity_diagnosed`    | 4 x 4              | Exacerbations among diagnosed patients   |
-| `n_severep_exac_by_ctime_age`          | time_horizon x 111 | Severe+ exacerbations by time and age    |
-| `n_exac_by_ctime_severity_undiagnosed` | time_horizon x 4   | Exacerbations in undiagnosed patients    |
-| `n_exac_by_ctime_severity_diagnosed`   | time_horizon x 4   | Exacerbations in diagnosed patients      |
-| `n_exac_by_ctime_severity_female`      | time_horizon x 4   | Exacerbations in females by severity     |
+| Output                                 | Dimensions         | Description                                          |
+|----------------------------------------|--------------------|------------------------------------------------------|
+| `n_exac_by_ctime_age`                  | time_horizon x 111 | Exacerbations by time and age                        |
+| `n_exac_by_ctime_severity`             | time_horizon x 4   | Exacerbations by time and severity                   |
+| `n_exac_by_ctime_sex`                  | time_horizon x 2   | Exacerbations by time and sex                        |
+| `n_exac_by_ctime_GOLD`                 | time_horizon x 4   | Exacerbations by time and GOLD stage                 |
+| `n_exac_by_gold_severity`              | 4 x 4              | Exacerbations by GOLD stage and severity             |
+| `n_exac_by_gold_severity_diagnosed`    | 4 x 4              | Exacerbations among diagnosed patients               |
+| `n_severep_exac_by_ctime_age`          | time_horizon x 111 | Severe and very severe exacerbations by time and age |
+| `n_exac_by_ctime_severity_undiagnosed` | time_horizon x 4   | Exacerbations in undiagnosed patients                |
+| `n_exac_by_ctime_severity_diagnosed`   | time_horizon x 4   | Exacerbations in diagnosed patients                  |
+| `n_exac_by_ctime_severity_female`      | time_horizon x 4   | Exacerbations in females by severity                 |
 
 #### Death Outcomes
 
@@ -752,15 +751,15 @@ results are included by default.
 
 #### Symptom and GP Visit Outcomes
 
-| Output                          | Dimensions       | Description                         |
-|---------------------------------|------------------|-------------------------------------|
-| `n_GPvisits_by_ctime_sex`       | time_horizon x 2 | GP visits by time and sex           |
-| `n_GPvisits_by_ctime_severity`  | time_horizon x 5 | GP visits by time and GOLD stage    |
-| `n_GPvisits_by_ctime_diagnosis` | time_horizon x 2 | GP visits by diagnosis status       |
-| `n_cough_by_ctime_severity`     | time_horizon x 5 | Cough prevalence by time and GOLD   |
-| `n_phlegm_by_ctime_severity`    | time_horizon x 5 | Phlegm prevalence by time and GOLD  |
-| `n_wheeze_by_ctime_severity`    | time_horizon x 5 | Wheeze prevalence by time and GOLD  |
-| `n_dyspnea_by_ctime_severity`   | time_horizon x 5 | Dyspnea prevalence by time and GOLD |
+| Output                          | Dimensions       | Description                          |
+|---------------------------------|------------------|--------------------------------------|
+| `n_GPvisits_by_ctime_sex`       | time_horizon x 2 | GP visits by time and sex            |
+| `n_GPvisits_by_ctime_severity`  | time_horizon x 5 | GP visits by time and GOLD stage     |
+| `n_GPvisits_by_ctime_diagnosis` | time_horizon x 2 | GP visits by diagnosis status        |
+| `n_cough_by_ctime_severity`     | time_horizon x 5 | Number with cough by time and GOLD   |
+| `n_phlegm_by_ctime_severity`    | time_horizon x 5 | Number with phlegm by time and GOLD  |
+| `n_wheeze_by_ctime_severity`    | time_horizon x 5 | Number with wheeze by time and GOLD  |
+| `n_dyspnea_by_ctime_severity`   | time_horizon x 5 | Number with dyspnea by time and GOLD |
 
 #### Medication Outcomes
 
@@ -789,7 +788,7 @@ results <- simulate(n_agents = 50000)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.5 seconds
+#> Simulation completed in 2.6 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -910,41 +909,41 @@ head(events)
 
 ### Event Matrix Columns (33 columns)
 
-| Column                       | Description                                        |
-|------------------------------|----------------------------------------------------|
-| `id`                         | Unique agent identifier                            |
-| `local_time`                 | Time since agent creation (years)                  |
-| `female`                     | Sex (0=male, 1=female)                             |
-| `time_at_creation`           | Calendar time when agent entered model             |
-| `age_at_creation`            | Age when agent entered model                       |
-| `pack_years`                 | Cumulative pack-years of smoking                   |
-| `gold`                       | GOLD stage (0=no COPD, 1-4=GOLD stages)            |
-| `event`                      | Event type code (see table below)                  |
-| `FEV1`                       | Current FEV1 value (liters)                        |
-| `FEV1_slope`                 | FEV1 decline slope                                 |
-| `FEV1_acceleration`          | FEV1 decline acceleration                          |
-| `pred_FEV1`                  | Predicted FEV1 based on age/height/sex             |
-| `smoking_status`             | Current smoking status (0=not smoking, 1=smoking)  |
-| `localtime_at_COPD`          | Local time when COPD developed                     |
-| `age_at_COPD`                | Age when COPD developed                            |
-| `weight_at_COPD`             | Weight when COPD developed                         |
-| `height`                     | Height (meters)                                    |
-| `followup_after_COPD`        | Time since COPD onset                              |
-| `FEV1_baseline`              | FEV1 at COPD onset                                 |
-| `exac_status`                | Current exacerbation status (0=none, 1-4=severity) |
-| `cough`                      | Cough symptom present (0/1)                        |
-| `phlegm`                     | Phlegm symptom present (0/1)                       |
-| `wheeze`                     | Wheeze symptom present (0/1)                       |
-| `dyspnea`                    | Dyspnea symptom present (0/1)                      |
-| `gpvisits`                   | Number of GP visits                                |
-| `diagnosis`                  | Diagnosis status (0=undiagnosed, 1=diagnosed)      |
-| `medication_status`          | Medication class bitfield                          |
-| `case_detection`             | Case detection received (0/1/2/3 by method)        |
-| `cumul_cost`                 | Cumulative cost for this agent                     |
-| `cumul_qaly`                 | Cumulative QALYs for this agent                    |
-| `time_at_diagnosis`          | Local time when diagnosed                          |
-| `exac_history_n_moderate`    | Count of moderate exacerbations                    |
-| `exac_history_n_severe_plus` | Count of severe+ exacerbations                     |
+| Column                       | Description                                              |
+|------------------------------|----------------------------------------------------------|
+| `id`                         | Unique agent identifier                                  |
+| `local_time`                 | Time since agent creation (years)                        |
+| `female`                     | Sex (0=male, 1=female)                                   |
+| `time_at_creation`           | Calendar time when agent entered model                   |
+| `age_at_creation`            | Age when agent entered model                             |
+| `pack_years`                 | Cumulative pack-years of smoking                         |
+| `gold`                       | GOLD stage (0=no COPD, 1-4=GOLD stages)                  |
+| `event`                      | Event type code (see table below)                        |
+| `FEV1`                       | Current FEV1 value (liters)                              |
+| `FEV1_slope`                 | FEV1 decline slope                                       |
+| `FEV1_acceleration`          | FEV1 decline acceleration                                |
+| `pred_FEV1`                  | Predicted FEV1 based on age/height/sex                   |
+| `smoking_status`             | Current smoking status (0=not smoking, 1=smoking)        |
+| `localtime_at_COPD`          | Local time when COPD developed                           |
+| `age_at_COPD`                | Age when COPD developed                                  |
+| `weight_at_COPD`             | Weight when COPD developed                               |
+| `height`                     | Height (meters)                                          |
+| `followup_after_COPD`        | Time since COPD onset                                    |
+| `FEV1_baseline`              | FEV1 at COPD onset                                       |
+| `exac_status`                | Current exacerbation status (0=none, 1-4=severity)       |
+| `cough`                      | Cough symptom present (0/1)                              |
+| `phlegm`                     | Phlegm symptom present (0/1)                             |
+| `wheeze`                     | Wheeze symptom present (0/1)                             |
+| `dyspnea`                    | Dyspnea symptom present (0/1)                            |
+| `gpvisits`                   | Annual number of GP visits                               |
+| `diagnosis`                  | Diagnosis status (0=undiagnosed, 1=diagnosed)            |
+| `medication_status`          | Medication class bitfield                                |
+| `case_detection`             | Case detection received (0/1)                            |
+| `cumul_cost`                 | Cumulative cost for this agent                           |
+| `cumul_qaly`                 | Cumulative QALYs for this agent                          |
+| `time_at_diagnosis`          | Local time when diagnosed                                |
+| `exac_history_n_moderate`    | Cumulative count of moderate exacerbations               |
+| `exac_history_n_severe_plus` | Cumulative count of severe and very severe exacerbations |
 
 ### Event Type Codes
 
@@ -1138,7 +1137,7 @@ results_baseline <- simulate(
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.5 seconds
+#> Simulation completed in 2.6 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -1171,7 +1170,7 @@ results_intervention <- simulate(
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.4 seconds
+#> Simulation completed in 2.5 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
