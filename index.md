@@ -10,202 +10,34 @@ Chronic Obstructive Pulmonary Disease.
 
 ## Installation
 
-### Prerequisites
+### Install from CRAN (Recommended)
 
-epicR requires R version 4.5.0 or later and uses Rcpp/RcppArmadillo for
-C++ integration, which requires compilation tools to be installed on
-your system.
-
-### Windows (Windows 10 or Later)
-
-1.  **Install R (version 4.5.0 or later)**
-
-    - Download and install the latest version of R from
-      <https://cran.r-project.org/bin/windows/base/>
-
-2.  **Install RStudio (Optional but Recommended)**
-
-    - Download and install RStudio from
-      <https://posit.co/download/rstudio-desktop/>
-
-3.  **Install Rtools**
-
-    - Download and install the latest version of Rtools from
-      <https://cran.r-project.org/bin/windows/Rtools/>
-    - **Important**: During installation, make sure to check the option
-      to add Rtools to the system PATH
-    - For R 4.3.0+, install Rtools43 or later
-    - For R 4.2.x, install Rtools42
-
-4.  **Verify Rtools Installation**
-
-    - Open R or RStudio and run:
-
-    ``` r
-    # Check if Rtools is available
-    Sys.which("make")
-    ```
-
-    - This should return a path to the make executable. If it returns an
-      empty string, Rtools is not properly configured.
-
-5.  **Install the pak package**
-
-    ``` r
-    install.packages('pak')
-    ```
-
-6.  **Install epicR from GitHub**
-
-    ``` r
-    pak::pkg_install('resplab/epicR')
-    ```
-
-### macOS (macOS 11 Big Sur or Later)
-
-1.  **Install R (version 4.5.0 or later)**
-
-    - Download and install the latest version of R from
-      <https://cran.r-project.org/bin/macosx/>
-    - Choose the appropriate version for your Mac:
-      - For Apple Silicon (M1/M2/M3): Download the arm64 version
-      - For Intel Macs: Download the x86_64 version
-
-2.  **Install RStudio (Optional but Recommended)**
-
-    - Download and install RStudio from
-      <https://posit.co/download/rstudio-desktop/>
-
-3.  **Install Xcode Command Line Tools**
-
-    - Open Terminal and run:
-
-    ``` bash
-    xcode-select --install
-    ```
-
-    - Follow the prompts to complete the installation
-
-4.  **Install gfortran**
-
-    - Download the appropriate gfortran installer from
-      <https://cran.r-project.org/bin/macosx/tools/>
-    - Choose the version that matches your macOS and architecture (Apple
-      Silicon or Intel)
-    - Run the installer package
-
-5.  **Verify Compiler Installation**
-
-    - Open Terminal and run:
-
-    ``` bash
-    # Check clang
-    clang --version
-
-    # Check gfortran
-    gfortran --version
-    ```
-
-    - Both commands should return version information
-
-6.  **Install the pak package**
-
-    - Open R or RStudio and run:
-
-    ``` r
-    install.packages('pak')
-    ```
-
-7.  **Install epicR from GitHub**
-
-    ``` r
-    pak::pkg_install('resplab/epicR')
-    ```
-
-### Troubleshooting
-
-#### Windows Issues
-
-- If you encounter compilation errors, ensure Rtools is in your PATH.
-  You can check this in R:
-
-  ``` r
-  Sys.getenv("PATH")
-  ```
-
-- If the PATH doesn’t include Rtools, you may need to add it manually or
-  reinstall Rtools with the PATH option enabled.
-
-#### macOS Issues
-
-**Linker Error: `ld: library 'emutls_w' not found`**
-
-This error occurs when gfortran is not properly installed or configured.
-Try these solutions:
-
-- **Solution: Install gfortran** from
-  <https://cran.r-project.org/bin/macosx/tools/>
-
-  After installation, restart R and try installing the package again:
-
-  ``` r
-  pak::pkg_install('resplab/epicR')
-  ```
-
-**Other Common Issues:** - If you encounter errors related to missing
-compilers after installation, try restarting your R session or
-computer. - For Apple Silicon Macs, ensure you’re using the arm64
-version of R and compatible compilers. - If you have previously
-installed older versions of compilers, they may interfere. Consider
-cleaning them up:
-`bash # Only run if you have issues with old compiler installations sudo rm -rf /usr/local/clang* sudo rm -rf /usr/local/gfortran rm ~/.R/Makevars # Remove custom compiler settings`
-
-### Ubuntu 22.04 and Later
-
-1.  Install R by executing the following commands in Terminal:
-
-``` bash
-  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-```
-
-``` bash
-  sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
-```
-
-``` bash
-  sudo apt-get update
-```
-
-``` bash
-  sudo apt-get install r-base
-```
-
-If the installation is successful, you should be able to start R:
-
-``` bash
-  sudo -i R
-```
-
-2.  Download and Install R Studio from
-    <https://posit.co/download/rstudio-desktop/>
-3.  Install `libcurl` from Terminal:
-
-``` bash
-  sudo apt-get install libcurl4-openssl-dev libssl-dev r-base-dev
-```
-
-4.  Using either an R session in Terminal or in R Studio, install the
-    package `pak`:
+The easiest way to install epicR is from CRAN:
 
 ``` r
-install.packages('pak')
+install.packages("epicR")
 ```
 
-5.  Install epicR from GitHub:
+This works on all platforms (Windows, macOS, Linux) and handles
+dependencies automatically.
+
+### Install Development Version from GitHub
+
+To install the latest development version with new features and bug
+fixes:
 
 ``` r
-pak::pkg_install('resplab/epicR')
+install.packages("pak")
+pak::pkg_install("resplab/epicR")
 ```
+
+**Note:** Installing from GitHub requires compilation tools: -
+**Windows**: Install
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) - **macOS**:
+Install Xcode Command Line Tools (`xcode-select --install`) and
+[gfortran](https://cran.r-project.org/bin/macosx/tools/) - **Linux**:
+Install `r-base-dev` and build essentials
+(`sudo apt-get install r-base-dev` on Ubuntu/Debian)
 
 # Quick Guide
 

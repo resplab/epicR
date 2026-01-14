@@ -139,7 +139,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.1 seconds
+#> Simulation completed in 3.0 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -189,7 +189,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.1 seconds
+#> Simulation completed in 3.0 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -282,7 +282,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.1 seconds
+#> Simulation completed in 3.0 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -444,7 +444,7 @@ results <- simulate(input = input$values)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 60000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 3.2 seconds
+#> Simulation completed in 3.1 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -629,7 +629,7 @@ results <- simulate(n_agents = 50000)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.6 seconds
+#> Simulation completed in 2.5 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -788,7 +788,7 @@ results <- simulate(n_agents = 50000)
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.6 seconds
+#> Simulation completed in 2.5 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -1137,7 +1137,7 @@ results_baseline <- simulate(
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.6 seconds
+#> Simulation completed in 2.5 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
@@ -1170,7 +1170,7 @@ results_intervention <- simulate(
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.5 seconds
+#> Simulation completed in 2.4 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
