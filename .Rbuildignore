@@ -33,3 +33,5 @@
 ^SEED_REPRODUCIBILITY\.md$
 ^GITHUB_CI_FIX\.md$
 ^examples$
+^cran-comments\.md$
+^CLAUDE\.md
