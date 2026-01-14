@@ -382,16 +382,6 @@
     "dispersion_gpvisits_nonCOPD_metadata": {
       "help": "Dispersion parameter for GP visits model in non-COPD patients",
       "ref": ""
-    },
-    "rate_doctor_visit": 0.1,
-    "rate_doctor_visit_metadata": {
-      "help": "Rate of doctor visits",
-      "ref": ""
-    },
-    "p_specialist": 0.1,
-    "p_specialist_metadata": {
-      "help": "Probability of specialist visit",
-      "ref": ""
     }
   },
   "diagnosis": {
