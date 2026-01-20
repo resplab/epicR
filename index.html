@@ -274,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <span><span class="va">intervention</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate.html">simulate</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">input</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
 <span><span class="co"># Compare with identical random variation removed</span></span></code></pre></div>
 <p><strong>Important</strong>: Do NOT use R’s native <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> function before calling <code><a href="reference/simulate.html">simulate()</a></code>. The <code>seed</code> parameter handles reproducibility correctly within EPIC’s simulation framework.</p>
-<p>For detailed information on seed usage, best practices, and technical details, see <a href="SEED_REPRODUCIBILITY.html">SEED_REPRODUCIBILITY.md</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
@@ -372,7 +371,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <span></span>
 <span><span class="co"># 3. Your changes are automatically used</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_input.html">get_input</a></span><span class="op">(</span>jurisdiction <span class="op">=</span> <span class="st">"canada"</span><span class="op">)</span></span></code></pre></div>
-<p>For detailed instructions, see the <a href="USER_CONFIG_GUIDE.html">User Configuration Guide</a>.</p>
 </div>
 </div>
 <div class="section level3">

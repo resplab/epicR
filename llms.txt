@@ -126,9 +126,6 @@ intervention <- simulate(input = input, seed = 42)
 calling [`simulate()`](reference/simulate.md). The `seed` parameter
 handles reproducibility correctly within EPIC’s simulation framework.
 
-For detailed information on seed usage, best practices, and technical
-details, see [SEED_REPRODUCIBILITY.md](SEED_REPRODUCIBILITY.md).
-
 ## Advanced Usage
 
 For advanced customization of input parameters:
@@ -226,9 +223,6 @@ open_user_config_dir()
 # 3. Your changes are automatically used
 input <- get_input(jurisdiction = "canada")
 ```
-
-For detailed instructions, see the [User Configuration
-Guide](USER_CONFIG_GUIDE.md).
 
 ### Package Configuration Files
 
