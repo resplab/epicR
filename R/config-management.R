@@ -1,8 +1,13 @@
 #' Get user config directory path
+#'
+#' Returns the path to the user configuration directory following
+
+#' CRAN policy using \code{tools::R_user_dir()}.
+#'
 #' @return Path to user config directory
 #' @export
 get_user_config_dir <- function() {
-  config_dir <- file.path(Sys.getenv("HOME"), ".epicR", "config")
+  config_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
   return(config_dir)
 }
 
@@ -99,28 +104,6 @@ reset_user_configs <- function(jurisdiction = NULL) {
   }
 }
 
-#' Open user config directory in file explorer
-#' @export
-open_user_config_dir <- function() {
-  user_dir <- get_user_config_dir()
-
-  if (!dir.exists(user_dir)) {
-    message("User config directory does not exist yet. Creating it now...")
-    copy_configs_to_user()
-  }
-
-  # Try to open in file explorer based on OS
-  if (Sys.info()["sysname"] == "Windows") {
-    shell(paste("explorer", gsub("/", "\\\\", user_dir)))
-  } else if (Sys.info()["sysname"] == "Darwin") {
-    system(paste("open", user_dir))
-  } else {
-    # Linux
-    system(paste("xdg-open", user_dir))
-  }
-
-  message(paste("Config directory location:", user_dir))
-}
 
 #' List available config jurisdictions
 #' @return Character vector of available jurisdictions

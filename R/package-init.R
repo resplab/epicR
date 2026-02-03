@@ -23,7 +23,7 @@ NULL
   .epicR_env$configs_copied <- FALSE
 
   # Check if user configs exist, if not copy them (silently in .onLoad)
-  user_dir <- file.path(Sys.getenv("HOME"), ".epicR", "config")
+  user_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
 
   if (!dir.exists(user_dir)) {
     # First time loading - copy configs to user directory
@@ -50,7 +50,7 @@ NULL
 }
 
 .onAttach <- function(libname, pkgname) {
-  user_dir <- file.path(Sys.getenv("HOME"), ".epicR", "config")
+  user_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
 
   if (.epicR_env$configs_copied) {
     packageStartupMessage("epicR: Setting up user configuration files...")

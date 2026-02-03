@@ -31,8 +31,8 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
 
   difference <- as.data.frame(t(difference))
   print(difference)
-  write.csv(difference[1,], "male_mortality.csv")
-  write.csv(difference[2,], "female_mortality.csv")
+  #write.csv(difference[1,], "male_mortality.csv")
+  #write.csv(difference[2,], "female_mortality.csv")
 
 
   terminate_session()
