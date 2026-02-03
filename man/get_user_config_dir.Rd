@@ -10,5 +10,6 @@ get_user_config_dir()
 Path to user config directory
 }
 \description{
-Get user config directory path
+Returns the path to the user configuration directory following
+CRAN policy using \code{tools::R_user_dir()}.
 }
