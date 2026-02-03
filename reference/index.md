@@ -95,9 +95,6 @@
 
 - [`mvrnormArma()`](mvrnormArma.md) : Samples from a multivariate normal
 
-- [`open_user_config_dir()`](open_user_config_dir.md) : Open user config
-  directory in file explorer
-
 - [`report_COPD_by_ctime()`](report_COPD_by_ctime.md) : Reports COPD
   related stats.
 
