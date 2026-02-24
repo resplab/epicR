@@ -72,7 +72,7 @@ get_input <- function(age0 = 40,
   
   # Load configuration file based on jurisdiction
   # First check user's config directory (using CRAN-compliant location)
-  user_config_file <- file.path(tools::R_user_dir("epicR", "config"), "config",
+  user_config_file <- file.path(R_user_dir("epicR", "config"), "config",
                                 paste0("config_", jurisdiction, ".json"))
 
   if (file.exists(user_config_file)) {

@@ -6,6 +6,7 @@
 #' @importFrom stats aggregate binomial coefficients glm optim runif confint
 #' @importFrom utils packageVersion
 #' @importFrom utils write.csv
+#' @importFrom tools R_user_dir
 #' @import ggplot2
 #' @import ggthemes
 #' @import dplyr
@@ -23,7 +24,7 @@ NULL
   .epicR_env$configs_copied <- FALSE
 
   # Check if user configs exist, if not copy them (silently in .onLoad)
-  user_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
+  user_dir <- file.path(R_user_dir("epicR", "config"), "config")
 
   if (!dir.exists(user_dir)) {
     # First time loading - copy configs to user directory
@@ -50,7 +51,7 @@ NULL
 }
 
 .onAttach <- function(libname, pkgname) {
-  user_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
+  user_dir <- file.path(R_user_dir("epicR", "config"), "config")
 
   if (.epicR_env$configs_copied) {
     packageStartupMessage("epicR: Setting up user configuration files...")
