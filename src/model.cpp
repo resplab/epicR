@@ -12,7 +12,6 @@
  * - model_random.cpp: Random number generation functions
  * - model.cpp: Settings, Input, Output, Agent, Event, and Model functions
  *
- * @author EPIC Development Team
  * @see https://github.com/resplab/epicR
  */
 

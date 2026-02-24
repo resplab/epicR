@@ -56,12 +56,20 @@ errors<-c(
 
 
 #' Returns a list of default model input values
+#'
 #' @param age0 Starting age in the model
 #' @param time_horizon Model time horizon
 #' @param discount_cost Discounting for cost outcomes
 #' @param discount_qaly Discounting for QALY outcomes
 #' @param closed_cohort Whether the model should run as closed_cohort, open-population by default.
 #' @param jurisdiction Jurisdiction for model parameters ("canada" or "us")
+#' @return A list with four components:
+#'   \describe{
+#'     \item{values}{A nested list of model input parameter values}
+#'     \item{help}{A nested list of help text descriptions for each parameter}
+#'     \item{ref}{A nested list of reference information for each parameter}
+#'     \item{config}{The raw configuration object loaded from the JSON file}
+#'   }
 #' @export
 get_input <- function(age0 = 40,
                        time_horizon = 20,
@@ -650,6 +658,7 @@ get_default_model_input <- function() {
 #' Forces the default model_input to be reloaded on next access.
 #' Useful after modifying config files.
 #'
+#' @return No return value, called for side effects (clears the model input cache).
 #' @export
 reset_model_input <- function() {
   .epicR_env$model_input <- NULL
