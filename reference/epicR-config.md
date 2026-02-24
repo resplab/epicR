@@ -82,20 +82,26 @@ If you need to reset your configurations:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
 # Check where user configs are stored
 get_user_config_dir()
+#> [1] "/home/runner/.config/R/epicR/config"
 
 # List available jurisdictions
 list_available_jurisdictions()
+#> [1] "canada" "us"    
 
 # Validate your custom config
 validate_config("canada", user = TRUE)
+#> Config for canada is valid
+#> [1] TRUE
 
 # Reset to package defaults if needed
 reset_user_configs("canada")
+#> Reset config for canada to package defaults
+#> [1] TRUE
 
 # Use your custom config
 input <- get_input(jurisdiction = "canada")
-} # }
+# }
 ```

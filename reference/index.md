@@ -109,9 +109,6 @@
 
 - [`resume()`](resume.md) : Resumes running of model.
 
-- [`run()`](run.md) : Runs the model. Auto-initializes if no session is
-  active.
-
 - [`sanity_COPD()`](sanity_COPD.md) : Basic COPD test.
 
 - [`sanity_check()`](sanity_check.md) : Basic tests of model

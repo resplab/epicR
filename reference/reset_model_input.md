@@ -8,3 +8,7 @@ after modifying config files.
 ``` r
 reset_model_input()
 ```
+
+## Value
+
+No return value, called for side effects (clears the model input cache).

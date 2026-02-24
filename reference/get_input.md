@@ -41,3 +41,23 @@ get_input(
 - jurisdiction:
 
   Jurisdiction for model parameters ("canada" or "us")
+
+## Value
+
+A list with four components:
+
+- values:
+
+  A nested list of model input parameter values
+
+- help:
+
+  A nested list of help text descriptions for each parameter
+
+- ref:
+
+  A nested list of reference information for each parameter
+
+- config:
+
+  The raw configuration object loaded from the JSON file
