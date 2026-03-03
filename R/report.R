@@ -102,9 +102,8 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
   op <- get_output()
   opx <- get_output_ex()
 
-  cat("Annual rate of exacerbation:", sum(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time), "\n")
-  cat("Annual rate of exacerbation by severity:", colSums(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time),
-      "\n")
+  message("Annual rate of exacerbation: ", sum(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time))
+  message("Annual rate of exacerbation by severity: ", paste(colSums(opx$n_exac_by_ctime_severity)/(op$cumul_time - opx$cumul_non_COPD_time), collapse = " "))
 
   g1 <- 41:55
   g2 <- 56:70
@@ -168,8 +167,8 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
 
   pie(colSums(opx$n_exac_by_ctime_severity), labels = c("Mild", "Moderate", "severe", "very severe"))
 
-  cat("Proportion by exacerbation severity:", format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),
-                                                     digits = 2), "\n")
+  message("Proportion by exacerbation severity: ", paste(format(colSums(opx$n_exac_by_ctime_severity/sum(opx$n_exac_by_ctime_severity)),
+                                                     digits = 2), collapse = " "))
   terminate_session()
 
   # Calculating Exacerbation Rate by GOLD Stage
@@ -196,11 +195,11 @@ report_exacerbation_by_time <- function(n_sim = 10^5) {
 
   terminate_session()
 
-  cat("Rates of exacerbation per GOLD stage:\n")
-  cat("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1], "\n")
-  cat("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2], "\n")
-  cat("GOLD III: ", as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3], "\n")
-  cat("GOLD IV: ", as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4], "\n")
+  message("Rates of exacerbation per GOLD stage:")
+  message("GOLD I: ", as.data.frame(table(exac_events[, "gold"]))[1, 2]/Follow_up_Gold[1])
+  message("GOLD II: ", as.data.frame(table(exac_events[, "gold"]))[2, 2]/Follow_up_Gold[2])
+  message("GOLD III: ", as.data.frame(table(exac_events[, "gold"]))[3, 2]/Follow_up_Gold[3])
+  message("GOLD IV: ", as.data.frame(table(exac_events[, "gold"]))[4, 2]/Follow_up_Gold[4])
 
   terminate_session()
 }

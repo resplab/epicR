@@ -299,7 +299,7 @@ set_Cmodel_inputs <- function(ls) {
 #' useful for generating input expressions from calibration results.
 #'
 #' @param mtx a matrix
-#' @return No return value, called for side effects (prints R code to console).
+#' @return Invisibly returns the generated R code as a character string, also outputs via message().
 #' @export
 express_matrix <- function(mtx) {
   nr <- dim(mtx)[1]
@@ -307,19 +307,24 @@ express_matrix <- function(mtx) {
   rnames <- rownames(mtx)
   cnames <- colnames(mtx)
 
+  lines <- character(0)
   for (i in 1:nc) {
-    cat(cnames[i], "=c(")
+    line <- paste0(cnames[i], " =c(")
     for (j in 1:nr) {
       if (!is.null(rnames))
-        cat(rnames[j], "=", mtx[j, i]) else cat(mtx[j, i])
+        line <- paste0(line, rnames[j], " = ", mtx[j, i]) else line <- paste0(line, mtx[j, i])
       if (j < nr)
-        cat(",")
+        line <- paste0(line, ",")
     }
-    cat(")\n")
+    line <- paste0(line, ")")
     if (i < nc)
-      cat(",")
+      line <- paste0(line, ",")
+    lines <- c(lines, line)
   }
-}  #Takes a named matrix and write the R code to populate it; good for generating input expressions from calibration results
+  out <- paste(lines, collapse = "\n")
+  message(out)
+  invisible(out)
+}
 
 
 
@@ -329,7 +334,7 @@ express_matrix <- function(mtx) {
 #' @export
 get_agent_events <- function(id) {
   x <- .Call(`_epicR_get_agent_events`, id)
-  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
+  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = TRUE))
   names(data) <- names(x[[1]])
   return(data)
 }
@@ -340,7 +345,7 @@ get_agent_events <- function(id) {
 #' @export
 get_events_by_type <- function(event_type) {
   x <- .Call(`_epicR_get_events_by_type`, event_type)
-  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
+  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = TRUE))
   names(data) <- names(x[[1]])
   return(data)
 }
@@ -350,7 +355,7 @@ get_events_by_type <- function(event_type) {
 #' @export
 get_all_events <- function() {
   x <- .Call(`_epicR_get_all_events`)
-  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = T))
+  data <- data.frame(matrix(unlist(x), nrow = length(x), byrow = TRUE))
   names(data) <- names(x[[1]])
   return(data)
 }

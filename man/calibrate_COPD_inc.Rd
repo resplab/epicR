@@ -4,7 +4,12 @@
 \alias{calibrate_COPD_inc}
 \title{Solves stochastically for COPD incidence rate equation.}
 \usage{
-calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
+calibrate_COPD_inc(
+  nIterations = 100,
+  nPatients = 1e+05,
+  time_horizon = 20,
+  output_dir = tempdir()
+)
 }
 \arguments{
 \item{nIterations}{number of iterations for the numerical solution}
@@ -12,6 +17,8 @@ calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
 \item{nPatients}{number of simulated agents.}
 
 \item{time_horizon}{in years}
+
+\item{output_dir}{directory for output CSV files (default: tempdir())}
 }
 \value{
 regression co-efficients as files

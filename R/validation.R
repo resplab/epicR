@@ -200,7 +200,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
     rmse_per_range <- data.frame(age_group = names(rmse_results),
                                  rmse = as.numeric(rmse_results))
 
-    print(rmse_per_range)
+    message(paste(capture.output(rmse_per_range), collapse = "\n"))
 
     # Plotting Loop
     unique_groups <- unique(df_summed_ranges$age_group)
@@ -259,7 +259,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
   message("\nBecause you have called me with remove_COPD=", remove_COPD, ", I am", c("NOT", "indeed")[remove_COPD + 1], "going to remove COPD-related mortality from my calculations")
   petoc()
 
-  # CanSim.052.0005<-read.csv(system.file ('extdata', 'CanSim.052.0005.csv', package = 'epicR'), header = T); #package ready
+  # CanSim.052.0005<-read.csv(system.file ('extdata', 'CanSim.052.0005.csv', package = 'epicR'), header = TRUE); #package ready
   # reading
   x <- aggregate(CanSim.052.0005[, "value"], by = list(CanSim.052.0005[, "year"]), FUN = sum)
   x[, 2] <- x[, 2]/x[1, 2]
@@ -296,9 +296,9 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
 
   df <- data.frame(Year = c(2015:(2015 + model_input$values$global_parameters$time_horizon-1)), Predicted = CanSim[1:model_input$values$global_parameters$time_horizon] * 1000, Simulated = rowSums(get_output_ex()$n_alive_by_ctime_sex)/ settings$n_base_agents * 18179400) #rescaling population. There are about 18.6 million Canadians above 40
   message ("Here's simulated vs. predicted population table:")
-  print(df)
+  message(paste(capture.output(df), collapse = "\n"))
   dfm <- reshape2::melt(df[,c('Year','Predicted','Simulated')], id.vars = 1)
-  plot_population_growth  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=F) +
+  plot_population_growth  <- ggplot2::ggplot(dfm, aes(x = Year, y = value)) +  theme_tufte(base_size=14, ticks=FALSE) +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     labs(title = "Population Growth Curve") + ylab ("Population") +
     labs(caption = "(based on population at age 40 and above)") +
@@ -306,7 +306,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
     scale_y_continuous(name="Population", labels = scales::comma)
 
   plot (plot_population_growth)
-  if (savePlots) ggsave(paste0("PopulationGrowth",".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+  if (savePlots) ggsave(file.path(tempdir(), paste0("PopulationGrowth",".tiff")), plot = last_plot(), device = "tiff", dpi = 300)
 
 
   pyramid <- matrix(NA, nrow = input$global_parameters$time_horizon, ncol = length(get_output_ex()$n_alive_by_ctime_age[1, ]) -
@@ -340,7 +340,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
     dfSimulated <- data.frame (population = pyramid[year - 2015 + 1, ], age = 40:110)
     dfSimulated$population <- dfSimulated$population * (-1) / settings$n_base_agents * 18179400 #rescaling population. There are 18179400 Canadians above 40
 
-    p <- ggplot (NULL, aes(x = age, y = population)) + theme_tufte(base_size=14, ticks=F) +
+    p <- ggplot (NULL, aes(x = age, y = population)) + theme_tufte(base_size=14, ticks=FALSE) +
          geom_bar (aes(fill = "Simulated"), data = dfSimulated, stat="identity", alpha = 0.5) +
          geom_bar (aes(fill = "Predicted"), data = dfPredicted, stat="identity", alpha = 0.5) +
          theme(axis.title=element_blank()) +
@@ -348,7 +348,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
          theme(legend.title=element_blank()) +
          scale_y_continuous(name="Population", labels = scales::comma) +
          scale_x_continuous(name="Age", labels = scales::comma)
-    if (savePlots) ggsave(paste0("Population ", year,".tiff"), plot = last_plot(), device = "tiff", dpi = 300)
+    if (savePlots) ggsave(file.path(tempdir(), paste0("Population ", year,".tiff")), plot = last_plot(), device = "tiff", dpi = 300)
 
     plot(p)
 
@@ -457,7 +457,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL, jurisdiction =
     title(cex.main = 0.5, "Average Pack-Years Per Year for 40+ Population (simulated)")
 
     z <- log(rowSums(smoker_prev))
-    message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
+    message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = TRUE)))
 
     #plotting overall distribution of smoking stats over time
     smoking_status_ctime <- matrix (NA, nrow = input$values$global_parameters$time_horizon, ncol = 4)
@@ -520,10 +520,10 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL, jurisdiction =
   message("Starting validation target 1: baseline prevalence of smokers.\n")
   petoc()
 
-  # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=T) Included in the package as internal data
+  # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=TRUE) Included in the package as internal data
   tab1 <- rbind(CanSim.105.0501[1:3, "value"], CanSim.105.0501[4:6, "value"])/100
   message("This is the observed percentage of current smokers in 2014 (m,f)\n")
-  barplot(tab1, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalenc of smoking",
+  barplot(tab1, beside = TRUE, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalenc of smoking",
           col = c("black", "grey"))
   title(cex.main = 0.5, "Prevalence of current smoker by sex and age group (observed)")
   legend("topright", c("Male", "Female"), fill = c("black", "grey"))
@@ -543,7 +543,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL, jurisdiction =
 
   message("This is the model generated bar plot")
   petoc()
-  barplot(tab2, beside = T, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
+  barplot(tab2, beside = TRUE, names.arg = c("40", "52", "65+"), ylim = c(0, 0.4), xlab = "Age group", ylab = "Prevalence of smoking",
           col = c("black", "grey"))
   title(cex.main = 0.5, "Prevalence of current smoking at creation (simulated)")
   legend("topright", c("Male", "Female"), fill = c("black", "grey"))
@@ -573,7 +573,7 @@ validate_smoking <- function(remove_COPD = 1, intercept_k = NULL, jurisdiction =
 
 
   z <- log(rowSums(smoker_prev))
-  message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = T)))
+  message("average decline in % of current_smoking rate is", 1 - exp(mean(c(z[-1], NaN) - z, na.rm = TRUE)))
   petoc()
 
   #plotting overall distribution of smoking stats over time
@@ -667,13 +667,13 @@ sanity_COPD <- function() {
   message("COPD incidence and prevalence parameters are as follows\n")
 
   message("model_input$values$COPD$logit_p_COPD_betas_by_sex:\n")
-  print(inp$values$COPD$logit_p_COPD_betas_by_sex)
+  message(paste(capture.output(inp$values$COPD$logit_p_COPD_betas_by_sex), collapse = "\n"))
   petoc()
   message("model_input$values$COPD$p_prevalent_COPD_stage:\n")
-  print(inp$values$COPD$p_prevalent_COPD_stage)
+  message(paste(capture.output(inp$values$COPD$p_prevalent_COPD_stage), collapse = "\n"))
   petoc()
   message("model_input$values$COPD$ln_h_COPD_betas_by_sex:\n")
-  print(inp$values$COPD$ln_h_COPD_betas_by_sex)
+  message(paste(capture.output(inp$values$COPD$ln_h_COPD_betas_by_sex), collapse = "\n"))
   petoc()
 
   message("Now I am going to first turn off both prevalence and incidence parameters and run the model to see how many COPDs I get\n")
@@ -791,9 +791,9 @@ validate_COPD <- function(incident_COPD_k = 1, return_CI = FALSE, jurisdiction =
       Prevalence_over80 = prevalenceCOPD_age_over80
     )
 
-    print(knitr::kable(COPD_prevalence_summary,
+    message(paste(capture.output(knitr::kable(COPD_prevalence_summary,
                        caption = "COPD Prevalence by Age Group Over Time",
-                       digits = 3))
+                       digits = 3)), collapse = "\n"))
 
     # Plot: All Ages
     plot_prevalenceCOPD_age_all <- data.frame(
@@ -1382,7 +1382,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
     plot <-
       ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
       scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-      theme_tufte(base_size=14, ticks=F)  +
+      theme_tufte(base_size=14, ticks=FALSE)  +
       geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
       ylab ("Rate") +
       labs(caption = "Total rate of exacerbations per year for all patients")
@@ -1419,7 +1419,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
     dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
     plot <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
       scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-      theme_tufte(base_size=14, ticks=F)  +
+      theme_tufte(base_size=14, ticks=FALSE)  +
       geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
       ylab ("Rate") +
       labs(caption = "Total rate of exacerbations per year for diagnosed patients")
@@ -1446,7 +1446,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
     plot <-
       ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
       scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-      theme_tufte(base_size=14, ticks=F)  +
+      theme_tufte(base_size=14, ticks=FALSE)  +
       geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
       ylab ("Rate") +
       labs(caption = "Total rate of moderate/severe exacerbations per year for diagnosed patients")
@@ -1471,7 +1471,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
     plot <-
       ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
       scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-      theme_tufte(base_size=14, ticks=F)  +
+      theme_tufte(base_size=14, ticks=FALSE)  +
       geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
       ylab ("Rate") +
       labs(caption = "Total rate of severe exacerbations per year for diagnosed patients")
@@ -1502,7 +1502,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
     plot <-
       ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
       scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-      theme_tufte(base_size=14, ticks=F)  +
+      theme_tufte(base_size=14, ticks=FALSE)  +
       geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
       ylab ("Rate") +
       labs(caption = "Total rate of exacerbations per year for undiagnosed patients")
@@ -1666,7 +1666,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   plot <-
     ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-    theme_tufte(base_size=14, ticks=F)  +
+    theme_tufte(base_size=14, ticks=FALSE)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for all patients")
@@ -1713,7 +1713,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   dfm <- melt(df[,c("GOLD", "EPIC", "Hoogendoorn")],id.vars = 1)
   plot <- ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-    theme_tufte(base_size=14, ticks=F)  +
+    theme_tufte(base_size=14, ticks=FALSE)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for diagnosed patients")
@@ -1749,7 +1749,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   plot <-
     ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-    theme_tufte(base_size=14, ticks=F)  +
+    theme_tufte(base_size=14, ticks=FALSE)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of moderate/severe exacerbations per year for diagnosed patients")
@@ -1786,7 +1786,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   plot <-
     ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-    theme_tufte(base_size=14, ticks=F)  +
+    theme_tufte(base_size=14, ticks=FALSE)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of severe exacerbations per year for diagnosed patients")
@@ -1823,7 +1823,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   plot <-
    ggplot(dfm, aes(x = GOLD, y = as.numeric(value))) +
     scale_y_continuous(breaks = seq(0, 3, by = 0.5)) +
-    theme_tufte(base_size=14, ticks=F)  +
+    theme_tufte(base_size=14, ticks=FALSE)  +
     geom_bar(aes(fill = variable), stat = "identity", position = "dodge") +
     ylab ("Rate") +
     labs(caption = "Total rate of exacerbations per year for undiagnosed patients")
@@ -1963,11 +1963,11 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction =
 
   plot (surv_plot)
 
-  if (savePlots) ggsave((paste0("survival-diagnosed", ".tiff")), plot = plot(surv_plot), device = "tiff", dpi = 300)
+  if (savePlots) ggsave(file.path(tempdir(), paste0("survival-diagnosed", ".tiff")), plot = plot(surv_plot), device = "tiff", dpi = 300)
 
   fitcox <- coxph(Surv(age, death) ~ copd, data = cohort)
   ftest <- cox.zph(fitcox)
-  print(summary(fitcox))
+  message(paste(capture.output(summary(fitcox)), collapse = "\n"))
 
   return(surv_plot)
 }
@@ -2018,7 +2018,7 @@ validate_diagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   diag$Proportion <- round(diag$Diagnosed/diag$COPD,2)
 
-  print(diag)
+  message(paste(capture.output(diag), collapse = "\n"))
 
   message("The average proportion diagnosed from year", round(length(diag$Proportion)/2,0), "to", length(diag$Proportion), "is",
       mean(diag$Proportion[(round(length(diag$Proportion)/2,0)):(length(diag$Proportion))]),"\n")
@@ -2039,7 +2039,7 @@ validate_diagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(prop) <- c("Year","GOLD1","GOLD2","GOLD3","GOLD4")
   prop <- prop[-1,]
-  print(prop)
+  message(paste(capture.output(prop), collapse = "\n"))
 
   message("The average proportion of GOLD 1 and 2 that are diagnosed from year", round(nrow(prop)/2,0), "to", max(prop$Year), "is",
       (mean(prop$GOLD1[round((nrow(prop)/2),0):nrow(prop)]) + mean(prop$GOLD2[round((nrow(prop)/2),0):nrow(prop)]))/2,"\n")
@@ -2097,7 +2097,7 @@ validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(GPSex) <- c("Year","Male","Female")
 
-  print(GPSex)
+  message(paste(capture.output(GPSex), collapse = "\n"))
 
   GPSex.plot <- tidyr::gather(data=GPSex, key="Sex", value="Visits", c(Male,Female))
 
@@ -2118,7 +2118,7 @@ validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(GPCOPD) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  print(GPCOPD[-1,])
+  message(paste(capture.output(GPCOPD[-1,]), collapse = "\n"))
 
 
   GPCOPD.plot <- tidyr::gather(data=GPCOPD, key="COPD", value="Visits", c(NoCOPD:GOLD4))
@@ -2142,7 +2142,7 @@ validate_gpvisits <- function(n_sim = 1e+04, jurisdiction = "canada") {
   GPDiag<- data.frame(Year=1:inputs$global_parameters$time_horizon,
                        output_ex$n_GPvisits_by_ctime_diagnosis/data)
 
-  print(GPDiag[-1,])
+  message(paste(capture.output(GPDiag[-1,]), collapse = "\n"))
 
   GPDiag.plot <- tidyr::gather(data=GPDiag, key="Diagnosis", value="Visits", c(Undiagnosed,Diagnosed))
 
@@ -2205,7 +2205,7 @@ validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(cough) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  print(cough)
+  message(paste(capture.output(cough), collapse = "\n"))
 
   # plot
   cough.plot <- tidyr::gather(data=cough, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
@@ -2228,7 +2228,7 @@ validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(phlegm) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  print(phlegm)
+  message(paste(capture.output(phlegm), collapse = "\n"))
 
   # plot
   phlegm.plot <- tidyr::gather(data=phlegm, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
@@ -2251,7 +2251,7 @@ validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(wheeze) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  print(wheeze)
+  message(paste(capture.output(wheeze), collapse = "\n"))
 
   # plot
   wheeze.plot <- tidyr::gather(data=wheeze, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
@@ -2274,7 +2274,7 @@ validate_symptoms <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   names(dyspnea) <- c("Year","NoCOPD","GOLD1","GOLD2","GOLD3","GOLD4")
 
-  print(dyspnea)
+  message(paste(capture.output(dyspnea), collapse = "\n"))
 
   # plot
   dyspnea.plot <- tidyr::gather(data=dyspnea, key="GOLD", value="Prevalence", NoCOPD:GOLD4)
@@ -2343,7 +2343,7 @@ validate_treatment<- function(n_sim = 1e+04, jurisdiction = "canada") {
                                     (rowSums(output_ex$n_COPD_by_ctime_severity[,-1]) - rowSums(output_ex$n_Diagnosed_by_ctime_sex))))
 
   names(undiagnosed) <- c("Year","Mild","Moderate","Severe","VerySevere")
-  print(undiagnosed)
+  message(paste(capture.output(undiagnosed), collapse = "\n"))
   undiagnosed$Diagnosis <- "undiagnosed"
 
   message("\n")
@@ -2355,7 +2355,7 @@ validate_treatment<- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   diagnosed[1,2:5] <- c(0,0,0,0)
   names(diagnosed) <- c("Year","Mild","Moderate","Severe","VerySevere")
-  print(diagnosed)
+  message(paste(capture.output(diagnosed), collapse = "\n"))
   diagnosed$Diagnosis <- "diagnosed"
 
   # plot
@@ -2484,7 +2484,7 @@ validate_treatment<- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   trt_effect$Delta <- (trt_effect$Undiagnosed - trt_effect$Diagnosed)/trt_effect$Undiagnosed
 
-  print(trt_effect)
+  message(paste(capture.output(trt_effect), collapse = "\n"))
 
   message("\n")
   message("Treatment reduces the rate of exacerbations by a mean of:", mean(trt_effect$Delta),"\n")
@@ -2551,7 +2551,7 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
   message("\n")
   message("Here are your inputs for the case detection strategy:\n")
   message("\n")
-  print(input$diagnosis)
+  message(paste(capture.output(input$diagnosis), collapse = "\n"))
 
   res <- run(input = input)
   if (res < 0)
@@ -2634,14 +2634,14 @@ test_case_detection <- function(n_sim = 1e+04, p_of_CD=0.1, min_age=40, min_pack
 
   message("Here are total number of exacerbations by severity:\n")
   message("\n")
-  print(exac.diff)
+  message(paste(capture.output(exac.diff), collapse = "\n"))
 
   message("\n")
   message("The annual rate of exacerbations with case detection is:\n")
-  print(exac_rate[,1:4])
+  message(paste(capture.output(exac_rate[,1:4]), collapse = "\n"))
   message("\n")
   message("The annual rate of exacerbations without case detection is:\n")
-  print(exac_rate_nocd[,1:4])
+  message(paste(capture.output(exac_rate_nocd[,1:4]), collapse = "\n"))
   message("\n")
   message("This data is also plotted.\n")
 
@@ -2725,7 +2725,7 @@ validate_overdiagnosis <- function(n_sim = 1e+04, jurisdiction = "canada") {
 
   overdiag$Proportion <- overdiag$Overdiagnosed/overdiag$NonCOPD
 
-  print(overdiag)
+  message(paste(capture.output(overdiag), collapse = "\n"))
 
   message("The average proportion overdiagnosed from year", round(length(overdiag$Proportion)/2,0), "to", length(overdiag$Proportion), "is",
       mean(overdiag$Proportion[(round(length(overdiag$Proportion)/2,0)):(length(overdiag$Proportion))]),"\n")
