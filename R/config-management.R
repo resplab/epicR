@@ -7,7 +7,7 @@
 #' @return Path to user config directory
 #' @export
 get_user_config_dir <- function() {
-  config_dir <- file.path(tools::R_user_dir("epicR", "config"), "config")
+  config_dir <- file.path(R_user_dir("epicR", "config"), "config")
   return(config_dir)
 }
 

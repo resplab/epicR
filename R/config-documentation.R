@@ -57,7 +57,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Check where user configs are stored
 #' get_user_config_dir()
 #'

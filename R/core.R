@@ -249,8 +249,13 @@ apply_settings <- function(settings = settings) {
 
 
 #' Get list elements
-#' @param ls ls
-#' @param running_name running_name
+#'
+#' Recursively extracts element names from a nested list structure.
+#'
+#' @param ls A list to extract element names from
+#' @param running_name Internal parameter for recursion (default: "")
+#' @return A character vector of element names, with nested elements
+#'   separated by "$" (e.g., "parent$child$grandchild").
 #' @export
 get_list_elements <- function(ls, running_name = "") {
   out <- NULL
@@ -289,7 +294,12 @@ set_Cmodel_inputs <- function(ls) {
 }
 
 #' Express matrix.
+#'
+#' Takes a named matrix and writes the R code to populate it;
+#' useful for generating input expressions from calibration results.
+#'
 #' @param mtx a matrix
+#' @return No return value, called for side effects (prints R code to console).
 #' @export
 express_matrix <- function(mtx) {
   nr <- dim(mtx)[1]
@@ -347,32 +357,8 @@ get_all_events <- function() {
 
 
 
-#' Runs the model. Auto-initializes if no session is active.
-#' @param max_n_agents maximum number of agents
-#' @param input customized input criteria
-#' @param settings customized settings (only used if auto-initializing)
-#' @param auto_terminate whether to automatically terminate session after run (default: FALSE)
-#' @param seed Random seed for reproducibility (optional). If provided, ensures identical results across runs
-#' @param jurisdiction character string specifying the jurisdiction ("canada" or "us"). Default is "canada"
-#' @return simulation results if successful
-#' @examples
-#' \dontrun{
-#' # Simple usage - everything handled automatically
-#' results <- run()
-#'
-#' # Or with custom input
-#' input <- get_input(jurisdiction = "us", time_horizon = 10)
-#' results <- run(input = input$values)
-#'
-#' # Advanced: manual session management for multiple runs
-#' init_session()
-#' run()
-#' run()  # run again with same session
-#' terminate_session()
-#'
-#' # With reproducible results
-#' run(seed = 123)
-#' }
+# Internal function - runs the model. Auto-initializes if no session is active.
+# Use simulate() for the exported user-facing interface.
 run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_terminate = FALSE, seed = NULL, jurisdiction = "canada") {
 
   # Set random seed for reproducibility if provided
@@ -477,7 +463,7 @@ run <- function(max_n_agents = NULL, input = NULL, settings = NULL, auto_termina
 #' @return list with simulation results (always includes 'basic', includes 'extended' by default, optionally 'events')
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simplest usage - includes both basic and extended results
 #' results <- simulate()
 #' print(results$basic)

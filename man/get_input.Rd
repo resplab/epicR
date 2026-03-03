@@ -26,6 +26,15 @@ get_input(
 
 \item{jurisdiction}{Jurisdiction for model parameters ("canada" or "us")}
 }
+\value{
+A list with four components:
+  \describe{
+    \item{values}{A nested list of model input parameter values}
+    \item{help}{A nested list of help text descriptions for each parameter}
+    \item{ref}{A nested list of reference information for each parameter}
+    \item{config}{The raw configuration object loaded from the JSON file}
+  }
+}
 \description{
 Returns a list of default model input values
 }

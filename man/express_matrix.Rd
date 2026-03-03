@@ -9,6 +9,10 @@ express_matrix(mtx)
 \arguments{
 \item{mtx}{a matrix}
 }
+\value{
+No return value, called for side effects (prints R code to console).
+}
 \description{
-Express matrix.
+Takes a named matrix and writes the R code to populate it;
+useful for generating input expressions from calibration results.
 }

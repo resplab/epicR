@@ -6,9 +6,9 @@ calib_params <- list(COPD = list(prevalence = 0.193))
 #' @return difference in mortality rates and life table
 #' @export
 calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
-  cat("Difference between life table and observed mortality\n")
-  cat("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex\n")
-  cat(paste("n_sim=", n_sim, "\n"))
+  message("Difference between life table and observed mortality")
+  message("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex")
+  message("n_sim=", n_sim)
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_none"]
@@ -22,10 +22,10 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
   input$global_parameters$time_horizon <- 20
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
 
-  cat("working...\n")
+  message("working...")
   res <- run(input = input)
 
-  cat("Mortality rate was", get_output()$n_death/get_output()$cumul_time, "\n")
+  message("Mortality rate was ", get_output()$n_death/get_output()$cumul_time)
 
   difference <- (get_output_ex()$n_death_by_age_sex/get_output_ex()$sum_time_by_age_sex) - input$agent$p_bgd_by_sex
 
@@ -45,9 +45,9 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
 #' @return difference in mortality rates and life table
 #' @export
 calibrate_explicit_mortality <- function(n_sim = 10^8) {
-  cat("Difference between life table and observed mortality\n")
-  cat("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex\n")
-  cat(paste("n_sim=", n_sim, "\n"))
+  message("Difference between life table and observed mortality")
+  message("You need to put the returned values into model_input$manual$explicit_mortality_by_age_sex")
+  message("n_sim=", n_sim)
 
   settings <- default_settings
   settings$record_mode <- record_mode["record_mode_none"]
@@ -61,10 +61,10 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
   input$global_parameters$time_horizon <- 1
   input$manual$explicit_mortality_by_age_sex <- input$manual$explicit_mortality_by_age_sex * 0
 
-  cat("working...\n")
+  message("working...")
   res <- run(input = input)
 
-  cat("Mortality rate was", get_output()$n_death/get_output()$cumul_time, "\n")
+  message("Mortality rate was ", get_output()$n_death/get_output()$cumul_time)
 
   difference <- model_input$agent$p_bgd_by_sex[41:111, ] - (get_output_ex()$n_death_by_age_sex[41:111, ]/get_output_ex()$sum_time_by_age_sex[41:111,
                                                                                                                                                ])
@@ -94,7 +94,7 @@ calibrate_explicit_mortality <- function(n_sim = 10^8) {
 #' @return TODO
 #' @export
 calibrate_smoking <- function() {
-  cat("I will try to estimate the value of input parameters with simulated data")
+  message("I will try to estimate the value of input parameters with simulated data")
   petoc()
 
   # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=T) included in package as internal data
@@ -119,9 +119,9 @@ calibrate_smoking <- function() {
   mydata <- as.data.frame(cbind(sex, age, age2, smoking_status = (runif(dim(data0)[1]) < tab1[cbind(1 + sex, ageCat)]) * 1, sex_age = sex *
                                   age, sex_age2 = sex * age * age, real_p = tab1[cbind(1 + sex, ageCat)]))
   reg <- glm(smoking_status ~ sex + age + age2 + sex_age + sex_age2, data = mydata, family = "binomial")
-  cat("regression coefficients are\n")
-  print(coefficients(reg))
-  cat("I will update the input and run this again")
+  message("regression coefficients are")
+  message(paste(names(coefficients(reg)), coefficients(reg), sep = "=", collapse = ", "))
+  message("I will update the input and run this again")
   petoc()
 
   model_input$smoking$logit_p_smoker_0_betas <- t(as.matrix(c(coefficients(reg), year = 0)))
@@ -133,13 +133,13 @@ calibrate_smoking <- function() {
   for (i in 0:1) for (j in 1:length(age_list)) tab2[i + 1, j] <- mean(data0[which(data0[, "sex"] == i & data0[, "age_at_creation"] >
                                                                                     age_list[[j]][1] & data0[, "age_at_creation"] <= age_list[[j]][2]), "smoking_status"])
 
-  cat("I will now show you the model generated bar plot")
+  message("I will now show you the model generated bar plot")
   petoc()
   barplot(tab2, beside = T, names.arg = c("40", "52", "65+"))
 
   petoc()
-  cat("For your consideration:\n")
-  paste(colnames(model_input$smoking$logit_p_smoker_0_betas), model_input$smoking$logit_p_smoker_0_betas, sep = "=", collapse = ",")
+  message("For your consideration:")
+  message(paste(colnames(model_input$smoking$logit_p_smoker_0_betas), model_input$smoking$logit_p_smoker_0_betas, sep = "=", collapse = ","))
   message("This task is over.")
   petoc()
 }

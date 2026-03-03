@@ -42,7 +42,7 @@ is displayed including: configuration summary, a real-time progress bar showing
 percentage completion (10%, 20%, ... 100%), elapsed time, and data collection status.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simplest usage - includes both basic and extended results
 results <- simulate()
 print(results$basic)

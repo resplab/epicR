@@ -7,10 +7,14 @@
 get_list_elements(ls, running_name = "")
 }
 \arguments{
-\item{ls}{ls}
+\item{ls}{A list to extract element names from}
 
-\item{running_name}{running_name}
+\item{running_name}{Internal parameter for recursion (default: "")}
+}
+\value{
+A character vector of element names, with nested elements
+  separated by "$" (e.g., "parent$child$grandchild").
 }
 \description{
-Get list elements
+Recursively extracts element names from a nested list structure.
 }
