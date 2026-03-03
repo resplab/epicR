@@ -10,7 +10,7 @@ express_matrix(mtx)
 \item{mtx}{a matrix}
 }
 \value{
-No return value, called for side effects (prints R code to console).
+Invisibly returns the generated R code as a character string, also outputs via message().
 }
 \description{
 Takes a named matrix and writes the R code to populate it;

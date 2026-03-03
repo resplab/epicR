@@ -133,7 +133,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
       x = validate_pop_size_scaled["EPIC_popsize"],
       by = validate_pop_size_scaled["year"],
       FUN = sum,
-      na.rm = TRUERUE
+      na.rm = TRUE
     )
 
     colnames(total_epic_by_year)[2] <- "total_EPIC_output"
@@ -187,14 +187,14 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
       x = df_with_growth[c("EPIC_output_scaled", "US_popsize")],
       by = df_with_growth[c("year", "age_group")],
       FUN = sum,
-      na.rm = TRUERUE
+      na.rm = TRUE
     )
 
     colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
 
     # Calculate RMSE
     rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
-      sqrt(mean((sub$total_EPIC_population - sub$total_US_population)^2, na.rm = TRUERUE))
+      sqrt(mean((sub$total_EPIC_population - sub$total_US_population)^2, na.rm = TRUE))
     })
 
     rmse_per_range <- data.frame(age_group = names(rmse_results),
@@ -1650,7 +1650,7 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   exac_table <- table(exac_events[, "gold"])
   GOLD_counts_all <- c(
     as.numeric(exac_table["1"]),
-    sum(as.numeric(exac_table[c("2", "3", "4")]), na.rm = TRUERUE)
+    sum(as.numeric(exac_table[c("2", "3", "4")]), na.rm = TRUE)
   )
   # Replace NA with 0
   GOLD_counts_all[is.na(GOLD_counts_all)] <- 0
@@ -1875,8 +1875,8 @@ validate_exacerbation <- function(base_agents=1e4, input=NULL, jurisdiction = "c
   message("Total exacerbations (Female): ", sum(n_exac[, 2]))
   message("Total COPD patient-years (Male): ", round(sum(n_COPD[, 1]), 2))
   message("Total COPD patient-years (Female): ", round(sum(n_COPD[, 2]), 2))
-  message("Mean exacerbation rate per COPD patient-year (Male): ", round(mean(exac_rate$Male, na.rm = TRUERUE), 4))
-  message("Mean exacerbation rate per COPD patient-year (Female): ", round(mean(exac_rate$Female, na.rm = TRUERUE), 4))
+  message("Mean exacerbation rate per COPD patient-year (Male): ", round(mean(exac_rate$Male, na.rm = TRUE), 4))
+  message("Mean exacerbation rate per COPD patient-year (Female): ", round(mean(exac_rate$Female, na.rm = TRUE), 4))
   message("Overall exacerbation rate per COPD patient-year (Male): ", round(sum(n_exac[, 1]) / sum(n_COPD[, 1]), 4))
   message("Overall exacerbation rate per COPD patient-year (Female): ", round(sum(n_exac[, 2]) / sum(n_COPD[, 2]), 4))
 
