@@ -5,7 +5,12 @@ Solves stochastically for COPD incidence rate equation.
 ## Usage
 
 ``` r
-calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
+calibrate_COPD_inc(
+  nIterations = 100,
+  nPatients = 1e+05,
+  time_horizon = 20,
+  output_dir = tempdir()
+)
 ```
 
 ## Arguments
@@ -21,6 +26,10 @@ calibrate_COPD_inc(nIterations = 100, nPatients = 1e+05, time_horizon = 20)
 - time_horizon:
 
   in years
+
+- output_dir:
+
+  directory for output CSV files (default: tempdir())
 
 ## Value
 

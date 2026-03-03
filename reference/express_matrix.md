@@ -17,4 +17,5 @@ express_matrix(mtx)
 
 ## Value
 
-No return value, called for side effects (prints R code to console).
+Invisibly returns the generated R code as a character string, also
+outputs via message().
