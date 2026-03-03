@@ -30,7 +30,7 @@ calibrate_explicit_mortality2 <- function(n_sim = 10^7) {
   difference <- (get_output_ex()$n_death_by_age_sex/get_output_ex()$sum_time_by_age_sex) - input$agent$p_bgd_by_sex
 
   difference <- as.data.frame(t(difference))
-  print(difference)
+  message(paste(capture.output(difference), collapse = "\n"))
   #write.csv(difference[1,], "male_mortality.csv")
   #write.csv(difference[2,], "female_mortality.csv")
 
@@ -97,9 +97,9 @@ calibrate_smoking <- function() {
   message("I will try to estimate the value of input parameters with simulated data")
   petoc()
 
-  # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=T) included in package as internal data
+  # CanSim.105.0501<-read.csv(paste(data_path,'/CanSim.105.0501.csv',sep=''),header=TRUE) included in package as internal data
   tab1 <- rbind(CanSim.105.0501[1:3, "value"], CanSim.105.0501[4:6, "value"])/100
-  barplot(tab1, beside = T, names.arg = c("40", "52", "65+"))
+  barplot(tab1, beside = TRUE, names.arg = c("40", "52", "65+"))
 
   settings$record_mode <- record_mode["record_mode_agent"]
   settings$agent_stack_size <- 0
@@ -135,7 +135,7 @@ calibrate_smoking <- function() {
 
   message("I will now show you the model generated bar plot")
   petoc()
-  barplot(tab2, beside = T, names.arg = c("40", "52", "65+"))
+  barplot(tab2, beside = TRUE, names.arg = c("40", "52", "65+"))
 
   petoc()
   message("For your consideration:")
@@ -148,24 +148,28 @@ calibrate_smoking <- function() {
 #' @param nIterations number of iterations for the numerical solution
 #' @param nPatients number of simulated agents.
 #' @param time_horizon in years
+#' @param output_dir directory for output CSV files (default: tempdir())
 #' @return regression co-efficients as files
 #' @export
 
 calibrate_COPD_inc<-function(nIterations=100,
                            nPatients=100000,
-                           time_horizon=20)
+                           time_horizon=20,
+                           output_dir=tempdir())
 {
 
   latest_COPD_inc_logit <- cbind(
     male =c(Intercept = 0, age = 0 ,age2 = 0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0)
     ,female =c(Intercept= 0, age = 0, age2 =0, pack_years = 0, smoking_status = 0, year = 0, asthma = 0))
 
+  coeff_file <- file.path(output_dir, "iteration_coeff.csv")
+  resid_file <- file.path(output_dir, "iteration_resid.csv")
 
-  cat("iteration", "intercept_men", "age_coeff_men", "packyears_coeff_men", "intercept_women", "age_coeff_women", "packyears_coeff_women", file="iteration_coeff.csv",sep=",",append=FALSE, fill=FALSE)
-  cat("\n",file="iteration_coeff.csv",sep=",",append=TRUE)
+  cat("iteration", "intercept_men", "age_coeff_men", "packyears_coeff_men", "intercept_women", "age_coeff_women", "packyears_coeff_women", file=coeff_file,sep=",",append=FALSE, fill=FALSE)
+  cat("\n",file=coeff_file,sep=",",append=TRUE)
 
-  cat("iteration","resid_intercept_men", "resid_age_coeff_men", "resid_packyears_coeff_men", "resid_intercept_women", "resid_packyears_coeff_women" ,"resid_age_coeff_women" , file="iteration_resid.csv",sep=",",append=FALSE, fill=FALSE)
-  cat("\n",file="iteration_resid.csv",sep=",",append=TRUE)
+  cat("iteration","resid_intercept_men", "resid_age_coeff_men", "resid_packyears_coeff_men", "resid_intercept_women", "resid_packyears_coeff_women" ,"resid_age_coeff_women" , file=resid_file,sep=",",append=FALSE, fill=FALSE)
+  cat("\n",file=resid_file,sep=",",append=TRUE)
 
   for (i in 1:nIterations){
 
@@ -213,25 +217,25 @@ calibrate_COPD_inc<-function(nIterations=100,
     residual <-  input$COPD$logit_p_COPD_betas_by_sex-latest_COPD_prev_logit
     message(c(i, "th loop:"))
     message ("residual is:")
-    print (residual)
+    message(paste(capture.output(residual), collapse = "\n"))
 
-    cat(i, residual[1,1], residual[2,1], residual[4,1], residual[1,2], residual[2,2], residual[4,2], file="iteration_resid.csv",sep=",",append=TRUE, fill=FALSE)
-    cat("\n",file="iteration_resid.csv",sep=",",append=TRUE)
+    cat(i, residual[1,1], residual[2,1], residual[4,1], residual[1,2], residual[2,2], residual[4,2], file=resid_file,sep=",",append=TRUE, fill=FALSE)
+    cat("\n",file=resid_file,sep=",",append=TRUE)
 
 
     latest_COPD_inc_logit <- latest_COPD_inc_logit + residual
 
     message ("latest inc logit is:")
-    print (latest_COPD_inc_logit)
+    message(paste(capture.output(latest_COPD_inc_logit), collapse = "\n"))
 
-    cat(i, latest_COPD_inc_logit[1,1], latest_COPD_inc_logit[2,1], latest_COPD_inc_logit[4,1], latest_COPD_inc_logit[1,2], latest_COPD_inc_logit[2,2], latest_COPD_inc_logit[4,2], file="iteration_coeff.csv",sep=",",append=TRUE, fill=FALSE)
-    cat("\n",file="iteration_coeff.csv",sep=",",append=TRUE)
+    cat(i, latest_COPD_inc_logit[1,1], latest_COPD_inc_logit[2,1], latest_COPD_inc_logit[4,1], latest_COPD_inc_logit[1,2], latest_COPD_inc_logit[2,2], latest_COPD_inc_logit[4,2], file=coeff_file,sep=",",append=TRUE, fill=FALSE)
+    cat("\n",file=coeff_file,sep=",",append=TRUE)
 
 
   }
 
-  iteration_coeff <- readr::read_csv("./iteration_coeff.csv")
-  iteration_resid <- readr::read_csv("./iteration_resid.csv")
+  iteration_coeff <- readr::read_csv(coeff_file)
+  iteration_resid <- readr::read_csv(resid_file)
 
 
   plot(ggplot2::qplot(iteration, age_coeff_men, data=iteration_coeff, size=I(1), main = "Age Coefficient Convergence for Men"))
