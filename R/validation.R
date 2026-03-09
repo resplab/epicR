@@ -1928,7 +1928,7 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction =
   cohort$age <- (cohort$age_at_creation+cohort$local_time)
 
   #fit <- survfit(Surv(age, death) ~ copd, data=cohort)
-  fit <- survival::survfit(Surv(age, death) ~ copd, data=cohort)
+  fit <- survival::survfit(survival::Surv(age, death) ~ copd, data=cohort)
 
   # Customized survival curves
   surv_plot <- survminer::ggsurvplot(fit, data = cohort, censor.shape="", censor.size = 1,
@@ -1948,7 +1948,7 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction =
                           # Add risk table
                           #risk.table = TRUE,
                           tables.height = 0.2,
-                          tables.theme = theme_cleantable(),
+                          tables.theme = survminer::theme_cleantable(),
 
                           # Color palettes. Use custom color: c("#E7B800", "#2E9FDF"),
                           # or brewer color (e.g.: "Dark2"), or ggsci color (e.g.: "jco")
@@ -1961,12 +1961,12 @@ validate_survival <- function(savePlots = FALSE, base_agents=1e4, jurisdiction =
                                   panel.background = element_blank())  # Change ggplot2 theme
   )
 
-  plot (surv_plot)
+  print(surv_plot$plot)
 
-  if (savePlots) ggsave(file.path(tempdir(), paste0("survival-diagnosed", ".tiff")), plot = plot(surv_plot), device = "tiff", dpi = 300)
+  if (savePlots) ggsave(file.path(tempdir(), paste0("survival-diagnosed", ".tiff")), plot = surv_plot$plot, device = "tiff", dpi = 300)
 
-  fitcox <- coxph(Surv(age, death) ~ copd, data = cohort)
-  ftest <- cox.zph(fitcox)
+  fitcox <- survival::coxph(survival::Surv(age, death) ~ copd, data = cohort)
+  ftest <- survival::cox.zph(fitcox)
   message(paste(capture.output(summary(fitcox)), collapse = "\n"))
 
   return(surv_plot)

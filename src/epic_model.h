@@ -462,7 +462,7 @@ struct output_ex {
 #if (OUTPUT_EX & OUTPUT_EX_MEDICATION) > 0
   double medication_time_by_class[N_MED_CLASS];
   double medication_time_by_ctime_class[1000][N_MED_CLASS];
-  double n_exac_by_medication_class[N_MED_CLASS][3];
+  double n_exac_by_medication_class[N_MED_CLASS][4];
   int n_smoking_cessation_by_ctime[1000];
 #endif
 };

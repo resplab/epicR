@@ -1,6 +1,7 @@
 <!-- badges: start -->
 [![R-CMD-check.yaml](https://github.com/resplab/epicR/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/resplab/epicR/actions/workflows/R-CMD-check.yaml)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![CRAN status](https://www.r-pkg.org/badges/version/epicR)](https://CRAN.R-project.org/package=epicR)
 <!-- badges: end -->
 
 # epicR
