@@ -1,9 +1,8 @@
 ---
 title: "Inputs and Outputs Structure"
 output:
-  html_document:
+  rmarkdown::html_vignette:
     toc: true
-    toc_float: true
     toc_depth: 5
 vignette: >
   %\VignetteIndexEntry{InputsOutputsStructure}
