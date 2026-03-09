@@ -42,7 +42,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck any::knitr any::rmarkdown
+          extra-packages: any::rcmdcheck any::knitr any::rmarkdown any::testthat
           needs: check
           dependencies: ${{ matrix.config.dependencies || '"all"' }}
 
