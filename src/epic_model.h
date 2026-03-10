@@ -37,6 +37,7 @@ using std::max;
 #define OUTPUT_EX 65535
 
 #define MAX_AGE 111
+#define MAX_CTIME 100
 #define N_MED_CLASS 5
 
 ////////////////////////////////////////////////////////////////////////////////

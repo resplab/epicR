@@ -466,7 +466,7 @@ void payoffs_LPT(agent *ag)
   output_ex.annual_cost_ctime[(int)floor((*ag).time_at_creation+(*ag).local_time)]+=(*ag).cumul_cost-(*ag).cumul_cost_prev_yr;
   (*ag).cumul_cost_prev_yr=(*ag).cumul_cost;
 
-  output_ex.cumul_time_by_ctime_GOLD[(int)floor((*ag).time_at_creation+(*ag).local_time)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
+  output_ex.cumul_time_by_ctime_GOLD[std::min((int)floor((*ag).time_at_creation+(*ag).local_time), MAX_CTIME-1)][(*ag).gold]+=((*ag).local_time-(*ag).medication_LPT);
 
   (*ag).cumul_qaly+=input.utility.bg_util_by_stage[(*ag).gold]*((*ag).local_time-(*ag).payoffs_LPT)/pow(1+input.global_parameters.discount_qaly,(*ag).local_time+calendar_time);
 
