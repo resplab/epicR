@@ -225,6 +225,10 @@ List get_agent(agent *ag)
   out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
 
+  // ===== ADI: Area Deprivation Index =====
+  out["adi_quintile"] = (*ag).adi_quintile;
+  // ===== END ADI =====
+
   return out;
 }
 
@@ -927,6 +931,19 @@ if(id<settings.n_base_agents)
       //if(i==40) Rprintf("r=%f,cum_p=%f\n",r,cum_p);
       if(r<cum_p) {(*ag).age_at_creation=i; break;}
     }
+
+// ===== ADI: Area Deprivation Index quintile assignment =====
+// Draw a uniform random number and walk cumulative ADI weights to assign quintile 1-5
+{
+  double r_adi = rand_unif();
+  double cum_adi = 0;
+  (*ag).adi_quintile = 5; // default to last quintile if weights don't sum to exactly 1
+  for (int q = 0; q < 5; q++) {
+    cum_adi += input.agent.p_adi_quintiles[q];
+    if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; }
+  }
+}
+// ===== END ADI =====
 
 // ========== STEP 3: Height and Weight Assignment ==========
     // Uses bivariate normal for correlated height/weight

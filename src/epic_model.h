@@ -160,6 +160,9 @@ struct input {
     double l_inc_betas[3];
     double p_bgd_by_sex[111][2];
     double ln_h_bgd_betas[9];
+    // ===== ADI: Area Deprivation Index =====
+    double p_adi_quintiles[5];  // population weights for quintiles 1–5 (must sum to 1)
+    // ===== END ADI =====
   } agent;
 
   struct {
@@ -371,6 +374,10 @@ struct agent {
   double re_phlegm;
   double re_dyspnea;
   double re_wheeze;
+
+  // ===== ADI: Area Deprivation Index =====
+  int adi_quintile;  // 1–5, assigned at baseline by population-weighted draw
+  // ===== END ADI =====
 };
 
 struct output {
