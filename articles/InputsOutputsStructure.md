@@ -1137,7 +1137,7 @@ results_baseline <- simulate(
 #> Note: No events will be recorded. Use record_mode_event (2) or record_mode_agent (1) to record events.
 #> Simulating 50000 base agents: 10% 20% 30% 40% 50%
 #> 60% 70% 80% 90% 100%
-#> Simulation completed in 2.7 seconds
+#> Simulation completed in 2.6 seconds
 #> Collecting results...
 #> Collecting extended results...
 #> Terminating the session
