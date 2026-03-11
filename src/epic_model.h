@@ -397,6 +397,12 @@ struct output {
 struct output_ex {
   int n_alive_by_ctime_sex[1000][2];
   int n_smoking_status_by_ctime[1000][3];
+  // ===== ADI: Area Deprivation Index =====
+  int n_alive_by_ctime_adi[1000][5];      // alive agents by calendar time and ADI quintile (1-5)
+  int n_COPD_by_ctime_adi[1000][5];       // COPD agents by calendar time and ADI quintile
+  double cumul_cost_by_ctime_adi[1000][5]; // cumulative cost by calendar time and ADI quintile
+  double cumul_qaly_by_ctime_adi[1000][5]; // cumulative QALY by calendar time and ADI quintile
+  // ===== END ADI =====
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
   double annual_cost_ctime[1000];
