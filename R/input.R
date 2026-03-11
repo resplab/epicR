@@ -245,6 +245,12 @@ get_input <- function(age0 = 40,
   input$agent$ln_h_bgd_betas <- t(as.matrix(convert_config_value(config$agent$ln_h_bgd_betas)))
   input_ref$agent$ln_h_bgd_betas <- get_metadata("agent", "ln_h_bgd_betas", "ref", "")
 
+  # ===== ADI: Area Deprivation Index =====
+  input_help$agent$p_adi_quintiles <- get_metadata("agent", "p_adi_quintiles", "help", "Population-weighted probabilities for ADI quintiles 1-5")
+  input$agent$p_adi_quintiles <- convert_config_value(config$agent$p_adi_quintiles)
+  input_ref$agent$p_adi_quintiles <- get_metadata("agent", "p_adi_quintiles", "ref", "")
+  # ===== END ADI =====
+
   ### smoking;
 
   input_help$smoking$logit_p_current_smoker_0_betas <- get_metadata("smoking", "logit_p_current_smoker_0_betas", "help", "Probability of being a current smoker at the time of creation")
