@@ -1,6 +1,6 @@
 Package: epicR
 Title: Evaluation Platform in Chronic Obstructive Pulmonary Disease
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Mohsen", "Sadatsafavi", email = "mohsen.sadatsafavi@ubc.ca", role = c("aut", "cph")),
     person("Amin", "Adibi", email = "adibi@alumni.ubc.ca", role = c("aut", "cre")),
