@@ -318,7 +318,10 @@ get_input <- function(age0 = 40,
   input_ref$COPD$logit_p_COPD_betas_by_sex <- get_metadata("COPD", "logit_p_COPD_betas_by_sex", "ref", "CanCold - Shahzad's Derivation. Last Updated on 2017-09-19, ne wmodel with no currnet smoker term")
 
   input_help$COPD$adi_logit_p_COPD_offset <- get_metadata("COPD", "adi_p_COPD_multipliers", "help", "Mean-centred log-odds offsets by ADI quintile for prevalent COPD logit, derived from adi_p_COPD_multipliers and p_adi_quintiles")
-  input$COPD$adi_logit_p_COPD_offset <- log(convert_config_value(config$COPD$adi_p_COPD_multipliers)) - sum(input$agent$p_adi_quintiles * log(convert_config_value(config$COPD$adi_p_COPD_multipliers)))
+  input$COPD$adi_logit_p_COPD_offset <- if (!is.null(config$COPD$adi_p_COPD_multipliers)) {
+    log_multipliers <- log(convert_config_value(config$COPD$adi_p_COPD_multipliers))
+    log_multipliers - sum(input$agent$p_adi_quintiles * log_multipliers)
+  } else rep(0.0, 5)
   input_ref$COPD$adi_logit_p_COPD_offset <- get_metadata("COPD", "adi_p_COPD_multipliers", "ref", "ADI National Ranking by Quintile table — observed diagnosed COPD prevalence Q1=0.05, Q2=0.05, Q3=0.06, Q4=0.08, Q5=0.12")
 
 
