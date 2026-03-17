@@ -1054,7 +1054,8 @@ if(id<settings.n_base_agents)
                          +input.COPD.logit_p_COPD_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation
                          +input.COPD.logit_p_COPD_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
                          +input.COPD.logit_p_COPD_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-                         +input.COPD.logit_p_COPD_betas_by_sex[5][(*ag).sex]*calendar_time)
+                         +input.COPD.logit_p_COPD_betas_by_sex[5][(*ag).sex]*calendar_time
+                         +input.COPD.adi_logit_p_COPD_offset[(*ag).adi_quintile-1])
                          //+input.COPD.logit_p_COPD_betas_by_sex[7]*(*ag).asthma
                          ;
 

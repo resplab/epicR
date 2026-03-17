@@ -158,6 +158,11 @@
       "help": "Logit of the probability of having COPD (FEV1/FVC<0.7) at time of creation (separately by sex)",
       "ref": "Adapted to US setting (July 22, 2025). CanCold - Shahzad's Derivation."
     },
+    "adi_p_COPD_multipliers": [1.0, 1.0, 1.2, 1.6, 2.4],
+    "adi_p_COPD_multipliers_metadata": {
+      "help": "Relative diagnosed COPD prevalence by ADI quintile (Q1=least deprived, reference=1.0). Used with p_adi_quintiles to compute mean-centred logit offsets at runtime in input.R. Preserves overall COPD prevalence target.",
+      "ref": "ADI National Ranking by Quintile table — observed diagnosed COPD prevalence Q1=0.05, Q2=0.05, Q3=0.06, Q4=0.08, Q5=0.12"
+    },
     "ln_h_COPD_betas_by_sex": {
       "male": [-7.62659032, 0.03116591, 0, 0.0276946, 0, 0, 0],
       "female": [-8.39537000, 0.03608233, 0, 0.04033863, 0, 0, 0]
