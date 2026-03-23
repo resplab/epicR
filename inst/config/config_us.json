@@ -170,6 +170,11 @@
     "ln_h_COPD_betas_by_sex_metadata": {
       "help": "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)",
       "ref": "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)"
+    },
+    "adi_ln_h_COPD_multipliers": [1.0, 1.0, 1.2, 1.6, 2.4],
+    "adi_ln_h_COPD_multipliers_metadata": {
+      "help": "Relative incident COPD hazard by ADI quintile (Q1=least deprived, reference=1.0). Used with p_adi_quintiles to compute mean-centred log-hazard offsets at runtime in input.R. Preserves overall COPD incidence target.",
+      "ref": "ADI National Ranking by Quintile table — observed diagnosed COPD prevalence Q1=0.05, Q2=0.05, Q3=0.06, Q4=0.08, Q5=0.12"
     }
   },
   "lung_function": {

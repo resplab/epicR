@@ -419,6 +419,7 @@ double event_COPD_tte(agent *ag)
                     +input.COPD.ln_h_COPD_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
                     +input.COPD.ln_h_COPD_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
                     +input.COPD.ln_h_COPD_betas_by_sex[5][(*ag).sex]*(calendar_time+(*ag).local_time)
+                    +input.COPD.adi_ln_h_COPD_offset[(*ag).adi_quintile-1]
   );
 
 

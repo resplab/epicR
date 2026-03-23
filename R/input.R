@@ -245,11 +245,9 @@ get_input <- function(age0 = 40,
   input$agent$ln_h_bgd_betas <- t(as.matrix(convert_config_value(config$agent$ln_h_bgd_betas)))
   input_ref$agent$ln_h_bgd_betas <- get_metadata("agent", "ln_h_bgd_betas", "ref", "")
 
-  # ===== ADI: Area Deprivation Index =====
   input_help$agent$p_adi_quintiles <- get_metadata("agent", "p_adi_quintiles", "help", "Population-weighted probabilities for ADI quintiles 1-5")
   input$agent$p_adi_quintiles <- convert_config_value(config$agent$p_adi_quintiles)
   input_ref$agent$p_adi_quintiles <- get_metadata("agent", "p_adi_quintiles", "ref", "")
-  # ===== END ADI =====
 
   ### smoking;
 
@@ -328,6 +326,13 @@ get_input <- function(age0 = 40,
   input_help$COPD$ln_h_COPD_betas_by_sex <- get_metadata("COPD", "ln_h_COPD_betas_by_sex", "help", "Log-hazard of developing COPD (FEV1/FVC<LLN) for those who did not have COPD at creation time (separately by sex)")
   input$COPD$ln_h_COPD_betas_by_sex <- create_matrix_from_config(config$COPD$ln_h_COPD_betas_by_sex, transpose = FALSE)
   input_ref$COPD$ln_h_COPD_betas_by_sex <- get_metadata("COPD", "ln_h_COPD_betas_by_sex", "ref", "Amin's Iterative solution. Last Updated on 2022-06-33 (0.29.0)")
+
+  input_help$COPD$adi_ln_h_COPD_offset <- get_metadata("COPD", "adi_ln_h_COPD_multipliers", "help", "Mean-centred log-hazard offsets by ADI quintile for incident COPD, derived from adi_ln_h_COPD_multipliers and p_adi_quintiles")
+  input$COPD$adi_ln_h_COPD_offset <- if (!is.null(config$COPD$adi_ln_h_COPD_multipliers)) {
+    log_multipliers <- log(convert_config_value(config$COPD$adi_ln_h_COPD_multipliers))
+    log_multipliers - sum(input$agent$p_adi_quintiles * log_multipliers)
+  } else rep(0.0, 5)
+  input_ref$COPD$adi_ln_h_COPD_offset <- get_metadata("COPD", "adi_ln_h_COPD_multipliers", "ref", "ADI National Ranking by Quintile table — observed diagnosed COPD prevalence Q1=0.05, Q2=0.05, Q3=0.06, Q4=0.08, Q5=0.12")
 
 
   ## Lung function
