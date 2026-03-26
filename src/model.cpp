@@ -225,9 +225,7 @@ List get_agent(agent *ag)
   out["cumul_cost_prev_yr"] = (*ag).cumul_cost_prev_yr;
   out["cumul_qaly"] = (*ag).cumul_qaly;
 
-  // ===== ADI: Area Deprivation Index =====
   out["adi_quintile"] = (*ag).adi_quintile;
-  // ===== END ADI =====
 
   return out;
 }
@@ -932,20 +930,19 @@ if(id<settings.n_base_agents)
       if(r<cum_p) {(*ag).age_at_creation=i; break;}
     }
 
-// ===== ADI: Area Deprivation Index quintile assignment =====
+// ===== STEP 3: Area Deprivation Index (ADI) Quintile Assignment =====
 // Draw a uniform random number and walk cumulative ADI weights to assign quintile 1-5
 {
   double r_adi = rand_unif();
   double cum_adi = 0;
-  (*ag).adi_quintile = 5; // default to last quintile if weights don't sum to exactly 1
-  for (int q = 0; q < 5; q++) {
-    cum_adi += input.agent.p_adi_quintiles[q];
-    if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; }
+  (*ag).adi_quintile = 5; // default to quintile 5 (most deprived) if random number exceeds cumulative distribution
+  for (int q = 0; q < 5; q++) { // Loop through quintiles 0-4, but assign quintile 1-5 to agent
+    cum_adi += input.agent.p_adi_quintiles[q]; // cumulative probability up to current quintile
+    if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; } // Assign quintile 1-5 based on where random number falls in cumulative distribution
   }
 }
-// ===== END ADI =====
 
-// ========== STEP 3: Height and Weight Assignment ==========
+// ========== STEP 4: Height and Weight Assignment ==========
     // Uses bivariate normal for correlated height/weight
     rbvnorm(input.agent.height_weight_rho,_bvn);
   (*ag).height=_bvn[0]*input.agent.height_0_sd
@@ -964,7 +961,7 @@ if(id<settings.n_base_agents)
   +input.agent.weight_0_betas[5]*(*ag).height
   +input.agent.weight_0_betas[6]*calendar_time;
 
-  // ========== STEP 4: Smoking Status Assignment ==========
+  // ========== STEP 5: Smoking Status Assignment ==========
   bool ever_smoker=false;
 
   double odds1=exp(input.smoking.logit_p_current_smoker_0_betas[0]
@@ -1021,7 +1018,7 @@ if(id<settings.n_base_agents)
   (*ag).smoking_status_LPT=0;
 
 
-  // ========== STEP 5: Exacerbation Random Effects ==========
+  // ========== STEP 6: Exacerbation Random Effects ==========
   rbvnorm(input.exacerbation.rate_severity_intercept_rho,_bvn);
   (*ag).ln_exac_rate_intercept=_bvn[0]*input.exacerbation.ln_rate_intercept_sd;
   (*ag).logit_exac_severity_intercept=_bvn[1]*input.exacerbation.logit_severity_intercept_sd;
@@ -1047,7 +1044,7 @@ if(id<settings.n_base_agents)
   (*ag).exac_history_n_severe_plus=0;
 
 
-  // ========== STEP 6: COPD Status (Prevalent Agents Only) ==========
+  // ========== STEP 7: COPD Status (Prevalent Agents Only) ==========
   // Calculate probability of COPD based on risk factors
   double COPD_odds=exp(input.COPD.logit_p_COPD_betas_by_sex[0][(*ag).sex]
                          +input.COPD.logit_p_COPD_betas_by_sex[1][(*ag).sex]*(*ag).age_at_creation

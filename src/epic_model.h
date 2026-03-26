@@ -160,9 +160,7 @@ struct input {
     double l_inc_betas[3];
     double p_bgd_by_sex[111][2];
     double ln_h_bgd_betas[9];
-    // ===== ADI: Area Deprivation Index =====
-    double p_adi_quintiles[5];  // population weights for quintiles 1–5 (must sum to 1)
-    // ===== END ADI =====
+    double p_adi_quintiles[5];  // population weights for quintiles 1–5
   } agent;
 
   struct {
@@ -377,9 +375,8 @@ struct agent {
   double re_dyspnea;
   double re_wheeze;
 
-  // ===== ADI: Area Deprivation Index =====
   int adi_quintile;  // 1–5, assigned at baseline by population-weighted draw
-  // ===== END ADI =====
+ 
 };
 
 struct output {
@@ -399,12 +396,10 @@ struct output {
 struct output_ex {
   int n_alive_by_ctime_sex[1000][2];
   int n_smoking_status_by_ctime[1000][3];
-  // ===== ADI: Area Deprivation Index =====
   int n_alive_by_ctime_adi[1000][5];      // alive agents by calendar time and ADI quintile (1-5)
   int n_COPD_by_ctime_adi[1000][5];       // COPD agents by calendar time and ADI quintile
   double cumul_cost_by_ctime_adi[1000][5]; // cumulative cost by calendar time and ADI quintile
   double cumul_qaly_by_ctime_adi[1000][5]; // cumulative QALY by calendar time and ADI quintile
-  // ===== END ADI =====
   int n_alive_by_ctime_age[1000][111];
   int n_current_smoker_by_ctime_sex[1000][2];
   double annual_cost_ctime[1000];

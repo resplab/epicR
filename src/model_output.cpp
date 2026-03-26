@@ -87,12 +87,10 @@ List get_output_ex()
     Rcpp::Named("n_alive_by_age_sex")=AS_MATRIX_INT(output_ex.n_alive_by_age_sex),
     Rcpp::Named("sum_time_by_ctime_sex")=AS_MATRIX_DOUBLE_SIZE(output_ex.sum_time_by_ctime_sex,input.global_parameters.time_horizon),
     Rcpp::Named("sum_time_by_age_sex")=AS_MATRIX_DOUBLE(output_ex.sum_time_by_age_sex),
-    // ===== ADI: Area Deprivation Index =====
     Rcpp::Named("n_alive_by_ctime_adi")=AS_MATRIX_INT_SIZE(output_ex.n_alive_by_ctime_adi,input.global_parameters.time_horizon),
     Rcpp::Named("n_COPD_by_ctime_adi")=AS_MATRIX_INT_SIZE(output_ex.n_COPD_by_ctime_adi,input.global_parameters.time_horizon),
     Rcpp::Named("cumul_cost_by_ctime_adi")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_cost_by_ctime_adi,input.global_parameters.time_horizon),
     Rcpp::Named("cumul_qaly_by_ctime_adi")=AS_MATRIX_DOUBLE_SIZE(output_ex.cumul_qaly_by_ctime_adi,input.global_parameters.time_horizon)
-    // ===== END ADI =====
 #endif
 #if (OUTPUT_EX & OUTPUT_EX_BIOMETRICS) > 0
   ,Rcpp::Named("sum_weight_by_ctime_sex")=AS_MATRIX_DOUBLE_SIZE(output_ex.sum_weight_by_ctime_sex,input.global_parameters.time_horizon)
@@ -174,13 +172,10 @@ void update_output_ex(agent *ag)
     output_ex.n_alive_by_ctime_age[time][age-1]+=1;   //age-1 -> adjusting for zero based system in C.
     output_ex.n_alive_by_ctime_sex[time][(*ag).sex]+=1;
     output_ex.n_alive_by_age_sex[age-1][(*ag).sex]+=1;
-    // ===== ADI: Area Deprivation Index =====
-    // adi_quintile is 1-5; subtract 1 for zero-based array index
     output_ex.n_alive_by_ctime_adi[time][(*ag).adi_quintile-1]+=1;
     output_ex.n_COPD_by_ctime_adi[time][(*ag).adi_quintile-1]+=((*ag).gold>0)*1;
     output_ex.cumul_cost_by_ctime_adi[time][(*ag).adi_quintile-1]+=(*ag).cumul_cost;
     output_ex.cumul_qaly_by_ctime_adi[time][(*ag).adi_quintile-1]+=(*ag).cumul_qaly;
-    // ===== END ADI =====
     if((*ag).smoking_status==1)
     {
       output_ex.n_smoking_status_by_ctime[time][1]+=1;
