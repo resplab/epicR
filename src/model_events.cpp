@@ -262,84 +262,99 @@ DataFrame get_all_events() //Returns all events from all agents;
 // [[Rcpp::export]]
 NumericMatrix get_all_events_matrix()
 {
-  NumericMatrix outm(event_stack_pointer,33);
-  CharacterVector eventMatrixColNames(33);
+  NumericMatrix outm(event_stack_pointer,34);
+  CharacterVector eventMatrixColNames(34);
 
 // eventMatrixColNames = CharacterVector::create("id", "local_time","sex", "time_at_creation", "age_at_creation", "pack_years","gold","event","FEV1","FEV1_slope", "FEV1_slope_t","pred_FEV1","smoking_status", "localtime_at_COPD", "age_at_COPD", "weight_at_COPD", "height","followup_after_COPD", "FEV1_baseline");
 // 'create' helper function is limited to 20 enteries
 
+  // --- Demographics ---
   eventMatrixColNames(0)  = "id";
   eventMatrixColNames(1)  = "local_time";
   eventMatrixColNames(2)  = "female";
   eventMatrixColNames(3)  = "time_at_creation";
   eventMatrixColNames(4)  = "age_at_creation";
-  eventMatrixColNames(5)  = "pack_years";
-  eventMatrixColNames(6)  = "gold";
-  eventMatrixColNames(7)  = "event";
-  eventMatrixColNames(8)  = "FEV1";
-  eventMatrixColNames(9)  = "FEV1_slope";
-  eventMatrixColNames(10) = "FEV1_acceleration";
-  eventMatrixColNames(11) = "pred_FEV1";
-  eventMatrixColNames(12) = "smoking_status";
-  eventMatrixColNames(13) = "localtime_at_COPD";
-  eventMatrixColNames(14) = "age_at_COPD";
-  eventMatrixColNames(15) = "weight_at_COPD";
-  eventMatrixColNames(16) = "height";
-  eventMatrixColNames(17) = "followup_after_COPD";
-  eventMatrixColNames(18) = "FEV1_baseline";
-  eventMatrixColNames(19) = "exac_status";
-  eventMatrixColNames(20) = "cough";
-  eventMatrixColNames(21) = "phlegm";
-  eventMatrixColNames(22) = "wheeze";
-  eventMatrixColNames(23) = "dyspnea";
-  eventMatrixColNames(24) = "gpvisits";
-  eventMatrixColNames(25) = "diagnosis";
-  eventMatrixColNames(26) = "medication_status";
-  eventMatrixColNames(27) = "case_detection";
-  eventMatrixColNames(28) = "cumul_cost";
-  eventMatrixColNames(29) = "cumul_qaly";
-  eventMatrixColNames(30) = "time_at_diagnosis";
-  eventMatrixColNames(31) = "exac_history_n_moderate";
-  eventMatrixColNames(32) = "exac_history_n_severe_plus";
-
+  eventMatrixColNames(5)  = "height";
+  eventMatrixColNames(6)  = "adi_quintile";       // ADI: 1=least deprived, 5=most deprived
+  // --- Smoking ---
+  eventMatrixColNames(7)  = "pack_years";
+  eventMatrixColNames(8)  = "smoking_status";
+  // --- COPD status ---
+  eventMatrixColNames(9)  = "gold";
+  eventMatrixColNames(10) = "event";
+  eventMatrixColNames(11) = "localtime_at_COPD";
+  eventMatrixColNames(12) = "age_at_COPD";
+  eventMatrixColNames(13) = "weight_at_COPD";
+  eventMatrixColNames(14) = "followup_after_COPD";
+  // --- Lung function ---
+  eventMatrixColNames(15) = "FEV1";
+  eventMatrixColNames(16) = "FEV1_slope";
+  eventMatrixColNames(17) = "FEV1_acceleration";
+  eventMatrixColNames(18) = "pred_FEV1";
+  eventMatrixColNames(19) = "FEV1_baseline";
+  // --- Symptoms ---
+  eventMatrixColNames(20) = "exac_status";
+  eventMatrixColNames(21) = "cough";
+  eventMatrixColNames(22) = "phlegm";
+  eventMatrixColNames(23) = "wheeze";
+  eventMatrixColNames(24) = "dyspnea";
+  // --- Healthcare ---
+  eventMatrixColNames(25) = "gpvisits";
+  eventMatrixColNames(26) = "diagnosis";
+  eventMatrixColNames(27) = "time_at_diagnosis";
+  eventMatrixColNames(28) = "medication_status";
+  eventMatrixColNames(29) = "case_detection";
+  // --- Outcomes ---
+  eventMatrixColNames(30) = "cumul_cost";
+  eventMatrixColNames(31) = "cumul_qaly";
+  eventMatrixColNames(32) = "exac_history_n_moderate";
+  eventMatrixColNames(33) = "exac_history_n_severe_plus";
 
   colnames(outm) = eventMatrixColNames;
   for(int i=0;i<event_stack_pointer;i++)
   {
     agent *ag=&event_stack[i];
-    outm(i,0)=(*ag).id;
-    outm(i,1)=(*ag).local_time;
-    outm(i,2)=(*ag).sex;
-    outm(i,3)=(*ag).time_at_creation;
-    outm(i,4)=(*ag).age_at_creation;
-    outm(i,5)=(*ag).pack_years;
-    outm(i,6)=(*ag).gold;
-    outm(i,7)=(*ag).event;
-    outm(i,8)=(*ag).fev1;
-    outm(i,9)=(*ag).fev1_slope;
-    outm(i,10)=(*ag).fev1_slope_t;
-    outm(i,11)=(*ag)._pred_fev1;
-    outm(i,12)=(*ag).smoking_status;
-    outm(i,13)=(*ag).local_time_at_COPD;
-    outm(i,14)=(*ag).age_baseline;
-    outm(i,15)=(*ag).weight_baseline;
-    outm(i,16)=(*ag).height;
-    outm(i,17)=(*ag).followup_time;
-    outm(i,18)=(*ag).fev1_baseline;
-    outm(i,19)=(*ag).exac_status;
-    outm(i,20)=(*ag).cough;
-    outm(i,21)=(*ag).phlegm;
-    outm(i,22)=(*ag).wheeze;
-    outm(i,23)=(*ag).dyspnea;
-    outm(i,24)=(*ag).gpvisits;
-    outm(i,25)=(*ag).diagnosis;
-    outm(i,26)=(*ag).medication_status;
-    outm(i,27)=(*ag).case_detection;
-    outm(i,28)=(*ag).cumul_cost;
-    outm(i,29)=(*ag).cumul_qaly;
-    outm(i,30)=(*ag).time_at_diagnosis;
-    outm(i,31)=(*ag).exac_history_n_moderate;
-    outm(i,32)=(*ag).exac_history_n_severe_plus;
+    // --- Demographics ---
+    outm(i,0)  = (*ag).id;
+    outm(i,1)  = (*ag).local_time;
+    outm(i,2)  = (*ag).sex;
+    outm(i,3)  = (*ag).time_at_creation;
+    outm(i,4)  = (*ag).age_at_creation;
+    outm(i,5)  = (*ag).height;
+    outm(i,6)  = (*ag).adi_quintile;
+    // --- Smoking ---
+    outm(i,7)  = (*ag).pack_years;
+    outm(i,8)  = (*ag).smoking_status;
+    // --- COPD status ---
+    outm(i,9)  = (*ag).gold;
+    outm(i,10) = (*ag).event;
+    outm(i,11) = (*ag).local_time_at_COPD;
+    outm(i,12) = (*ag).age_baseline;
+    outm(i,13) = (*ag).weight_baseline;
+    outm(i,14) = (*ag).followup_time;
+    // --- Lung function ---
+    outm(i,15) = (*ag).fev1;
+    outm(i,16) = (*ag).fev1_slope;
+    outm(i,17) = (*ag).fev1_slope_t;
+    outm(i,18) = (*ag)._pred_fev1;
+    outm(i,19) = (*ag).fev1_baseline;
+    // --- Symptoms ---
+    outm(i,20) = (*ag).exac_status;
+    outm(i,21) = (*ag).cough;
+    outm(i,22) = (*ag).phlegm;
+    outm(i,23) = (*ag).wheeze;
+    outm(i,24) = (*ag).dyspnea;
+    // --- Healthcare ---
+    outm(i,25) = (*ag).gpvisits;
+    outm(i,26) = (*ag).diagnosis;
+    outm(i,27) = (*ag).time_at_diagnosis;
+    outm(i,28) = (*ag).medication_status;
+    outm(i,29) = (*ag).case_detection;
+    // --- Outcomes ---
+    outm(i,30) = (*ag).cumul_cost;
+    outm(i,31) = (*ag).cumul_qaly;
+    outm(i,32) = (*ag).exac_history_n_moderate;
+    outm(i,33) = (*ag).exac_history_n_severe_plus;
 
   }
 
