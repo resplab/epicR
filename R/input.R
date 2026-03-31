@@ -249,6 +249,13 @@ get_input <- function(age0 = 40,
   input$agent$p_adi_quintiles <- convert_config_value(config$agent$p_adi_quintiles)
   input_ref$agent$p_adi_quintiles <- get_metadata("agent", "p_adi_quintiles", "ref", "")
 
+  input_help$agent$p_adi_quintiles_COPD <- "ADI quintile weights for prevalent COPD agents, derived from adi_p_COPD_multipliers and p_adi_quintiles via Bayes theorem. Reflects higher ADI burden among COPD agents while preserving overall COPD calibration."
+  input$agent$p_adi_quintiles_COPD <- {
+    adi_copd_quintile_weights <- convert_config_value(config$COPD$adi_p_COPD_multipliers) * input$agent$p_adi_quintiles
+    adi_copd_quintile_weights / sum(adi_copd_quintile_weights)
+  }
+  input_ref$agent$p_adi_quintiles_COPD <- get_metadata("COPD", "adi_p_COPD_multipliers", "ref", "")
+
   ### smoking;
 
   input_help$smoking$logit_p_current_smoker_0_betas <- get_metadata("smoking", "logit_p_current_smoker_0_betas", "help", "Probability of being a current smoker at the time of creation")

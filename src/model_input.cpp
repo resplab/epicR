@@ -41,7 +41,8 @@ List get_inputs()
       Rcpp::Named("l_inc_betas")=AS_VECTOR_DOUBLE(input.agent.l_inc_betas),
       Rcpp::Named("ln_h_bgd_betas")=AS_VECTOR_DOUBLE(input.agent.ln_h_bgd_betas),
 
-      Rcpp::Named("p_adi_quintiles")=AS_VECTOR_DOUBLE(input.agent.p_adi_quintiles)
+      Rcpp::Named("p_adi_quintiles")=AS_VECTOR_DOUBLE(input.agent.p_adi_quintiles),
+      Rcpp::Named("p_adi_quintiles_COPD")=AS_VECTOR_DOUBLE(input.agent.p_adi_quintiles_COPD)
 
     ),
     Rcpp::Named("smoking")=Rcpp::List::create(
@@ -177,7 +178,7 @@ int set_input_var(std::string name, NumericVector value)
   if(name=="agent$ln_h_bgd_betas") READ_R_VECTOR(value,input.agent.ln_h_bgd_betas);
 
   if(name=="agent$p_adi_quintiles") READ_R_VECTOR(value,input.agent.p_adi_quintiles);
-
+  if(name=="agent$p_adi_quintiles_COPD") READ_R_VECTOR(value,input.agent.p_adi_quintiles_COPD);
 
   if(name=="smoking$logit_p_current_smoker_0_betas") READ_R_VECTOR(value,input.smoking.logit_p_current_smoker_0_betas);
   if(name=="smoking$logit_p_never_smoker_con_not_current_0_betas") READ_R_VECTOR(value,input.smoking.logit_p_never_smoker_con_not_current_0_betas);

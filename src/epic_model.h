@@ -160,7 +160,8 @@ struct input {
     double l_inc_betas[3];
     double p_bgd_by_sex[111][2];
     double ln_h_bgd_betas[9];
-    double p_adi_quintiles[5];  // population weights for quintiles 1–5
+    double p_adi_quintiles[5];       // ADI quintile weights for non-COPD agents (Q1=least deprived)
+    double p_adi_quintiles_COPD[5];  // ADI quintile weights for prevalent COPD agents — placeholder, update in input.R
   } agent;
 
   struct {

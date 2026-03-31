@@ -897,6 +897,7 @@ double _bvn[2]; // Bivariate normal sample, reused for correlated variables
 (*ag).sex=rand_unif()<input.agent.p_female;
 (*ag).fev1_tail = sqrt(0.1845) * rand_norm() + 0.827;
 
+(*ag).adi_quintile = 5; // default to quintile 5 (most deprived) if random number exceeds cumulative distribution
 
 // (*ag).norm_refill = 0;
 // (*ag).exp_refill = 0;
@@ -930,17 +931,6 @@ if(id<settings.n_base_agents)
       if(r<cum_p) {(*ag).age_at_creation=i; break;}
     }
 
-// ===== STEP 3: Area Deprivation Index (ADI) Quintile Assignment =====
-// Draw a uniform random number and walk cumulative ADI weights to assign quintile 1-5
-{
-  double r_adi = rand_unif();
-  double cum_adi = 0;
-  (*ag).adi_quintile = 5; // default to quintile 5 (most deprived) if random number exceeds cumulative distribution
-  for (int q = 0; q < 5; q++) { // Loop through quintiles 0-4, but assign quintile 1-5 to agent
-    cum_adi += input.agent.p_adi_quintiles[q]; // cumulative probability up to current quintile
-    if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; } // Assign quintile 1-5 based on where random number falls in cumulative distribution
-  }
-}
 
 // ========== STEP 4: Height and Weight Assignment ==========
     // Uses bivariate normal for correlated height/weight
@@ -1051,9 +1041,9 @@ if(id<settings.n_base_agents)
                          +input.COPD.logit_p_COPD_betas_by_sex[2][(*ag).sex]*(*ag).age_at_creation*(*ag).age_at_creation
                          +input.COPD.logit_p_COPD_betas_by_sex[3][(*ag).sex]*(*ag).pack_years
                          +input.COPD.logit_p_COPD_betas_by_sex[4][(*ag).sex]*(*ag).smoking_status
-                         +input.COPD.logit_p_COPD_betas_by_sex[5][(*ag).sex]*calendar_time
-                         +input.COPD.adi_logit_p_COPD_offset[(*ag).adi_quintile-1])
+                         +input.COPD.logit_p_COPD_betas_by_sex[5][(*ag).sex]*calendar_time)
                          //+input.COPD.logit_p_COPD_betas_by_sex[7]*(*ag).asthma
+                         // ADI offset removed: ADI assigned after COPD status (Step 7b), relationship captured via p_adi_quintiles_COPD
                          ;
 
   (*ag).p_COPD=COPD_odds/(1+COPD_odds);
@@ -1121,6 +1111,26 @@ if(id<settings.n_base_agents)
 
   }
 
+// ===== STEP 7b: Area Deprivation Index (ADI) Quintile Assignment =====
+// Assigned after COPD status (gold) is known so different weights can be used
+// for COPD vs non-COPD agents.
+{
+  double r_adi = rand_unif();
+  double cum_adi = 0;
+  if ((*ag).gold == 0) {
+    // Non-COPD agent: use general population weights
+    for (int q = 0; q < 5; q++) {
+      cum_adi += input.agent.p_adi_quintiles[q];
+      if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; }
+    }
+  } else {
+    // COPD agent: use COPD-specific weights (placeholder — update in input.R)
+    for (int q = 0; q < 5; q++) {
+      cum_adi += input.agent.p_adi_quintiles_COPD[q];
+      if (r_adi < cum_adi) { (*ag).adi_quintile = q + 1; break; }
+    }
+  }
+}
 
   //lung function;
   (*ag).lung_function_LPT=0;
