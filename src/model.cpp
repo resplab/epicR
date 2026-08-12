@@ -642,7 +642,7 @@ double update_prevalent_diagnosis(agent *ag)
     {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            (*ag).medication_status= max((int)MED_CLASS_LAMA, (*ag).medication_status);
+            (*ag).medication_status= max((int)MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
             medication_LPT(ag);
           }
     }
@@ -714,7 +714,7 @@ double update_prevalent_diagnosis(agent *ag)
       {
           if (rand_unif() < input.medication.medication_adherence)
           {
-            (*ag).medication_status= max((int)MED_CLASS_LAMA, (*ag).medication_status);
+            (*ag).medication_status= max((int)MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
             medication_LPT(ag);
           }
       }

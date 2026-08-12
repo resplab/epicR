@@ -635,7 +635,7 @@ void event_exacerbation_process(agent *ag)
   {
     if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max((int)MED_CLASS_LAMA, (*ag).medication_status);
+        (*ag).medication_status= max((int)MED_CLASS_LAMA | MED_CLASS_LABA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
@@ -644,23 +644,12 @@ void event_exacerbation_process(agent *ag)
   {
       if (rand_unif() < input.medication.medication_adherence)
         {
-        (*ag).medication_status= max((int)MED_CLASS_SABA, (*ag).medication_status);
+        (*ag).medication_status= max((int)MED_CLASS_LAMA, (*ag).medication_status);
         medication_LPT(ag);
         }
   }
 
-  if((*ag).diagnosis==1 && (*ag).dyspnea==0 && (((*ag).exac_status>2) |
-     ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
-     (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
-  {
-        if (rand_unif() < input.medication.medication_adherence)
-        {
-          (*ag).medication_status= max((int)(MED_CLASS_LAMA | MED_CLASS_LABA), (*ag).medication_status);
-          medication_LPT(ag);
-        }
-  }
-
-  if((*ag).diagnosis==1 && (*ag).dyspnea==1 && (((*ag).exac_status>2) |
+  if((*ag).diagnosis==1 && (((*ag).exac_status>2) |
      ((*ag).exac_history_severity_first==2 && ((*ag).local_time - (*ag).exac_history_time_first) <1 &&
      (*ag).exac_history_severity_second==2 && ((*ag).local_time - (*ag).exac_history_time_second) <1)))
   {
