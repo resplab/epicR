@@ -56,7 +56,7 @@ test_that("In untreated patients:
 
   expect_gt(diag_sevexacrategoldTest$difference[2], 0)
   expect_gt(diag_sevexacrategoldTest$difference[3], 0)
-  expect_gt(diag_sevexacrategoldTest$difference[4], -0.01)
+  expect_gt(diag_sevexacrategoldTest$difference[4], 0)
 
   terminate_session()
 
