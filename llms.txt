@@ -15,6 +15,7 @@ Chronic Obstructive Pulmonary Disease.
 The easiest way to install epicR is from CRAN:
 
 ``` r
+
 install.packages("epicR")
 ```
 
@@ -27,6 +28,7 @@ To install the latest development version with new features and bug
 fixes:
 
 ``` r
+
 install.packages("pak")
 pak::pkg_install("resplab/epicR")
 ```
@@ -49,6 +51,7 @@ session management automatically and provides progress information
 including a real-time progress bar:
 
 ``` r
+
 library(epicR)
 
 # Run with defaults (Canada, 20 year horizon, 60,000 agents)
@@ -94,6 +97,7 @@ reproducible results. Use the `seed` parameter in the
 [`simulate()`](reference/simulate.md) function:
 
 ``` r
+
 # Run with a specific seed for reproducible results
 results1 <- simulate(seed = 123)
 results2 <- simulate(seed = 123)
@@ -131,6 +135,7 @@ handles reproducibility correctly within EPIC’s simulation framework.
 For advanced customization of input parameters:
 
 ``` r
+
 library(epicR)
 
 # Get and modify inputs
@@ -150,6 +155,7 @@ are fully configured, with US parameters available as a template.
 ### Using Canadian Parameters (Default)
 
 ``` r
+
 # Canadian parameters are used by default
 input <- get_input()
 # or explicitly specify:
@@ -159,6 +165,7 @@ input <- get_input(jurisdiction = "canada")
 ### Using US Parameters
 
 ``` r
+
 # Note: US parameters must be configured first (see Configuration section)
 input <- get_input(jurisdiction = "us")
 ```
@@ -168,6 +175,7 @@ input <- get_input(jurisdiction = "us")
 Function parameters still override jurisdiction defaults:
 
 ``` r
+
 # Use Canadian defaults but change time horizon
 input <- get_input(jurisdiction = "canada", time_horizon = 10)
 ```
@@ -195,6 +203,7 @@ modify model parameters without changing the package code.
 #### Configuration Management Functions:
 
 ``` r
+
 # View config directory location
 get_user_config_dir()
 
@@ -215,6 +224,7 @@ reset_user_configs("canada")  # Specific jurisdiction
 #### Customizing Parameters:
 
 ``` r
+
 # 1. Open config directory
 open_user_config_dir()
 
@@ -300,6 +310,7 @@ possible by using the `return_events` parameter in
 [`simulate()`](reference/simulate.md):
 
 ``` r
+
 # Get events along with other results
 results <- simulate(
   n_agents = 10000,
@@ -314,6 +325,7 @@ head(events)
 Alternatively, you can set `record_mode` as a `setting`:
 
 ``` r
+
 settings <- get_default_settings()
 settings$record_mode <- 2
 settings$n_base_agents <- 1e4
@@ -348,6 +360,7 @@ Closed-cohort analysis can be specified by changing the appropriate
 input parameters.
 
 ``` r
+
 library(epicR)
 
 # Simple closed-cohort analysis

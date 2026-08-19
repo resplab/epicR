@@ -34,6 +34,7 @@ and treatment changes.
 If you haven’t already installed epicR:
 
 ``` r
+
 # Install from GitHub
 pak::pkg_install("resplab/epicR")
 ```
@@ -49,10 +50,12 @@ session management automatically and provides progress information
 messages):
 
 ``` r
+
 library(epicR)
 ```
 
 ``` r
+
 # Run with defaults - that's it!
 results <- simulate()
 
@@ -100,6 +103,7 @@ EPIC supports both Canadian and US populations with
 jurisdiction-specific parameters:
 
 ``` r
+
 # For Canadian population (default)
 results_canada <- simulate(jurisdiction = "canada")
 
@@ -117,6 +121,7 @@ prevalence and trends - Healthcare costs - Disease incidence rates
 Inputs control the model’s parameters. Explore them:
 
 ``` r
+
 inputs <- get_input()
 
 # Top-level structure
@@ -137,6 +142,7 @@ The [`simulate()`](../reference/simulate.md) function provides
 convenient parameters for common customizations:
 
 ``` r
+
 # Change time horizon
 results <- simulate(time_horizon = 20)
 
@@ -152,6 +158,7 @@ For more advanced input modifications, you can use
 parameters:
 
 ``` r
+
 # Explore available inputs
 input <- get_input()
 names(input$values)  # See categories
@@ -166,6 +173,7 @@ input$values$global_parameters$time_horizon
 Settings control how the model runs (not what it simulates):
 
 ``` r
+
 settings <- get_default_settings()
 names(settings)
 ```
@@ -182,6 +190,7 @@ Key settings:
 More agents = more precision but longer runtime and more memory:
 
 ``` r
+
 # Quick test run (10,000 agents)
 results <- simulate(n_agents = 1e4)
 
@@ -202,6 +211,7 @@ estimate_memory_required(n_agents = 1e6, record_mode = 0, time_horizon = 20)
 For more detailed results by year and demographics:
 
 ``` r
+
 # By default, you get both basic and extended results
 results <- simulate()
 
@@ -217,6 +227,7 @@ names(results$extended)
 To collect event-level data for each agent, use `return_events = TRUE`:
 
 ``` r
+
 # Get event history (automatically sets record_mode = 2)
 # Keep n_agents small due to memory requirements
 results <- simulate(
@@ -266,6 +277,7 @@ population dynamics (births, deaths, immigration, emigration). For a
 **closed cohort** analysis (fixed initial population, no new entries):
 
 ``` r
+
 # Run closed cohort analysis
 results <- simulate(closed_cohort = TRUE)
 
@@ -285,6 +297,7 @@ A common use case is comparing interventions. The
 straightforward:
 
 ``` r
+
 # Baseline scenario
 results_baseline <- simulate(
   jurisdiction = "canada",
@@ -320,6 +333,7 @@ For complex input modifications not covered by
 [`simulate()`](../reference/simulate.md) parameters:
 
 ``` r
+
 # Get and modify inputs
 input <- get_input()
 
@@ -336,6 +350,7 @@ results <- simulate(input = input$values)
 To run multiple simulations with different parameters:
 
 ``` r
+
 # Simulation 1
 results1 <- simulate(n_agents = 50000, time_horizon = 10, seed = 123)
 
@@ -355,6 +370,7 @@ The [`simulate()`](../reference/simulate.md) function includes automatic
 error handling and cleanup. For additional safety:
 
 ``` r
+
 results <- tryCatch({
   simulate(n_agents = 50000)
 }, error = function(e) {

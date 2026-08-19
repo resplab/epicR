@@ -70,14 +70,14 @@ background data for the simulation.
 
 **Key Components:**
 
-| Component              | Data Source                          | Description                                     |
-|------------------------|--------------------------------------|-------------------------------------------------|
-| Age distribution       | Statistics Canada (2001 Census)      | Initial age pyramid for the Canadian population |
-| Sex distribution       | Statistics Canada                    | Proportion of males and females                 |
-| Birth rates            | Statistics Canada                    | Annual birth rates by age group                 |
-| Mortality rates        | Canadian Life Tables                 | Background mortality rates by age and sex       |
-| Immigration/Emigration | Statistics Canada                    | Population flow rates                           |
-| Initial population     | Canadian Community Health Survey 1.1 | Starting population characteristics (n=105,908) |
+| Component | Data Source | Description |
+|----|----|----|
+| Age distribution | Statistics Canada (2001 Census) | Initial age pyramid for the Canadian population |
+| Sex distribution | Statistics Canada | Proportion of males and females |
+| Birth rates | Statistics Canada | Annual birth rates by age group |
+| Mortality rates | Canadian Life Tables | Background mortality rates by age and sex |
+| Immigration/Emigration | Statistics Canada | Population flow rates |
+| Initial population | Canadian Community Health Survey 1.1 | Starting population characteristics (n=105,908) |
 
 ### COPD Occurence Module
 
@@ -86,12 +86,12 @@ to assign a binary COPD status to individuals upon their creation.
 
 **COPD Incidence Model:**
 
-| Parameter                  | Data Source       | Notes                                       |
-|----------------------------|-------------------|---------------------------------------------|
-| Prevalent COPD at baseline | CanCOLD study     | Initial COPD status for existing population |
-| Incident COPD probability  | CanCOLD study     | Annual probability of developing COPD       |
-| Risk factors               | Literature review | Smoking status, pack-years, age, sex        |
-| GOLD staging               | Spirometry data   | Severity classification based on FEV₁       |
+| Parameter | Data Source | Notes |
+|----|----|----|
+| Prevalent COPD at baseline | CanCOLD study | Initial COPD status for existing population |
+| Incident COPD probability | CanCOLD study | Annual probability of developing COPD |
+| Risk factors | Literature review | Smoking status, pack-years, age, sex |
+| GOLD staging | Spirometry data | Severity classification based on FEV₁ |
 
 **COPD Definition:** Post-bronchodilator FEV₁/FVC ratio \< 0.70 (GOLD
 criteria)
@@ -107,12 +107,12 @@ over time.
 
 **Lung Function Components:**
 
-| Component                     | Data Source            | Description                                       |
-|-------------------------------|------------------------|---------------------------------------------------|
-| Initial FEV₁ (prevalent COPD) | CanCOLD study          | Starting lung function for existing COPD patients |
-| Initial FEV₁ (incident COPD)  | CanCOLD study          | Lung function at time of COPD diagnosis           |
-| FEV₁ decline rate             | Fletcher & Peto curves | Annual rate of lung function decline (mL/year)    |
-| GOLD stage transitions        | Literature review      | Progression between severity stages               |
+| Component | Data Source | Description |
+|----|----|----|
+| Initial FEV₁ (prevalent COPD) | CanCOLD study | Starting lung function for existing COPD patients |
+| Initial FEV₁ (incident COPD) | CanCOLD study | Lung function at time of COPD diagnosis |
+| FEV₁ decline rate | Fletcher & Peto curves | Annual rate of lung function decline (mL/year) |
+| GOLD stage transitions | Literature review | Progression between severity stages |
 
 **FEV₁ Decline Factors:** - Current smoking status (faster decline in
 current smokers) - Age and sex - Pack-years of smoking history -
@@ -129,21 +129,21 @@ intervention.
 
 #### Exacerbation Severity
 
-| Severity Level | Definition                                       | Treatment Setting                       |
-|----------------|--------------------------------------------------|-----------------------------------------|
-| Mild           | Managed with rescue medications only             | Self-managed at home                    |
-| Moderate       | Requires antibiotics and/or oral corticosteroids | Primary care visit                      |
-| Severe         | Requires hospitalization                         | Emergency department/hospital admission |
-| Very Severe    | Requires ICU admission                           | Intensive care unit                     |
+| Severity Level | Definition | Treatment Setting |
+|----|----|----|
+| Mild | Managed with rescue medications only | Self-managed at home |
+| Moderate | Requires antibiotics and/or oral corticosteroids | Primary care visit |
+| Severe | Requires hospitalization | Emergency department/hospital admission |
+| Very Severe | Requires ICU admission | Intensive care unit |
 
 **Exacerbation Model Parameters:**
 
-| Parameter                  | Data Source                  | Description                                |
-|----------------------------|------------------------------|--------------------------------------------|
-| Baseline exacerbation rate | TORCH, UPLIFT trials         | Rate by GOLD stage and severity            |
-| Rate multipliers           | Meta-analysis                | Effect of smoking, previous exacerbations  |
-| Seasonal variation         | Literature review            | Higher rates in winter months              |
-| Case fatality rate         | Canadian administrative data | Mortality risk during severe exacerbations |
+| Parameter | Data Source | Description |
+|----|----|----|
+| Baseline exacerbation rate | TORCH, UPLIFT trials | Rate by GOLD stage and severity |
+| Rate multipliers | Meta-analysis | Effect of smoking, previous exacerbations |
+| Seasonal variation | Literature review | Higher rates in winter months |
+| Case fatality rate | Canadian administrative data | Mortality risk during severe exacerbations |
 
 **Note:** *Hazard* refers to the instantaneous exacerbation rate at any
 given time.
@@ -159,12 +159,12 @@ from COPD. More formally:
 
 **Mortality Model Components:**
 
-| Mortality Type         | Data Source                          | Key Parameters                                              |
-|------------------------|--------------------------------------|-------------------------------------------------------------|
-| Background mortality   | Statistics Canada Life Tables        | Age- and sex-specific mortality rates                       |
+| Mortality Type | Data Source | Key Parameters |
+|----|----|----|
+| Background mortality | Statistics Canada Life Tables | Age- and sex-specific mortality rates |
 | COPD-related mortality | Administrative data, clinical trials | Case fatality rates during severe/very severe exacerbations |
-| Mortality rate ratios  | Meta-analysis                        | Increased mortality risk by GOLD stage                      |
-| Smoking impact         | Literature review                    | Hazard ratios for current vs. former vs. never smokers      |
+| Mortality rate ratios | Meta-analysis | Increased mortality risk by GOLD stage |
+| Smoking impact | Literature review | Hazard ratios for current vs. former vs. never smokers |
 
 **Case Fatality Rates:** - Severe exacerbations: ~2-5% in-hospital
 mortality - Very severe exacerbations (ICU): ~10-15% in-hospital
@@ -179,22 +179,22 @@ exacerbations.
 
 **Cost and Utility Categories:**
 
-| Category                 | Description                                                | Components                                                |
-|--------------------------|------------------------------------------------------------|-----------------------------------------------------------|
-| **Maintenance costs**    | Ongoing annual costs of managing stable COPD               | Medications, routine physician visits, diagnostic tests   |
-| **Exacerbation costs**   | Direct costs of treating exacerbations                     | Emergency visits, hospitalizations, ICU care, medications |
-| **Maintenance utility**  | Baseline quality of life with stable COPD                  | Health-related quality of life by GOLD stage              |
-| **Exacerbation utility** | Temporary reduction in quality of life during exacerbation | Severity-specific utility decrements                      |
+| Category | Description | Components |
+|----|----|----|
+| **Maintenance costs** | Ongoing annual costs of managing stable COPD | Medications, routine physician visits, diagnostic tests |
+| **Exacerbation costs** | Direct costs of treating exacerbations | Emergency visits, hospitalizations, ICU care, medications |
+| **Maintenance utility** | Baseline quality of life with stable COPD | Health-related quality of life by GOLD stage |
+| **Exacerbation utility** | Temporary reduction in quality of life during exacerbation | Severity-specific utility decrements |
 
 **Payoff Model Parameters:**
 
-| Parameter                | Data Source                    | Notes                                            |
-|--------------------------|--------------------------------|--------------------------------------------------|
-| Annual maintenance costs | Canadian costing studies       | Costs by GOLD stage (mild to very severe)        |
-| Exacerbation costs       | Provincial administrative data | By severity: mild, moderate, severe, very severe |
-| Baseline utilities       | EQ-5D studies                  | Health state utilities by GOLD stage             |
-| Exacerbation disutility  | Literature review              | Temporary quality of life reduction              |
-| Discount rate            | Canadian guidelines            | 1.5% for both costs and QALYs                    |
+| Parameter | Data Source | Notes |
+|----|----|----|
+| Annual maintenance costs | Canadian costing studies | Costs by GOLD stage (mild to very severe) |
+| Exacerbation costs | Provincial administrative data | By severity: mild, moderate, severe, very severe |
+| Baseline utilities | EQ-5D studies | Health state utilities by GOLD stage |
+| Exacerbation disutility | Literature review | Temporary quality of life reduction |
+| Discount rate | Canadian guidelines | 1.5% for both costs and QALYs |
 
 **Cost Ranges (CAD, 2015 dollars):** - Mild exacerbation: ~\$50-100 -
 Moderate exacerbation: ~\$200-400 - Severe exacerbation:
@@ -209,13 +209,13 @@ effect on the individual’s health trajectory.
 
 **Smoking Model Components:**
 
-| Component                | Data Source       | Description                                                 |
-|--------------------------|-------------------|-------------------------------------------------------------|
-| Initial smoking status   | CCHS 1.1          | Proportion of current, former, and never smokers by age/sex |
-| Pack-years               | CCHS, literature  | Cumulative smoking exposure (packs per day × years)         |
-| Smoking initiation rates | Statistics Canada | Age-specific rates of starting smoking                      |
-| Smoking cessation rates  | Statistics Canada | Age-specific rates of quitting smoking                      |
-| Relapse rates            | Literature review | Probability of restarting smoking after quitting            |
+| Component | Data Source | Description |
+|----|----|----|
+| Initial smoking status | CCHS 1.1 | Proportion of current, former, and never smokers by age/sex |
+| Pack-years | CCHS, literature | Cumulative smoking exposure (packs per day × years) |
+| Smoking initiation rates | Statistics Canada | Age-specific rates of starting smoking |
+| Smoking cessation rates | Statistics Canada | Age-specific rates of quitting smoking |
+| Relapse rates | Literature review | Probability of restarting smoking after quitting |
 
 **Smoking Status Definitions:** - **Never smoker**: \< 100 cigarettes
 lifetime - **Former smoker**: ≥ 100 cigarettes lifetime, currently

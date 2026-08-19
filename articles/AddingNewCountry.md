@@ -30,6 +30,7 @@ Create a new JSON configuration file for your country in the
 `inst/config/` directory:
 
 ``` r
+
 # Example: Adding Germany
 file_name <- "inst/config/config_germany.json"
 ```
@@ -40,6 +41,7 @@ Start by copying the structure from an existing configuration file. You
 can use the US template as a starting point:
 
 ``` r
+
 # Read the US template
 us_config <- jsonlite::fromJSON("inst/config/config_us.json")
 
@@ -204,6 +206,7 @@ When direct data is not available, parameters can be estimated using:
 #### 5.1 Regression Models
 
 ``` r
+
 # Example: Estimating COPD prevalence coefficients
 # Using logistic regression on survey data
 model <- glm(copd ~ age + sex + smoking_status + pack_years, 
@@ -230,6 +233,7 @@ Once you have populated the configuration file:
 #### 6.1 Test Loading
 
 ``` r
+
 # Test that the configuration loads without errors
 library(epicR)
 input <- get_input(jurisdiction = "germany")
@@ -238,6 +242,7 @@ input <- get_input(jurisdiction = "germany")
 #### 6.2 Run Basic Simulation
 
 ``` r
+
 # Run a small simulation to check for errors
 results <- simulate(
   jurisdiction = "germany",
@@ -260,6 +265,7 @@ Create documentation for your new country configuration:
 #### 7.1 Data Sources Documentation
 
 ``` r
+
 # Create a data sources file
 data_sources <- list(
   demographics = "German Federal Statistical Office, 2023",
@@ -278,6 +284,7 @@ estimation.
 Here’s a simplified example of adding Germany to epicR:
 
 ``` r
+
 # 1. Create base configuration
 germany_config <- list(
   jurisdiction = "germany",
