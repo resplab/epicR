@@ -17,7 +17,6 @@ See the README on
 
 Authors:
 \itemize{
-  \item Amin Adibi \email{adibi@alumni.ubc.ca}
   \item Mohsen Sadatsafavi \email{mohsen.sadatsafavi@ubc.ca} [copyright holder]
   \item Kate Johnson \email{kate.johnson@alumni.ubc.ca}
 }
