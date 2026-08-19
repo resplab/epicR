@@ -8,7 +8,7 @@ test_that("In untreated patients:
   init_session()
   input <- get_input()
   input$values$medication$medication_ln_hr_exac <- rep(0, length(input$values$medication$medication_ln_hr_exac))
-  run(input = input$values)
+  run(input = input$values, seed = 42)
 
   inputs <- get_inputs()
   output_ex <- get_output_ex()
