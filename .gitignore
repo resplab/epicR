@@ -12,5 +12,6 @@ docs
 *.tar.gz
 CLAUDE.md
 /epicR.Rcheck/
+.DS_Store
 
 Rplots.pdf
