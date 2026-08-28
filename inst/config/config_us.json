@@ -76,15 +76,15 @@
       "help": "Life table",
       "ref": "US Life Tables"
     },
-    "l_inc_betas": [-3.62672063032448, 0.0040274171887977, -4.37035899506131e-05],
+    "l_inc_betas": [-3.47849053292448, 0.0038533960887977, -4.37035899506131e-05],
     "l_inc_betas_metadata": {
       "help": "Ln of incidence rate of the new population - Calibration target to keep populatoin size and age pyramid in line with calibration",
-      "ref": "Calibration results from Ece (November 10, 2025). If closed cohort is enabled, incidence population will be turned off."
+      "ref": "Calibration settings updated (August 21, 2026)"
     },
-    "ln_h_bgd_betas": [0, -0.01, 0, -0.00532065698144107, 0, 0, 0, 0, 0],
+    "ln_h_bgd_betas": [0, -0.0075245599, 0, -0.00423104298144107, 0, 0, 0, 0, 0],
     "ln_h_bgd_betas_metadata": {
       "help": "Increased Longevity Over time and effect of other variables",
-      "ref": "Calibration results from Ece"
+      "ref": "Calibration settings updated (August 21, 2026)"
     }
   },
   "smoking": {
