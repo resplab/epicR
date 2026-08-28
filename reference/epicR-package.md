@@ -8,10 +8,14 @@ See the README on [GitHub](https://github.com/resplab/epicR#readme)
 
 ## Author
 
-**Maintainer**: Amin Adibi <adibi@alumni.ubc.ca>
+**Maintainer**: Kate Johnson <kate.johnson@ubc.ca>
 
 Authors:
 
+- Kate Johnson <kate.johnson@ubc.ca>
+
 - Mohsen Sadatsafavi <mohsen.sadatsafavi@ubc.ca> \[copyright holder\]
 
-- Kate Johnson <kate.johnson@alumni.ubc.ca>
+- Amin Adibi <adibi@alumni.ubc.ca>
+
+- Kevin Yan <kevin.yan@ubc.ca>
