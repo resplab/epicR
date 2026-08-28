@@ -13,12 +13,14 @@ See the README on
 \href{https://github.com/resplab/epicR#readme}{GitHub}
 }
 \author{
-\strong{Maintainer}: Amin Adibi \email{adibi@alumni.ubc.ca}
+\strong{Maintainer}: Kate Johnson \email{kate.johnson@ubc.ca}
 
 Authors:
 \itemize{
+  \item Kate Johnson \email{kate.johnson@ubc.ca}
   \item Mohsen Sadatsafavi \email{mohsen.sadatsafavi@ubc.ca} [copyright holder]
-  \item Kate Johnson \email{kate.johnson@alumni.ubc.ca}
+  \item Amin Adibi \email{adibi@alumni.ubc.ca}
+  \item Kevin Yan \email{kevin.yan@ubc.ca}
 }
 
 }
