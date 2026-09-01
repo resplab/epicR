@@ -123,6 +123,9 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
                                       by = c("year", "age"),
                                       all.x = TRUE)
 
+    # Restrict to the simulated time horizon (2015-2060) for validation
+    validate_pop_size_scaled <- validate_pop_size_scaled[validate_pop_size_scaled$year <= 2060, ]
+
     # Rescale the model's raw per-age counts to real population units,
     # anchored per age to the actual 2015 US population at that age
     baseline_2015 <- validate_pop_size_scaled[validate_pop_size_scaled$year == 2015,
