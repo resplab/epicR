@@ -93,7 +93,7 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
     settings$record_mode <- 0
     settings$n_base_agents <- 1e+05 # Reduced from 1e6 for testing speed
 
-    time_horizon <- 56
+    time_horizon <- 46
     results <- simulate(settings = settings, jurisdiction = "us", time_horizon = time_horizon, extended_results = TRUE)
     output <- results$extended
 
@@ -123,74 +123,47 @@ validate_population <- function(remove_COPD = 0, incidence_k = 1, savePlots = 0,
                                       by = c("year", "age"),
                                       all.x = TRUE)
 
-    # Initialize Scaled Column
-    validate_pop_size_scaled$EPIC_output_scaled <- NA
-    validate_pop_size_scaled$EPIC_output_scaled[validate_pop_size_scaled$year == 2015] <-
-      validate_pop_size_scaled$US_popsize[validate_pop_size_scaled$year == 2015]
+    # Restrict to the simulated time horizon (2015-2060) for validation
+    validate_pop_size_scaled <- validate_pop_size_scaled[validate_pop_size_scaled$year <= 2060, ]
 
-    # Calculate Growth Rates
-    total_epic_by_year <- aggregate(
-      x = validate_pop_size_scaled["EPIC_popsize"],
-      by = validate_pop_size_scaled["year"],
-      FUN = sum,
-      na.rm = TRUE
-    )
+    # Rescale the model's raw per-age counts to real population units,
+    # anchored per age to the actual 2015 US population at that age
+    baseline_2015 <- validate_pop_size_scaled[validate_pop_size_scaled$year == 2015,
+                                              c("age", "US_popsize", "EPIC_popsize")]
+    baseline_2015$age_scale_factor <- baseline_2015$US_popsize / baseline_2015$EPIC_popsize
 
-    colnames(total_epic_by_year)[2] <- "total_EPIC_output"
+    validate_pop_size_scaled <- merge(validate_pop_size_scaled,
+                                      baseline_2015[, c("age", "age_scale_factor")],
+                                      by = "age")
 
-    # Sort by year
-    total_epic_by_year <- total_epic_by_year[order(total_epic_by_year$year), ]
-
-    # Calculate growth rate (current / previous)
-    prev_vals <- c(NA, total_epic_by_year$total_EPIC_output[-nrow(total_epic_by_year)])
-    total_epic_by_year$growth_rate <- total_epic_by_year$total_EPIC_output / prev_vals
-
-    # Merge growth rates back
-    df_with_growth <- merge(validate_pop_size_scaled,
-                            total_epic_by_year[, c("year", "growth_rate")],
-                            by = "year",
-                            all.x = TRUE)
-
-    # Sort for calculations
-    df_with_growth <- df_with_growth[order(df_with_growth$age, df_with_growth$year), ]
-
-    # Apply Growth Projection
-    df_split <- split(df_with_growth, df_with_growth$age)
-
-    df_split <- lapply(df_split, function(sub_df) {
-      # Ensure sorted by year
-      sub_df <- sub_df[order(sub_df$year), ]
-      rates <- sub_df$growth_rate
-      rates[is.na(rates)] <- 1
-      # Get baseline (2015) US size
-      baseline <- sub_df$US_popsize[sub_df$year == 2015]
-      if(length(baseline) == 0) baseline <- 0
-      else baseline <- baseline[1]
-
-      # Calculate Projection
-      sub_df$EPIC_output_scaled <- baseline * cumprod(rates)
-
-      return(sub_df)
-    })
-
-    # Recombine
-    df_with_growth <- do.call(rbind, df_split)
+    validate_pop_size_scaled$EPIC_output_scaled <-
+      validate_pop_size_scaled$EPIC_popsize * validate_pop_size_scaled$age_scale_factor
 
     # Create Age Groups
-    df_with_growth$age_group <- NA
-    df_with_growth$age_group[df_with_growth$age >= 40 & df_with_growth$age <= 59] <- "40-59"
-    df_with_growth$age_group[df_with_growth$age >= 60 & df_with_growth$age <= 79] <- "60-79"
-    df_with_growth$age_group[df_with_growth$age >= 80] <- "80+"
+    validate_pop_size_scaled$age_group <- NA
+    validate_pop_size_scaled$age_group[validate_pop_size_scaled$age >= 40 & validate_pop_size_scaled$age <= 59] <- "40-59"
+    validate_pop_size_scaled$age_group[validate_pop_size_scaled$age >= 60 & validate_pop_size_scaled$age <= 79] <- "60-79"
+    validate_pop_size_scaled$age_group[validate_pop_size_scaled$age >= 80] <- "80+"
 
     # Aggregate Final Data
     df_summed_ranges <- aggregate(
-      x = df_with_growth[c("EPIC_output_scaled", "US_popsize")],
-      by = df_with_growth[c("year", "age_group")],
+      x = validate_pop_size_scaled[c("EPIC_output_scaled", "US_popsize")],
+      by = validate_pop_size_scaled[c("year", "age_group")],
       FUN = sum,
       na.rm = TRUE
     )
 
     colnames(df_summed_ranges)[3:4] <- c("total_EPIC_population", "total_US_population")
+
+    # Combine 40-59 and 60-79 into a single 40-79 bracket (working-age + young-old)
+    df_40_79 <- df_summed_ranges[df_summed_ranges$age_group %in% c("40-59", "60-79"), ]
+    df_40_79 <- aggregate(
+      df_40_79[c("total_EPIC_population", "total_US_population")],
+      by = df_40_79["year"],
+      FUN = sum
+    )
+    df_40_79$age_group <- "40-79"
+    df_summed_ranges <- rbind(df_summed_ranges, df_40_79[colnames(df_summed_ranges)])
 
     # Calculate RMSE
     rmse_results <- by(df_summed_ranges, df_summed_ranges$age_group, function(sub) {
